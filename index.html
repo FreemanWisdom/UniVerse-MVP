@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVERSE | Enter the Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        body { font-family: 'Space Grotesk', sans-serif; background: #0f172a; }
+        .scholar-gradient { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #22c55e; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full glass-card p-8 rounded-[2.5rem] shadow-2xl">
+        <div class="text-center mb-10">
+            <div class="inline-block px-4 py-1 rounded-full border border-green-500/30 text-green-500 text-xs font-bold uppercase tracking-widest mb-4">
+                Student verified
+            </div>
+            <h1 class="text-4xl font-bold text-white tracking-tighter">Uni<span class="text-green-500">Verse</span></h1>
+            <p id="authSubtitle" class="text-slate-400 mt-2">Connecting the smartest hustlers.</p>
+        </div>
+
+        <div class="flex bg-white/5 p-1 rounded-2xl mb-8 border border-white/5">
+            <button onclick="switchTab('login')" id="loginTab" class="w-1/2 py-3 text-sm font-bold rounded-xl transition-all bg-green-500 text-white shadow-lg shadow-green-500/20">Login</button>
+            <button onclick="switchTab('signup')" id="signupTab" class="w-1/2 py-3 text-sm font-bold rounded-xl transition-all text-slate-400">Join</button>
+        </div>
+
+        <form id="loginForm" class="space-y-4">
+            <input type="email" id="loginEmail" placeholder="University Email" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            <input type="password" id="loginPassword" placeholder="Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            <button type="button" onclick="handleLogin()" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Enter the Verse</button>
+        </form>
+
+        <form id="signupForm" class="space-y-4 hidden">
+            <input type="text" id="signupName" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            <input type="email" id="signupEmail" placeholder="University Email" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            
+            <button type="button" onclick="toggleUniModal()" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-left flex justify-between items-center group">
+                <span id="selectedUniLabel" class="text-slate-500">Select your Uni</span>
+                <i class="fas fa-university text-green-500"></i>
+            </button>
+            <input type="hidden" id="signupUniversity">
+
+            <input type="password" id="signupPassword" placeholder="Create Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            <button type="button" onclick="handleSignup()" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Join the Verse Scholars</button>
+        </form>
+    </div>
+
+    <div id="uniModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-slate-900 w-full max-w-lg rounded-t-[2rem] sm:rounded-[2rem] border-t border-white/10 max-h-[70vh] flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-white/5 bg-slate-800/50">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-white font-bold text-xl">Select Institution</h3>
+                    <button type="button" title="Close" onclick="toggleUniModal()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="relative">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="uniSearch" placeholder="Search universities..." class="w-full p-3 pl-10 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition" oninput="filterUniversities()">
+                </div>
+            </div>
+            <div id="uniList" class="p-4 overflow-y-auto custom-scrollbar grid grid-cols-1 gap-2">
+                </div>
+        </div>
+    </div>
+
+    <div id="otpPortal" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6">
+    <div class="w-full max-w-md bg-white/5 border border-white/10 p-8 rounded-[2.5rem] text-center space-y-6">
+        <div class="bg-green-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto">
+            <i class="fas fa-envelope-open-text text-green-500 text-2xl"></i>
+        </div>
+        <div>
+            <h2 class="text-2xl font-black text-white">Check your mail</h2>
+            <p class="text-slate-400 text-sm mt-2">We sent a 6-digit code to your university email.</p>
+        </div>
+        
+        <input type="text" id="otpCode" placeholder="0 0 0 0 0 0" 
+               class="w-full bg-white/5 border-2 border-dashed border-white/20 p-5 rounded-2xl text-center text-3xl font-black tracking-[1rem] text-green-500 outline-none focus:border-green-500 transition-all">
+        
+        <button onclick="verifyMyCode()" class="w-full scholar-gradient py-4 rounded-2xl text-black font-black shadow-lg shadow-green-500/20">
+            VERIFY & ORBIT
+        </button>
+        
+        <button onclick="closeOtpPortal()" class="text-slate-500 text-xs font-bold uppercase tracking-widest">
+            Back to Signup
+        </button>
+    </div>
+</div>
+
+    <script>
+        // CONFIG - FILL THESE TWO
+        const supabaseUrl = 'https://loppfyncbehifnspupwa.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvcHBmeW5jYmVoaWZuc3B1cHdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MDk2MDcsImV4cCI6MjA4NDA4NTYwN30.BuR0SNe1KQmZMl7u8s25hAI-QY_cDZRB2ijUU0JIu_c';
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const nigerianUnis = [
+    "Abia State University (ABSU)",
+    "Abubakar Tafawa Balewa University (ATBU)",
+    "Achievers University, Owo",
+    "Adamawa State University (ADSU)",
+    "Adekunle Ajasin University (AAUA)",
+    "Adeleke University (AUE)",
+    "Admiralty University of Nigeria (ADUN)",
+    "Afe Babalola University (ABUAD)",
+    "African University of Science and Technology (AUST)",
+    "Ahmadu Bello University (ABU)",
+    "Ajayi Crowther University (ACU)",
+    "Akwa Ibom State University (AKSU)",
+    "Al-Hikmah University",
+    "Al-Qalam University",
+    "Alex Ekwueme Federal University (AE-FUNAI)",
+    "Ambrose Alli University (AAU)",
+    "American University of Nigeria (AUN)",
+    "Anchor University",
+    "Arthur Jarvis University",
+    "Atiba University",
+    "Augustine University",
+    "Babcock University (BU)",
+    "Bauchi State University (BASUG)",
+    "Bayero University Kano (BUK)",
+    "Baze University",
+    "Bells University of Technology (BUT)",
+    "Benson Idahosa University (BIU)",
+    "Benue State University (BSUM)",
+    "Bingham University",
+    "Borno State University (BOSU)",
+    "Bowen University",
+    "Caleb University",
+    "Caritas University",
+    "Chrisland University",
+    "Christopher University",
+    "Chukwuemeka Odumegwu Ojukwu University (COOU)",
+    "Clifford University",
+    "Coal City University",
+    "Covenant University (CU)",
+    "Crawford University",
+    "Crescent University",
+    "Cross River University of Technology (CRUTECH)",
+    "Crown Hill University",
+    "Delta State University (DELSU)",
+    "Dominican University",
+    "Ebonyi State University (EBSU)",
+    "Edo State University Uzairue",
+    "Edwin Clark University",
+    "Ekiti State University (EKSU)",
+    "Eko University of Medicine and Health Sciences",
+    "Elizade University",
+    "Enugu State University of Science and Technology (ESUT)",
+    "Evangel University",
+    "Federal University Gashua (FUGA)",
+    "Federal University Gusau (FUGUS)",
+    "Federal University Kashere (FUK)",
+    "Federal University Lafia (FULAFIA)",
+    "Federal University Lokoja (FULOKOJA)",
+    "Federal University Otuoke (FUOTUOKE)",
+    "Federal University Oye-Ekiti (FUOYE)",
+    "Federal University of Agriculture, Abeokuta (FUNAAB)",
+    "Federal University of Agriculture, Makurdi (FUAM)",
+    "Federal University of Petroleum Resources (FUPRE)",
+    "Federal University of Technology, Akure (FUTA)",
+    "Federal University of Technology, Minna (FUTMINNA)",
+    "Federal University of Technology, Owerri (FUTO)",
+    "Fountain University",
+    "Godfrey Okoye University (GOU)",
+    "Gombe State University (GSU)",
+    "Gregory University",
+    "Hallmark University",
+    "Hezekiah University",
+    "Igbinedion University",
+    "Ignatius Ajuru University of Education (IAUE)",
+    "Ilorin University (UNILORIN)",
+    "Imo State University (IMSU)",
+    "Joseph Ayo Babalola University (JABU)",
+    "Kaduna State University (KASU)",
+    "Kano University of Science and Technology (KUST)",
+    "Kebbi State University of Science and Technology (KSUSTA)",
+    "Kings University",
+    "Kogi State University (KSU)",
+    "Kwara State University (KWASU)",
+    "Kwararafa University",
+    "Lagos State University (LASU)",
+    "Landmark University",
+    "Lead City University",
+    "Legacy University",
+    "Lidwin University",
+    "Ladoke Akintola University of Technology (LAUTECH)",
+    "Madonna University",
+    "Mcpherson University",
+    "Micheal Okpara University of Agriculture (MOUAU)",
+    "Modibbo Adama University of Technology (MAUTECH)",
+    "Mountain Top University",
+    "Nasarawa State University (NSUK)",
+    "Niger Delta University (NDU)",
+    "Nile University of Nigeria",
+    "Nnamdi Azikiwe University (UNIZIK)",
+    "Novena University",
+    "Obafemi Awolowo University (OAU)",
+    "Obong University",
+    "Oduduwa University",
+    "Olabisi Onabanjo University (OOU)",
+    "Ondo State University of Science and Technology (OSUSTECH)",
+    "Osadebe University",
+    "Osuman Danfodiyo University (UDUS)",
+    "Pan-Atlantic University (PAU)",
+    "Paul University",
+    "Plateau State University (PLASU)",
+    "Precious Cornerstone University (PCU)",
+    "Redeemer's University (RUN)",
+    "Renaissance University",
+    "Rhema University",
+    "Ritman University",
+    "Rivers State University (RSU)",
+    "Salem University",
+    "Samuel Adegboyega University (SAU)",
+    "Skyline University Nigeria (SUN)",
+    "Southwestern University",
+    "Summit University",
+    "Tai Solarin University of Education (TASUED)",
+    "Tansian University",
+    "Taraba State University (TASU)",
+    "University of Abuja (UNIABUJA)",
+    "University of Agriculture and Environmental Sciences, Umagwo (UAES)",
+    "University of Benin (UNIBEN)",
+    "University of Calabar (UNICAL)",
+    "University of Ibadan (UI)",
+    "University of Ilorin (UNILORIN)",
+    "University of Jos (UNIJOS)",
+    "University of Lagos (UNILAG)",
+    "University of Maiduguri (UNIMAID)",
+    "University of Mkar",
+    "University of Nigeria, Nsukka (UNN)",
+    "University of Port Harcourt (UNIPORT)",
+    "University of Uyo (UNIUYO)",
+    "Usmanu Danfodiyo University (UDUSOK)",
+    "Veritas University",
+    "Wellspring University",
+    "Wesley University",
+    "Western Delta University"
+].sort();
+
+        function switchTab(type) {
+            const isLogin = type === 'login';
+            document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+            document.getElementById('signupForm').classList.toggle('hidden', isLogin);
+            
+            const loginBtn = document.getElementById('loginTab');
+            const signupBtn = document.getElementById('signupTab');
+            
+            if(isLogin) {
+                loginBtn.className = "w-1/2 py-3 text-sm font-bold rounded-xl bg-green-500 text-white shadow-lg shadow-green-500/20";
+                signupBtn.className = "w-1/2 py-3 text-sm font-bold rounded-xl text-slate-400";
+            } else {
+                signupBtn.className = "w-1/2 py-3 text-sm font-bold rounded-xl bg-green-500 text-white shadow-lg shadow-green-500/20";
+                loginBtn.className = "w-1/2 py-3 text-sm font-bold rounded-xl text-slate-400";
+            }
+        }
+
+        function toggleUniModal() {
+            const modal = document.getElementById('uniModal');
+            modal.classList.toggle('hidden');
+            if (document.getElementById('uniList').innerHTML.trim() === "" || !modal.classList.contains('hidden')) {
+                document.getElementById('uniSearch').value = '';
+                populateUniList(nigerianUnis);
+            }
+        }
+
+        function populateUniList(unis) {
+            // Use data attributes + encoder to avoid breaking the inline onclick when
+            // university names contain quotes. selectUniFromElement will decode.
+            document.getElementById('uniList').innerHTML = unis.map(uni => `
+                <div data-uni="${encodeURIComponent(uni)}" onclick="selectUniFromElement(this)" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-slate-300 hover:bg-green-500/10 hover:border-green-500/30 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-green-500/20 text-green-500 flex items-center justify-center font-bold text-xs">${uni[0]}</div>
+                    ${uni}
+                </div>
+            `).join('');
+            
+            if (unis.length === 0) {
+                document.getElementById('uniList').innerHTML = '<div class="p-8 text-center text-slate-400">No universities found</div>';
+            }
+        }
+
+        function filterUniversities() {
+            const searchTerm = document.getElementById('uniSearch').value.toLowerCase();
+            const filtered = nigerianUnis.filter(uni => 
+                uni.toLowerCase().includes(searchTerm)
+            );
+            populateUniList(filtered);
+        }
+
+        function selectUni(name) {
+            document.getElementById('signupUniversity').value = name;
+            document.getElementById('selectedUniLabel').innerText = name;
+            document.getElementById('selectedUniLabel').className = "text-white font-medium";
+            toggleUniModal();
+        }
+
+        function selectUniFromElement(el) {
+            try {
+                const encoded = el.dataset.uni || '';
+                const name = decodeURIComponent(encoded);
+                selectUni(name);
+            } catch (e) {
+                console.error('Failed to select uni from element', e);
+            }
+        }
+
+       async function handleSignup() {
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const school = document.getElementById('signupUniversity').value;
+
+    if(!email || !password || !school || !name) {
+        alert("All fields are required to join the Verse.");
+        return;
+    }
+
+    // 1. Sign up the user
+    const { data, error } = await _supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+            data: { full_name: name, university: school }
+        }
+    });
+
+    if (error) {
+        alert("Signup Error: " + error.message);
+    } else {
+        // 2. Show the OTP Portal instead of redirecting
+        document.getElementById('otpPortal').classList.remove('hidden');
+        // Save the email temporarily to use in the next step
+        window.tempEmail = email; 
+    }
+}
+
+async function verifyMyCode() {
+    const token = document.getElementById('otpCode').value;
+    const email = window.tempEmail;
+
+    // 3. Verify the 6-digit code with Supabase
+    const { data, error } = await _supabase.auth.verifyOtp({
+        email: email,
+        token: token,
+        type: 'signup'
+    });
+
+    if (error) {
+        alert("Invalid or Expired Code: " + error.message);
+    } else {
+        alert("Identity Verified! Welcome to UniVERSE.");
+        window.location.href = 'dashboard.html'; // Direct access to dashboard
+    }
+}
+
+function closeOtpPortal() {
+    document.getElementById('otpPortal').classList.add('hidden');
+    document.getElementById('otpCode').value = '';
+}
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) alert(error.message);
+            else window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

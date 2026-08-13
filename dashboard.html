@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVERSE | The Orbit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        body { font-family: 'Space Grotesk', sans-serif; background: #0b0f1a; color: white; }
+        .glass-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+        .scholar-gradient { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .nav-glass { background: rgba(11, 15, 26, 0.8); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.05); }
+        /* Responsive text wrapping helpers */
+        .break-words { overflow-wrap: break-word; word-break: break-word; }
+        .wrap-on-mobile { white-space: normal !important; }
+        
+        /* Light Mode Styles - Professional neutral theme */
+        body.light-mode {
+            background: linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
+            color: #111827;
+        }
+        body.light-mode .glass-card {
+            background: #ffffff;
+            border: 1px solid rgba(15, 23, 42, 0.04);
+            box-shadow: 0 6px 20px rgba(16,24,40,0.06);
+            color: #111827;
+        }
+        body.light-mode .nav-glass {
+            background: #ffffff;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+            box-shadow: 0 4px 18px rgba(16,24,40,0.04);
+        }
+        body.light-mode nav {
+            background: linear-gradient(90deg, rgba(255,255,255,0.98) 0%, rgba(250,250,250,0.98) 100%) !important;
+            border-bottom: 1px solid rgba(15,23,42,0.04);
+        }
+        body.light-mode #userUniDisplay {
+            color: #6b7280 !important;
+        }
+        body.light-mode .text-slate-300,
+        body.light-mode .text-slate-400,
+        body.light-mode .text-slate-500 {
+            color: #6b7280 !important;
+        }
+        body.light-mode .text-white {
+            color: #0f172a !important;
+        }
+        body.light-mode .text-slate-600 {
+            color: #4b5563 !important;
+        }
+        body.light-mode .bg-white\/5 {
+            background: rgba(15,23,42,0.02) !important;
+        }
+        body.light-mode .bg-white\/10 {
+            background: rgba(15,23,42,0.03) !important;
+        }
+        body.light-mode .border-white\/10 {
+            border-color: rgba(15,23,42,0.06) !important;
+        }
+        body.light-mode .border-white\/5 {
+            border-color: rgba(15,23,42,0.03) !important;
+        }
+        body.light-mode input,
+        body.light-mode textarea {
+            background: #f3f4f6 !important;
+            color: #0f172a !important;
+            border-color: rgba(15,23,42,0.06) !important;
+        }
+        body.light-mode input::placeholder,
+        body.light-mode textarea::placeholder {
+            color: #9ca3af !important;
+        }
+        /* Slightly tone down the brand gradient for light mode */
+        body.light-mode .scholar-gradient { background: linear-gradient(135deg,#10b981 0%, #059669 100%); }
+        
+        /* Mobile-first responsive utilities */
+        @media (max-width: 640px) {
+            nav { padding: 1rem !important; }
+            nav h1 { font-size: 1rem !important; }
+            nav .flex.items-center.gap-4 { gap: 0.5rem !important; }
+            nav button { padding: 0.25rem !important; }
+            nav i { font-size: 1rem !important; }
+            #userInitial { width: 2rem !important; height: 2rem !important; }
+            
+            main { padding: 1rem !important; }
+            
+            .grid.grid-cols-2 { grid-template-columns: 1fr !important; }
+            .glass-card { padding: 1rem !important; border-radius: 1.5rem !important; }
+            
+            h1 { font-size: 1.25rem !important; }
+            h2 { font-size: 1.5rem !important; }
+            h3 { font-size: 1rem !important; }
+            
+            .flex.justify-between.items-end { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
+            .flex.justify-between.items-end button { width: 100% !important; }
+            
+            button { padding: 0.75rem 1rem !important; font-size: 0.75rem !important; }
+            textarea { font-size: 0.875rem !important; }
+            input { font-size: 0.875rem !important; padding: 0.75rem !important; }
+        }
+        
+        @media (max-width: 768px) {
+            body { margin: 0; }
+            main { max-width: 100% !important; }
+            .scholar-gradient { padding: 1rem !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-32">
+
+    <nav class="p-6 flex justify-between items-center sticky top-0 bg-[#0b0f1a]/90 backdrop-blur-md z-50 md:p-6 sm:p-4">
+        <div class="min-w-0">
+            <h1 class="text-xl md:text-2xl font-bold tracking-tighter truncate">Uni<span class="text-green-500">VERSE</span></h1>
+            <div class="flex items-center gap-1.5 min-w-0">
+                <div class="w-1.5 h-1.5 flex-shrink-0 rounded-full bg-green-500 animate-pulse"></div>
+                <p id="userUniDisplay" class="text-[8px] md:text-[9px] text-slate-500 uppercase font-black tracking-widest italic truncate">Verifying...</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
+            <button onclick="toggleTheme()" class="text-slate-400 hover:text-slate-600 transition p-1 md:px-2" title="Toggle Dark/Light Mode">
+                <i id="themeIcon" class="fas fa-moon text-base md:text-lg"></i>
+            </button>
+            <button onclick="toggleLogoutModal(true)" class="text-slate-400 hover:text-red-500 transition p-1 md:px-2" title="Logout">
+                <i class="fas fa-sign-out-alt text-base md:text-lg"></i>
+            </button>
+            <button type="button" title="Messages" class="text-slate-400 hover:text-white transition p-1 md:px-2"><i class="far fa-comment-dots text-base md:text-lg"></i></button>
+            <button onclick="openProfilePage()" id="userInitial" class="w-8 h-8 md:w-10 md:h-10 rounded-full scholar-gradient flex items-center justify-center font-bold border border-white/10 shadow-lg cursor-pointer flex-shrink-0 hover:shadow-green-500/30 transition title='Profile'"><i class="fas fa-user text-white text-sm md:text-lg"></i></button>
+        </div>
+    </nav>
+
+    <main class="p-6 md:p-8 max-w-2xl mx-auto space-y-4 md:space-y-6">
+        
+        <div id="orbitPage" class="space-y-4 md:space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <div class="glass-card p-4 md:p-6 rounded-[2.2rem]">
+                    <p class="text-[8px] md:text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">Wallet Balance</p>
+                    <h2 class="text-xl md:text-2xl font-bold text-white">₦<span id="userBalance">0.00</span></h2>
+                </div>
+                <div class="glass-card p-4 md:p-6 rounded-[2.2rem]">
+                    <p class="text-[8px] md:text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">Reputation</p>
+                    <div id="reputationStars" class="flex items-center gap-1 text-[10px] min-h-[14px]"></div>
+                </div>
+            </div>
+
+            <button onclick="openPostModal()" class="w-full scholar-gradient p-4 md:p-5 rounded-[2rem] flex items-center justify-between shadow-xl shadow-green-500/10 transition active:scale-95">
+                <div class="text-left min-w-0">
+                    <h3 class="font-bold text-white text-base md:text-lg">Broadcast to Orbit</h3>
+                    <p class="text-white/60 text-[10px] md:text-[11px]">Share news, photos, or updates</p>
+                </div>
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0"><i class="fas fa-plus text-white text-base md:text-xl"></i></div>
+            </button>
+
+            <div id="orbitFeed" class="space-y-4 md:space-y-6">
+                </div>
+        </div>
+
+        <div id="lodgePage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-3 md:gap-4">
+        <div class="min-w-0">
+            <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">UniVERSE Real Estate</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Lodge Finder</h2>
+        </div>
+        <button id="scoutButton" onclick="checkReputationForPosting()" class="w-full md:w-auto scholar-gradient px-4 md:px-6 py-2 md:py-3 rounded-2xl text-[8px] md:text-[10px] font-black uppercase tracking-widest shadow-lg shadow-green-500/20 active:scale-95 transition flex-shrink-0">
+            Scout & Earn 7%
+        </button>
+    </div>
+
+    <div id="lodgeFeed" class="space-y-3 md:space-y-4">
+        <div class="glass-card rounded-[2.5rem] p-6 md:p-10 text-center border-dashed border-white/10">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-green-500/5 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 border border-green-500/10">
+                <i class="fas fa-bed text-2xl md:text-3xl text-green-500/50"></i>
+            </div>
+            <h3 id="noListingsText" class="text-lg md:text-xl font-bold text-white mb-2">No active listings in [University]</h3>
+            <p class="text-slate-500 text-xs md:text-sm max-w-[250px] mx-auto leading-relaxed">
+                Be the first to scout a vacant lodge and claim your <span class="text-green-500 font-bold">7% commission</span> on successful rent.
+            </p>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    <div id="logoutModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-6">
+        <div class="glass-card p-8 rounded-[2.5rem] w-full max-w-xs text-center border-white/20 shadow-2xl">
+            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-sign-out-alt text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Leave Orbit?</h3>
+            <p class="text-slate-400 text-sm mb-6">Are you sure you want to log out?</p>
+            <div class="space-y-3">
+                <button onclick="handleLogout()" class="w-full bg-red-500 hover:bg-red-600 text-white py-4 rounded-2xl font-bold transition">Yes, Logout</button>
+                <button onclick="toggleLogoutModal(false)" class="w-full bg-white/5 hover:bg-white/10 text-white py-4 rounded-2xl font-bold transition">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="postModal" class="fixed inset-0 bg-black/95 hidden z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 pb-32">
+        <div class="bg-[#0b0f1a] w-full max-w-lg rounded-t-[2.5rem] sm:rounded-[2.5rem] border border-white/10 p-8 space-y-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-xl font-bold">New Broadcast</h3>
+                <button type="button" onclick="closePostModal()" class="text-slate-500" title="Close"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <textarea id="postContent" placeholder="What's happening on campus?" rows="4" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 outline-none text-white focus:border-green-500 resize-none"></textarea>
+            
+            <label class="block w-full p-4 rounded-2xl bg-white/5 border-2 border-dashed border-white/10 text-center cursor-pointer hover:border-green-500">
+                <i class="fas fa-images text-slate-500 mb-1 text-xl"></i>
+                <p class="text-[10px] text-slate-500 font-bold uppercase">Attach Photos</p>
+                <input type="file" id="postImage" accept="image/*" class="hidden" onchange="previewFiles()" multiple>
+            </label>
+            <div id="imagePreviewContainer" class="grid grid-cols-3 gap-2 mt-2"></div>
+            <button onclick="submitPost()" id="submitBtn" class="w-full scholar-gradient py-5 rounded-[2rem] font-bold mt-2">Launch to Orbit</button>
+        </div>
+    </div>
+
+    <div id="scoutModal" class="fixed inset-0 bg-black/95 hidden z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 pb-32">
+        <div class="bg-[#0b0f1a] w-full sm:max-w-lg rounded-t-[2.5rem] sm:rounded-[2.5rem] border border-white/10 p-3 sm:p-4 md:p-8 space-y-2 sm:space-y-3 md:space-y-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-2 gap-2">
+                <h3 class="text-lg md:text-xl font-bold break-words">Scout Lodge</h3>
+                <button type="button" onclick="closeScoutModal()" class="text-slate-500 flex-shrink-0" title="Close"><i class="fas fa-times text-lg md:text-xl"></i></button>
+            </div>
+            
+            <input id="lodgeName" placeholder="Lodge Name" class="w-full p-2 sm:p-3 md:p-4 rounded-2xl bg-white/5 border border-white/10 outline-none text-white focus:border-green-500 text-xs sm:text-sm md:text-base break-words">
+            
+            <input id="landlordContact" placeholder="Contact" required class="w-full p-2 sm:p-3 md:p-4 rounded-2xl bg-white/5 border border-white/10 outline-none text-white focus:border-green-500 text-xs sm:text-sm md:text-base break-words">
+            
+            <input id="lodgeAddress" placeholder="Address" required class="w-full p-2 sm:p-3 md:p-4 rounded-2xl bg-white/5 border border-white/10 outline-none text-white focus:border-green-500 text-xs sm:text-sm md:text-base break-words">
+            
+            <textarea id="lodgeDescription" placeholder="Description" rows="2" class="w-full p-2 sm:p-3 md:p-4 rounded-2xl bg-white/5 border border-white/10 outline-none text-white focus:border-green-500 resize-none text-xs sm:text-sm md:text-base break-words"></textarea>
+            
+            <div class="relative">
+                <span class="absolute left-2 sm:left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs sm:text-sm md:text-base">₦</span>
+                <input id="lodgePrice" type="number" placeholder="Price/year" required class="w-full pl-6 sm:pl-7 md:pl-8 pr-2 sm:pr-3 md:pr-4 py-2 sm:py-3 md:py-4 rounded-2xl bg-white/5 border border-white/10 outline-none text-white focus:border-green-500 text-xs sm:text-sm md:text-base break-words">
+            </div>
+            
+            <label class="block w-full p-2 sm:p-3 md:p-4 rounded-2xl bg-white/5 border-2 border-dashed border-white/10 text-center cursor-pointer hover:border-green-500">
+                <i class="fas fa-images text-slate-500 mb-0.5 text-sm sm:text-base md:text-xl"></i>
+                <p class="text-[7px] sm:text-[8px] md:text-[10px] text-slate-500 font-bold uppercase break-words">Attach Photos (Min 3)</p>
+                <input type="file" id="lodgeImages" accept="image/*" class="hidden" onchange="previewLodgeFiles()" multiple>
+            </label>
+            <div id="lodgeImagePreviewContainer" class="grid grid-cols-3 gap-2 mt-2"></div>
+            <button onclick="submitLodge()" id="submitLodgeBtn" class="w-full scholar-gradient py-2 sm:py-3 md:py-5 rounded-[2rem] font-bold mt-2 text-xs sm:text-sm md:text-base">Post Lodge</button>
+        </div>
+    </div>
+
+    <div id="profilePage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
+        <div class="glass-card p-8 md:p-10 rounded-[2.5rem] text-center space-y-6">
+            <!-- Profile Photo Section -->
+            <div class="relative w-24 h-24 md:w-32 md:h-32 mx-auto">
+                <div id="profilePhotoDisplay" class="w-full h-full rounded-full scholar-gradient flex items-center justify-center font-bold text-4xl md:text-5xl text-white border-4 border-green-500/30 shadow-lg">
+                    <img id="profilePhotoImg" style="display: none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                </div>
+                <label class="absolute bottom-0 right-0 w-10 h-10 md:w-12 md:h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center cursor-pointer transition shadow-lg">
+                    <i class="fas fa-camera text-white text-lg md:text-xl"></i>
+                    <input type="file" id="profilePhotoInput" accept="image/*" class="hidden" onchange="handleProfilePhotoUpload()">
+                </label>
+            </div>
+
+            <!-- Edit Profile Button -->
+            <button onclick="toggleProfileEdit()" id="editProfileBtn" class="w-full scholar-gradient py-3 md:py-4 rounded-2xl font-bold text-sm md:text-base hover:opacity-90 transition">
+                <i class="fas fa-edit mr-2"></i> Edit Profile
+            </button>
+
+            <!-- Profile Info in Display Mode -->
+            <div id="profileDisplayMode" class="space-y-6">
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-xs md:text-sm text-slate-500 uppercase font-bold mb-1">Full Name</p>
+                        <h2 id="profileNameDisplay" class="text-xl md:text-2xl font-bold text-white">Loading...</h2>
+                    </div>
+                    <div>
+                        <p class="text-xs md:text-sm text-slate-500 uppercase font-bold mb-1">University Email</p>
+                        <p id="profileEmailDisplay" class="text-sm md:text-base text-slate-400">Loading...</p>
+                    </div>
+                    <div>
+                        <p class="text-xs md:text-sm text-slate-500 uppercase font-bold mb-1">Institution</p>
+                        <p id="profileUniDisplay" class="text-sm md:text-base text-slate-400">Loading...</p>
+                    </div>
+                    <div>
+                        <p class="text-xs md:text-sm text-slate-500 uppercase font-bold mb-1">Bio</p>
+                        <p id="profileBioDisplay" class="text-sm md:text-base text-slate-300 min-h-[3rem]">No bio added yet. Click Edit Profile to add one.</p>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/10">
+                    <div class="space-y-2">
+                        <p class="text-xs text-slate-500 uppercase font-bold">Wallet Balance</p>
+                        <p class="text-lg md:text-xl font-bold text-green-500">₦<span id="profileBalanceDisplay">0.00</span></p>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-xs text-slate-500 uppercase font-bold">Reputation</p>
+                        <div id="profileStarsDisplay" class="flex items-center justify-center gap-1"></div>
+                    </div>
+                </div>
+
+                <!-- Joined Date -->
+                <div class="text-xs text-slate-500 font-bold">
+                    Joined <span id="joinedDateDisplay">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Profile Edit Form -->
+            <div id="profileEditMode" class="hidden space-y-4">
+                <input type="text" id="editProfileName" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition text-sm md:text-base">
+                <textarea id="editProfileBio" placeholder="Tell us about yourself (bio)..." rows="4" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition text-sm md:text-base resize-none"></textarea>
+                <div class="flex gap-3 md:gap-4">
+                    <button onclick="saveProfileChanges()" class="flex-1 scholar-gradient py-3 md:py-4 rounded-2xl font-bold text-sm md:text-base hover:opacity-90 transition">
+                        <i class="fas fa-check mr-2"></i> Save Changes
+                    </button>
+                    <button onclick="toggleProfileEdit()" class="flex-1 bg-white/10 hover:bg-white/20 py-3 md:py-4 rounded-2xl font-bold text-white text-sm md:text-base transition">
+                        <i class="fas fa-times mr-2"></i> Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="glass-card p-6 md:p-8 rounded-[2.5rem] space-y-4">
+            <h3 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+                <i class="fas fa-cog text-green-500"></i> Settings
+            </h3>
+            <div class="space-y-3 border-t border-white/10 pt-4">
+                <button onclick="toggleJourneyModal(true)" class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition text-slate-300 text-sm md:text-base">
+                    <span class="flex items-center gap-2"><i class="fas fa-route text-green-500"></i> The UniVerse Journey</span>
+                    <i class="fas fa-chevron-right text-slate-500"></i>
+                </button>
+                <button onclick="toggleFutureModal(true)" class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition text-slate-300 text-sm md:text-base">
+                    <span class="flex items-center gap-2"><i class="fas fa-flask text-green-500"></i> Future ICOS Experiences</span>
+                    <i class="fas fa-chevron-right text-slate-500"></i>
+                </button>
+                <button class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 transition text-slate-500 text-sm md:text-base opacity-60 cursor-default">
+                    <span>Privacy Settings</span>
+                    <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
+                </button>
+                <button class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 transition text-slate-500 text-sm md:text-base opacity-60 cursor-default">
+                    <span>Notification Preferences</span>
+                    <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
+                </button>
+                <button class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 transition text-slate-500 text-sm md:text-base opacity-60 cursor-default">
+                    <span>Change Password</span>
+                    <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
+                </button>
+                <button onclick="toggleLogoutModal(true)" class="w-full flex items-center justify-between p-4 rounded-2xl bg-red-500/10 hover:bg-red-500/20 transition text-red-400 text-sm md:text-base font-bold">
+                    <span>Logout</span>
+                    <i class="fas fa-sign-out-alt text-red-500"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="errandPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 md:gap-4">
+            <div class="min-w-0">
+                <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">Campus Services</p>
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tighter text-white">Errand Hub</h2>
+            </div>
+            <button onclick="openErrandModal()" class="w-full md:w-auto scholar-gradient px-4 md:px-6 py-2 md:py-3 rounded-2xl text-[8px] md:text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition flex-shrink-0">Post Errand</button>
+        </div>
+
+        <div id="errandListContainer" class="space-y-3 md:space-y-4 min-h-[400px]">
+            <div class="glass-card rounded-[2.5rem] p-6 md:p-10 text-center border-dashed border-white/10">
+                <div class="w-16 h-16 md:w-20 md:h-20 bg-green-500/5 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 border border-green-500/10">
+                    <i class="fas fa-box-open text-2xl md:text-3xl text-green-500/50"></i>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-white mb-2">No active errands</h3>
+                <p class="text-slate-500 text-xs md:text-sm max-w-[250px] mx-auto leading-relaxed">Post an errand request to find someone who can help you or browse existing requests.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="errandModal" class="fixed inset-0 bg-black/95 hidden z-[300] p-4 md:p-6 backdrop-blur-md overflow-y-auto flex items-end md:items-center justify-center">
+        <div class="w-full max-w-md bg-[#0b0f1a] rounded-t-[2rem] md:rounded-[2.5rem] border border-white/10 p-6 md:p-8 space-y-5">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg md:text-xl font-bold text-white">Request an Errand</h3>
+                <button type="button" onclick="closeErrandModal()" class="text-slate-500 flex-shrink-0" title="Close"><i class="fas fa-times text-lg md:text-xl"></i></button>
+            </div>
+            
+            <input type="text" id="errandTitle" placeholder="What do you need? (e.g. Laundry)" class="w-full p-3 md:p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none text-sm md:text-base">
+            
+            <textarea id="errandDesc" placeholder="Detailed description..." rows="3" class="w-full p-3 md:p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none text-sm md:text-base"></textarea>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <input type="number" id="errandPrice" placeholder="Reward (₦)" class="p-3 md:p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none text-sm md:text-base">
+                <input type="datetime-local" id="errandDeadline" placeholder="Deadline" class="p-3 md:p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none text-sm md:text-base">
+            </div>
+
+            <button onclick="saveErrand()" id="errandSubmitBtn" class="w-full scholar-gradient py-4 rounded-2xl font-bold shadow-xl active:scale-95 transition-all">Post Request</button>
+            <button onclick="closeErrandModal()" class="w-full bg-white/5 hover:bg-white/10 py-4 rounded-2xl text-white text-sm font-bold transition">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         V1.0 PILLAR PLACEHOLDERS — Campus Chat, Study, Campus Whisper
+         These are intentionally NOT fake-functional. Each pillar is
+         built out in its own later phase (Chat: Phase 4, Study:
+         Phases 5-7, Whisper: Phase 8) and this placeholder is
+         replaced at that point, not left in place.
+         ============================================================ -->
+
+    <div id="chatPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
+        <div class="min-w-0">
+            <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">UniVERSE Communication</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Campus Chat</h2>
+        </div>
+        <div class="glass-card rounded-[2.5rem] p-10 md:p-14 text-center border-dashed border-white/10">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-green-500/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/10">
+                <i class="far fa-comment-dots text-2xl md:text-3xl text-green-500/50"></i>
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-white mb-2">Coming Soon</h3>
+            <p class="text-slate-500 text-xs md:text-sm max-w-[280px] mx-auto leading-relaxed">
+                Campus Chat is being built as part of UniVerse ICOS V1.0 — one-to-one messaging with your campus community, arriving before September 1, 2026.
+            </p>
+        </div>
+    </div>
+
+    <div id="studyPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
+        <div class="min-w-0">
+            <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">Academic Layer</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Study</h2>
+        </div>
+        <div class="grid grid-cols-1 gap-3 md:gap-4">
+            <div class="glass-card rounded-[2rem] p-6 md:p-8 flex items-center justify-between opacity-70">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center flex-shrink-0"><i class="fas fa-book text-green-500"></i></div>
+                    <div>
+                        <h3 class="font-bold text-white text-sm md:text-base">Study Hub</h3>
+                        <p class="text-slate-500 text-[10px] md:text-xs">PDFs, past questions, lecture materials</p>
+                    </div>
+                </div>
+                <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-500 border border-white/10 rounded-full px-3 py-1 flex-shrink-0">Coming Soon</span>
+            </div>
+            <div class="glass-card rounded-[2rem] p-6 md:p-8 flex items-center justify-between opacity-70">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center flex-shrink-0"><i class="fas fa-users text-green-500"></i></div>
+                    <div>
+                        <h3 class="font-bold text-white text-sm md:text-base">Study Tribes</h3>
+                        <p class="text-slate-500 text-[10px] md:text-xs">Join peer-learning communities</p>
+                    </div>
+                </div>
+                <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-500 border border-white/10 rounded-full px-3 py-1 flex-shrink-0">Coming Soon</span>
+            </div>
+            <div class="glass-card rounded-[2rem] p-6 md:p-8 flex items-center justify-between opacity-70">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center flex-shrink-0"><i class="fas fa-robot text-green-500"></i></div>
+                    <div>
+                        <h3 class="font-bold text-white text-sm md:text-base">AI Tutor</h3>
+                        <p class="text-slate-500 text-[10px] md:text-xs">Ask academic questions, get explanations</p>
+                    </div>
+                </div>
+                <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-500 border border-white/10 rounded-full px-3 py-1 flex-shrink-0">Coming Soon</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="whisperPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
+        <div class="min-w-0">
+            <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">Anonymous, To Other Students Only</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Campus Whisper</h2>
+        </div>
+        <div class="glass-card rounded-[2.5rem] p-10 md:p-14 text-center border-dashed border-white/10">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-green-500/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/10">
+                <i class="fas fa-user-secret text-2xl md:text-3xl text-green-500/50"></i>
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-white mb-2">Coming Soon</h3>
+            <p class="text-slate-500 text-xs md:text-sm max-w-[280px] mx-auto leading-relaxed">
+                Campus Whisper is being built as part of UniVerse ICOS V1.0 — anonymous campus conversation, with real moderation behind the scenes.
+            </p>
+        </div>
+    </div>
+
+    <!-- Future ICOS Experiences — preserved, functional modules that
+         are not part of the six V1.0 pillars. Reached from Profile,
+         not the primary nav. -->
+    <div id="futureModal" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-slate-900 w-full max-w-md rounded-t-[2rem] sm:rounded-[2rem] border-t border-white/10 sm:border p-6 md:p-8 space-y-4">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-white font-bold text-xl">Future ICOS Experiences</h3>
+                <button type="button" onclick="toggleFutureModal(false)" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <p class="text-slate-400 text-xs md:text-sm">These aren't part of the V1.0 core experience yet, but they're live and working as an early beta.</p>
+            <button onclick="toggleFutureModal(false); showPage('lodge')" class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition text-left">
+                <span class="flex items-center gap-3 text-slate-200 text-sm font-bold"><i class="fas fa-bed text-green-500"></i> Lodge Finder <span class="text-[8px] font-black uppercase text-green-500 border border-green-500/30 rounded-full px-2 py-0.5">Beta</span></span>
+                <i class="fas fa-chevron-right text-slate-500"></i>
+            </button>
+            <button onclick="toggleFutureModal(false); showPage('errandPage')" class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition text-left">
+                <span class="flex items-center gap-3 text-slate-200 text-sm font-bold"><i class="fas fa-car text-green-500"></i> Errand Hub <span class="text-[8px] font-black uppercase text-green-500 border border-green-500/30 rounded-full px-2 py-0.5">Beta</span></span>
+                <i class="fas fa-chevron-right text-slate-500"></i>
+            </button>
+            <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 opacity-50">
+                <span class="flex items-center gap-3 text-slate-400 text-sm font-bold"><i class="fas fa-tools"></i> Skill Place</span>
+                <span class="text-[8px] font-black uppercase text-slate-500">Coming Later</span>
+            </div>
+            <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 opacity-50">
+                <span class="flex items-center gap-3 text-slate-400 text-sm font-bold"><i class="fas fa-shopping-bag"></i> Marketplace</span>
+                <span class="text-[8px] font-black uppercase text-slate-500">Coming Later</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- UniVerse Journey -->
+    <div id="journeyModal" class="fixed inset-0 bg-black/90 hidden z-[100] backdrop-blur-md overflow-y-auto flex items-start sm:items-center justify-center p-4 py-10">
+        <div class="bg-slate-900 w-full max-w-lg rounded-[2rem] border border-white/10 p-6 md:p-8 space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-white font-bold text-xl">The UniVerse Journey</h3>
+                <button type="button" onclick="toggleJourneyModal(false)" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <p class="text-slate-400 text-xs md:text-sm">UniVerse ICOS V1.0 is the beginning, not the whole vision. Here's where it's headed.</p>
+
+            <div class="space-y-3">
+                <div class="glass-card rounded-2xl p-5 border-green-500/30">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-green-500 mb-1">V1.0 — The Foundation · Sept 1, 2026</p>
+                    <p class="text-white text-sm font-bold mb-1">Orbit · Campus Chat · Study Tribes · Study Hub · AI Tutor · Campus Whisper</p>
+                    <p class="text-slate-500 text-xs">Connect. Learn. Communicate. Contribute.</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 opacity-70">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">V2.0 — Student Economy</p>
+                    <p class="text-slate-300 text-sm">Skill Place · Marketplace · Lodge Finder · Errand Hub</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 opacity-70">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">V3.0 — Campus Infrastructure</p>
+                    <p class="text-slate-300 text-sm">Transport · Student Wallet · Institutional Payments · Campus Services</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 opacity-70">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">V4.0 — National Network</p>
+                    <p class="text-slate-300 text-sm">Expansion across Nigerian universities.</p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 opacity-70">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">V5.0 — African Network</p>
+                    <p class="text-slate-300 text-sm">A connected African student ecosystem.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://loppfyncbehifnspupwa.supabase.co';
+        // NOTE: In a production app with millions of users you should NEVER embed a service
+        // key directly in client-side code.  Use environment variables or a minimal public
+        // anon key and enforce row-level security on the server. The key below is left for
+        // simplicity but could be abused if leaked.
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvcHBmeW5jYmVoaWZuc3B1cHdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MDk2MDcsImV4cCI6MjA4NDA4NTYwN30.BuR0SNe1KQmZMl7u8s25hAI-QY_cDZRB2ijUU0JIu_c';
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let userUniversity = '', userFullName = '', currentUserId = '', selectedFiles = [], selectedLodgeFiles = [], userReputation = 0;
+
+        // pagination / throttle constants to avoid loading millions of rows at once
+        const FEED_PAGE_SIZE = 20;
+        const LODGE_PAGE_SIZE = 20;
+        const ERRAND_PAGE_SIZE = 20;
+        const MAX_COMMENTS = 200;      // keep only the most recent comments per post
+        const MAX_LIKES = 10000;       // avoid unbounded like arrays
+        const MAX_DOM_FEED = 500;      // keep only this many post elements in the DOM
+
+        let feedLastTimestamp = null;
+        let feedLoadedAll = false;
+        let lodgeLastTimestamp = null;
+        let lodgeLoadedAll = false;
+        let feedReloadTimer = null;    // throttle real-time updates for orbit feed
+        let lodgeReloadTimer = null;   // throttle real-time updates for lodges
+        let isFeedLoading = false;     // prevent overlapping load requests
+
+        // utility helpers
+        function ensureArrayLimit(arr, max) {
+            if (!Array.isArray(arr)) return [];
+            if (arr.length <= max) return arr;
+            // keep most recent entries at the end
+            return arr.slice(arr.length - max);
+        }
+
+        // This is your app's temporary memory
+let appState = {
+    userProfile: null,
+    isLoaded: false
+};
+
+        // Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.classList.toggle('light-mode', savedTheme === 'light');
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const isLightMode = document.body.classList.contains('light-mode');
+            const newTheme = isLightMode ? 'dark' : 'light';
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'light') {
+                icon.className = 'fas fa-sun text-lg';
+            } else {
+                icon.className = 'fas fa-moon text-lg';
+            }
+        }
+
+        async function init() {
+            initTheme();
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session || !session.user) {
+                // no active session, send back to login
+                return window.location.href = 'index.html';
+            }
+            
+            currentUserId = session.user.id;
+            userUniversity = session.user.user_metadata?.university || '';
+            userFullName = session.user.user_metadata?.full_name || '';
+            
+            document.getElementById('userUniDisplay').innerText = userUniversity || 'Unknown';
+            document.getElementById('userInitial').innerText = userFullName ? userFullName[0].toUpperCase() : '?';
+
+           const { data: profile } = await _supabase
+    .from('profiles')
+    .select('wallet_balance, reputation_stars')
+    .eq('id', currentUserId)
+    .single();
+    // Make sure the user has a profile row; if not, create a blank one so stars
+    // are always available immediately rather than only after some other action.
+    if (!profile) {
+        const { error: insertErr } = await _supabase.from('profiles').insert({
+            id: currentUserId,
+            wallet_balance: 0,
+            reputation_stars: 0
+        });
+        if (insertErr) console.error('Failed to create default profile', insertErr);
+    }
+    // Add this inside the end of your init() function
+_supabase
+    .channel('public:orbit_feed')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'orbit_feed' }, payload => {
+        console.log('Change received!', payload);
+        // throttled reload so a flood of updates can't overwhelm the UI
+        if (feedReloadTimer) clearTimeout(feedReloadTimer);
+        feedReloadTimer = setTimeout(() => {
+            if (!isFeedLoading) loadFeed(true);
+        }, 1500); // slightly larger throttle to reduce network churn with a million users
+    })
+    .subscribe();
+
+// Listen for lodge changes
+_supabase
+    .channel('public:lodges')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'lodges' }, payload => {
+        console.log('Lodge change received!', payload);
+        if (lodgeReloadTimer) clearTimeout(lodgeReloadTimer);
+        lodgeReloadTimer = setTimeout(() => loadLodgeFeed(true), 500);
+    })
+    .subscribe();
+
+// Listen for profile changes to update stars and balance in real-time (INSERT/UPDATE)
+_supabase
+    .channel('public:profiles')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, payload => {
+        console.log('Profile change!', payload);
+        if (payload.new && payload.new.id === currentUserId) {
+            document.getElementById('userBalance').innerText = (payload.new.wallet_balance || 0).toFixed(2);
+            userReputation = payload.new.reputation_stars || 0;
+            renderStars(userReputation);
+        }
+    })
+    .subscribe();
+
+if (profile) {
+    document.getElementById('userBalance').innerText = (profile.wallet_balance || 0).toFixed(2);
+    userReputation = profile.reputation_stars || 0;
+    // This line sends the data to the stars function
+    renderStars(userReputation); 
+} else {
+    // If no profile found, show 0 stars
+    userReputation = 0;
+    renderStars(0);
+}
+            loadFeed(true);
+            loadLodgeFeed(true);
+            loadErrands(true);
+        }
+        
+
+        // --- PROFILE PAGE FUNCTIONS ---
+        function openProfilePage() {
+            showPage('profile');
+            loadProfileData();
+        }
+
+        async function loadProfileData() {
+            try {
+                const { data: session } = await _supabase.auth.getSession();
+                if (!session?.user) return;
+
+                const userEmail = session.user.email;
+
+                // Get profile data
+                const { data: profile, error } = await _supabase
+                    .from('profiles')
+                    .select('bio, profile_photo_url, wallet_balance, reputation_stars, created_at')
+                    .eq('id', currentUserId)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') {
+                    console.error('Error loading profile:', error);
+                }
+
+                // Update display
+                document.getElementById('profileNameDisplay').innerText = userFullName || 'User';
+                document.getElementById('profileEmailDisplay').innerText = userEmail;
+                document.getElementById('profileUniDisplay').innerText = userUniversity || 'Unknown';
+                document.getElementById('profileBioDisplay').innerText = profile?.bio || 'No bio added yet. Click Edit Profile to add one.';
+                document.getElementById('profileBalanceDisplay').innerText = (profile?.wallet_balance || 0).toFixed(2);
+
+                // Profile initials
+                const initials = userFullName ? userFullName.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+                document.getElementById('profilePhotoDisplay').innerText = initials;
+
+                // Profile photo
+                if (profile?.profile_photo_url) {
+                    document.getElementById('profilePhotoImg').src = profile.profile_photo_url;
+                    document.getElementById('profilePhotoImg').style.display = 'block';
+                    document.getElementById('profilePhotoDisplay').innerText = '';
+                } else {
+                    document.getElementById('profilePhotoImg').style.display = 'none';
+                    document.getElementById('profilePhotoDisplay').innerText = initials;
+                }
+
+                // Reputation stars
+                const stars = profile?.reputation_stars || 0;
+                const starsContainer = document.getElementById('profileStarsDisplay');
+                starsContainer.innerHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    const star = document.createElement('i');
+                    if (i <= stars) {
+                        star.className = 'fas fa-star text-green-500 text-lg md:text-xl';
+                    } else {
+                        star.className = 'far fa-star text-slate-600 text-lg md:text-xl';
+                    }
+                    starsContainer.appendChild(star);
+                }
+
+                // Joined date
+                if (profile?.created_at) {
+                    const joinedDate = new Date(profile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    document.getElementById('joinedDateDisplay').innerText = joinedDate;
+                }
+
+                // Populate edit form
+                document.getElementById('editProfileName').value = userFullName || '';
+                document.getElementById('editProfileBio').value = profile?.bio || '';
+
+            } catch (err) {
+                console.error('Error in loadProfileData:', err);
+            }
+        }
+
+        function toggleProfileEdit() {
+            const displayMode = document.getElementById('profileDisplayMode');
+            const editMode = document.getElementById('profileEditMode');
+            
+            displayMode.classList.toggle('hidden');
+            editMode.classList.toggle('hidden');
+        }
+
+        async function handleProfilePhotoUpload() {
+            const fileInput = document.getElementById('profilePhotoInput');
+            const file = fileInput.files[0];
+
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file');
+                return;
+            }
+
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                alert('File size should be less than 5MB');
+                return;
+            }
+
+            try {
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById('profilePhotoImg');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    document.getElementById('profilePhotoDisplay').innerText = '';
+                };
+                reader.readAsDataURL(file);
+
+                // Upload to Supabase storage
+                const fileName = `${currentUserId}-${Date.now()}`;
+                const { data, error: uploadError } = await _supabase.storage
+                    .from('profile-photos')
+                    .upload(fileName, file, { upsert: true });
+
+                if (uploadError) throw uploadError;
+
+                // Get public URL
+                const { data: urlData } = _supabase.storage
+                    .from('profile-photos')
+                    .getPublicUrl(fileName);
+
+                // Save URL to database
+                const { error: updateError } = await _supabase
+                    .from('profiles')
+                    .update({ profile_photo_url: urlData.publicUrl })
+                    .eq('id', currentUserId);
+
+                if (updateError) throw updateError;
+
+                alert('Profile photo updated successfully!');
+            } catch (err) {
+                console.error('Error uploading profile photo:', err);
+                alert('Error uploading profile photo: ' + err.message);
+            }
+        }
+
+        async function saveProfileChanges() {
+            const newName = document.getElementById('editProfileName').value.trim();
+            const newBio = document.getElementById('editProfileBio').value.trim();
+
+            if (!newName) {
+                alert('Name cannot be empty');
+                return;
+            }
+
+            try {
+                const btn = document.querySelector('#profileEditMode button:first-child');
+                const originalText = btn.innerText;
+                btn.innerText = 'Saving...';
+                btn.disabled = true;
+
+                // Update profile in database
+                const { error } = await _supabase
+                    .from('profiles')
+                    .update({ 
+                        bio: newBio,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', currentUserId);
+
+                if (error) throw error;
+
+                // Update user metadata with new name
+                const { error: authError } = await _supabase.auth.updateUser({
+                    data: { full_name: newName, university: userUniversity }
+                });
+
+                if (authError) throw authError;
+
+                userFullName = newName;
+                alert('Profile updated successfully!');
+                toggleProfileEdit();
+                loadProfileData();
+
+                btn.innerText = originalText;
+                btn.disabled = false;
+
+            } catch (err) {
+                console.error('Error saving profile:', err);
+                alert('Error saving profile: ' + err.message);
+            }
+        }
+
+        function toggleLogoutModal(show) { document.getElementById('logoutModal').classList.toggle('hidden', !show); }
+        async function handleLogout() { await _supabase.auth.signOut(); window.location.href = 'index.html'; }
+
+        function renderStars(rating) {
+    const container = document.getElementById('reputationStars');
+    if (!container) return;
+    
+    // Convert to number (handles strings or nulls from Supabase)
+    const numericRating = Number(rating) || 0; 
+    const count = Math.floor(numericRating); 
+    
+    let html = '';
+    
+    for (let i = 1; i <= 5; i++) {
+        if (i <= count) {
+            // Solid Green Star for earned reputation
+            html += `<i class="fas fa-star text-green-500 transition-all duration-300 scale-110"></i>`;
+        } else {
+            // Outline star; make zero‑rating more visible by using a lighter color
+            const outlineClass = count === 0 ? 'text-slate-500' : 'text-slate-700 opacity-40';
+            html += `<i class="far fa-star ${outlineClass}"></i>`;
+        }
+    }
+    
+    container.innerHTML = html;
+    console.log("Reputation Rendered:", numericRating, "stars");
+}
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            if (seconds < 60) return "just now";
+            const intervals = { y: 31536000, mo: 2592000, d: 86400, h: 3600, m: 60 };
+            for (let key in intervals) {
+                let interval = seconds / intervals[key];
+                if (interval > 1) return Math.floor(interval) + key + " ago";
+            }
+        }
+
+        // helper to render a single post row (used by pagination and realtime events)
+        function renderPost(post) {
+            const likes = Array.isArray(post.likes) ? post.likes : [];
+            let comments = Array.isArray(post.comments) ? post.comments : [];
+            // only keep most recent comments for display
+            if (comments.length > MAX_COMMENTS) {
+                comments = comments.slice(comments.length - MAX_COMMENTS);
+            }
+            const hasLiked = likes.includes(currentUserId);
+            const isMyPost = post.poster_id === currentUserId;
+            return `
+                <div id="post-${post.id}" class="glass-card p-6 rounded-[2rem] space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full scholar-gradient flex items-center justify-center font-bold text-xs text-white">${post.poster_name ? post.poster_name[0] : '?'} </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">${post.poster_name}</h4>
+                                <p class="text-[9px] text-green-500 font-black uppercase tracking-tighter">${timeAgo(post.created_at)}</p>
+                            </div>
+                        </div>
+                        ${isMyPost ? `<button onclick="deletePost('${post.id}')" class="text-slate-600 hover:text-red-500 transition text-sm p-2"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>
+
+                    <p class="text-sm text-slate-300 leading-relaxed break-words">${post.content}</p>
+                    ${post.images?.length > 0 ? `<div class="grid ${post.images.length > 1 ? 'grid-cols-2' : 'grid-cols-1'} gap-2 mt-2">
+                        ${post.images.map(img => `<img src="${img}" class="w-full h-48 object-cover rounded-2xl border border-white/10">`).join('')}
+                    </div>` : ''}
+                    
+                    <div class="flex items-center gap-6 pt-2 border-t border-white/5">
+                        <button onclick="toggleLike('${post.id}')" class="flex items-center gap-2 ${hasLiked ? 'text-green-500' : 'text-slate-500'} transition" data-liked="${hasLiked}">
+                            <i class="${hasLiked ? 'fas' : 'far'} fa-heart"></i>
+                            <span class="text-xs font-bold">${likes.length}</span>
+                        </button>
+                        <button onclick="toggleComments('${post.id}')" class="flex items-center gap-2 text-slate-500">
+                            <i class="far fa-comment"></i>
+                            <span class="text-xs font-bold">${comments.length}</span>
+                        </button>
+                    </div>
+
+                    <div id="commentSection-${post.id}" class="hidden space-y-3 pt-4">
+                        <div class="max-h-40 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                            ${comments.map((c, index) => `
+                                <div class="bg-white/5 p-3 rounded-2xl flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <p class="text-[10px] font-bold text-green-500 mb-1">${c.user}</p>
+                                        <p class="text-xs text-slate-300 break-words">${c.text}</p>
+                                    </div>
+                                    ${(c.userId === currentUserId || isMyPost) ? `
+                                        <button onclick="deleteComment('${post.id}', ${index})" class="text-slate-600 hover:text-red-500 p-1">
+                                            <i class="fas fa-times text-[10px]"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="flex gap-2">
+                            <input id="commentInput-${post.id}" type="text" placeholder="Add a comment..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs outline-none focus:border-green-500">
+                            <button onclick="addComment('${post.id}')" class="w-10 h-10 scholar-gradient rounded-xl flex items-center justify-center"><i class="fas fa-paper-plane text-xs"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        async function loadFeed(reset = false) {
+            if (isFeedLoading) return; // drop overlapping calls
+            isFeedLoading = true;
+            const feed = document.getElementById('orbitFeed');
+            try {
+                if (reset) {
+                    feedLastTimestamp = null;
+                    feedLoadedAll = false;
+                    feed.innerHTML = '';
+                }
+                if (feedLoadedAll) return;
+
+                let query = _supabase.from('orbit_feed')
+                    .select('*')
+                    .eq('school_tag', userUniversity)
+                    .order('created_at', { ascending: false })
+                    .limit(FEED_PAGE_SIZE);
+                if (feedLastTimestamp) query = query.lt('created_at', feedLastTimestamp);
+
+                const { data, error } = await query;
+                if (error) {
+                    console.error('Feed load error', error);
+                    if (!feed.innerHTML) {
+                        feed.innerHTML = `<div class="glass-card p-12 rounded-[2.5rem] text-center opacity-30 text-xs italic">Unable to load feed.</div>`;
+                    }
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    if (!feed.innerHTML) {
+                        feed.innerHTML = `<div class="glass-card p-12 rounded-[2.5rem] text-center opacity-30 text-xs italic">The Orbit is empty...</div>`;
+                    }
+                    feedLoadedAll = true;
+                    return;
+                }
+
+                // append posts and trim arrays if they already grew too large in the database
+                data.forEach(async post => {
+                    if (post.likes && post.likes.length > MAX_LIKES) {
+                        const trimmed = ensureArrayLimit(post.likes, MAX_LIKES);
+                        await _supabase.from('orbit_feed').update({ likes: trimmed }).eq('id', post.id);
+                        post.likes = trimmed;
+                    }
+                    if (post.comments && post.comments.length > MAX_COMMENTS) {
+                        post.comments = ensureArrayLimit(post.comments, MAX_COMMENTS);
+                        await _supabase.from('orbit_feed').update({ comments: post.comments }).eq('id', post.id);
+                    }
+                    feed.insertAdjacentHTML('beforeend', renderPost(post));
+                });
+
+                // remember last timestamp for next page
+                feedLastTimestamp = data[data.length - 1].created_at;
+                if (data.length < FEED_PAGE_SIZE) feedLoadedAll = true;
+
+                // DOM pruning: keep at most MAX_DOM_FEED posts to avoid runaway memory use
+                while (feed.children.length > MAX_DOM_FEED) {
+                    feed.removeChild(feed.firstElementChild);
+                }
+
+                // if still not all, append a load-more button at bottom
+                if (!feedLoadedAll && !document.getElementById('loadMoreBtn')) {
+                    feed.insertAdjacentHTML('beforeend', `<button id="loadMoreBtn" onclick="loadFeed()" class="w-full py-4 text-center text-sm text-green-500 font-bold">Load more</button>`);
+                }
+                if (feedLoadedAll) {
+                    const btn = document.getElementById('loadMoreBtn');
+                    if (btn) btn.remove();
+                }
+            } finally {
+                isFeedLoading = false;
+            }
+        }
+
+        async function toggleLike(postId) {
+            try {
+                // fetch array with limit to avoid straining memory on huge records
+                const { data: post, error } = await _supabase.from('orbit_feed').select('likes').eq('id', postId).single();
+                if (error || !post) return;
+                let likes = Array.isArray(post.likes) ? post.likes : [];
+                const idx = likes.indexOf(currentUserId);
+                if (idx > -1) likes.splice(idx, 1);
+                else {
+                    likes.push(currentUserId);
+                }
+                likes = ensureArrayLimit(likes, MAX_LIKES);
+
+                const { error: updateErr } = await _supabase.from('orbit_feed').update({ likes }).eq('id', postId);
+                if (updateErr) {
+                    console.error('Failed to update likes:', updateErr);
+                    return;
+                }
+
+                // update DOM locally instead of re-fetching entire feed
+                const btn = document.querySelector(`#post-${postId} button[onclick^="toggleLike"]`);
+                if (btn) {
+                    const span = btn.querySelector('span');
+                    btn.classList.toggle('text-green-500');
+                    btn.classList.toggle('text-slate-500');
+                    const icon = btn.querySelector('i');
+                    icon.className = idx > -1 ? 'far fa-heart' : 'fas fa-heart';
+                    if (span) span.innerText = likes.length;
+                }
+            } catch (err) {
+                console.error('toggleLike error', err);
+            }
+        }
+
+        async function addComment(postId) {
+            const input = document.getElementById(`commentInput-${postId}`);
+            const text = input.value.trim();
+            if (!text) return;
+            try {
+                const { data: post, error } = await _supabase.from('orbit_feed').select('comments').eq('id', postId).single();
+                if (error || !post) return;
+                let comments = Array.isArray(post.comments) ? post.comments : [];
+                const newComment = { user: userFullName, userId: currentUserId, text: text, time: new Date().toISOString() };
+                comments.push(newComment);
+                comments = ensureArrayLimit(comments, MAX_COMMENTS);
+                await _supabase.from('orbit_feed').update({ comments }).eq('id', postId);
+                input.value = '';
+                // only refresh this post's comment section if visible
+                const section = document.getElementById(`commentSection-${postId}`);
+                if (section && !section.classList.contains('hidden')) {
+                    // reload comments by calling loadFeed(true); eventually this could fetch just this post
+                    loadFeed(true);
+                }
+            } catch (err) {
+                console.error('addComment error', err);
+            }
+        }
+
+        async function deleteComment(postId, commentIndex) {
+            if(!confirm("Remove this comment?")) return;
+            const { data: post } = await _supabase.from('orbit_feed').select('comments').eq('id', postId).single();
+            let comments = Array.isArray(post.comments) ? post.comments : [];
+            comments.splice(commentIndex, 1);
+            await _supabase.from('orbit_feed').update({ comments }).eq('id', postId);
+            loadFeed();
+        }
+
+     async function deletePost(postId) {
+    if(!confirm("Are you sure you want to delete this broadcast?")) return;
+    
+    const { error } = await _supabase
+        .from('orbit_feed')
+        .delete()
+        .eq('id', postId);
+
+    if(error) {
+        alert("Error: " + error.message);
+    } else {
+        // This is the missing part: refreshing the feed locally after delete
+        loadFeed(); 
+    }
+}
+
+let isLodgeLoading = false;
+        async function loadLodgeFeed(reset = false) {
+            if (isLodgeLoading) return;
+            isLodgeLoading = true;
+            const feed = document.getElementById('lodgeFeed');
+            try {
+                if (reset) {
+                    lodgeLastTimestamp = null;
+                    lodgeLoadedAll = false;
+                    feed.innerHTML = '';
+                }
+                if (lodgeLoadedAll) return;
+
+                let query = _supabase.from('lodges')
+                    .select('*')
+                    .eq('school_tag', userUniversity)
+                    .order('created_at', { ascending: false })
+                    .limit(LODGE_PAGE_SIZE);
+                if (lodgeLastTimestamp) query = query.lt('created_at', lodgeLastTimestamp);
+
+                const { data, error } = await query;
+                if (error) {
+                    console.error('Lodge feed error', error);
+                    if (!feed.innerHTML) {
+                        feed.innerHTML = `<div class="glass-card rounded-[2.5rem] p-10 text-center border-dashed border-white/10">
+                            <h3 class="text-xl font-bold text-white mb-2">Error loading lodges</h3>
+                        </div>`;
+                    }
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    if (!feed.innerHTML) {
+                        feed.innerHTML = `<div class="glass-card rounded-[2.5rem] p-10 text-center border-dashed border-white/10">
+                            <div class="w-20 h-20 bg-green-500/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/10">
+                                <i class="fas fa-bed text-3xl text-green-500/50"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">No active listings in ${userUniversity}</h3>
+                            <p class="text-slate-500 text-sm max-w-[250px] mx-auto leading-relaxed">
+                                Be the first to scout a vacant lodge and claim your <span class="text-green-500 font-bold">7% commission</span> on successful rent.
+                            </p>
+                        </div>`;
+                    }
+                    lodgeLoadedAll = true;
+                    return;
+                }
+
+                feed.innerHTML += data.map(lodge => {
+                    return `
+                    <div class="glass-card p-6 rounded-[2rem] space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full scholar-gradient flex items-center justify-center font-bold text-xs text-white">${lodge.poster_name ? lodge.poster_name[0] : '?'} </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">${lodge.poster_name}</h4>
+                                    <p class="text-[9px] text-green-500 font-black uppercase tracking-tighter">${timeAgo(lodge.created_at)}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${lodge.name ? `<h3 class="text-lg font-bold text-white">${lodge.name}</h3>` : ''}
+                        <p class="text-sm text-slate-300 break-words"><strong>Address:</strong> ${lodge.address}</p>
+                        <p class="text-sm text-slate-300 break-words"><strong>Contact:</strong> ${lodge.landlord_contact}</p>
+                        <p class="text-sm text-slate-300 break-words"><strong>Price:</strong> ₦${(lodge.price != null ? lodge.price.toLocaleString() : '0')}</p>
+                        ${lodge.description ? `<p class="text-sm text-slate-300 break-words"><strong>Description:</strong> ${lodge.description}</p>` : ''}
+                        
+                        ${lodge.images?.length > 0 ? `<div class="grid ${lodge.images.length > 1 ? 'grid-cols-2' : 'grid-cols-1'} gap-2 mt-2">
+                            ${lodge.images.map(img => `<img src="${img}" class="w-full h-48 object-cover rounded-2xl border border-white/10">`).join('')}
+                        </div>` : ''}
+                        
+                        ${lodge.poster_id === currentUserId ? `<div class="flex justify-end pt-2">
+                            <button onclick="markAsRented('${lodge.id}')" class="text-slate-500 hover:text-green-500 transition text-sm p-2">
+                                <i class="fas fa-check-circle"></i> Mark as Rented
+                            </button>
+                        </div>` : ''}
+                    </div>`;
+                }).join('');
+
+                lodgeLastTimestamp = data[data.length - 1].created_at;
+                if (data.length < LODGE_PAGE_SIZE) lodgeLoadedAll = true;
+
+                // prune DOM if it grows too large
+                while (feed.children.length > MAX_DOM_FEED) {
+                    feed.removeChild(feed.firstElementChild);
+                }
+            } finally {
+                isLodgeLoading = false;
+            }
+        }
+
+        function loadLodges() {
+            document.getElementById('noListingsText').innerText = `No active listings in ${userUniversity}`;
+        }
+
+        function toggleComments(postId) { document.getElementById(`commentSection-${postId}`).classList.toggle('hidden'); }
+
+        function previewFiles() {
+            const input = document.getElementById('postImage');
+            selectedFiles = [...selectedFiles, ...Array.from(input.files)];
+            // cap attachments at 10 files to keep memory under control
+            if (selectedFiles.length > 10) {
+                selectedFiles = selectedFiles.slice(0, 10);
+                alert('Maximum of 10 images allowed');
+            }
+            renderPreviewTray();
+        }
+
+        function removeFile(index) { selectedFiles.splice(index, 1); renderPreviewTray(); }
+
+        function renderPreviewTray() {
+            const container = document.getElementById('imagePreviewContainer');
+            container.innerHTML = '';
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = "relative aspect-square rounded-lg overflow-hidden border border-white/10";
+                    div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">
+                                    <button onclick="removeFile(${index})" class="absolute top-1 right-1 bg-black/50 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px]"><i class="fas fa-times"></i></button>`;
+                    container.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function previewLodgeFiles() {
+            const input = document.getElementById('lodgeImages');
+            selectedLodgeFiles = [...selectedLodgeFiles, ...Array.from(input.files)];
+            // cap at 20 images for lodges
+            if (selectedLodgeFiles.length > 20) {
+                selectedLodgeFiles = selectedLodgeFiles.slice(0, 20);
+                alert('Maximum of 20 lodge photos allowed');
+            }
+            renderLodgePreviewTray();
+        }
+
+        function removeLodgeFile(index) { selectedLodgeFiles.splice(index, 1); renderLodgePreviewTray(); }
+
+        function renderLodgePreviewTray() {
+            const container = document.getElementById('lodgeImagePreviewContainer');
+            container.innerHTML = '';
+            selectedLodgeFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = "relative aspect-square rounded-lg overflow-hidden border border-white/10";
+                    div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">
+                                    <button onclick="removeLodgeFile(${index})" class="absolute top-1 right-1 bg-black/50 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px]"><i class="fas fa-times"></i></button>`;
+                    container.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function openPostModal() { document.getElementById('postModal').classList.remove('hidden'); }
+        function closePostModal() { 
+            document.getElementById('postModal').classList.add('hidden');
+            document.getElementById('imagePreviewContainer').innerHTML = '';
+            selectedFiles = [];
+            document.getElementById('postContent').value = '';
+        }
+
+        async function submitPost() {
+            const content = document.getElementById('postContent').value;
+            const btn = document.getElementById('submitBtn');
+            if(!content && selectedFiles.length === 0) return;
+            btn.disabled = true; btn.innerText = "Launching...";
+            let urls = [];
+            try {
+                for (let f of selectedFiles) {
+                    // simple size check to avoid sending huge files
+                    if (f.size > 10 * 1024 * 1024) { // 10MB per file
+                        alert('Each image must be smaller than 10MB');
+                        throw new Error('File too large');
+                    }
+                    const name = `${Date.now()}_${f.name}`;
+                    const { data, error } = await _supabase.storage.from('orbit-images').upload(name, f);
+                    if (error) {
+                        console.error('Upload failed', error);
+                        throw error;
+                    }
+                    urls.push(_supabase.storage.from('orbit-images').getPublicUrl(name).data.publicUrl);
+                }
+                await _supabase.from('orbit_feed').insert([{
+                    content, images: urls, school_tag: userUniversity,
+                    poster_name: userFullName, poster_id: currentUserId,
+                    likes: [], comments: []
+                }]);
+                closePostModal(); loadFeed();
+            } catch (err) {
+                console.error('submitPost error', err);
+                alert('Unable to post at this time. Please try again.');
+            } finally {
+                btn.disabled = false; btn.innerText = "Launch to Orbit";
+            }
+        }
+
+        async function submitLodge() {
+            const name = document.getElementById('lodgeName').value.trim();
+            const contact = document.getElementById('landlordContact').value.trim();
+            const address = document.getElementById('lodgeAddress').value.trim();
+            const description = document.getElementById('lodgeDescription').value.trim();
+            const price = document.getElementById('lodgePrice').value.trim();
+            const btn = document.getElementById('submitLodgeBtn');
+            
+            if (!contact || !address || !price || selectedLodgeFiles.length < 3) {
+                alert('Please fill in all required fields and upload at least 3 photos.');
+                return;
+            }
+            
+            btn.disabled = true; btn.innerText = "Posting...";
+            let urls = [];
+            try {
+                for (let f of selectedLodgeFiles) {
+                    if (f.size > 15 * 1024 * 1024) { // 15MB limit
+                        alert('Each photo must be smaller than 15MB');
+                        throw new Error('File too large');
+                    }
+                    const fileName = `${Date.now()}_${f.name}`;
+                    console.log('Uploading file:', fileName);
+                    const { data, error } = await _supabase.storage.from('lodge-photos').upload(fileName, f);
+                    if (error) {
+                        console.error('Upload error:', error);
+                        throw error;
+                    }
+                    if (data) {
+                        console.log('Upload success:', data);
+                        const { data: urlData } = _supabase.storage.from('lodge-photos').getPublicUrl(fileName);
+                        console.log('Public URL:', urlData.publicUrl);
+                        urls.push(urlData.publicUrl);
+                    }
+                }
+                console.log('All URLs:', urls);
+                
+                const { error } = await _supabase.from('lodges').insert([{
+                    name: name || null,
+                    landlord_contact: contact,
+                    address: address,
+                    description: description || null,
+                    price: parseFloat(price),
+                    images: urls,
+                    school_tag: userUniversity,
+                    poster_name: userFullName,
+                    poster_id: currentUserId,
+                    created_at: new Date().toISOString()
+                }]);
+                
+                if (error) {
+                    console.error('Insert error:', error);
+                    alert('Error posting lodge: ' + error.message);
+                    return;
+                }
+                
+                closeScoutModal();
+                loadLodgeFeed();
+            } catch (err) {
+                console.error('submitLodge error', err);
+                alert('Unable to post lodge right now. Please try again later.');
+            } finally {
+                btn.disabled = false; btn.innerText = "Post Lodge";
+            }
+        }
+
+        async function markAsRented(lodgeId) {
+            if (confirm('Mark this lodge as rented? This will remove it from the listings.')) {
+                const { error } = await _supabase.from('lodges').delete().eq('id', lodgeId);
+                if (error) {
+                    alert('Error removing lodge: ' + error.message);
+                } else {
+                    loadLodgeFeed();
+                }
+            }
+        }
+
+        // --- PAGE SWITCHER LOGIC ---
+// V1.0 primary pages (bottom nav) + preserved future-module pages
+// (lodge, errandPage) which are reachable via the Future ICOS modal
+// but are no longer part of the primary nav highlight set.
+const ALL_PAGE_IDS = ['orbitPage', 'chatPage', 'studyPage', 'whisperPage', 'profilePage', 'lodgePage', 'errandPage'];
+const NAV_ITEMS = {
+    orbit:   { page: 'orbitPage',   icon: 'orbitIcon',       text: 'orbitText' },
+    chat:    { page: 'chatPage',    icon: 'chatIcon',        text: 'chatText' },
+    study:   { page: 'studyPage',   icon: 'studyIcon',       text: 'studyText' },
+    whisper: { page: 'whisperPage', icon: 'whisperIcon',     text: 'whisperText' },
+    profile: { page: 'profilePage', icon: 'profileNavIcon',  text: 'profileNavText' }
+};
+
+function showPage(pageName) {
+    const navPlus = document.getElementById('navPlusBtn');
+
+    // Close any open modals when navigating
+    closeScoutModal();
+    closePostModal();
+    closeErrandModal();
+
+    // Hide every page, then show only the target
+    ALL_PAGE_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+
+    // pageName uses legacy ids 'lodge' and 'errandPage' for the two
+    // preserved future modules; everything else maps 1:1 to NAV_ITEMS.
+    const targetPageId = pageName === 'lodge' ? 'lodgePage'
+        : pageName === 'errandPage' ? 'errandPage'
+        : (NAV_ITEMS[pageName]?.page || 'orbitPage');
+
+    const targetEl = document.getElementById(targetPageId);
+    if (targetEl) targetEl.classList.remove('hidden');
+
+    // Only Orbit shows the central "+" broadcast button
+    navPlus.classList.toggle('hidden', pageName !== 'orbit');
+
+    // Reset every nav icon to dim, then highlight the active one
+    // (lodge/errandPage aren't in the nav, so nothing highlights for them)
+    Object.values(NAV_ITEMS).forEach(({ icon, text }) => {
+        const iconEl = document.getElementById(icon);
+        const textEl = document.getElementById(text);
+        if (iconEl) iconEl.classList.replace('text-green-500', 'text-slate-400');
+        if (textEl) textEl.classList.replace('text-green-500', 'text-slate-400');
+    });
+    if (NAV_ITEMS[pageName]) {
+        const { icon, text } = NAV_ITEMS[pageName];
+        document.getElementById(icon)?.classList.replace('text-slate-400', 'text-green-500');
+        document.getElementById(text)?.classList.replace('text-slate-400', 'text-green-500');
+    }
+
+    // Page-specific data loads, preserved from the original implementation
+    if (pageName === 'profile') loadProfileData();
+    else if (pageName === 'lodge') loadLodgeFeed(true);
+    else if (pageName === 'errandPage') loadErrands(true);
+}
+
+function toggleFutureModal(show) {
+    document.getElementById('futureModal').classList.toggle('hidden', !show);
+}
+
+function toggleJourneyModal(show) {
+    document.getElementById('journeyModal').classList.toggle('hidden', !show);
+}
+
+// --- LODGE REPUTATION CHECK ---
+async function checkReputationForPosting() {
+    const button = document.getElementById('scoutButton');
+    const originalText = button.innerText;
+    button.innerText = 'Checking...';
+    button.disabled = true;
+
+    // 1. Get fresh data from Supabase
+    const { data: profile, error } = await _supabase
+        .from('profiles')
+        .select('reputation_stars')
+        .eq('id', currentUserId)
+        .single();
+
+    button.innerText = originalText;
+    button.disabled = false;
+
+    if (error) {
+        console.error("Error fetching reputation:", error);
+        alert("Error checking reputation. Please try again.");
+        return;
+    }
+
+    // Update local reputation
+    userReputation = profile.reputation_stars || 0;
+    renderStars(userReputation);
+
+    // 2. Check if they hit the 3-star requirement
+    if (profile && Number(profile.reputation_stars) >= 3) {
+        // SUCCESS: Launch the scout form
+        openScoutModal(); 
+    } else {
+        // FAIL: Show the requirement message
+        alert(`Access Denied: You currently have ${profile.reputation_stars || 0} stars. You need 3 stars to Scout Lodges.`);
+    }
+}
+        window.onload = init;
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Unhandled error:', message, 'at', source + ':' + lineno + ':' + colno, error);
+            // Could send to analytics/logging service here
+            return false; // allow default handler as well
+        };
+        window.addEventListener('unhandledrejection', e => {
+            console.error('Unhandled promise rejection:', e.reason);
+            // prevent silent crash
+        });
+        window.addEventListener('beforeunload', () => {
+            // unsubscribe from realtime channels when leaving
+            try {
+                _supabase.removeAllChannels();
+            } catch (e) { console.warn('Failed to remove channels', e); }
+        });
+        function openScoutModal() {
+    document.getElementById('scoutModal').classList.remove('hidden');
+}
+
+function closeScoutModal() {
+    document.getElementById('scoutModal').classList.add('hidden');
+    document.getElementById('lodgeImagePreviewContainer').innerHTML = '';
+    selectedLodgeFiles = [];
+    document.getElementById('lodgeName').value = '';
+    document.getElementById('landlordContact').value = '';
+    document.getElementById('lodgeAddress').value = '';
+    document.getElementById('lodgeDescription').value = '';
+    document.getElementById('lodgePrice').value = '';
+}
+
+// --- ERRAND FUNCTIONS ---
+function openErrandModal() {
+    document.getElementById('errandModal').classList.remove('hidden');
+}
+
+function closeErrandModal() {
+    document.getElementById('errandModal').classList.add('hidden');
+    document.getElementById('errandTitle').value = '';
+    document.getElementById('errandDesc').value = '';
+    document.getElementById('errandPrice').value = '';
+    document.getElementById('errandDeadline').value = '';
+}
+
+async function saveErrand() {
+    const title = document.getElementById('errandTitle').value.trim();
+    const description = document.getElementById('errandDesc').value.trim();
+    const reward = parseFloat(document.getElementById('errandPrice').value) || 0;
+    const deadline = document.getElementById('errandDeadline').value;
+
+    if (!title || !description || reward <= 0 || !deadline) {
+        alert('Please fill in all fields with valid information');
+        return;
+    }
+
+    if (!userUniversity) {
+        console.warn('Attempted to post errand without university');
+        alert('Your university is not set; please re-login or contact support.');
+        return;
+    }
+
+    // Check user's current wallet balance
+    const { data: profile, error: profileErr } = await _supabase
+        .from('profiles')
+        .select('wallet_balance')
+        .eq('id', currentUserId)
+        .single();
+
+    if (profileErr || !profile) {
+        alert('Unable to verify your wallet balance. Please try again.');
+        return;
+    }
+
+    const currentBalance = profile.wallet_balance || 0;
+    if (currentBalance < reward) {
+        alert(`Insufficient balance. You need ₦${reward.toFixed(2)} but only have ₦${currentBalance.toFixed(2)}.`);
+        return;
+    }
+
+    const btn = document.getElementById('errandSubmitBtn');
+    const originalText = btn.innerText;
+    btn.innerText = 'Processing...';
+    btn.disabled = true;
+
+    try {
+        console.log('Saving errand to Supabase', { userUniversity, title, reward, deadline });
+        
+        // Deduct reward from wallet balance
+        const newBalance = currentBalance - reward;
+        const { error: updateErr } = await _supabase
+            .from('profiles')
+            .update({ wallet_balance: newBalance })
+            .eq('id', currentUserId);
+
+        if (updateErr) {
+            console.error('Error updating wallet:', updateErr);
+            alert('Error deducting reward from wallet: ' + updateErr.message);
+            return;
+        }
+
+        // Now insert the errand
+        const { data, error } = await _supabase.from('errands').insert([{
+            user_id: currentUserId,
+            title: title,
+            description: description,
+            reward: reward,
+            deadline: deadline,
+            school_tag: userUniversity,
+            created_at: new Date().toISOString(),
+            status: 'open'
+        }]);
+
+        if (error) {
+            console.error('Error saving errand:', error);
+            // Rollback wallet balance if errand insertion failed
+            await _supabase
+                .from('profiles')
+                .update({ wallet_balance: currentBalance })
+                .eq('id', currentUserId);
+            alert('Error posting errand: ' + error.message);
+        } else {
+            console.log('Errand insert result', data);
+            // Update local balance display
+            document.getElementById('userBalance').innerText = newBalance.toFixed(2);
+            alert(`Errand posted successfully! ₦${reward.toFixed(2)} has been deducted from your wallet.`);
+            closeErrandModal();
+
+                // after inserting, reload the list to reset paging flags and fetch
+            // anything else that might have been added by other users.
+            // Because loadErrands now returns the fetched errands we'll be able
+            // to detect whether our newly created item showed up.
+            const fetched = await loadErrands(true);
+
+            if (data && data.length > 0) {
+                const errand = data[0];
+                const appeared = fetched && Array.isArray(fetched) && fetched.some(e => e.id === errand.id);
+                if (!appeared) {
+                    // insert manually if the query didn't return it
+                    const container = document.getElementById('errandListContainer');
+                    const html = `
+            <div data-errand-id="${errand.id}" class="glass-card rounded-[2rem] p-6 space-y-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">${errand.title}</h3>
+                        <p class="text-xs text-slate-500 mt-1">${timeAgo(errand.created_at)}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-green-500 font-bold text-lg">₦${errand.reward.toFixed(2)}</p>
+                        <p class="text-xs text-slate-500">Reward</p>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm break-words">${errand.description}</p>
+                <div class="flex gap-3 pt-3">
+                    <button class="flex-1 bg-white/10 hover:bg-white/20 text-white text-sm py-2 rounded-xl transition">
+                        Interested
+                    </button>
+                    <button class="flex-1 scholar-gradient text-white text-sm py-2 rounded-xl transition">
+                        Accept Offer
+                    </button>
+                </div>
+            </div>
+                    `;
+                    container.insertAdjacentHTML('afterbegin', html);
+                }
+            }
+        }
+    } catch (err) {
+        console.error('Unexpected error saving errand:', err);
+        alert('An unexpected error occurred');
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
+
+
+let errandLastTimestamp = null;
+let errandLoadedAll = false;
+let isErrandLoading = false;
+
+async function loadErrands(reset = false) {
+    if (isErrandLoading) return null;
+    isErrandLoading = true;
+    const container = document.getElementById('errandListContainer');
+    let errands = null; // will hold data for return
+    try {
+        if (reset) {
+            errandLastTimestamp = null;
+            errandLoadedAll = false;
+            container.innerHTML = '';
+        }
+        if (errandLoadedAll) return null;
+
+        let query = _supabase
+            .from('errands')
+            .select('*')
+            .eq('school_tag', userUniversity)
+            .eq('status', 'open')
+            .order('created_at', { ascending: false })
+            .limit(ERRAND_PAGE_SIZE);
+        if (errandLastTimestamp) query = query.lt('created_at', errandLastTimestamp);
+
+        const result = await query;
+        errands = result.data;
+        const error = result.error;
+        console.log('loadErrands query returned', { count: errands ? errands.length : null, error });
+
+        if (error || !errands || errands.length === 0) {
+            if (!container.innerHTML) {
+                container.innerHTML = `
+                    <div class="glass-card rounded-[2.5rem] p-10 text-center border-dashed border-white/10">
+                        <div class="w-20 h-20 bg-green-500/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/10">
+                            <i class="fas fa-box-open text-3xl text-green-500/50"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">No active errands</h3>
+                        <p class="text-slate-500 text-sm max-w-[250px] mx-auto leading-relaxed">Post an errand request to find someone who can help you or browse existing requests.</p>
+                    </div>
+                `;
+            }
+            errandLoadedAll = true;
+            return errands;
+        }
+
+        container.innerHTML += errands.map(errand => `
+            <div class="glass-card rounded-[2rem] p-6 space-y-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">${errand.title}</h3>
+                        <p class="text-xs text-slate-500 mt-1">${timeAgo(errand.created_at)}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-green-500 font-bold text-lg">₦${errand.reward.toFixed(2)}</p>
+                        <p class="text-xs text-slate-500">Reward</p>
+                    </div>
+                </div>
+                <p class="text-slate-300 text-sm">${errand.description}</p>
+                <div class="flex gap-3 pt-3">
+                    <button class="flex-1 bg-white/10 hover:bg-white/20 text-white text-sm py-2 rounded-xl transition">
+                        Interested
+                    </button>
+                    <button class="flex-1 scholar-gradient text-white text-sm py-2 rounded-xl transition">
+                        Accept Offer
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        errandLastTimestamp = errands[errands.length - 1].created_at;
+        if (errands.length < ERRAND_PAGE_SIZE) errandLoadedAll = true;
+
+        while (container.children.length > MAX_DOM_FEED) {
+            container.removeChild(container.firstElementChild);
+        }
+    } catch (err) {
+        console.error('loadErrands error', err);
+    } finally {
+        isErrandLoading = false;
+    }
+    return errands;
+}
+  
+  </script>
+
+    <div class="fixed bottom-0 left-0 right-0 p-2 md:p-4 z-[100]">
+        <div class="max-w-2xl mx-auto relative h-16 md:h-20">
+            <button id="navPlusBtn" type="button" title="Create a new broadcast" onclick="openPostModal()" class="absolute -top-6 md:-top-7 left-1/2 -translate-x-1/2 w-12 h-12 md:w-14 md:h-14 scholar-gradient rounded-xl md:rounded-2xl shadow-xl shadow-green-500/20 flex items-center justify-center border-4 border-[#0b0f1a] active:scale-90 transition-all z-20">
+                <i class="fas fa-plus text-white text-base md:text-xl"></i>
+            </button>
+
+                <div class="nav-glass rounded-2xl md:rounded-[2.5rem] p-3 md:p-4 flex flex-row items-stretch justify-around md:justify-between px-2 md:px-6 border border-white/5 shadow-2xl relative z-10 min-w-0">
+                <div onclick="showPage('orbit')" class="flex flex-col items-center gap-0.5 cursor-pointer p-1 flex-1 md:flex-none">
+                    <i id="orbitIcon" class="fas fa-rocket text-green-500 text-base md:text-lg"></i>
+                    <span id="orbitText" class="text-[7px] md:text-[8px] font-bold uppercase text-green-500 md:whitespace-nowrap">Orbit</span>
+                </div>
+
+                <div onclick="showPage('chat')" class="flex flex-col items-center gap-0.5 cursor-pointer p-1 flex-1 md:flex-none">
+                    <i id="chatIcon" class="far fa-comment-dots text-slate-400 text-base md:text-lg"></i>
+                    <span id="chatText" class="text-[7px] md:text-[8px] font-bold uppercase text-slate-400 md:whitespace-nowrap">Chat</span>
+                </div>
+
+                <div onclick="showPage('study')" class="flex flex-col items-center gap-0.5 cursor-pointer p-1 flex-1 md:flex-none">
+                    <i id="studyIcon" class="fas fa-book text-slate-400 text-base md:text-lg"></i>
+                    <span id="studyText" class="text-[7px] md:text-[8px] font-bold uppercase text-slate-400 md:whitespace-nowrap">Study</span>
+                </div>
+
+                <div onclick="showPage('whisper')" class="flex flex-col items-center gap-0.5 cursor-pointer p-1 flex-1 md:flex-none">
+                    <i id="whisperIcon" class="fas fa-user-secret text-slate-400 text-base md:text-lg"></i>
+                    <span id="whisperText" class="text-[7px] md:text-[8px] font-bold uppercase text-slate-400 md:whitespace-nowrap">Whisper</span>
+                </div>
+
+                <div onclick="showPage('profile')" class="flex flex-col items-center gap-0.5 cursor-pointer p-1 flex-1 md:flex-none">
+                    <i id="profileNavIcon" class="fas fa-user text-slate-400 text-base md:text-lg"></i>
+                    <span id="profileNavText" class="text-[7px] md:text-[8px] font-bold uppercase text-slate-400 md:whitespace-nowrap">Profile</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

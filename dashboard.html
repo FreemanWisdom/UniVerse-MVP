@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -109,6 +109,83 @@
             main { max-width: 100% !important; }
             .scholar-gradient { padding: 1rem !important; }
         }
+
+        /* Campus Chat MVP — scoped styles only */
+        .chat-shell { min-width: 0; }
+        .chat-workspace { display:grid; grid-template-columns: 300px minmax(0,1fr); min-height: 620px; height: min(72vh, 760px); overflow:hidden; border:1px solid rgba(255,255,255,.08); border-radius:2rem; background:rgba(255,255,255,.018); box-shadow:0 24px 70px rgba(0,0,0,.18); }
+        .chat-sidebar { min-width:0; padding:1rem; border-right:1px solid rgba(255,255,255,.06); background:rgba(11,15,26,.34); display:flex; flex-direction:column; }
+        .chat-conversation-list { overflow-y:auto; min-height:0; }
+        .chat-conversation-view { position:relative; min-width:0; min-height:0; display:flex; flex-direction:column; background:radial-gradient(circle at 80% 10%, rgba(34,197,94,.045), transparent 32%); }
+        .chat-panel { padding:1rem; border:1px solid rgba(255,255,255,.08); border-radius:1.5rem; background:rgba(255,255,255,.025); backdrop-filter:blur(16px); }
+        .chat-action-btn,.chat-primary-btn { min-height:42px; display:inline-flex; align-items:center; justify-content:center; gap:.5rem; border-radius:1rem; padding:.7rem 1rem; font-size:.72rem; font-weight:700; transition:transform .18s ease, background .18s ease, border-color .18s ease; }
+        .chat-action-btn { color:#cbd5e1; background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.08); }
+        .chat-action-btn:hover { background:rgba(255,255,255,.07); }
+        .chat-primary-btn { color:#fff; background:linear-gradient(135deg,#22c55e 0%,#16a34a 100%); box-shadow:0 12px 30px rgba(34,197,94,.13); }
+        .chat-primary-btn:hover,.chat-send-btn:hover { transform:translateY(-1px); }
+        .chat-icon-btn { width:38px; height:38px; flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; border-radius:.85rem; color:#94a3b8; background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.06); transition:.18s ease; }
+        .chat-icon-btn:hover { color:#fff; background:rgba(255,255,255,.08); }
+        .chat-input { width:100%; min-width:0; outline:none; border:0 !important; background:transparent !important; color:#fff !important; box-shadow:none !important; padding:.75rem 0 !important; }
+        .chat-input::placeholder { color:#64748b !important; }
+        .chat-conversation-item { width:100%; display:flex; align-items:center; gap:.75rem; padding:.75rem; border-radius:1rem; text-align:left; transition:background .18s ease, transform .18s ease; }
+        .chat-conversation-item:hover { background:rgba(255,255,255,.045); }
+        .chat-conversation-item.active { background:rgba(34,197,94,.09); box-shadow:inset 2px 0 0 #22c55e; }
+        .chat-conversation-item.unread .chat-preview-name { color:#fff; }
+        .chat-conversation-item.unread .chat-preview { color:#cbd5e1; font-weight:500; }
+        .chat-avatar { width:42px; height:42px; flex:0 0 auto; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:.78rem; background:linear-gradient(135deg,rgba(34,197,94,.75),rgba(22,163,74,.35)); border:1px solid rgba(255,255,255,.1); position:relative; overflow:hidden; }
+        .chat-avatar img { width:100%; height:100%; object-fit:cover; }
+        .chat-avatar-lg { width:44px; height:44px; }
+        .chat-online-dot { position:absolute; right:0; bottom:1px; width:10px; height:10px; border-radius:50%; background:#22c55e; border:2px solid #0b0f1a; }
+        .chat-unread { min-width:20px; height:20px; padding:0 5px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:#22c55e; color:#052e16; font-size:9px; font-weight:900; }
+        .chat-conversation-header { position:relative; display:flex; align-items:center; gap:.65rem; min-height:76px; padding:1rem 1.25rem; border-bottom:1px solid rgba(255,255,255,.06); background:rgba(11,15,26,.35); backdrop-filter:blur(14px); }
+        .chat-message-list { flex:1; min-height:0; overflow-y:auto; padding:1.25rem; }
+        .chat-date-separator { display:flex; align-items:center; gap:.75rem; margin:1rem 0; color:#475569; font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+        .chat-date-separator::before,.chat-date-separator::after { content:""; height:1px; flex:1; background:rgba(255,255,255,.05); }
+        .chat-bubble-row { display:flex; margin:.3rem 0; }
+        .chat-bubble-row.sent { justify-content:flex-end; }
+        .chat-bubble { max-width:min(78%, 520px); padding:.7rem .9rem; border-radius:1.1rem; font-size:.78rem; line-height:1.55; word-break:break-word; }
+        .chat-bubble.received { color:#dbe4ef; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.055); border-top-left-radius:.35rem; }
+        .chat-bubble.sent { color:#fff; background:linear-gradient(135deg,rgba(34,197,94,.88),rgba(22,163,74,.72)); border-top-right-radius:.35rem; }
+        .chat-meta { margin-top:.28rem; display:flex; align-items:center; justify-content:flex-end; gap:.35rem; font-size:8px; color:#64748b; }
+        .chat-bubble.sent .chat-meta { color:rgba(255,255,255,.68); }
+        .chat-composer { display:flex; align-items:center; gap:.6rem; margin:.75rem; padding:.45rem .45rem .45rem .9rem; border:1px solid rgba(255,255,255,.08); border-radius:1.25rem; background:rgba(255,255,255,.035); backdrop-filter:blur(16px); }
+        .chat-send-btn { width:40px; height:40px; flex:0 0 auto; border:0; border-radius:.95rem; display:inline-flex; align-items:center; justify-content:center; color:#fff; background:#22c55e; transition:transform .18s ease; }
+        .chat-empty { align-items:center; justify-content:center; padding:2rem; }
+        .chat-empty-orbit { width:74px; height:74px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#22c55e; font-size:1.6rem; background:rgba(34,197,94,.055); border:1px solid rgba(34,197,94,.15); box-shadow:0 0 50px rgba(34,197,94,.06); }
+        .chat-menu { position:absolute; top:64px; right:1rem; z-index:30; width:190px; padding:.35rem; border:1px solid rgba(255,255,255,.09); border-radius:1rem; background:rgba(13,18,31,.96); backdrop-filter:blur(20px); box-shadow:0 20px 50px rgba(0,0,0,.35); }
+        .chat-menu button { width:100%; display:flex; align-items:center; gap:.65rem; padding:.65rem .7rem; border-radius:.7rem; color:#cbd5e1; font-size:.72rem; font-weight:600; text-align:left; background:transparent; }
+        .chat-menu button:hover { background:rgba(255,255,255,.06); color:#fff; }
+        .chat-menu button[data-chat-action="block"] { color:#fca5a5; }
+        .chat-result { display:flex; align-items:center; gap:.75rem; padding:.75rem; border-radius:1rem; border:1px solid rgba(255,255,255,.05); background:rgba(255,255,255,.018); }
+        .chat-result:hover { background:rgba(255,255,255,.04); }
+        .chat-modal-backdrop { position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center; padding:1rem; background:rgba(2,6,23,.72); backdrop-filter:blur(8px); }
+        .chat-modal { width:min(100%, 430px); max-height:min(88vh,720px); overflow:auto; border:1px solid rgba(255,255,255,.09); border-radius:1.7rem; background:#0e1421; box-shadow:0 30px 90px rgba(0,0,0,.5); }
+        .chat-profile-row { display:flex; align-items:center; gap:.9rem; padding:1rem; border-bottom:1px solid rgba(255,255,255,.05); }
+        .chat-skeleton { background:linear-gradient(90deg,rgba(255,255,255,.035),rgba(255,255,255,.07),rgba(255,255,255,.035)); background-size:200% 100%; animation:chatShimmer 1.3s infinite; }
+        @keyframes chatShimmer { to { background-position:-200% 0; } }
+        body.light-mode .chat-workspace { background:#fff; border-color:rgba(15,23,42,.06); box-shadow:0 24px 70px rgba(16,24,40,.08); }
+        body.light-mode .chat-sidebar, body.light-mode .chat-conversation-header { background:#fff; border-color:rgba(15,23,42,.06); }
+        body.light-mode .chat-conversation-item:hover { background:rgba(15,23,42,.025); }
+        body.light-mode .chat-conversation-item.active { background:rgba(16,185,129,.08); }
+        body.light-mode .chat-bubble.received { color:#334155; background:#f3f4f6; border-color:rgba(15,23,42,.04); }
+        body.light-mode .chat-input { color:#0f172a !important; }
+        body.light-mode .chat-composer,.light-mode .chat-panel { background:#f8fafc; border-color:rgba(15,23,42,.06); }
+        body.light-mode .chat-menu,.light-mode .chat-modal { background:#fff; border-color:rgba(15,23,42,.07); }
+        body.light-mode .chat-menu button { color:#475569; }
+        body.light-mode .chat-menu button:hover { background:rgba(15,23,42,.04); color:#0f172a; }
+        @media (max-width: 767px) {
+            .chat-workspace { display:block; height:calc(100vh - 205px); min-height:500px; border-radius:1.5rem; }
+            .chat-sidebar { height:100%; border-right:0; padding:.75rem; }
+            .chat-conversation-view { height:100%; }
+            .chat-workspace:has(#chatConversationView.chat-mobile-open) .chat-sidebar { display:none; }
+            .chat-conversation-view.chat-mobile-open { display:flex; }
+            .chat-message-list { padding:.9rem; }
+            .chat-bubble { max-width:86%; font-size:.75rem; }
+            .chat-conversation-header { padding:.75rem; min-height:68px; }
+            .chat-composer { margin:.55rem; }
+            .chat-search-mobile-hide { display:none; }
+        }
+        @media (min-width: 768px) { #chatMobileSearch { display:none; } }
+
     </style>
 </head>
 <body class="min-h-screen pb-32">
@@ -136,16 +213,24 @@
     <main class="p-6 md:p-8 max-w-2xl mx-auto space-y-4 md:space-y-6">
         
         <div id="orbitPage" class="space-y-4 md:space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                <div class="glass-card p-4 md:p-6 rounded-[2.2rem]">
-                    <p class="text-[8px] md:text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">Wallet Balance</p>
-                    <h2 class="text-xl md:text-2xl font-bold text-white">₦<span id="userBalance">0.00</span></h2>
-                </div>
-                <div class="glass-card p-4 md:p-6 rounded-[2.2rem]">
-                    <p class="text-[8px] md:text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">Reputation</p>
-                    <div id="reputationStars" class="flex items-center gap-1 text-[10px] min-h-[14px]"></div>
+            <!-- Orbit Hero Header (replaces prior wallet/reputation stat cards) -->
+            <div class="glass-card p-5 md:p-8 rounded-[2.2rem] relative overflow-hidden">
+                <div class="absolute -top-20 -right-16 w-48 h-48 bg-green-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative space-y-2 md:space-y-3">
+                    <p class="text-[8px] md:text-[9px] text-green-500 font-black uppercase tracking-[0.25em]">Your Campus • The Orbit</p>
+                    <div>
+                        <h2 class="text-xl md:text-3xl font-bold text-white tracking-tight leading-snug">Welcome back, <span id="orbitFirstName">Scholar</span>.</h2>
+                        <p id="orbitUniName" class="text-xs md:text-sm text-slate-400 font-semibold mt-1 truncate">Loading campus...</p>
+                    </div>
+                    <p class="text-slate-500 text-[11px] md:text-xs">See what's happening across your campus.</p>
+                    <div class="flex items-center gap-1.5 pt-1">
+                        <span class="text-[8px] md:text-[9px] text-slate-500 uppercase font-bold tracking-widest">Campus Reputation</span>
+                        <div id="reputationStars" class="flex items-center gap-1 text-[10px] min-h-[14px]"></div>
+                    </div>
                 </div>
             </div>
+            <!-- Wallet / financial layer intentionally quarantined from MVP. Preserve underlying implementation for future ICOS economy phase. -->
+            <span id="userBalance" class="hidden" aria-hidden="true">0.00</span>
 
             <button onclick="openPostModal()" class="w-full scholar-gradient p-4 md:p-5 rounded-[2rem] flex items-center justify-between shadow-xl shadow-green-500/10 transition active:scale-95">
                 <div class="text-left min-w-0">
@@ -402,21 +487,83 @@
          replaced at that point, not left in place.
          ============================================================ -->
 
-    <div id="chatPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
-        <div class="min-w-0">
-            <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">UniVERSE Communication</p>
-            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Campus Chat</h2>
-        </div>
-        <div class="glass-card rounded-[2.5rem] p-10 md:p-14 text-center border-dashed border-white/10">
-            <div class="w-16 h-16 md:w-20 md:h-20 bg-green-500/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/10">
-                <i class="far fa-comment-dots text-2xl md:text-3xl text-green-500/50"></i>
+        <div id="chatPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
+            <div class="chat-shell space-y-4 md:space-y-5">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div class="min-w-0">
+                        <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">UniVERSE Communication</p>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Campus Chat</h2>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1">Connect with students on your campus.</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <button type="button" id="chatSearchToggle" class="chat-action-btn flex-1 md:flex-none" aria-label="Search students">
+                            <i class="fas fa-search"></i><span>Search</span>
+                        </button>
+                        <button type="button" id="chatNewButton" class="chat-primary-btn flex-1 md:flex-none">
+                            <i class="fas fa-plus"></i><span>New Chat</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="chatSearchPanel" class="chat-panel hidden">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-search text-slate-500"></i>
+                        <input id="chatStudentSearch" class="chat-input" type="search" autocomplete="off" placeholder="Search students on your campus..." aria-label="Search students on your campus">
+                        <button type="button" id="chatSearchClose" class="chat-icon-btn" aria-label="Close search"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div id="chatSearchResults" class="mt-4 space-y-2"></div>
+                </div>
+
+                <div class="chat-workspace">
+                    <aside id="chatSidebar" class="chat-sidebar">
+                        <div class="px-1 pb-3 flex items-center justify-between">
+                            <div>
+                                <p class="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500">Your conversations</p>
+                                <p id="chatConversationCount" class="text-[11px] text-slate-600 mt-0.5">0 conversations</p>
+                            </div>
+                            <button type="button" id="chatMobileSearch" class="chat-icon-btn md:hidden" aria-label="Search conversations"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div id="chatConversationList" class="chat-conversation-list custom-scrollbar"></div>
+                    </aside>
+
+                    <section id="chatConversationView" class="chat-conversation-view" aria-live="polite">
+                        <div id="chatEmptyConversation" class="chat-empty flex-1">
+                            <div class="chat-empty-orbit"><i class="far fa-comment-dots"></i></div>
+                            <h3 class="text-base md:text-lg font-bold text-white mt-5">Your campus, one conversation away.</h3>
+                            <p class="text-xs md:text-sm text-slate-500 max-w-sm text-center mt-2">Find students from your campus and start your first conversation.</p>
+                            <button type="button" id="chatEmptyNewButton" class="chat-primary-btn mt-5"><i class="fas fa-plus"></i> New Chat</button>
+                        </div>
+
+                        <div id="chatActiveConversation" class="hidden h-full min-h-0 flex flex-col">
+                            <header class="chat-conversation-header">
+                                <button type="button" id="chatBackButton" class="chat-icon-btn md:hidden" aria-label="Back to conversations"><i class="fas fa-arrow-left"></i></button>
+                                <button type="button" id="chatHeaderProfile" class="flex items-center gap-3 min-w-0 text-left">
+                                    <span id="chatHeaderAvatar" class="chat-avatar chat-avatar-lg">?</span>
+                                    <span class="min-w-0">
+                                        <span id="chatHeaderName" class="block text-sm font-bold text-white truncate">Student</span>
+                                        <span id="chatHeaderStatus" class="block text-[10px] text-slate-500 mt-0.5">Offline</span>
+                                    </span>
+                                </button>
+                                <button type="button" id="chatMoreButton" class="chat-icon-btn ml-auto" aria-label="Conversation options" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                                <div id="chatMoreMenu" class="chat-menu hidden" role="menu">
+                                    <button type="button" data-chat-action="profile"><i class="far fa-user"></i> View Profile</button>
+                                    <button type="button" data-chat-action="mute"><i class="far fa-bell-slash"></i> Mute</button>
+                                    <button type="button" data-chat-action="block"><i class="fas fa-ban"></i> Block</button>
+                                    <button type="button" data-chat-action="report"><i class="far fa-flag"></i> Report</button>
+                                </div>
+                            </header>
+
+                            <div id="chatMessageList" class="chat-message-list custom-scrollbar"></div>
+
+                            <form id="chatComposer" class="chat-composer">
+                                <input id="chatMessageInput" class="chat-input" type="text" maxlength="2000" autocomplete="off" placeholder="Type a message..." aria-label="Type a message">
+                                <button type="submit" class="chat-send-btn" aria-label="Send message"><i class="fas fa-paper-plane"></i></button>
+                            </form>
+                        </div>
+                    </section>
+                </div>
             </div>
-            <h3 class="text-lg md:text-xl font-bold text-white mb-2">Coming Soon</h3>
-            <p class="text-slate-500 text-xs md:text-sm max-w-[280px] mx-auto leading-relaxed">
-                Campus Chat is being built as part of UniVerse ICOS V1.0 — one-to-one messaging with your campus community, arriving before September 1, 2026.
-            </p>
         </div>
-    </div>
 
     <div id="studyPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
         <div class="min-w-0">
@@ -616,6 +763,12 @@ let appState = {
             
             document.getElementById('userUniDisplay').innerText = userUniversity || 'Unknown';
             document.getElementById('userInitial').innerText = userFullName ? userFullName[0].toUpperCase() : '?';
+
+            // Orbit hero header (first name + university)
+            const orbitFirstNameEl = document.getElementById('orbitFirstName');
+            if (orbitFirstNameEl) orbitFirstNameEl.innerText = userFullName ? userFullName.split(' ')[0] : 'Scholar';
+            const orbitUniNameEl = document.getElementById('orbitUniName');
+            if (orbitUniNameEl) orbitUniNameEl.innerText = userUniversity || 'Unknown University';
 
            const { data: profile } = await _supabase
     .from('profiles')
@@ -1399,7 +1552,226 @@ let isLodgeLoading = false;
             }
         }
 
-        // --- PAGE SWITCHER LOGIC ---
+        
+// ============================================================
+// CAMPUS CHAT MVP — frontend-only, Supabase-ready
+// ============================================================
+const chatState = {
+    conversations: [],
+    students: [],
+    messages: {},
+    activeConversationId: null,
+    searchQuery: '',
+    loading: false,
+    requests: [{ id:'req-1', senderId:'student-5', message:'Hey, are you in Mass Communication?', status:'pending' }]
+};
+
+const chatMockStudents = [
+    { id:'student-1', username:'amara', full_name:'Amara Okafor', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Engineering', department:'Computer Engineering', level:'300L', online_status:'online', last_seen:null },
+    { id:'student-2', username:'chinedu', full_name:'Chinedu Nwosu', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Sciences', department:'Computer Science', level:'300L', online_status:'offline', last_seen:'2026-08-13T09:12:00Z' },
+    { id:'student-3', username:'mary', full_name:'Mary Eze', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Business', department:'Accounting', level:'200L', online_status:'online', last_seen:null },
+    { id:'student-4', username:'david', full_name:'David Mensah', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Engineering', department:'Electrical Engineering', level:'400L', online_status:'offline', last_seen:'2026-08-12T20:31:00Z' },
+    { id:'student-5', username:'zainab', full_name:'Zainab Bello', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Arts', department:'Mass Communication', level:'300L', online_status:'online', last_seen:null }
+];
+
+chatState.students = chatMockStudents;
+chatState.conversations = [
+    { id:'conv-1', type:'direct', participantId:'student-1', created_at:'2026-08-12T09:00:00Z', unread:2, last_message:'Are you coming to the study session?', last_message_at:'2026-08-13T10:42:00Z' },
+    { id:'conv-2', type:'direct', participantId:'student-3', created_at:'2026-08-10T11:00:00Z', unread:0, last_message:'See you tomorrow.', last_message_at:'2026-08-12T18:22:00Z' },
+    { id:'conv-3', type:'direct', participantId:'student-2', created_at:'2026-08-09T08:00:00Z', unread:1, last_message:'Thanks! That helped a lot.', last_message_at:'2026-08-12T15:08:00Z' },
+    { id:'conv-4', type:'direct', participantId:'student-4', created_at:'2026-08-07T12:00:00Z', unread:0, last_message:'Let me check and get back to you.', last_message_at:'2026-08-11T21:14:00Z' }
+];
+
+chatState.messages = {
+    'conv-1': [
+        { id:'m1', conversation_id:'conv-1', sender_id:'student-1', content:'Hey! Are you attending the study session?', created_at:'2026-08-13T10:38:00Z', read:true },
+        { id:'m2', conversation_id:'conv-1', sender_id:'me', content:'Yes, I’ll be there. What time are you getting there?', created_at:'2026-08-13T10:40:00Z', read:true },
+        { id:'m3', conversation_id:'conv-1', sender_id:'student-1', content:'Around 4. I can save us a spot.', created_at:'2026-08-13T10:41:00Z', read:true },
+        { id:'m4', conversation_id:'conv-1', sender_id:'student-1', content:'Are you coming to the study session?', created_at:'2026-08-13T10:42:00Z', read:false }
+    ],
+    'conv-2': [
+        { id:'m5', conversation_id:'conv-2', sender_id:'me', content:'Thanks for sending the notes.', created_at:'2026-08-12T18:18:00Z', read:true },
+        { id:'m6', conversation_id:'conv-2', sender_id:'student-3', content:'No problem. See you tomorrow.', created_at:'2026-08-12T18:22:00Z', read:true }
+    ],
+    'conv-3': [
+        { id:'m7', conversation_id:'conv-3', sender_id:'student-2', content:'Did the explanation make sense?', created_at:'2026-08-12T15:04:00Z', read:true },
+        { id:'m8', conversation_id:'conv-3', sender_id:'student-2', content:'Thanks! That helped a lot.', created_at:'2026-08-12T15:08:00Z', read:false }
+    ],
+    'conv-4': [
+        { id:'m9', conversation_id:'conv-4', sender_id:'me', content:'Can you confirm the venue?', created_at:'2026-08-11T21:10:00Z', read:true },
+        { id:'m10', conversation_id:'conv-4', sender_id:'student-4', content:'Let me check and get back to you.', created_at:'2026-08-11T21:14:00Z', read:true }
+    ]
+};
+
+const chat = {
+    async loadConversations() { return chatState.conversations; },
+    async loadMessages(conversationId) { return chatState.messages[conversationId] || []; },
+    async sendMessage(conversationId, content) {
+        // SUPABASE INTEGRATION POINT: insert into messages, then subscribe via Realtime.
+        const message = { id:'local-'+Date.now(), conversation_id:conversationId, sender_id:'me', content, created_at:new Date().toISOString(), read:false };
+        if (!chatState.messages[conversationId]) chatState.messages[conversationId] = [];
+        chatState.messages[conversationId].push(message);
+        return message;
+    },
+    async searchStudents(query) {
+        // SUPABASE INTEGRATION POINT: filter by current university/campus and query profiles.
+        const q = query.trim().toLowerCase();
+        if (!q) return [];
+        return chatState.students.filter(s => `${s.full_name} ${s.username} ${s.department} ${s.faculty}`.toLowerCase().includes(q));
+    },
+    async startConversation(userId) {
+        // SUPABASE INTEGRATION POINT: find/create direct conversation and conversation_member rows.
+        const existing = chatState.conversations.find(c => c.participantId === userId);
+        if (existing) return existing;
+        const conversation = { id:'conv-'+Date.now(), type:'direct', participantId:userId, created_at:new Date().toISOString(), unread:0, last_message:'', last_message_at:new Date().toISOString() };
+        chatState.conversations.unshift(conversation);
+        chatState.messages[conversation.id] = [];
+        return conversation;
+    },
+    async markAsRead(conversationId) {
+        // SUPABASE INTEGRATION POINT: update message_read rows / unread state.
+        const conversation = chatState.conversations.find(c => c.id === conversationId);
+        if (conversation) conversation.unread = 0;
+        (chatState.messages[conversationId] || []).forEach(m => { if (m.sender_id !== 'me') m.read = true; });
+    },
+    async sendMessageRequest(userId, content) {
+        // SUPABASE INTEGRATION POINT: insert into message_requests.
+        return { id:'request-'+Date.now(), sender_id:'me', recipient_id:userId, status:'pending', content, created_at:new Date().toISOString() };
+    },
+    async blockUser(userId) {
+        // SUPABASE INTEGRATION POINT: insert blocker_id / blocked_id.
+        return { blocker_id:'me', blocked_id:userId };
+    },
+    async reportUser(data) {
+        // SUPABASE INTEGRATION POINT: insert report row.
+        return data;
+    },
+    onNewMessage(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; },
+    onMessageUpdated(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; },
+    onMessageDeleted(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; },
+    onConversationUpdated(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; },
+    onUserPresenceChanged(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; }
+};
+
+function chatStudent(id) { return chatState.students.find(s => s.id === id) || { id, username:'student', full_name:'Campus Student', faculty:'', department:'', level:'', online_status:'offline' }; }
+function chatInitials(name) { return name.split(' ').map(x => x[0]).slice(0,2).join('').toUpperCase(); }
+function chatTime(value) { return new Date(value).toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }); }
+function chatDate(value) { const d=new Date(value), now=new Date(); const same=d.toDateString()===now.toDateString(); return same?'TODAY':d.toLocaleDateString([], { month:'short', day:'numeric' }).toUpperCase(); }
+function chatStatus(student) { return student.online_status === 'online' ? '● Active now' : `Last seen ${chatTime(student.last_seen || new Date().toISOString())}`; }
+function chatAvatarHTML(student, large=false) { return `<span class="chat-avatar ${large?'chat-avatar-lg':''}">${student.avatar_url ? `<img src="${student.avatar_url}" alt="">` : chatInitials(student.full_name)}${student.online_status==='online'?'<span class="chat-online-dot"></span>':''}</span>`; }
+function chatEscape(value) { const div=document.createElement('div'); div.textContent=value ?? ''; return div.innerHTML; }
+
+function renderChatConversations() {
+    const list=document.getElementById('chatConversationList');
+    const count=document.getElementById('chatConversationCount');
+    if (!list) return;
+    count.textContent=`${chatState.conversations.length} conversation${chatState.conversations.length===1?'':'s'}`;
+    if (!chatState.conversations.length) {
+        list.innerHTML=`<div class="py-10 text-center"><div class="text-slate-600 text-2xl mb-3"><i class="far fa-comments"></i></div><p class="text-xs font-bold text-slate-400">No conversations yet.</p><p class="text-[10px] text-slate-600 mt-1">Start one with a campus student.</p></div>`;
+        return;
+    }
+    const requestMarkup=chatState.requests.filter(r=>r.status==='pending').map(r=>{ const s=chatStudent(r.senderId); return `<div class="mb-2 rounded-2xl border border-green-500/15 bg-green-500/5 p-3"><div class="flex items-center gap-2">${chatAvatarHTML(s)}<div class="min-w-0"><p class="text-[10px] uppercase tracking-widest font-black text-green-500">Message Request</p><p class="text-xs font-bold text-white truncate mt-0.5">${chatEscape(s.full_name)}</p></div></div><p class="text-[10px] text-slate-400 mt-2">${chatEscape(r.message)}</p><div class="flex gap-2 mt-3"><button type="button" class="chat-action-btn flex-1 !min-h-[34px]" data-request-decline="${r.id}">Decline</button><button type="button" class="chat-primary-btn flex-1 !min-h-[34px]" data-request-accept="${r.id}">Accept</button></div></div>`; }).join('');
+    list.innerHTML=requestMarkup+chatState.conversations.map(c=>{
+        const s=chatStudent(c.participantId); const active=c.id===chatState.activeConversationId;
+        return `<button type="button" class="chat-conversation-item ${active?'active ':''}${c.unread?'unread':''}" data-conversation-id="${c.id}">
+            ${chatAvatarHTML(s)}<span class="min-w-0 flex-1"><span class="flex items-center justify-between gap-2"><span class="chat-preview-name text-xs font-bold text-slate-200 truncate">${chatEscape(s.full_name)}</span><span class="text-[8px] text-slate-600 flex-shrink-0">${c.last_message_at?chatTime(c.last_message_at):''}</span></span><span class="flex items-center justify-between gap-2 mt-1"><span class="chat-preview text-[10px] text-slate-500 truncate">${chatEscape(c.last_message||'Start a conversation')}</span>${c.unread?`<span class="chat-unread">${c.unread}</span>`:''}</span></span>
+        </button>`;
+    }).join('');
+    list.querySelectorAll('[data-conversation-id]').forEach(btn=>btn.addEventListener('click',()=>openChatConversation(btn.dataset.conversationId)));
+    list.querySelectorAll('[data-request-accept]').forEach(btn=>btn.addEventListener('click',async()=>{const r=chatState.requests.find(x=>x.id===btn.dataset.requestAccept);if(!r)return;r.status='accepted';const c=await chat.startConversation(r.senderId);renderChatConversations();await openChatConversation(c.id);}));
+    list.querySelectorAll('[data-request-decline]').forEach(btn=>btn.addEventListener('click',()=>{const r=chatState.requests.find(x=>x.id===btn.dataset.requestDecline);if(r)r.status='declined';renderChatConversations();}));
+}
+
+async function openChatConversation(conversationId) {
+    const conversation=chatState.conversations.find(c=>c.id===conversationId); if(!conversation) return;
+    chatState.activeConversationId=conversationId;
+    await chat.markAsRead(conversationId);
+    renderChatConversations();
+    const s=chatStudent(conversation.participantId);
+    document.getElementById('chatEmptyConversation').classList.add('hidden');
+    document.getElementById('chatActiveConversation').classList.remove('hidden');
+    document.getElementById('chatConversationView').classList.add('chat-mobile-open');
+    document.getElementById('chatHeaderAvatar').outerHTML=chatAvatarHTML(s,true).replace('chat-avatar-lg','chat-avatar-lg" id="chatHeaderAvatar');
+    document.getElementById('chatHeaderName').textContent=s.full_name;
+    document.getElementById('chatHeaderStatus').textContent=chatStatus(s);
+    document.getElementById('chatMoreMenu').classList.add('hidden');
+    renderChatMessages(await chat.loadMessages(conversationId));
+}
+
+function renderChatMessages(messages) {
+    const box=document.getElementById('chatMessageList');
+    if (!messages.length) { box.innerHTML=`<div class="h-full flex items-center justify-center"><div class="text-center"><div class="text-2xl text-slate-700 mb-2"><i class="far fa-comment"></i></div><p class="text-xs text-slate-500">Start the conversation.</p></div></div>`; return; }
+    let lastDate='';
+    box.innerHTML=messages.map(m=>{
+        const date=chatDate(m.created_at); let sep=''; if(date!==lastDate){lastDate=date;sep=`<div class="chat-date-separator">${date}</div>`;}
+        const sent=m.sender_id==='me';
+        return `${sep}<div class="chat-bubble-row ${sent?'sent':''}"><div class="chat-bubble ${sent?'sent':'received'}"><div>${chatEscape(m.content)}</div><div class="chat-meta"><span>${chatTime(m.created_at)}</span>${sent?`<span>${m.read?'✓✓':'✓'}</span>`:''}</div></div></div>`;
+    }).join('');
+    requestAnimationFrame(()=>{ box.scrollTop=box.scrollHeight; });
+}
+
+function renderChatSkeleton(target) {
+    target.innerHTML=Array.from({length:4},()=>`<div class="flex items-center gap-3 p-3"><div class="chat-avatar chat-skeleton"></div><div class="flex-1 space-y-2"><div class="h-3 rounded chat-skeleton w-2/3"></div><div class="h-2 rounded chat-skeleton w-full"></div></div></div>`).join('');
+}
+
+async function renderChatSearchResults(query) {
+    const box=document.getElementById('chatSearchResults'); if(!box) return;
+    if(!query.trim()){box.innerHTML=`<p class="text-[10px] text-slate-600 px-1">Search by name, username, faculty or department.</p>`;return;}
+    renderChatSkeleton(box);
+    let results=[];
+    try { results=await chat.searchStudents(query); }
+    catch(error) { console.error('Campus Chat search error',error); box.innerHTML=`<div class="py-6 text-center"><div class="text-red-400 text-xl mb-2"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Something went wrong.</p><p class="text-[10px] text-slate-600 mt-1">Your student search couldn't be completed.</p><button type="button" class="chat-action-btn mt-3" onclick="renderChatSearchResults(document.getElementById('chatStudentSearch').value)">Try Again</button></div>`; return; }
+    if(!results.length){box.innerHTML=`<div class="py-6 text-center"><p class="text-xs font-bold text-slate-400">No students found.</p><p class="text-[10px] text-slate-600 mt-1">Try searching by another name or username.</p></div>`;return;}
+    box.innerHTML=results.map(s=>`<div class="chat-result"><button type="button" class="flex items-center gap-3 min-w-0 flex-1 text-left" data-student-id="${s.id}">${chatAvatarHTML(s)}<span class="min-w-0"><span class="block text-xs font-bold text-white truncate">${chatEscape(s.full_name)}</span><span class="block text-[9px] text-slate-500 truncate">@${chatEscape(s.username)} · ${chatEscape(s.department)} · ${chatEscape(s.level)}</span><span class="block text-[9px] ${s.online_status==='online'?'text-green-500':'text-slate-600'} mt-0.5">${s.online_status==='online'?'● Active': '○ Offline'}</span></span></button><button type="button" class="chat-action-btn !min-h-[34px] !px-3 !rounded-lg" data-message-student="${s.id}">Message</button></div>`).join('');
+    box.querySelectorAll('[data-student-id]').forEach(b=>b.addEventListener('click',()=>startChatWithStudent(b.dataset.studentId)));
+    box.querySelectorAll('[data-message-student]').forEach(b=>b.addEventListener('click',()=>startChatWithStudent(b.dataset.messageStudent)));
+}
+
+async function startChatWithStudent(studentId) {
+    const existing=chatState.conversations.find(c=>c.participantId===studentId);
+    closeChatSearch();
+    if (existing) { await openChatConversation(existing.id); return; }
+    openChatRequest(studentId);
+}
+function openChatRequest(studentId){
+    const s=chatStudent(studentId);
+    chatOpenModal(`<div class="p-5"><div class="flex items-center justify-between"><div><p class="text-[8px] uppercase tracking-[.2em] font-black text-green-500">New conversation</p><h3 class="text-lg font-bold text-white mt-1">Start a conversation</h3></div><button class="chat-icon-btn" onclick="chatCloseModal()"><i class="fas fa-times"></i></button></div><div class="flex items-center gap-3 mt-5 p-3 rounded-2xl bg-white/5">${chatAvatarHTML(s)}<div><p class="text-sm font-bold text-white">${chatEscape(s.full_name)}</p><p class="text-[10px] text-slate-500">@${chatEscape(s.username)} · ${chatEscape(s.department)} · ${chatEscape(s.level)}</p></div></div><div class="mt-4 rounded-2xl border border-green-500/10 bg-green-500/5 p-3"><p class="text-[10px] text-slate-400">This is a message request. If they accept, you can continue the conversation.</p></div><textarea id="chatRequestMessage" class="w-full mt-4 rounded-xl bg-white/5 border border-white/10 p-3 text-xs text-white outline-none" rows="3" maxlength="500" placeholder="Write a short message..."></textarea><div class="flex gap-2 mt-3"><button class="chat-action-btn flex-1" onclick="chatCloseModal()">Cancel</button><button id="chatRequestSend" class="chat-primary-btn flex-1">Send Request</button></div></div>`);
+    document.getElementById('chatRequestSend').onclick=async()=>{ const content=document.getElementById('chatRequestMessage').value.trim(); if(!content){document.getElementById('chatRequestMessage').focus();return;} await chat.sendMessageRequest(studentId,content); const c=await chat.startConversation(studentId); c.last_message=content; c.last_message_at=new Date().toISOString(); chatCloseModal(); renderChatConversations(); await openChatConversation(c.id); };
+}
+
+function openChatSearch(){ document.getElementById('chatSearchPanel').classList.remove('hidden'); document.getElementById('chatStudentSearch').focus(); }
+function closeChatSearch(){ document.getElementById('chatSearchPanel').classList.add('hidden'); document.getElementById('chatStudentSearch').value=''; document.getElementById('chatSearchResults').innerHTML=''; }
+function chatOpenModal(content) { const wrap=document.createElement('div'); wrap.className='chat-modal-backdrop'; wrap.id='chatTransientModal'; wrap.innerHTML=`<div class="chat-modal">${content}</div>`; document.body.appendChild(wrap); wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.remove();}); return wrap; }
+function chatCloseModal(){document.getElementById('chatTransientModal')?.remove();}
+
+function openChatProfile() {
+    if(!chatState.activeConversationId)return; const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId); const s=chatStudent(c.participantId);
+    chatOpenModal(`<div class="p-5"><div class="flex items-start justify-between"><div>${chatAvatarHTML(s,true)}</div><button type="button" class="chat-icon-btn" onclick="chatCloseModal()"><i class="fas fa-times"></i></button></div><h3 class="text-lg font-bold text-white mt-4">${chatEscape(s.full_name)}</h3><p class="text-xs text-slate-500 mt-1">@${chatEscape(s.username)}</p><div class="grid grid-cols-2 gap-2 mt-5">${[['University','Campus University'],['Campus','Main Campus'],['Faculty',s.faculty],['Department',s.department],['Level',s.level]].map(x=>`<div class="rounded-xl bg-white/5 p-3"><p class="text-[8px] uppercase tracking-widest text-slate-600 font-bold">${x[0]}</p><p class="text-[10px] text-slate-300 mt-1">${chatEscape(x[1]||'—')}</p></div>`).join('')}</div><div class="flex gap-2 mt-5"><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatBlock()">Block</button><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatReport()">Report</button></div></div>`);
+}
+function openChatBlock(){ const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId); const s=chatStudent(c.participantId); chatOpenModal(`<div class="p-5"><div class="w-11 h-11 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center"><i class="fas fa-ban"></i></div><h3 class="text-lg font-bold text-white mt-4">Block this student?</h3><p class="text-xs text-slate-500 mt-2">Blocked students won't be able to message you.</p><div class="flex gap-2 mt-6"><button class="chat-action-btn flex-1" onclick="chatCloseModal()">Cancel</button><button class="chat-action-btn flex-1 !text-red-300 !border-red-500/20" onclick="confirmChatBlock('${s.id}')">Block</button></div></div>`); }
+async function confirmChatBlock(userId){ await chat.blockUser(userId); chatState.conversations=chatState.conversations.filter(c=>c.participantId!==userId); chatState.activeConversationId=null; chatCloseModal(); closeChatConversationMobile(); renderChatConversations(); document.getElementById('chatActiveConversation').classList.add('hidden'); document.getElementById('chatEmptyConversation').classList.remove('hidden'); }
+function openChatReport(){ const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId); if(!c)return; const s=chatStudent(c.participantId); chatOpenModal(`<div class="p-5"><div class="flex items-center justify-between"><h3 class="text-lg font-bold text-white">Report conversation</h3><button class="chat-icon-btn" onclick="chatCloseModal()"><i class="fas fa-times"></i></button></div><p class="text-xs text-slate-500 mt-1">Tell us what happened with ${chatEscape(s.full_name)}.</p><div class="grid grid-cols-2 gap-2 mt-5">${['Spam','Harassment','Inappropriate content','Fake account'].map(r=>`<button type="button" class="chat-action-btn report-reason" data-reason="${r}">${r}</button>`).join('')}<button type="button" class="chat-action-btn report-reason col-span-2" data-reason="Other">Other</button></div><textarea id="chatReportNote" class="w-full mt-3 rounded-xl bg-white/5 border border-white/10 p-3 text-xs text-white outline-none" rows="3" placeholder="Tell us what happened."></textarea><button id="chatReportSubmit" class="chat-primary-btn w-full mt-3">Submit Report</button></div>`); let reason=''; document.querySelectorAll('.report-reason').forEach(b=>b.addEventListener('click',()=>{reason=b.dataset.reason;document.querySelectorAll('.report-reason').forEach(x=>x.classList.remove('!bg-green-500/10','!text-green-400'));b.classList.add('!bg-green-500/10','!text-green-400');})); document.getElementById('chatReportSubmit').onclick=async()=>{if(!reason){alert('Please select a reason.');return;}await chat.reportUser({reporter_id:'me',reported_user_id:s.id,conversation_id:c.id,reason,note:document.getElementById('chatReportNote').value});chatCloseModal();alert('Report submitted. Thank you for helping keep Campus Chat safe.');}; }
+function closeChatConversationMobile(){document.getElementById('chatConversationView').classList.remove('chat-mobile-open');}
+
+function initCampusChat(){
+    renderChatConversations();
+    document.getElementById('chatSearchToggle')?.addEventListener('click',openChatSearch);
+    document.getElementById('chatMobileSearch')?.addEventListener('click',openChatSearch);
+    document.getElementById('chatSearchClose')?.addEventListener('click',closeChatSearch);
+    document.getElementById('chatStudentSearch')?.addEventListener('input',e=>renderChatSearchResults(e.target.value));
+    const newChat=()=>openChatSearch();
+    document.getElementById('chatNewButton')?.addEventListener('click',newChat);
+    document.getElementById('chatEmptyNewButton')?.addEventListener('click',newChat);
+    document.getElementById('chatBackButton')?.addEventListener('click',closeChatConversationMobile);
+    document.getElementById('chatHeaderProfile')?.addEventListener('click',openChatProfile);
+    document.getElementById('chatMoreButton')?.addEventListener('click',e=>{e.stopPropagation();document.getElementById('chatMoreMenu').classList.toggle('hidden');});
+    document.querySelectorAll('#chatMoreMenu [data-chat-action]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('chatMoreMenu').classList.add('hidden'); const a=b.dataset.chatAction; if(a==='profile')openChatProfile(); else if(a==='block')openChatBlock(); else if(a==='report')openChatReport(); else if(a==='mute')alert('Notifications muted for this conversation.');}));
+    document.getElementById('chatComposer')?.addEventListener('submit',async e=>{e.preventDefault();const input=document.getElementById('chatMessageInput');const content=input.value.trim();if(!content||!chatState.activeConversationId)return;const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId);const message=await chat.sendMessage(c.id,content);c.last_message=message.content;c.last_message_at=message.created_at;input.value='';renderChatConversations();renderChatMessages(await chat.loadMessages(c.id));});
+    document.addEventListener('click',e=>{if(!e.target.closest('#chatMoreButton')&&!e.target.closest('#chatMoreMenu'))document.getElementById('chatMoreMenu')?.classList.add('hidden');});
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCampusChat); else initCampusChat();
+
+// --- PAGE SWITCHER LOGIC ---
 // V1.0 primary pages (bottom nav) + preserved future-module pages
 // (lodge, errandPage) which are reachable via the Future ICOS modal
 // but are no longer part of the primary nav highlight set.

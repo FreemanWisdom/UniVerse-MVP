@@ -117,6 +117,46 @@
         input[type="text"], input[type="email"], input[type="password"] { font-family: 'Inter', sans-serif; }
 
         #mobileNav { transition: max-height .3s ease, opacity .25s ease; overflow: hidden; }
+
+        /* Section eyebrow / numbering */
+        .uv-eyebrow { font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--uv-green); }
+        .uv-kicker { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--uv-text-dim); }
+        .uv-divider { height: 1px; background: linear-gradient(90deg, rgba(52,224,138,0.35), rgba(255,255,255,0.04) 60%, transparent); }
+        .uv-mono { font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.06em; }
+
+        /* Nav active link */
+        .uv-nav-link.uv-active { color: var(--uv-text); }
+        .uv-nav-link { position: relative; }
+        .uv-nav-link.uv-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -18px; height: 2px; background: var(--uv-green); border-radius: 2px; }
+
+        /* Status panel */
+        .uv-status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--uv-green); box-shadow: 0 0 0 3px rgba(52,224,138,0.18); animation: uv-blink 2.4s ease-in-out infinite; }
+        @keyframes uv-blink { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+        /* Ambient particles, small */
+        .uv-dot-particle { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: rgba(52,224,138,0.5); animation: uv-float 9s ease-in-out infinite; }
+
+        /* Roadmap flow */
+        .uv-flow-line { width: 1px; background: linear-gradient(180deg, rgba(52,224,138,0.5), rgba(255,255,255,0.05)); }
+
+        /* Modal (legal docs) */
+        .uv-doc-body h3 { font-family: 'Space Grotesk', sans-serif; color: #fff; font-weight: 700; font-size: 1.05rem; margin-top: 1.75rem; margin-bottom: 0.6rem; }
+        .uv-doc-body h3:first-child { margin-top: 0; }
+        .uv-doc-body p { color: var(--uv-text-dim); font-size: 0.9rem; line-height: 1.7; margin-bottom: 0.75rem; }
+        .uv-doc-body ul { color: var(--uv-text-dim); font-size: 0.9rem; line-height: 1.7; margin: 0 0 0.9rem 1.1rem; list-style: disc; }
+        .uv-doc-body li { margin-bottom: 0.25rem; }
+        .uv-doc-body strong { color: var(--uv-text); }
+
+        /* Checkbox */
+        .uv-check { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.03); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color .2s ease, background .2s ease; cursor: pointer; }
+        .uv-check.checked { border-color: var(--uv-green); background: rgba(52,224,138,0.18); }
+        .uv-check i { font-size: 0.65rem; color: var(--uv-green); opacity: 0; transition: opacity .15s ease; }
+        .uv-check.checked i { opacity: 1; }
+        #signupAgreeError { transition: opacity .2s ease, transform .2s ease; }
+
+        @media (max-width: 767px) {
+            .uv-doc-modal-panel { max-height: 85vh; }
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -126,12 +166,16 @@
     <!-- ============ TOP NAVIGATION ============ -->
     <nav class="uv-nav fixed top-0 left-0 right-0 z-40">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="font-display text-xl font-bold tracking-tight text-white">Uni<span class="text-green-400" style="color:var(--uv-green)">Verse</span></div>
-            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
-                <a href="#ecosystem" class="uv-nav-link">The Ecosystem</a>
-                <a href="#study" class="uv-nav-link">Study</a>
-                <a href="#connect" class="uv-nav-link">Connect</a>
-                <a href="#collaborate" class="uv-nav-link">Collaborate</a>
+            <a href="#top" class="font-display text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                Uni<span class="text-green-400" style="color:var(--uv-green)">Verse</span>
+                <span class="uv-kicker hidden lg:inline-block ml-1 pl-2 border-l border-white/10">ICOS · V1.0</span>
+            </a>
+            <div class="hidden md:flex items-center gap-7 text-sm font-medium" id="navLinks">
+                <a href="#overview" data-section="overview" class="uv-nav-link">Overview</a>
+                <a href="#ecosystem" data-section="ecosystem" class="uv-nav-link">Ecosystem</a>
+                <a href="#how-it-works" data-section="how-it-works" class="uv-nav-link">How It Works</a>
+                <a href="#v1" data-section="v1" class="uv-nav-link">V1.0 MVP</a>
+                <a href="#community" data-section="community" class="uv-nav-link">Community</a>
             </div>
             <div class="hidden md:flex items-center gap-3">
                 <button onclick="openAuthModal('login')" class="uv-nav-link text-sm font-semibold px-4 py-2">Log In</button>
@@ -143,10 +187,13 @@
         </div>
         <div id="mobileNav" class="md:hidden max-h-0 opacity-0 px-6">
             <div class="flex flex-col gap-1 pb-5 pt-1 border-t border-white/5">
-                <a href="#ecosystem" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">The Ecosystem</a>
-                <a href="#study" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Study</a>
-                <a href="#connect" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Connect</a>
-                <a href="#collaborate" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Collaborate</a>
+                <a href="#overview" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Overview</a>
+                <a href="#ecosystem" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Ecosystem</a>
+                <a href="#how-it-works" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">How It Works</a>
+                <a href="#v1" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">V1.0 MVP</a>
+                <a href="#community" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Community</a>
+                <a href="#" onclick="toggleMobileNav(); openDoc('privacy'); return false;" class="uv-nav-link py-3 text-sm">Privacy Policy</a>
+                <a href="#" onclick="toggleMobileNav(); openDoc('community'); return false;" class="uv-nav-link py-3 text-sm">Community Standards</a>
                 <div class="flex gap-3 pt-3">
                     <button onclick="openAuthModal('login')" class="flex-1 uv-btn-ghost text-sm font-semibold py-2.5 rounded-full">Log In</button>
                     <button onclick="openAuthModal('signup')" class="flex-1 uv-btn-primary text-sm font-bold py-2.5 rounded-full">Join</button>
@@ -156,29 +203,43 @@
     </nav>
 
     <!-- ============ HERO ============ -->
-    <header class="uv-relative pt-40 pb-24 px-6">
+    <header id="top" class="uv-relative pt-36 pb-16 px-6">
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
             <div class="uv-reveal uv-visible">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-green-500/25 text-xs font-bold uppercase tracking-widest mb-6" style="color:var(--uv-green)">
-                    <span class="w-1.5 h-1.5 rounded-full" style="background:var(--uv-green)"></span>
-                    The digital campus ecosystem
+                <div class="flex flex-wrap items-center gap-2 mb-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-green-500/25 uv-mono text-[0.65rem] font-bold uppercase tracking-widest" style="color:var(--uv-green)">
+                        <span class="w-1.5 h-1.5 rounded-full" style="background:var(--uv-green)"></span>
+                        UniVerse ICOS · Version 1.0
+                    </div>
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 uv-mono text-[0.65rem] font-bold uppercase tracking-widest" style="color:var(--uv-text-dim)">
+                        MVP · First Campus Layer
+                    </div>
                 </div>
                 <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight text-white">
                     Your campus.<br>
                     <span style="color:var(--uv-green)">One universe.</span>
                 </h1>
                 <p class="mt-6 text-lg leading-relaxed max-w-lg" style="color:var(--uv-text-dim)">
-                    UniVerse brings the student experience into one connected ecosystem — where you connect, learn, communicate and collaborate.
+                    UniVerse is building an <strong class="text-white font-semibold">Integrated Campus Operating System</strong> — bringing the digital student experience into one connected ecosystem.
+                </p>
+                <p class="mt-4 text-sm leading-relaxed max-w-lg pl-4 border-l-2" style="color:var(--uv-text-dim); border-color:rgba(52,224,138,0.4)">
+                    You're looking at the first version. <strong class="text-white font-medium">V1.0 is our MVP</strong> — a focused first layer built around connection, learning, communication and collaboration.
                 </p>
                 <div class="mt-10 flex flex-wrap gap-4">
                     <button onclick="openAuthModal('login')" class="uv-btn-primary font-bold px-7 py-3.5 rounded-full text-sm">Enter UniVerse</button>
-                    <button onclick="openAuthModal('signup')" class="uv-btn-ghost font-bold px-7 py-3.5 rounded-full text-sm">Create your account</button>
+                    <button onclick="openAuthModal('signup')" class="uv-btn-ghost font-bold px-7 py-3.5 rounded-full text-sm">Join the V1.0</button>
                 </div>
             </div>
 
             <!-- Orbit visual -->
             <div class="uv-reveal uv-visible relative">
                 <div class="uv-orbit-wrap">
+                    <!-- conceptual layer labels -->
+                    <div class="absolute -top-2 left-1/2 -translate-x-1/2 uv-kicker" style="color:var(--uv-green)">Social</div>
+                    <div class="absolute top-1/2 -right-1 -translate-y-1/2 rotate-0 uv-kicker" style="color:var(--uv-green)">Academic</div>
+                    <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 uv-kicker" style="color:var(--uv-green)">Communication</div>
+                    <div class="absolute top-1/2 -left-1 -translate-y-1/2 uv-kicker" style="color:var(--uv-green)">Collaboration</div>
+
                     <div class="uv-orbit-ring"></div>
                     <div class="uv-orbit-ring ring-2"></div>
                     <div class="uv-particle" style="top:12%; left:20%;"></div>
@@ -188,35 +249,89 @@
                     <div class="uv-orbit-core"><span>ORBIT</span></div>
 
                     <div class="uv-orbit-spin">
-                        <div class="uv-orbit-node" style="top:-2%; left:50%; transform:translate(-50%,0);">
+                        <div class="uv-orbit-node" style="top:4%; left:50%; transform:translate(-50%,-50%);">
                             <div class="uv-node-dot"><i class="fas fa-satellite text-sm"></i></div>
                             <div class="uv-node-label">Orbit</div>
                         </div>
-                        <div class="uv-orbit-node" style="top:50%; right:-2%; transform:translate(0,-50%);">
+                        <div class="uv-orbit-node" style="top:27%; left:89.84%; transform:translate(-50%,-50%);">
                             <div class="uv-node-dot"><i class="fas fa-book text-sm"></i></div>
                             <div class="uv-node-label">Study Hub</div>
                         </div>
-                        <div class="uv-orbit-node" style="bottom:-2%; left:50%; transform:translate(-50%,0);">
+                        <div class="uv-orbit-node" style="top:73%; left:89.84%; transform:translate(-50%,-50%);">
                             <div class="uv-node-dot"><i class="fas fa-comments text-sm"></i></div>
                             <div class="uv-node-label">Campus Chat</div>
                         </div>
-                        <div class="uv-orbit-node" style="top:50%; left:-2%; transform:translate(0,-50%);">
+                        <div class="uv-orbit-node" style="top:96%; left:50%; transform:translate(-50%,-50%);">
                             <div class="uv-node-dot"><i class="fas fa-users text-sm"></i></div>
                             <div class="uv-node-label">Study Tribes</div>
                         </div>
+                        <div class="uv-orbit-node" style="top:73%; left:10.16%; transform:translate(-50%,-50%);">
+                            <div class="uv-node-dot"><i class="fas fa-mask text-sm"></i></div>
+                            <div class="uv-node-label">Campus Whisper</div>
+                        </div>
+                        <div class="uv-orbit-node" style="top:27%; left:10.16%; transform:translate(-50%,-50%);">
+                            <div class="uv-node-dot"><i class="fas fa-robot text-sm"></i></div>
+                            <div class="uv-node-label">AI Tutor</div>
+                        </div>
                     </div>
+                </div>
+                <!-- system readout strip -->
+                <div class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
+                    <div class="uv-kicker flex items-center gap-1.5"><span class="uv-status-dot"></span>System / V1.0</div>
+                    <div class="uv-kicker">Core Layer / Active</div>
+                    <div class="uv-kicker">Campus Network / Connected</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ YOU ARE HERE STATUS PANEL ============ -->
+        <div class="max-w-7xl mx-auto mt-16 uv-reveal">
+            <div class="glass-card rounded-[2rem] p-7 sm:p-9 grid sm:grid-cols-4 gap-8 sm:gap-6 relative overflow-hidden">
+                <div class="absolute inset-0 pointer-events-none opacity-40" style="background: radial-gradient(ellipse 60% 100% at 0% 0%, rgba(52,224,138,0.10), transparent 60%);"></div>
+                <div class="relative">
+                    <div class="uv-kicker mb-2">UniVerse ICOS</div>
+                    <div class="font-display text-2xl font-bold text-white">V1.0 <span style="color:var(--uv-green)">/ MVP</span></div>
+                </div>
+                <div class="relative">
+                    <div class="uv-kicker mb-2">Status</div>
+                    <div class="flex items-center gap-2 font-display text-sm font-bold text-white uppercase tracking-wide"><span class="uv-status-dot"></span>Live / Pilot</div>
+                </div>
+                <div class="relative">
+                    <div class="uv-kicker mb-2">Current Layer</div>
+                    <div class="font-display text-sm font-bold text-white uppercase tracking-wide">The Core Campus Experience</div>
+                </div>
+                <div class="relative">
+                    <div class="uv-kicker mb-2">Focus</div>
+                    <div class="font-display text-sm font-bold text-white uppercase tracking-wide">Connect · Learn · Communicate · Collaborate · Express · Ask</div>
+                </div>
+                <div class="relative sm:col-span-4 pt-6 border-t border-white/5">
+                    <p class="text-sm" style="color:var(--uv-text-dim)">The larger ICOS ecosystem will evolve beyond this first release.</p>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- ============ WHAT IS UNIVERSE ============ -->
-    <section class="uv-relative px-6 py-20 border-t border-white/5">
+    <section id="overview" class="uv-relative px-6 py-24 border-t border-white/5">
         <div class="max-w-3xl mx-auto text-center uv-reveal">
-            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">One ecosystem for campus life.</h2>
+            <div class="uv-eyebrow mb-4">01 · Overview</div>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">The campus experience is fragmented.</h2>
             <p class="mt-5 text-base leading-relaxed" style="color:var(--uv-text-dim)">
-                UniVerse is designed to bring the fragmented student experience into one connected digital environment. Students shouldn't need to jump between countless disconnected platforms to communicate, study and participate in campus life. UniVerse brings those experiences together.
+                Students currently move between separate platforms for conversations, academic resources, communities and campus interactions. UniVerse is designed to bring these experiences into one connected environment.
             </p>
+        </div>
+
+        <div class="max-w-5xl mx-auto mt-16 grid md:grid-cols-2 gap-5 uv-reveal">
+            <div class="glass-card rounded-3xl p-8">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(255,255,255,0.06); color:var(--uv-text-dim)"><i class="fas fa-shapes"></i></div>
+                <h3 class="font-display text-lg font-bold text-white mb-2">ICOS — Integrated Campus Operating System</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">ICOS is the broader architecture behind UniVerse: a connected digital environment designed around the different ecosystems of campus life — social, academic, communication and collaboration.</p>
+            </div>
+            <div class="uv-card rounded-3xl p-8" style="border-color:rgba(52,224,138,0.3); background:rgba(52,224,138,0.04)">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(52,224,138,0.14); color:var(--uv-green)"><i class="fas fa-flag"></i></div>
+                <h3 class="font-display text-lg font-bold text-white mb-2">UniVerse ICOS v1.0</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">UniVerse ICOS v1.0 is the first practical layer of that vision — a focused MVP built around four core systems, with the wider ICOS ecosystem expanding from here.</p>
+            </div>
         </div>
     </section>
 
@@ -224,33 +339,76 @@
     <section id="ecosystem" class="uv-relative px-6 py-20 border-t border-white/5">
         <div class="max-w-7xl mx-auto">
             <div class="mb-14 uv-reveal">
-                <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--uv-green)">The ecosystem</div>
-                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white max-w-xl">Four systems. One campus.</h2>
+                <div class="uv-eyebrow mb-3">02 · The Ecosystem</div>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white max-w-xl">Six systems. One campus.</h2>
+                <p class="mt-4 text-sm max-w-xl" style="color:var(--uv-text-dim)">The six core layers that make up UniVerse ICOS v1.0.</p>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <div id="connect" class="uv-card uv-reveal rounded-3xl p-7">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-6" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-satellite"></i></div>
-                    <div class="text-[0.65rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-text-dim)">System 01</div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div id="connect" class="uv-card uv-reveal rounded-3xl p-7 relative overflow-hidden group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-satellite"></i></div>
+                        <span class="uv-mono text-[0.6rem] font-bold" style="color:var(--uv-text-dim)">01</span>
+                    </div>
+                    <div class="text-[0.62rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-green)">Social Layer</div>
                     <h3 class="font-display text-xl font-bold text-white mb-2">Orbit</h3>
-                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Your campus social layer. Connect with people around you, discover what's happening and participate in campus life.</p>
+                    <p class="text-xs font-semibold mb-3" style="color:var(--uv-text-dim)">Your campus, in motion.</p>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">The social layer of UniVerse — discover conversations, people and activity happening around your campus.</p>
+                    <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 uv-kicker"><span class="uv-status-dot"></span>System 01 / Active</div>
                 </div>
-                <div id="study" class="uv-card uv-reveal rounded-3xl p-7">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-6" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-book"></i></div>
-                    <div class="text-[0.65rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-text-dim)">System 02</div>
+                <div id="study" class="uv-card uv-reveal rounded-3xl p-7 relative overflow-hidden group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-book"></i></div>
+                        <span class="uv-mono text-[0.6rem] font-bold" style="color:var(--uv-text-dim)">02</span>
+                    </div>
+                    <div class="text-[0.62rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-green)">Academic Layer</div>
                     <h3 class="font-display text-xl font-bold text-white mb-2">Study Hub</h3>
-                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Your academic command center. Access learning resources, past questions, study materials and tools designed to make studying easier.</p>
+                    <p class="text-xs font-semibold mb-3" style="color:var(--uv-text-dim)">Everything you need to study smarter.</p>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Your academic command center — access learning resources, study materials and tools built around your coursework.</p>
+                    <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 uv-kicker"><span class="uv-status-dot"></span>System 02 / Active</div>
                 </div>
-                <div class="uv-card uv-reveal rounded-3xl p-7">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-6" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-comments"></i></div>
-                    <div class="text-[0.65rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-text-dim)">System 03</div>
+                <div class="uv-card uv-reveal rounded-3xl p-7 relative overflow-hidden group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-comments"></i></div>
+                        <span class="uv-mono text-[0.6rem] font-bold" style="color:var(--uv-text-dim)">03</span>
+                    </div>
+                    <div class="text-[0.62rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-green)">Communication Layer</div>
                     <h3 class="font-display text-xl font-bold text-white mb-2">Campus Chat</h3>
-                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Talk to your campus. Communicate directly with other students inside your campus ecosystem.</p>
+                    <p class="text-xs font-semibold mb-3" style="color:var(--uv-text-dim)">Direct campus communication.</p>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Communicate directly with other students inside your campus ecosystem — no separate app required.</p>
+                    <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 uv-kicker"><span class="uv-status-dot"></span>System 03 / Active</div>
                 </div>
-                <div id="collaborate" class="uv-card uv-reveal rounded-3xl p-7">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-6" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-users"></i></div>
-                    <div class="text-[0.65rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-text-dim)">System 04</div>
+                <div id="collaborate" class="uv-card uv-reveal rounded-3xl p-7 relative overflow-hidden group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-users"></i></div>
+                        <span class="uv-mono text-[0.6rem] font-bold" style="color:var(--uv-text-dim)">04</span>
+                    </div>
+                    <div class="text-[0.62rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-green)">Collaboration Layer</div>
                     <h3 class="font-display text-xl font-bold text-white mb-2">Study Tribes</h3>
-                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Learn together, go further. Create or join focused learning communities and study with people pursuing the same goals.</p>
+                    <p class="text-xs font-semibold mb-3" style="color:var(--uv-text-dim)">Learn together. Go further.</p>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Create or join focused learning communities and study with people pursuing the same goals.</p>
+                    <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 uv-kicker"><span class="uv-status-dot"></span>System 04 / Active</div>
+                </div>
+                <div class="uv-card uv-reveal rounded-3xl p-7 relative overflow-hidden group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-mask"></i></div>
+                        <span class="uv-mono text-[0.6rem] font-bold" style="color:var(--uv-text-dim)">05</span>
+                    </div>
+                    <div class="text-[0.62rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-green)">Anonymous Layer</div>
+                    <h3 class="font-display text-xl font-bold text-white mb-2">Campus Whisper</h3>
+                    <p class="text-xs font-semibold mb-3" style="color:var(--uv-text-dim)">Say it without your name.</p>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">A space for anonymous posts — where students can share what's really on their mind and read what's being said across campus, without attaching their identity.</p>
+                    <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 uv-kicker"><span class="uv-status-dot"></span>System 05 / Active</div>
+                </div>
+                <div class="uv-card uv-reveal rounded-3xl p-7 relative overflow-hidden group">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-robot"></i></div>
+                        <span class="uv-mono text-[0.6rem] font-bold" style="color:var(--uv-text-dim)">06</span>
+                    </div>
+                    <div class="text-[0.62rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-green)">Intelligence Layer</div>
+                    <h3 class="font-display text-xl font-bold text-white mb-2">AI Tutor</h3>
+                    <p class="text-xs font-semibold mb-3" style="color:var(--uv-text-dim)">Ask anything. Learn faster.</p>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">An AI-powered study assistant built into your academic layer — get explanations, work through concepts and get unstuck without waiting for office hours.</p>
+                    <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 uv-kicker"><span class="uv-status-dot"></span>System 06 / Active</div>
                 </div>
             </div>
         </div>
@@ -274,14 +432,129 @@
         </div>
     </section>
 
-    <!-- ============ MVP POSITIONING ============ -->
-    <section class="uv-relative px-6 py-20 border-t border-white/5">
-        <div class="max-w-3xl mx-auto text-center uv-reveal">
-            <div class="inline-block text-xs font-bold uppercase tracking-widest mb-4 px-3 py-1 rounded-full border border-white/10" style="color:var(--uv-green)">UniVerse ICOS v1.0</div>
-            <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mb-5">The first layer of the campus operating system.</h2>
-            <p class="text-base leading-relaxed" style="color:var(--uv-text-dim)">
-                The current UniVerse experience focuses on the core student ecosystem — connect, learn, communicate and collaborate — with more of the campus operating system arriving as the platform grows.
-            </p>
+    <!-- ============ WHAT'S ACTUALLY IN V1.0 ============ -->
+    <section id="v1" class="uv-relative px-6 py-24 border-t border-white/5">
+        <div class="max-w-3xl mx-auto text-center uv-reveal mb-16">
+            <div class="uv-eyebrow mb-3">03 · V1.0 MVP</div>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">What's actually in V1.0?</h2>
+            <p class="mt-4 text-base" style="color:var(--uv-text-dim)">Six experiences. One focused MVP.</p>
+        </div>
+        <div class="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-5 uv-reveal">
+            <div class="glass-card rounded-3xl p-7 text-center">
+                <div class="uv-mono text-3xl font-bold mb-3" style="color:var(--uv-green)">01</div>
+                <div class="font-display text-lg font-bold text-white mb-1">Orbit</div>
+                <div class="uv-kicker">Connect.</div>
+            </div>
+            <div class="glass-card rounded-3xl p-7 text-center">
+                <div class="uv-mono text-3xl font-bold mb-3" style="color:var(--uv-green)">02</div>
+                <div class="font-display text-lg font-bold text-white mb-1">Study Hub</div>
+                <div class="uv-kicker">Learn.</div>
+            </div>
+            <div class="glass-card rounded-3xl p-7 text-center">
+                <div class="uv-mono text-3xl font-bold mb-3" style="color:var(--uv-green)">03</div>
+                <div class="font-display text-lg font-bold text-white mb-1">Campus Chat</div>
+                <div class="uv-kicker">Communicate.</div>
+            </div>
+            <div class="glass-card rounded-3xl p-7 text-center">
+                <div class="uv-mono text-3xl font-bold mb-3" style="color:var(--uv-green)">04</div>
+                <div class="font-display text-lg font-bold text-white mb-1">Study Tribes</div>
+                <div class="uv-kicker">Collaborate.</div>
+            </div>
+            <div class="glass-card rounded-3xl p-7 text-center">
+                <div class="uv-mono text-3xl font-bold mb-3" style="color:var(--uv-green)">05</div>
+                <div class="font-display text-lg font-bold text-white mb-1">Campus Whisper</div>
+                <div class="uv-kicker">Express.</div>
+            </div>
+            <div class="glass-card rounded-3xl p-7 text-center">
+                <div class="uv-mono text-3xl font-bold mb-3" style="color:var(--uv-green)">06</div>
+                <div class="font-display text-lg font-bold text-white mb-1">AI Tutor</div>
+                <div class="uv-kicker">Ask.</div>
+            </div>
+        </div>
+        <div class="max-w-2xl mx-auto text-center mt-14 uv-reveal">
+            <p class="font-display text-lg font-bold text-white mb-2">That's the MVP.</p>
+            <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">We're deliberately starting focused. V1.0 establishes the core experience before the broader ICOS ecosystem expands.</p>
+        </div>
+    </section>
+
+    <!-- ============ THE LARGER VISION COMES NEXT ============ -->
+    <section class="uv-relative px-6 py-24 border-t border-white/5">
+        <div class="max-w-3xl mx-auto text-center uv-reveal mb-14">
+            <div class="uv-eyebrow mb-3">04 · Roadmap</div>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">The larger vision comes next.</h2>
+            <p class="mt-4 text-base leading-relaxed" style="color:var(--uv-text-dim)">V1.0 is intentionally focused. UniVerse ICOS is designed to grow into a broader campus operating system over time.</p>
+        </div>
+        <div class="max-w-md mx-auto flex flex-col items-center uv-reveal">
+            <div class="glass-card rounded-2xl px-6 py-4 w-full text-center">
+                <div class="uv-kicker mb-1" style="color:var(--uv-green)">Now</div>
+                <div class="font-display font-bold text-white">V1.0</div>
+            </div>
+            <div class="uv-flow-line h-8"></div>
+            <div class="glass-card rounded-2xl px-6 py-4 w-full text-center">
+                <div class="uv-kicker mb-1">Expanding</div>
+                <div class="font-display font-bold text-white">Campus Ecosystem</div>
+            </div>
+            <div class="uv-flow-line h-8"></div>
+            <div class="rounded-2xl px-6 py-4 w-full text-center border border-dashed border-white/15">
+                <div class="uv-kicker mb-1">Future Ecosystem</div>
+                <div class="font-display font-bold" style="color:var(--uv-text-dim)">Future ICOS Layers</div>
+                <div class="uv-kicker mt-1" style="color:var(--uv-text-dim)">Coming as the platform evolves</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ HOW UNIVERSE WORKS ============ -->
+    <section id="how-it-works" class="uv-relative px-6 py-24 border-t border-white/5">
+        <div class="max-w-3xl mx-auto text-center uv-reveal mb-16">
+            <div class="uv-eyebrow mb-3">05 · How It Works</div>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">How UniVerse works.</h2>
+        </div>
+        <div class="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-5 uv-reveal">
+            <div class="uv-card rounded-3xl p-7">
+                <div class="uv-mono text-2xl font-bold mb-4" style="color:var(--uv-green)">01</div>
+                <h3 class="font-display text-base font-bold text-white mb-2">Choose your campus</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Select your university to join its dedicated campus ecosystem.</p>
+            </div>
+            <div class="uv-card rounded-3xl p-7">
+                <div class="uv-mono text-2xl font-bold mb-4" style="color:var(--uv-green)">02</div>
+                <h3 class="font-display text-base font-bold text-white mb-2">Create your UniVerse identity</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Verify your university email and set up your profile.</p>
+            </div>
+            <div class="uv-card rounded-3xl p-7">
+                <div class="uv-mono text-2xl font-bold mb-4" style="color:var(--uv-green)">03</div>
+                <h3 class="font-display text-base font-bold text-white mb-2">Enter your campus ecosystem</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Step into the UniVerse built around your university.</p>
+            </div>
+            <div class="uv-card rounded-3xl p-7">
+                <div class="uv-mono text-2xl font-bold mb-4" style="color:var(--uv-green)">04</div>
+                <h3 class="font-display text-base font-bold text-white mb-2">Connect. Learn. Communicate. Collaborate. Express. Ask.</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Use Orbit, Study Hub, Campus Chat, Study Tribes, Campus Whisper and AI Tutor.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COMMUNITY TRUST ============ -->
+    <section id="community" class="uv-relative px-6 py-24 border-t border-white/5">
+        <div class="max-w-5xl mx-auto uv-reveal">
+            <div class="glass-card rounded-[2rem] p-9 sm:p-12 grid lg:grid-cols-2 gap-10 items-center">
+                <div>
+                    <div class="uv-eyebrow mb-3">06 · Community</div>
+                    <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mb-4">Built for a better campus community.</h2>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">UniVerse is designed to provide students with a connected environment where people can communicate, collaborate and participate responsibly.</p>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <button onclick="openDoc('privacy')" class="uv-card rounded-2xl p-6 text-left w-full">
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center mb-4" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-shield-halved text-sm"></i></div>
+                        <div class="font-display text-sm font-bold text-white mb-1">Privacy Policy</div>
+                        <div class="text-xs" style="color:var(--uv-text-dim)">How we handle your data.</div>
+                    </button>
+                    <button onclick="openDoc('community')" class="uv-card rounded-2xl p-6 text-left w-full">
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center mb-4" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-people-group text-sm"></i></div>
+                        <div class="font-display text-sm font-bold text-white mb-1">Community Standards</div>
+                        <div class="text-xs" style="color:var(--uv-text-dim)">The rules of the campus.</div>
+                    </button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -297,14 +570,45 @@
     </section>
 
     <!-- ============ FOOTER ============ -->
-    <footer class="uv-relative px-6 py-12 border-t border-white/5">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-            <div>
-                <div class="font-display text-lg font-bold text-white">UniVerse ICOS</div>
-                <p class="text-sm mt-1" style="color:var(--uv-text-dim)">Connecting campus life into one ecosystem.</p>
+    <footer class="uv-relative px-6 py-14 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 pb-10">
+                <div>
+                    <div class="font-display text-lg font-bold text-white">UniVerse ICOS</div>
+                    <div class="uv-kicker mt-1" style="color:var(--uv-green)">V1.0 / MVP</div>
+                    <p class="text-sm mt-3 max-w-xs" style="color:var(--uv-text-dim)">The first layer of the campus operating system.</p>
+                </div>
+                <div class="flex flex-wrap gap-x-8 gap-y-3 text-sm">
+                    <a href="#overview" class="uv-nav-link">Overview</a>
+                    <a href="#ecosystem" class="uv-nav-link">Ecosystem</a>
+                    <a href="#v1" class="uv-nav-link">V1.0 MVP</a>
+                    <button onclick="openDoc('privacy')" class="uv-nav-link">Privacy Policy</button>
+                    <button onclick="openDoc('community')" class="uv-nav-link">Community Standards</button>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+                <div class="uv-kicker">UniVerse ICOS v1.0 · MVP</div>
+                <div class="uv-kicker">&copy; 2026 UniVerse</div>
             </div>
         </div>
     </footer>
+
+    <!-- ============ LEGAL / COMMUNITY DOCUMENT MODAL ============ -->
+    <div id="docModal" class="hidden fixed inset-0 z-[90] flex items-end sm:items-center justify-center p-0 sm:p-4 uv-auth-backdrop" onclick="if(event.target===this) closeDoc()" role="dialog" aria-modal="true" aria-labelledby="docModalTitle">
+        <div class="uv-doc-modal-panel bg-[#0a0e18] w-full sm:max-w-2xl rounded-t-[2rem] sm:rounded-[2rem] border border-white/10 max-h-[88vh] flex flex-col overflow-hidden">
+            <div class="p-6 sm:p-8 border-b border-white/5 flex items-start justify-between gap-4 flex-shrink-0">
+                <div>
+                    <div class="uv-kicker mb-2" style="color:var(--uv-green)">UniVerse ICOS</div>
+                    <h2 id="docModalTitle" class="font-display text-2xl font-bold text-white"></h2>
+                    <p id="docModalSubtitle" class="text-xs mt-1" style="color:var(--uv-text-dim)"></p>
+                </div>
+                <button onclick="closeDoc()" title="Close" class="w-9 h-9 rounded-full uv-btn-ghost flex items-center justify-center text-white/70 hover:text-white flex-shrink-0">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+            <div id="docModalBody" class="uv-doc-body overflow-y-auto custom-scrollbar p-6 sm:p-8"></div>
+        </div>
+    </div>
 
     <!-- ============ AUTH MODAL (wraps existing login/signup functionality) ============ -->
     <div id="authModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 uv-auth-backdrop" onclick="if(event.target===this) closeAuthModal()">
@@ -342,6 +646,17 @@
             <input type="hidden" id="signupUniversity">
 
             <input type="password" id="signupPassword" placeholder="Create Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+
+            <div class="flex items-start gap-3 pt-1">
+                <div id="signupAgreeCheck" class="uv-check mt-0.5" role="checkbox" aria-checked="false" tabindex="0" aria-label="I agree to the UniVerse Privacy Policy and Community Standards" onclick="toggleAgree()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAgree();}">
+                    <i class="fas fa-check"></i>
+                </div>
+                <label for="signupAgreeCheck" class="text-xs leading-relaxed cursor-pointer" style="color:var(--uv-text-dim)" onclick="toggleAgree()">
+                    I agree to the UniVerse <button type="button" onclick="event.stopPropagation(); openDoc('privacy')" class="underline hover:text-white" style="color:var(--uv-green)">Privacy Policy</button> and <button type="button" onclick="event.stopPropagation(); openDoc('community')" class="underline hover:text-white" style="color:var(--uv-green)">Community Standards</button>.
+                </label>
+            </div>
+            <p id="signupAgreeError" class="hidden text-xs font-medium px-4 py-2.5 rounded-xl" style="color:#ff9d9d; background:rgba(255,80,80,0.08); border:1px solid rgba(255,80,80,0.2)">Please review and accept the Privacy Policy and Community Standards to continue.</p>
+
             <button type="button" onclick="handleSignup()" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Join UniVerse</button>
         </form>
     </div>
@@ -561,8 +876,8 @@
                     authTitle.textContent = "Welcome back.";
                     authSubtitle.textContent = "Continue your journey through UniVerse.";
                 } else {
-                    authTitle.textContent = "Join the Universe.";
-                    authSubtitle.textContent = "Create your place in your campus ecosystem.";
+                    authTitle.textContent = "Create your UniVerse identity.";
+                    authSubtitle.textContent = "Join UniVerse ICOS v1.0 — the first campus layer.";
                 }
             }
         }
@@ -578,6 +893,11 @@
         function closeAuthModal() {
             document.getElementById('authModal').classList.add('hidden');
             document.body.style.overflow = '';
+            signupAgreed = false;
+            const box = document.getElementById('signupAgreeCheck');
+            if (box) { box.classList.remove('checked'); box.setAttribute('aria-checked', 'false'); }
+            const err = document.getElementById('signupAgreeError');
+            if (err) err.classList.add('hidden');
         }
 
         function toggleMobileNav() {
@@ -596,6 +916,8 @@
             if (e.key === 'Escape') {
                 const authModal = document.getElementById('authModal');
                 if (authModal && !authModal.classList.contains('hidden')) closeAuthModal();
+                const docModal = document.getElementById('docModal');
+                if (docModal && !docModal.classList.contains('hidden')) closeDoc();
             }
         });
 
@@ -611,6 +933,167 @@
             document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.uv-reveal').forEach(el => revealObserver.observe(el));
             });
+        }
+
+        // ============ ACTIVE NAV SECTION HIGHLIGHT ============
+        if ('IntersectionObserver' in window) {
+            const navSectionIds = ['overview', 'ecosystem', 'v1', 'how-it-works', 'community'];
+            const navLinkEls = {};
+            document.querySelectorAll('#navLinks a[data-section]').forEach(a => { navLinkEls[a.dataset.section] = a; });
+            const navObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const id = entry.target.id;
+                    const link = navLinkEls[id];
+                    if (!link) return;
+                    if (entry.isIntersecting) {
+                        Object.values(navLinkEls).forEach(l => l.classList.remove('uv-active'));
+                        link.classList.add('uv-active');
+                    }
+                });
+            }, { threshold: 0, rootMargin: '-45% 0px -50% 0px' });
+            document.addEventListener('DOMContentLoaded', () => {
+                navSectionIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) navObserver.observe(el);
+                });
+            });
+        }
+
+        // ============ MANDATORY SIGNUP AGREEMENT ============
+        let signupAgreed = false;
+        function toggleAgree() {
+            signupAgreed = !signupAgreed;
+            const box = document.getElementById('signupAgreeCheck');
+            box.classList.toggle('checked', signupAgreed);
+            box.setAttribute('aria-checked', String(signupAgreed));
+            if (signupAgreed) {
+                document.getElementById('signupAgreeError').classList.add('hidden');
+            }
+        }
+
+        // ============ LEGAL / COMMUNITY DOCUMENT MODAL ============
+        const uvDocs = {
+            privacy: {
+                title: 'Privacy Policy',
+                subtitle: 'How UniVerse collects, uses and protects your information.',
+                html: `
+                    <h3>Introduction</h3>
+                    <p>This Privacy Policy explains how <strong>UniVerse</strong> ("UniVerse," "we," "us" or "our") collects, uses and protects information in connection with UniVerse ICOS v1.0. This document is product policy and is not intended as legal advice.</p>
+
+                    <h3>Information we collect</h3>
+                    <p>To operate UniVerse, we collect information including:</p>
+                    <ul>
+                        <li>Account information, such as your name and university</li>
+                        <li>Your email address, used for authentication and communication</li>
+                        <li>Authentication information necessary to secure your account</li>
+                        <li>Content you voluntarily submit while using UniVerse, such as messages, posts or community content</li>
+                        <li>Basic technical information necessary to operate the service, such as device and usage data</li>
+                    </ul>
+
+                    <h3>How we use your information</h3>
+                    <p>We use the information we collect to:</p>
+                    <ul>
+                        <li>Create and manage your account</li>
+                        <li>Authenticate you and keep your account secure</li>
+                        <li>Operate UniVerse and provide its campus features</li>
+                        <li>Improve and maintain the platform</li>
+                        <li>Prevent fraud, abuse and security incidents</li>
+                        <li>Send communications related to the service, such as verification codes</li>
+                    </ul>
+
+                    <h3>User-generated content</h3>
+                    <p>Depending on the features available in your version of UniVerse, you may create content such as messages, posts, study or community content, or other information. This content is associated with your account and may be visible to other users within your campus ecosystem, depending on the feature.</p>
+                    <p>Some features, such as Campus Whisper, let you post without your name being shown to other users. Posts made through these features are not fully anonymous to UniVerse itself — we may retain information that allows us to connect a post to an account internally, which we may use for safety, security and enforcement of our Community Standards.</p>
+
+                    <h3>AI Tutor</h3>
+                    <p>AI Tutor lets you ask questions and receive AI-generated academic assistance. Conversations you have with AI Tutor may be processed, including by third-party AI service providers, in order to generate responses and to improve the feature's reliability and safety.</p>
+
+                    <h3>Information sharing</h3>
+                    <p>UniVerse does not sell your personal information. Information may be processed by service providers that help us operate the platform, such as infrastructure, authentication and communications providers, under obligations to protect your data.</p>
+
+                    <h3>Security</h3>
+                    <p>We use reasonable technical and organizational safeguards designed to protect your information. No method of transmission or storage is completely secure, and we cannot guarantee absolute security.</p>
+
+                    <h3>Data retention</h3>
+                    <p>We retain information for as long as reasonably necessary to provide UniVerse, comply with legal obligations, resolve disputes and maintain the security and integrity of the platform.</p>
+
+                    <h3>Your rights</h3>
+                    <p>Depending on your location and applicable law, you may have rights regarding your personal information, such as requesting access to, correction of, or deletion of certain data. Where such rights apply, we will work to honor requests in accordance with applicable law and our operational capabilities.</p>
+
+                    <h3>Children's privacy</h3>
+                    <p>UniVerse is intended for university students and is not designed specifically for children. We do not knowingly direct UniVerse toward children.</p>
+
+                    <h3>Changes to this policy</h3>
+                    <p>This policy may change as UniVerse evolves, including as new features are introduced. We will update this page to reflect material changes.</p>
+
+                    <h3>Contact</h3>
+                    <p>Questions about this Privacy Policy can be directed to <strong>[support email to be added]</strong>.</p>
+                `
+            },
+            community: {
+                title: 'Community Standards',
+                subtitle: 'Build the campus you want to belong to.',
+                html: `
+                    <h3>Build the campus you want to belong to.</h3>
+                    <p>UniVerse exists to connect campus life. These standards apply to everyone using UniVerse and are designed to keep the community respectful, safe and trustworthy.</p>
+
+                    <h3>Respect</h3>
+                    <p>Treat other members of your campus community with respect. Harassment, intimidation or targeted abuse of any kind is not allowed.</p>
+
+                    <h3>Hate and discrimination</h3>
+                    <p>Content that targets people based on protected characteristics — including race, ethnicity, religion, gender, sexual orientation, disability or nationality — is not allowed.</p>
+
+                    <h3>Threats and violence</h3>
+                    <p>Threats of violence, or content that encourages violence against any person or group, are strictly prohibited.</p>
+
+                    <h3>Sexual exploitation and inappropriate content</h3>
+                    <p>UniVerse prohibits sexual exploitation and content that is sexually inappropriate for the platform, with zero tolerance for anything involving minors.</p>
+
+                    <h3>Privacy</h3>
+                    <p>Do not publish another person's private information — such as contact details, location or personal records — without their permission.</p>
+
+                    <h3>Anonymous posting</h3>
+                    <p>Some parts of UniVerse, such as Campus Whisper, allow anonymous posts. Anonymity does not remove your responsibility to follow these standards. All other rules in this document — including those on harassment, hate speech, threats, privacy and illegal activity — apply fully to anonymous content.</p>
+
+                    <h3>Impersonation and deception</h3>
+                    <p>Do not impersonate another student, staff member or organization in a way intended to deceive others.</p>
+
+                    <h3>Spam and manipulation</h3>
+                    <p>Spam, scams, malicious links and coordinated manipulation of the platform are not allowed.</p>
+
+                    <h3>Academic integrity</h3>
+                    <p>Do not use UniVerse to facilitate cheating, impersonation in academic contexts, or other academic misconduct. This includes using AI Tutor to complete graded work in ways that violate your institution's academic integrity policies — AI Tutor is intended to help you understand material, not to substitute for your own work where that would breach your school's rules.</p>
+
+                    <h3>Illegal activity</h3>
+                    <p>UniVerse may not be used to facilitate unlawful activity.</p>
+
+                    <h3>Platform abuse</h3>
+                    <p>Attempts to exploit, disrupt or compromise UniVerse or its infrastructure are prohibited.</p>
+
+                    <h3>Reporting</h3>
+                    <p>If you encounter content or behavior that violates these standards, please report it so it can be reviewed.</p>
+
+                    <h3>Enforcement</h3>
+                    <p>UniVerse may review reports and take appropriate action, which can include content removal, feature restrictions or account suspension, depending on the severity and context of the violation.</p>
+                `
+            }
+        };
+
+        function openDoc(key) {
+            const doc = uvDocs[key];
+            if (!doc) return;
+            document.getElementById('docModalTitle').textContent = doc.title;
+            document.getElementById('docModalSubtitle').textContent = doc.subtitle;
+            document.getElementById('docModalBody').innerHTML = doc.html;
+            document.getElementById('docModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDoc() {
+            document.getElementById('docModal').classList.add('hidden');
+            if (document.getElementById('authModal').classList.contains('hidden')) {
+                document.body.style.overflow = '';
+            }
         }
 
         function toggleUniModal() {
@@ -670,6 +1153,15 @@
 
     if(!email || !password || !school || !name) {
         alert("All fields are required to join the Verse.");
+        return;
+    }
+
+    // Mandatory Privacy Policy / Community Standards agreement
+    if (!signupAgreed) {
+        const err = document.getElementById('signupAgreeError');
+        if (err) err.classList.remove('hidden');
+        const box = document.getElementById('signupAgreeCheck');
+        if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
     }
 

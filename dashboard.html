@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1554,207 +1554,383 @@ let isLodgeLoading = false;
 
         
 // ============================================================
-// CAMPUS CHAT MVP — frontend-only, Supabase-ready
-// ============================================================
+// CAMPUS CHAT MVP — live Supabase frontend
+// Uses the existing UniVerse Supabase client, auth session and Chat tables.
+// No mock/demo data is used here.
 const chatState = {
     conversations: [],
     students: [],
     messages: {},
     activeConversationId: null,
-    searchQuery: '',
+    currentProfile: null,
     loading: false,
-    requests: [{ id:'req-1', senderId:'student-5', message:'Hey, are you in Mass Communication?', status:'pending' }]
+    searchTimer: null
 };
+let chatRealtimeChannel = null;
 
-const chatMockStudents = [
-    { id:'student-1', username:'amara', full_name:'Amara Okafor', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Engineering', department:'Computer Engineering', level:'300L', online_status:'online', last_seen:null },
-    { id:'student-2', username:'chinedu', full_name:'Chinedu Nwosu', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Sciences', department:'Computer Science', level:'300L', online_status:'offline', last_seen:'2026-08-13T09:12:00Z' },
-    { id:'student-3', username:'mary', full_name:'Mary Eze', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Business', department:'Accounting', level:'200L', online_status:'online', last_seen:null },
-    { id:'student-4', username:'david', full_name:'David Mensah', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Engineering', department:'Electrical Engineering', level:'400L', online_status:'offline', last_seen:'2026-08-12T20:31:00Z' },
-    { id:'student-5', username:'zainab', full_name:'Zainab Bello', university_id:'uni-demo', campus_id:'campus-demo', faculty:'Arts', department:'Mass Communication', level:'300L', online_status:'online', last_seen:null }
-];
-
-chatState.students = chatMockStudents;
-chatState.conversations = [
-    { id:'conv-1', type:'direct', participantId:'student-1', created_at:'2026-08-12T09:00:00Z', unread:2, last_message:'Are you coming to the study session?', last_message_at:'2026-08-13T10:42:00Z' },
-    { id:'conv-2', type:'direct', participantId:'student-3', created_at:'2026-08-10T11:00:00Z', unread:0, last_message:'See you tomorrow.', last_message_at:'2026-08-12T18:22:00Z' },
-    { id:'conv-3', type:'direct', participantId:'student-2', created_at:'2026-08-09T08:00:00Z', unread:1, last_message:'Thanks! That helped a lot.', last_message_at:'2026-08-12T15:08:00Z' },
-    { id:'conv-4', type:'direct', participantId:'student-4', created_at:'2026-08-07T12:00:00Z', unread:0, last_message:'Let me check and get back to you.', last_message_at:'2026-08-11T21:14:00Z' }
-];
-
-chatState.messages = {
-    'conv-1': [
-        { id:'m1', conversation_id:'conv-1', sender_id:'student-1', content:'Hey! Are you attending the study session?', created_at:'2026-08-13T10:38:00Z', read:true },
-        { id:'m2', conversation_id:'conv-1', sender_id:'me', content:'Yes, I’ll be there. What time are you getting there?', created_at:'2026-08-13T10:40:00Z', read:true },
-        { id:'m3', conversation_id:'conv-1', sender_id:'student-1', content:'Around 4. I can save us a spot.', created_at:'2026-08-13T10:41:00Z', read:true },
-        { id:'m4', conversation_id:'conv-1', sender_id:'student-1', content:'Are you coming to the study session?', created_at:'2026-08-13T10:42:00Z', read:false }
-    ],
-    'conv-2': [
-        { id:'m5', conversation_id:'conv-2', sender_id:'me', content:'Thanks for sending the notes.', created_at:'2026-08-12T18:18:00Z', read:true },
-        { id:'m6', conversation_id:'conv-2', sender_id:'student-3', content:'No problem. See you tomorrow.', created_at:'2026-08-12T18:22:00Z', read:true }
-    ],
-    'conv-3': [
-        { id:'m7', conversation_id:'conv-3', sender_id:'student-2', content:'Did the explanation make sense?', created_at:'2026-08-12T15:04:00Z', read:true },
-        { id:'m8', conversation_id:'conv-3', sender_id:'student-2', content:'Thanks! That helped a lot.', created_at:'2026-08-12T15:08:00Z', read:false }
-    ],
-    'conv-4': [
-        { id:'m9', conversation_id:'conv-4', sender_id:'me', content:'Can you confirm the venue?', created_at:'2026-08-11T21:10:00Z', read:true },
-        { id:'m10', conversation_id:'conv-4', sender_id:'student-4', content:'Let me check and get back to you.', created_at:'2026-08-11T21:14:00Z', read:true }
-    ]
-};
+function chatEscape(value='') {
+    return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+function chatInitials(name='Student') {
+    return name.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase() || '?';
+}
+function chatAvatarHTML(student, large=false) {
+    const size = large ? 'chat-avatar-lg' : '';
+    return student?.avatar_url
+        ? `<span class="chat-avatar ${size}"><img src="${chatEscape(student.avatar_url)}" alt="${chatEscape(student.full_name || 'Student')}" class="w-full h-full object-cover rounded-full"></span>`
+        : `<span class="chat-avatar ${size}">${chatInitials(student?.full_name)}</span>`;
+}
+function chatDisplayUsername(student) {
+    if (!student) return 'student';
+    return (student.username || student.full_name || 'student').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,24) || 'student';
+}
+function chatTime(value) {
+    if (!value) return '';
+    const d = new Date(value), now = new Date();
+    if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+    return d.toLocaleDateString([], {month:'short', day:'numeric'});
+}
+function chatStatusText() { return 'On your campus'; }
+function chatStudent(id) { return chatState.students.find(s => s.id === id) || null; }
+function chatError(message='Something went wrong.') { console.error('Campus Chat:', message); return message; }
 
 const chat = {
-    async loadConversations() { return chatState.conversations; },
-    async loadMessages(conversationId) { return chatState.messages[conversationId] || []; },
+    async getSessionUser() {
+        const { data: { session }, error } = await _supabase.auth.getSession();
+        if (error) throw error;
+        return session?.user || null;
+    },
+
+    async loadCurrentProfile() {
+        if (!currentUserId) return null;
+        const { data, error } = await _supabase.from('profiles')
+            .select('id, full_name, avatar_url, university, department, level, bio, reputation_stars, is_verified')
+            .eq('id', currentUserId).maybeSingle();
+        if (error) throw error;
+        chatState.currentProfile = data || {
+            id: currentUserId,
+            full_name: userFullName || 'Student',
+            university: userUniversity || ''
+        };
+        return chatState.currentProfile;
+    },
+
+    async searchStudents(query='') {
+        if (!currentUserId) return [];
+        const profile = chatState.currentProfile || await this.loadCurrentProfile();
+        let request = _supabase.from('profiles')
+            .select('id, full_name, avatar_url, university, department, level, bio, reputation_stars, is_verified')
+            .neq('id', currentUserId)
+            .limit(30);
+        if (profile?.university) request = request.eq('university', profile.university);
+        if (query.trim()) {
+            const q = query.trim().replace(/[%_]/g, '');
+            request = request.or(`full_name.ilike.%${q}%,department.ilike.%${q}%,university.ilike.%${q}%`);
+        }
+        const { data, error } = await request;
+        if (error) throw error;
+        return (data || []).map(s => ({...s, username: chatDisplayUsername(s)}));
+    },
+
+    async loadConversations() {
+        if (!currentUserId) return [];
+        const { data: memberships, error: memberError } = await _supabase.from('conversation_members')
+            .select('conversation_id, user_id, joined_at, last_read_at')
+            .eq('user_id', currentUserId);
+        if (memberError) throw memberError;
+        if (!memberships?.length) return [];
+
+        const ids = memberships.map(m => m.conversation_id);
+        const { data: conversations, error: conversationError } = await _supabase.from('conversations')
+            .select('id, is_group, title, school_tag, created_by, created_at')
+            .in('id', ids);
+        if (conversationError) throw conversationError;
+
+        const { data: allMembers, error: allMemberError } = await _supabase.from('conversation_members')
+            .select('conversation_id, user_id, last_read_at')
+            .in('conversation_id', ids);
+        if (allMemberError) throw allMemberError;
+
+        const otherIds = [...new Set((allMembers || []).map(m => m.user_id).filter(id => id !== currentUserId))];
+        let profiles = [];
+        if (otherIds.length) {
+            const { data, error } = await _supabase.from('profiles')
+                .select('id, full_name, avatar_url, university, department, level, bio, reputation_stars, is_verified')
+                .in('id', otherIds);
+            if (error) throw error;
+            profiles = data || [];
+        }
+        const profileMap = Object.fromEntries(profiles.map(p => [p.id, {...p, username: chatDisplayUsername(p)}]));
+
+        const { data: messages, error: messageError } = await _supabase.from('messages')
+            .select('id, conversation_id, sender_id, content, created_at')
+            .in('conversation_id', ids)
+            .order('created_at', {ascending: false});
+        if (messageError) throw messageError;
+
+        const messageMap = {};
+        (messages || []).forEach(m => { if (!messageMap[m.conversation_id]) messageMap[m.conversation_id] = []; messageMap[m.conversation_id].push(m); });
+        chatState.messages = messageMap;
+
+        return (conversations || []).map(c => {
+            const membership = memberships.find(m => m.conversation_id === c.id);
+            const members = (allMembers || []).filter(m => m.conversation_id === c.id);
+            const otherMember = members.find(m => m.user_id !== currentUserId);
+            const participant = otherMember ? profileMap[otherMember.user_id] : null;
+            const listMessages = messageMap[c.id] || [];
+            const latest = listMessages[0];
+            const unread = latest && latest.sender_id !== currentUserId && (!membership?.last_read_at || new Date(latest.created_at) > new Date(membership.last_read_at))
+                ? listMessages.filter(m => m.sender_id !== currentUserId && (!membership?.last_read_at || new Date(m.created_at) > new Date(membership.last_read_at))).length : 0;
+            return {
+                ...c,
+                participantId: otherMember?.user_id || null,
+                participant,
+                unread,
+                last_message: latest?.content || '',
+                last_message_at: latest?.created_at || c.created_at,
+                last_read_at: membership?.last_read_at || null
+            };
+        }).sort((a,b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+    },
+
+    async loadMessages(conversationId) {
+        const { data, error } = await _supabase.from('messages')
+            .select('id, conversation_id, sender_id, content, created_at')
+            .eq('conversation_id', conversationId)
+            .order('created_at', {ascending: true});
+        if (error) throw error;
+        chatState.messages[conversationId] = data || [];
+        return data || [];
+    },
+
     async sendMessage(conversationId, content) {
-        // SUPABASE INTEGRATION POINT: insert into messages, then subscribe via Realtime.
-        const message = { id:'local-'+Date.now(), conversation_id:conversationId, sender_id:'me', content, created_at:new Date().toISOString(), read:false };
-        if (!chatState.messages[conversationId]) chatState.messages[conversationId] = [];
-        chatState.messages[conversationId].push(message);
-        return message;
-    },
-    async searchStudents(query) {
-        // SUPABASE INTEGRATION POINT: filter by current university/campus and query profiles.
-        const q = query.trim().toLowerCase();
-        if (!q) return [];
-        return chatState.students.filter(s => `${s.full_name} ${s.username} ${s.department} ${s.faculty}`.toLowerCase().includes(q));
-    },
-    async startConversation(userId) {
-        // SUPABASE INTEGRATION POINT: find/create direct conversation and conversation_member rows.
-        const existing = chatState.conversations.find(c => c.participantId === userId);
-        if (existing) return existing;
-        const conversation = { id:'conv-'+Date.now(), type:'direct', participantId:userId, created_at:new Date().toISOString(), unread:0, last_message:'', last_message_at:new Date().toISOString() };
-        chatState.conversations.unshift(conversation);
-        chatState.messages[conversation.id] = [];
-        return conversation;
-    },
-    async markAsRead(conversationId) {
-        // SUPABASE INTEGRATION POINT: update message_read rows / unread state.
-        const conversation = chatState.conversations.find(c => c.id === conversationId);
-        if (conversation) conversation.unread = 0;
-        (chatState.messages[conversationId] || []).forEach(m => { if (m.sender_id !== 'me') m.read = true; });
-    },
-    async sendMessageRequest(userId, content) {
-        // SUPABASE INTEGRATION POINT: insert into message_requests.
-        return { id:'request-'+Date.now(), sender_id:'me', recipient_id:userId, status:'pending', content, created_at:new Date().toISOString() };
-    },
-    async blockUser(userId) {
-        // SUPABASE INTEGRATION POINT: insert blocker_id / blocked_id.
-        return { blocker_id:'me', blocked_id:userId };
-    },
-    async reportUser(data) {
-        // SUPABASE INTEGRATION POINT: insert report row.
+        const { data, error } = await _supabase.from('messages')
+            .insert({conversation_id: conversationId, sender_id: currentUserId, content})
+            .select('id, conversation_id, sender_id, content, created_at')
+            .single();
+        if (error) throw error;
         return data;
     },
-    onNewMessage(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; },
-    onMessageUpdated(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; },
-    onMessageDeleted(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; },
-    onConversationUpdated(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; },
-    onUserPresenceChanged(callback) { /* SUPABASE REALTIME INTEGRATION POINT */ return () => {}; }
-};
 
-function chatStudent(id) { return chatState.students.find(s => s.id === id) || { id, username:'student', full_name:'Campus Student', faculty:'', department:'', level:'', online_status:'offline' }; }
-function chatInitials(name) { return name.split(' ').map(x => x[0]).slice(0,2).join('').toUpperCase(); }
-function chatTime(value) { return new Date(value).toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }); }
-function chatDate(value) { const d=new Date(value), now=new Date(); const same=d.toDateString()===now.toDateString(); return same?'TODAY':d.toLocaleDateString([], { month:'short', day:'numeric' }).toUpperCase(); }
-function chatStatus(student) { return student.online_status === 'online' ? '● Active now' : `Last seen ${chatTime(student.last_seen || new Date().toISOString())}`; }
-function chatAvatarHTML(student, large=false) { return `<span class="chat-avatar ${large?'chat-avatar-lg':''}">${student.avatar_url ? `<img src="${student.avatar_url}" alt="">` : chatInitials(student.full_name)}${student.online_status==='online'?'<span class="chat-online-dot"></span>':''}</span>`; }
-function chatEscape(value) { const div=document.createElement('div'); div.textContent=value ?? ''; return div.innerHTML; }
+    async startConversation(userId) {
+        if (!currentUserId || userId === currentUserId) throw new Error('Invalid conversation participant.');
+        const existing = chatState.conversations.find(c => c.participantId === userId && !c.is_group);
+        if (existing) return existing;
+
+        // Generate the UUID client-side so creation does not depend on a SELECT
+        // policy before the creator has been added to conversation_members.
+        const conversationId = crypto.randomUUID();
+        const createdAt = new Date().toISOString();
+
+        const { error: conversationError } = await _supabase.from('conversations')
+            .insert({
+                id: conversationId,
+                is_group:false,
+                title:null,
+                school_tag:userUniversity || null,
+                created_by:currentUserId,
+                created_at:createdAt
+            });
+        if (conversationError) throw conversationError;
+
+        const { error: memberError } = await _supabase.from('conversation_members').insert([
+            {conversation_id:conversationId, user_id:currentUserId, joined_at:createdAt},
+            {conversation_id:conversationId, user_id:userId, joined_at:createdAt}
+        ]);
+        if (memberError) {
+            // Avoid leaving an orphaned conversation if membership creation fails.
+            try { await _supabase.from('conversations').delete().eq('id', conversationId).eq('created_by', currentUserId); } catch (_) {}
+            throw memberError;
+        }
+
+        await chat.refreshConversations();
+        return chatState.conversations.find(c => c.id === conversationId) || {
+            id:conversationId,
+            is_group:false,
+            title:null,
+            school_tag:userUniversity || null,
+            created_by:currentUserId,
+            created_at:createdAt,
+            participantId:userId,
+            participant:chatStudent(userId),
+            unread:0,
+            last_message:'',
+            last_message_at:createdAt
+        };
+    },
+
+    async markAsRead(conversationId) {
+        const { error } = await _supabase.from('conversation_members')
+            .update({last_read_at:new Date().toISOString()})
+            .eq('conversation_id', conversationId).eq('user_id', currentUserId);
+        if (error) throw error;
+    },
+
+    async blockUser(userId) {
+        const { error } = await _supabase.from('blocks').upsert({blocker_id:currentUserId, blocked_id:userId}, {onConflict:'blocker_id,blocked_id'});
+        if (error) throw error;
+    },
+
+    async reportUser({conversationId, messageId, reportedUserId, reason}) {
+        const contentType = messageId ? 'message' : 'conversation';
+        const contentId = messageId || conversationId;
+        const { error } = await _supabase.from('reports').insert({
+            reporter_id:currentUserId,
+            content_type:contentType,
+            content_id:contentId,
+            reason,
+            status:'pending'
+        });
+        if (error) throw error;
+    },
+
+    async refreshConversations() {
+        chatState.conversations = await this.loadConversations();
+        renderChatConversations();
+        return chatState.conversations;
+    },
+
+    subscribeRealtime() {
+        if (chatRealtimeChannel) _supabase.removeChannel(chatRealtimeChannel);
+        chatRealtimeChannel = _supabase.channel(`campus-chat-${currentUserId}`)
+            .on('postgres_changes', {event:'*', schema:'public', table:'messages'}, async payload => {
+                const conversationId = payload.new?.conversation_id || payload.old?.conversation_id;
+                if (!conversationId) return;
+                if (chatState.activeConversationId === conversationId) await chat.loadMessages(conversationId);
+                await chat.refreshConversations();
+                if (chatState.activeConversationId === conversationId) renderChatMessages(chatState.messages[conversationId] || []);
+            })
+            .on('postgres_changes', {event:'*', schema:'public', table:'conversation_members'}, async payload => {
+                const conversationId = payload.new?.conversation_id || payload.old?.conversation_id;
+                if (!conversationId) return;
+                await chat.refreshConversations();
+                if (!chatState.conversations.some(c => c.id === chatState.activeConversationId)) closeChatConversation();
+            })
+            .subscribe();
+    }
+};
 
 function renderChatConversations() {
     const list=document.getElementById('chatConversationList');
     const count=document.getElementById('chatConversationCount');
-    if (!list) return;
+    if (!list || !count) return;
     count.textContent=`${chatState.conversations.length} conversation${chatState.conversations.length===1?'':'s'}`;
     if (!chatState.conversations.length) {
-        list.innerHTML=`<div class="py-10 text-center"><div class="text-slate-600 text-2xl mb-3"><i class="far fa-comments"></i></div><p class="text-xs font-bold text-slate-400">No conversations yet.</p><p class="text-[10px] text-slate-600 mt-1">Start one with a campus student.</p></div>`;
+        list.innerHTML=`<div class="py-10 px-3 text-center"><div class="text-slate-600 text-2xl mb-3"><i class="far fa-comments"></i></div><p class="text-xs font-bold text-slate-400">Your campus, one conversation away.</p><p class="text-[10px] text-slate-600 mt-1">Start a conversation with a student from your campus.</p></div>`;
         return;
     }
-    const requestMarkup=chatState.requests.filter(r=>r.status==='pending').map(r=>{ const s=chatStudent(r.senderId); return `<div class="mb-2 rounded-2xl border border-green-500/15 bg-green-500/5 p-3"><div class="flex items-center gap-2">${chatAvatarHTML(s)}<div class="min-w-0"><p class="text-[10px] uppercase tracking-widest font-black text-green-500">Message Request</p><p class="text-xs font-bold text-white truncate mt-0.5">${chatEscape(s.full_name)}</p></div></div><p class="text-[10px] text-slate-400 mt-2">${chatEscape(r.message)}</p><div class="flex gap-2 mt-3"><button type="button" class="chat-action-btn flex-1 !min-h-[34px]" data-request-decline="${r.id}">Decline</button><button type="button" class="chat-primary-btn flex-1 !min-h-[34px]" data-request-accept="${r.id}">Accept</button></div></div>`; }).join('');
-    list.innerHTML=requestMarkup+chatState.conversations.map(c=>{
-        const s=chatStudent(c.participantId); const active=c.id===chatState.activeConversationId;
+    list.innerHTML=chatState.conversations.map(c=>{
+        const s=c.participant || {full_name:c.is_group ? (c.title||'Campus Group') : 'Student'};
+        const active=c.id===chatState.activeConversationId;
         return `<button type="button" class="chat-conversation-item ${active?'active ':''}${c.unread?'unread':''}" data-conversation-id="${c.id}">
-            ${chatAvatarHTML(s)}<span class="min-w-0 flex-1"><span class="flex items-center justify-between gap-2"><span class="chat-preview-name text-xs font-bold text-slate-200 truncate">${chatEscape(s.full_name)}</span><span class="text-[8px] text-slate-600 flex-shrink-0">${c.last_message_at?chatTime(c.last_message_at):''}</span></span><span class="flex items-center justify-between gap-2 mt-1"><span class="chat-preview text-[10px] text-slate-500 truncate">${chatEscape(c.last_message||'Start a conversation')}</span>${c.unread?`<span class="chat-unread">${c.unread}</span>`:''}</span></span>
+            ${chatAvatarHTML(s)}<span class="min-w-0 flex-1"><span class="flex items-center justify-between gap-2"><span class="chat-preview-name text-xs font-bold text-slate-200 truncate">${chatEscape(s.full_name||c.title||'Conversation')}</span><span class="text-[8px] text-slate-600 flex-shrink-0">${chatTime(c.last_message_at)}</span></span><span class="flex items-center justify-between gap-2 mt-1"><span class="chat-preview text-[10px] text-slate-500 truncate">${chatEscape(c.last_message||'No messages yet')}</span>${c.unread?`<span class="chat-unread">${c.unread}</span>`:''}</span></span>
         </button>`;
     }).join('');
     list.querySelectorAll('[data-conversation-id]').forEach(btn=>btn.addEventListener('click',()=>openChatConversation(btn.dataset.conversationId)));
-    list.querySelectorAll('[data-request-accept]').forEach(btn=>btn.addEventListener('click',async()=>{const r=chatState.requests.find(x=>x.id===btn.dataset.requestAccept);if(!r)return;r.status='accepted';const c=await chat.startConversation(r.senderId);renderChatConversations();await openChatConversation(c.id);}));
-    list.querySelectorAll('[data-request-decline]').forEach(btn=>btn.addEventListener('click',()=>{const r=chatState.requests.find(x=>x.id===btn.dataset.requestDecline);if(r)r.status='declined';renderChatConversations();}));
 }
 
 async function openChatConversation(conversationId) {
     const conversation=chatState.conversations.find(c=>c.id===conversationId); if(!conversation) return;
     chatState.activeConversationId=conversationId;
-    await chat.markAsRead(conversationId);
-    renderChatConversations();
-    const s=chatStudent(conversation.participantId);
+    const s=conversation.participant || {full_name:conversation.title||'Conversation'};
     document.getElementById('chatEmptyConversation').classList.add('hidden');
     document.getElementById('chatActiveConversation').classList.remove('hidden');
     document.getElementById('chatConversationView').classList.add('chat-mobile-open');
-    document.getElementById('chatHeaderAvatar').outerHTML=chatAvatarHTML(s,true).replace('chat-avatar-lg','chat-avatar-lg" id="chatHeaderAvatar');
-    document.getElementById('chatHeaderName').textContent=s.full_name;
-    document.getElementById('chatHeaderStatus').textContent=chatStatus(s);
-    document.getElementById('chatMoreMenu').classList.add('hidden');
-    renderChatMessages(await chat.loadMessages(conversationId));
+    document.getElementById('chatHeaderAvatar').innerHTML=chatAvatarHTML(s).replace(/<span class="chat-avatar ">|<\/span>$/g,'');
+    // Keep the existing header avatar element styling while rendering a reliable fallback.
+    const avatarHost=document.getElementById('chatHeaderAvatar');
+    avatarHost.innerHTML=s.avatar_url ? `<img src="${chatEscape(s.avatar_url)}" alt="" class="w-full h-full object-cover rounded-full">` : chatInitials(s.full_name);
+    document.getElementById('chatHeaderName').textContent=s.full_name||'Student';
+    document.getElementById('chatHeaderStatus').textContent=chatStatusText();
+    try {
+        await chat.markAsRead(conversationId);
+        const messages=await chat.loadMessages(conversationId);
+        conversation.unread=0;
+        renderChatConversations();
+        renderChatMessages(messages);
+    } catch(error) {
+        renderChatMessagesError();
+        chatError(error);
+    }
 }
 
 function renderChatMessages(messages) {
-    const box=document.getElementById('chatMessageList');
-    if (!messages.length) { box.innerHTML=`<div class="h-full flex items-center justify-center"><div class="text-center"><div class="text-2xl text-slate-700 mb-2"><i class="far fa-comment"></i></div><p class="text-xs text-slate-500">Start the conversation.</p></div></div>`; return; }
-    let lastDate='';
+    const box=document.getElementById('chatMessageList'); if(!box)return;
+    if(!messages.length){box.innerHTML=`<div class="h-full flex items-center justify-center"><div class="text-center"><div class="text-2xl text-slate-700 mb-2"><i class="far fa-comment"></i></div><p class="text-xs text-slate-500">Start the conversation.</p></div></div>`;return;}
+    let lastDay='';
     box.innerHTML=messages.map(m=>{
-        const date=chatDate(m.created_at); let sep=''; if(date!==lastDate){lastDate=date;sep=`<div class="chat-date-separator">${date}</div>`;}
-        const sent=m.sender_id==='me';
-        return `${sep}<div class="chat-bubble-row ${sent?'sent':''}"><div class="chat-bubble ${sent?'sent':'received'}"><div>${chatEscape(m.content)}</div><div class="chat-meta"><span>${chatTime(m.created_at)}</span>${sent?`<span>${m.read?'✓✓':'✓'}</span>`:''}</div></div></div>`;
+        const day=new Date(m.created_at).toLocaleDateString([], {weekday:'short',month:'short',day:'numeric'});
+        const separator=day!==lastDay ? `<div class="chat-date-separator"><span>${chatEscape(day)}</span></div>` : '';
+        lastDay=day;
+        const mine=m.sender_id===currentUserId;
+        return `${separator}<div class="flex ${mine?'justify-end':'justify-start'}"><div class="chat-bubble ${mine?'chat-bubble-sent':'chat-bubble-received'}"><div>${chatEscape(m.content)}</div><div class="chat-message-meta">${chatTime(m.created_at)}${mine?' · ✓✓':''}</div></div></div>`;
     }).join('');
-    requestAnimationFrame(()=>{ box.scrollTop=box.scrollHeight; });
+    box.scrollTop=box.scrollHeight;
 }
+function renderChatMessagesError(){document.getElementById('chatMessageList').innerHTML=`<div class="h-full flex items-center justify-center"><div class="text-center"><div class="text-red-400 text-xl mb-2"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Something went wrong.</p><p class="text-[10px] text-slate-600 mt-1">Your messages couldn't be loaded.</p><button type="button" class="chat-action-btn mt-3" onclick="openChatConversation('${chatState.activeConversationId||''}')">Try Again</button></div></div>`;}
 
-function renderChatSkeleton(target) {
-    target.innerHTML=Array.from({length:4},()=>`<div class="flex items-center gap-3 p-3"><div class="chat-avatar chat-skeleton"></div><div class="flex-1 space-y-2"><div class="h-3 rounded chat-skeleton w-2/3"></div><div class="h-2 rounded chat-skeleton w-full"></div></div></div>`).join('');
-}
-
-async function renderChatSearchResults(query) {
-    const box=document.getElementById('chatSearchResults'); if(!box) return;
-    if(!query.trim()){box.innerHTML=`<p class="text-[10px] text-slate-600 px-1">Search by name, username, faculty or department.</p>`;return;}
-    renderChatSkeleton(box);
-    let results=[];
-    try { results=await chat.searchStudents(query); }
-    catch(error) { console.error('Campus Chat search error',error); box.innerHTML=`<div class="py-6 text-center"><div class="text-red-400 text-xl mb-2"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Something went wrong.</p><p class="text-[10px] text-slate-600 mt-1">Your student search couldn't be completed.</p><button type="button" class="chat-action-btn mt-3" onclick="renderChatSearchResults(document.getElementById('chatStudentSearch').value)">Try Again</button></div>`; return; }
-    if(!results.length){box.innerHTML=`<div class="py-6 text-center"><p class="text-xs font-bold text-slate-400">No students found.</p><p class="text-[10px] text-slate-600 mt-1">Try searching by another name or username.</p></div>`;return;}
-    box.innerHTML=results.map(s=>`<div class="chat-result"><button type="button" class="flex items-center gap-3 min-w-0 flex-1 text-left" data-student-id="${s.id}">${chatAvatarHTML(s)}<span class="min-w-0"><span class="block text-xs font-bold text-white truncate">${chatEscape(s.full_name)}</span><span class="block text-[9px] text-slate-500 truncate">@${chatEscape(s.username)} · ${chatEscape(s.department)} · ${chatEscape(s.level)}</span><span class="block text-[9px] ${s.online_status==='online'?'text-green-500':'text-slate-600'} mt-0.5">${s.online_status==='online'?'● Active': '○ Offline'}</span></span></button><button type="button" class="chat-action-btn !min-h-[34px] !px-3 !rounded-lg" data-message-student="${s.id}">Message</button></div>`).join('');
-    box.querySelectorAll('[data-student-id]').forEach(b=>b.addEventListener('click',()=>startChatWithStudent(b.dataset.studentId)));
-    box.querySelectorAll('[data-message-student]').forEach(b=>b.addEventListener('click',()=>startChatWithStudent(b.dataset.messageStudent)));
+function renderChatSearchResults(query='') {
+    const box=document.getElementById('chatSearchResults'); if(!box)return;
+    if(!query.trim()){box.innerHTML=`<div class="py-5 text-center text-[10px] text-slate-600">Search by a student's name or department.</div>`;return;}
+    box.innerHTML=`<div class="space-y-2"><div class="chat-skeleton"></div><div class="chat-skeleton"></div></div>`;
+    clearTimeout(chatState.searchTimer);
+    chatState.searchTimer=setTimeout(async()=>{
+        try {
+            const students=await chat.searchStudents(query);
+            chatState.students=students;
+            if(!students.length){box.innerHTML=`<div class="py-6 text-center"><div class="text-slate-600 text-xl mb-2"><i class="far fa-user"></i></div><p class="text-xs font-bold text-slate-400">No students found.</p><p class="text-[10px] text-slate-600 mt-1">Try another name or department.</p></div>`;return;}
+            box.innerHTML=students.map(s=>`<div class="chat-search-result"><div class="flex items-center gap-3 min-w-0">${chatAvatarHTML(s)}<div class="min-w-0"><p class="text-xs font-bold text-white truncate">${chatEscape(s.full_name||'Student')}</p><p class="text-[9px] text-slate-500 truncate">@${chatEscape(s.username)} · ${chatEscape(s.department||s.university||'Campus student')} · ${chatEscape(s.level||'')}</p></div></div><button type="button" class="chat-primary-btn !px-3 !py-2 text-[10px]" data-student-id="${s.id}">Message</button></div>`).join('');
+            box.querySelectorAll('[data-student-id]').forEach(b=>b.addEventListener('click',()=>startChatWithStudent(b.dataset.studentId)));
+        } catch(error) {
+            box.innerHTML=`<div class="py-6 text-center"><div class="text-red-400 text-xl mb-2"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Something went wrong.</p><p class="text-[10px] text-slate-600 mt-1">Your student search couldn't be completed.</p><button type="button" class="chat-action-btn mt-3" onclick="renderChatSearchResults(document.getElementById('chatStudentSearch').value)">Try Again</button></div>`;
+            chatError(error);
+        }
+    },220);
 }
 
 async function startChatWithStudent(studentId) {
-    const existing=chatState.conversations.find(c=>c.participantId===studentId);
     closeChatSearch();
-    if (existing) { await openChatConversation(existing.id); return; }
-    openChatRequest(studentId);
+    try {
+        const existing=chatState.conversations.find(c=>c.participantId===studentId);
+        if(existing){await openChatConversation(existing.id);return;}
+        const conversation=await chat.startConversation(studentId);
+        await openChatConversation(conversation.id);
+    } catch(error) {
+        chatOpenModal(`<div class="p-5"><h3 class="text-lg font-bold text-white">Couldn't start chat</h3><p class="text-xs text-slate-500 mt-2">We couldn't start this conversation. Please try again.</p><button class="chat-primary-btn w-full mt-5" onclick="chatCloseModal();startChatWithStudent('${studentId}')">Try Again</button></div>`);
+        chatError(error);
+    }
 }
-function openChatRequest(studentId){
-    const s=chatStudent(studentId);
-    chatOpenModal(`<div class="p-5"><div class="flex items-center justify-between"><div><p class="text-[8px] uppercase tracking-[.2em] font-black text-green-500">New conversation</p><h3 class="text-lg font-bold text-white mt-1">Start a conversation</h3></div><button class="chat-icon-btn" onclick="chatCloseModal()"><i class="fas fa-times"></i></button></div><div class="flex items-center gap-3 mt-5 p-3 rounded-2xl bg-white/5">${chatAvatarHTML(s)}<div><p class="text-sm font-bold text-white">${chatEscape(s.full_name)}</p><p class="text-[10px] text-slate-500">@${chatEscape(s.username)} · ${chatEscape(s.department)} · ${chatEscape(s.level)}</p></div></div><div class="mt-4 rounded-2xl border border-green-500/10 bg-green-500/5 p-3"><p class="text-[10px] text-slate-400">This is a message request. If they accept, you can continue the conversation.</p></div><textarea id="chatRequestMessage" class="w-full mt-4 rounded-xl bg-white/5 border border-white/10 p-3 text-xs text-white outline-none" rows="3" maxlength="500" placeholder="Write a short message..."></textarea><div class="flex gap-2 mt-3"><button class="chat-action-btn flex-1" onclick="chatCloseModal()">Cancel</button><button id="chatRequestSend" class="chat-primary-btn flex-1">Send Request</button></div></div>`);
-    document.getElementById('chatRequestSend').onclick=async()=>{ const content=document.getElementById('chatRequestMessage').value.trim(); if(!content){document.getElementById('chatRequestMessage').focus();return;} await chat.sendMessageRequest(studentId,content); const c=await chat.startConversation(studentId); c.last_message=content; c.last_message_at=new Date().toISOString(); chatCloseModal(); renderChatConversations(); await openChatConversation(c.id); };
-}
-
-function openChatSearch(){ document.getElementById('chatSearchPanel').classList.remove('hidden'); document.getElementById('chatStudentSearch').focus(); }
-function closeChatSearch(){ document.getElementById('chatSearchPanel').classList.add('hidden'); document.getElementById('chatStudentSearch').value=''; document.getElementById('chatSearchResults').innerHTML=''; }
-function chatOpenModal(content) { const wrap=document.createElement('div'); wrap.className='chat-modal-backdrop'; wrap.id='chatTransientModal'; wrap.innerHTML=`<div class="chat-modal">${content}</div>`; document.body.appendChild(wrap); wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.remove();}); return wrap; }
+function openChatSearch(){document.getElementById('chatSearchPanel').classList.remove('hidden');document.getElementById('chatStudentSearch').focus();}
+function closeChatSearch(){document.getElementById('chatSearchPanel').classList.add('hidden');document.getElementById('chatStudentSearch').value='';document.getElementById('chatSearchResults').innerHTML='';}
+function chatOpenModal(content){const wrap=document.createElement('div');wrap.className='chat-modal-backdrop';wrap.id='chatTransientModal';wrap.innerHTML=`<div class="chat-modal">${content}</div>`;document.body.appendChild(wrap);wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.remove();});return wrap;}
 function chatCloseModal(){document.getElementById('chatTransientModal')?.remove();}
 
-function openChatProfile() {
-    if(!chatState.activeConversationId)return; const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId); const s=chatStudent(c.participantId);
-    chatOpenModal(`<div class="p-5"><div class="flex items-start justify-between"><div>${chatAvatarHTML(s,true)}</div><button type="button" class="chat-icon-btn" onclick="chatCloseModal()"><i class="fas fa-times"></i></button></div><h3 class="text-lg font-bold text-white mt-4">${chatEscape(s.full_name)}</h3><p class="text-xs text-slate-500 mt-1">@${chatEscape(s.username)}</p><div class="grid grid-cols-2 gap-2 mt-5">${[['University','Campus University'],['Campus','Main Campus'],['Faculty',s.faculty],['Department',s.department],['Level',s.level]].map(x=>`<div class="rounded-xl bg-white/5 p-3"><p class="text-[8px] uppercase tracking-widest text-slate-600 font-bold">${x[0]}</p><p class="text-[10px] text-slate-300 mt-1">${chatEscape(x[1]||'—')}</p></div>`).join('')}</div><div class="flex gap-2 mt-5"><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatBlock()">Block</button><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatReport()">Report</button></div></div>`);
+function openChatProfile(){
+    if(!chatState.activeConversationId)return;
+    const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId);if(!c)return;
+    const s=c.participant;if(!s)return;
+    chatOpenModal(`<div class="p-5"><div class="flex items-start justify-between"><div>${chatAvatarHTML(s,true)}</div><button type="button" class="chat-icon-btn" onclick="chatCloseModal()"><i class="fas fa-times"></i></button></div><h3 class="text-lg font-bold text-white mt-4">${chatEscape(s.full_name||'Student')}</h3><p class="text-xs text-slate-500 mt-1">@${chatEscape(chatDisplayUsername(s))}</p><div class="grid grid-cols-2 gap-2 mt-5">${[['University',s.university],['Faculty','Not provided'],['Department',s.department],['Level',s.level],['Bio',s.bio]].map(x=>`<div class="rounded-xl bg-white/5 p-3"><p class="text-[8px] uppercase tracking-widest text-slate-600 font-bold">${x[0]}</p><p class="text-[10px] text-slate-300 mt-1">${chatEscape(x[1]||'—')}</p></div>`).join('')}</div><div class="flex gap-2 mt-5"><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatBlock()">Block</button><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatReport()">Report</button></div></div>`);
 }
-function openChatBlock(){ const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId); const s=chatStudent(c.participantId); chatOpenModal(`<div class="p-5"><div class="w-11 h-11 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center"><i class="fas fa-ban"></i></div><h3 class="text-lg font-bold text-white mt-4">Block this student?</h3><p class="text-xs text-slate-500 mt-2">Blocked students won't be able to message you.</p><div class="flex gap-2 mt-6"><button class="chat-action-btn flex-1" onclick="chatCloseModal()">Cancel</button><button class="chat-action-btn flex-1 !text-red-300 !border-red-500/20" onclick="confirmChatBlock('${s.id}')">Block</button></div></div>`); }
-async function confirmChatBlock(userId){ await chat.blockUser(userId); chatState.conversations=chatState.conversations.filter(c=>c.participantId!==userId); chatState.activeConversationId=null; chatCloseModal(); closeChatConversationMobile(); renderChatConversations(); document.getElementById('chatActiveConversation').classList.add('hidden'); document.getElementById('chatEmptyConversation').classList.remove('hidden'); }
-function openChatReport(){ const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId); if(!c)return; const s=chatStudent(c.participantId); chatOpenModal(`<div class="p-5"><div class="flex items-center justify-between"><h3 class="text-lg font-bold text-white">Report conversation</h3><button class="chat-icon-btn" onclick="chatCloseModal()"><i class="fas fa-times"></i></button></div><p class="text-xs text-slate-500 mt-1">Tell us what happened with ${chatEscape(s.full_name)}.</p><div class="grid grid-cols-2 gap-2 mt-5">${['Spam','Harassment','Inappropriate content','Fake account'].map(r=>`<button type="button" class="chat-action-btn report-reason" data-reason="${r}">${r}</button>`).join('')}<button type="button" class="chat-action-btn report-reason col-span-2" data-reason="Other">Other</button></div><textarea id="chatReportNote" class="w-full mt-3 rounded-xl bg-white/5 border border-white/10 p-3 text-xs text-white outline-none" rows="3" placeholder="Tell us what happened."></textarea><button id="chatReportSubmit" class="chat-primary-btn w-full mt-3">Submit Report</button></div>`); let reason=''; document.querySelectorAll('.report-reason').forEach(b=>b.addEventListener('click',()=>{reason=b.dataset.reason;document.querySelectorAll('.report-reason').forEach(x=>x.classList.remove('!bg-green-500/10','!text-green-400'));b.classList.add('!bg-green-500/10','!text-green-400');})); document.getElementById('chatReportSubmit').onclick=async()=>{if(!reason){alert('Please select a reason.');return;}await chat.reportUser({reporter_id:'me',reported_user_id:s.id,conversation_id:c.id,reason,note:document.getElementById('chatReportNote').value});chatCloseModal();alert('Report submitted. Thank you for helping keep Campus Chat safe.');}; }
-function closeChatConversationMobile(){document.getElementById('chatConversationView').classList.remove('chat-mobile-open');}
+function openChatBlock(){const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId);if(!c?.participant)return;const s=c.participant;chatOpenModal(`<div class="p-5"><div class="w-11 h-11 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center"><i class="fas fa-ban"></i></div><h3 class="text-lg font-bold text-white mt-4">Block this student?</h3><p class="text-xs text-slate-500 mt-2">Blocked students won't be able to message you.</p><div class="flex gap-2 mt-6"><button class="chat-action-btn flex-1" onclick="chatCloseModal()">Cancel</button><button class="chat-action-btn flex-1 !text-red-300 !border-red-500/20" onclick="confirmChatBlock('${s.id}')">Block</button></div></div>`);}
+async function confirmChatBlock(userId){try{await chat.blockUser(userId);chatState.conversations=chatState.conversations.filter(c=>c.participantId!==userId);chatState.activeConversationId=null;chatCloseModal();closeChatConversation();renderChatConversations();document.getElementById('chatActiveConversation').classList.add('hidden');document.getElementById('chatEmptyConversation').classList.remove('hidden');}catch(error){chatError(error);alert('We could not block this student. Please try again.');}}
+function openChatReport(){const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId);if(!c?.participant)return;const s=c.participant;chatOpenModal(`<div class="p-5"><div class="flex items-center justify-between"><h3 class="text-lg font-bold text-white">Report conversation</h3><button class="chat-icon-btn" onclick="chatCloseModal()"><i class="fas fa-times"></i></button></div><p class="text-xs text-slate-500 mt-1">Tell us what happened with ${chatEscape(s.full_name)}.</p><div class="grid grid-cols-2 gap-2 mt-5">${['Spam','Harassment','Inappropriate content','Fake account'].map(r=>`<button type="button" class="chat-action-btn report-reason" data-reason="${r}">${r}</button>`).join('')}<button type="button" class="chat-action-btn report-reason col-span-2" data-reason="Other">Other</button></div><textarea id="chatReportNote" class="w-full mt-3 rounded-xl bg-white/5 border border-white/10 p-3 text-xs text-white outline-none" rows="3" maxlength="1000" placeholder="Tell us what happened."></textarea><button id="chatReportSubmit" class="chat-primary-btn w-full mt-3">Submit Report</button></div>`);let reason='';document.querySelectorAll('.report-reason').forEach(b=>b.addEventListener('click',()=>{reason=b.dataset.reason;document.querySelectorAll('.report-reason').forEach(x=>x.classList.remove('!bg-green-500/10','!text-green-400'));b.classList.add('!bg-green-500/10','!text-green-400');}));document.getElementById('chatReportSubmit').onclick=async()=>{if(!reason){alert('Please select a reason.');return;}try{await chat.reportUser({reportedUserId:s.id,conversationId:c.id,reason});chatCloseModal();alert('Report submitted. Thank you for helping keep Campus Chat safe.');}catch(error){chatError(error);alert('We could not submit the report. Please try again.');}};}
+function closeChatConversation(){document.getElementById('chatConversationView').classList.remove('chat-mobile-open');document.getElementById('chatMoreMenu')?.classList.add('hidden');}
 
-function initCampusChat(){
-    renderChatConversations();
+async function initCampusChat(){
+    try {
+        const user=await chat.getSessionUser();
+        if(!user){return;}
+        currentUserId=user.id;
+        if(!userFullName)userFullName=user.user_metadata?.full_name||'';
+        if(!userUniversity)userUniversity=user.user_metadata?.university||'';
+        await chat.loadCurrentProfile();
+        await chat.refreshConversations();
+        chat.subscribeRealtime();
+    } catch(error) {
+        const list=document.getElementById('chatConversationList');
+        if(list)list.innerHTML=`<div class="py-10 px-3 text-center"><div class="text-red-400 text-xl mb-3"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Something went wrong.</p><p class="text-[10px] text-slate-600 mt-1">Your conversations couldn't be loaded.</p><button type="button" class="chat-action-btn mt-3" onclick="initCampusChat()">Try Again</button></div>`;
+        chatError(error);
+    }
     document.getElementById('chatSearchToggle')?.addEventListener('click',openChatSearch);
     document.getElementById('chatMobileSearch')?.addEventListener('click',openChatSearch);
     document.getElementById('chatSearchClose')?.addEventListener('click',closeChatSearch);
@@ -1762,14 +1938,14 @@ function initCampusChat(){
     const newChat=()=>openChatSearch();
     document.getElementById('chatNewButton')?.addEventListener('click',newChat);
     document.getElementById('chatEmptyNewButton')?.addEventListener('click',newChat);
-    document.getElementById('chatBackButton')?.addEventListener('click',closeChatConversationMobile);
+    document.getElementById('chatBackButton')?.addEventListener('click',closeChatConversation);
     document.getElementById('chatHeaderProfile')?.addEventListener('click',openChatProfile);
     document.getElementById('chatMoreButton')?.addEventListener('click',e=>{e.stopPropagation();document.getElementById('chatMoreMenu').classList.toggle('hidden');});
-    document.querySelectorAll('#chatMoreMenu [data-chat-action]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('chatMoreMenu').classList.add('hidden'); const a=b.dataset.chatAction; if(a==='profile')openChatProfile(); else if(a==='block')openChatBlock(); else if(a==='report')openChatReport(); else if(a==='mute')alert('Notifications muted for this conversation.');}));
-    document.getElementById('chatComposer')?.addEventListener('submit',async e=>{e.preventDefault();const input=document.getElementById('chatMessageInput');const content=input.value.trim();if(!content||!chatState.activeConversationId)return;const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId);const message=await chat.sendMessage(c.id,content);c.last_message=message.content;c.last_message_at=message.created_at;input.value='';renderChatConversations();renderChatMessages(await chat.loadMessages(c.id));});
+    document.querySelectorAll('#chatMoreMenu [data-chat-action]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('chatMoreMenu').classList.add('hidden');const a=b.dataset.chatAction;if(a==='profile')openChatProfile();else if(a==='block')openChatBlock();else if(a==='report')openChatReport();else if(a==='mute')alert('Notifications muted for this conversation.');}));
+    document.getElementById('chatComposer')?.addEventListener('submit',async e=>{e.preventDefault();const input=document.getElementById('chatMessageInput');const content=input.value.trim();if(!content||!chatState.activeConversationId)return;const sendButton=e.submitter||document.querySelector('#chatComposer .chat-send-btn');if(sendButton)sendButton.disabled=true;try{await chat.sendMessage(chatState.activeConversationId,content);input.value='';await chat.loadMessages(chatState.activeConversationId);await chat.refreshConversations();renderChatMessages(chatState.messages[chatState.activeConversationId]||[]);}catch(error){chatError(error);alert('Your message could not be sent. Please try again.');}finally{if(sendButton)sendButton.disabled=false;}});
     document.addEventListener('click',e=>{if(!e.target.closest('#chatMoreButton')&&!e.target.closest('#chatMoreMenu'))document.getElementById('chatMoreMenu')?.classList.add('hidden');});
 }
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCampusChat); else initCampusChat();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initCampusChat);else initCampusChat();
 
 // --- PAGE SWITCHER LOGIC ---
 // V1.0 primary pages (bottom nav) + preserved future-module pages

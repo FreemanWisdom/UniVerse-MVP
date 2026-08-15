@@ -3,28 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniVERSE | Enter the Network</title>
+    <title>UniVerse | The Campus Operating System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
-        body { font-family: 'Space Grotesk', sans-serif; background: #0f172a; }
-        .scholar-gradient { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
-        .glass-card { background: rgba(255, 255, 255, 0.03); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root{
+            --uv-bg: #05070c;
+            --uv-bg-soft: #0a0e18;
+            --uv-surface: rgba(255,255,255,0.035);
+            --uv-border: rgba(255,255,255,0.08);
+            --uv-green: #34e08a;
+            --uv-green-dim: #1f8f56;
+            --uv-text: #e8ecf3;
+            --uv-text-dim: #8891a3;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--uv-bg);
+            color: var(--uv-text);
+            overflow-x: hidden;
+        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        /* Background atmosphere */
+        .uv-bg-field {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 60% 45% at 22% 8%, rgba(52,224,138,0.10), transparent 60%),
+                radial-gradient(ellipse 50% 40% at 85% 15%, rgba(52,224,138,0.06), transparent 60%),
+                linear-gradient(180deg, #05070c 0%, #070a12 40%, #05070c 100%);
+        }
+        .uv-grid {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.35;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(ellipse 70% 55% at 50% 20%, black 10%, transparent 75%);
+        }
+
+        .uv-relative { position: relative; z-index: 1; }
+
+        .scholar-gradient { background: linear-gradient(135deg, var(--uv-green) 0%, var(--uv-green-dim) 100%); }
+        .glass-card { background: var(--uv-surface); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid var(--uv-border); }
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #22c55e; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--uv-green); border-radius: 10px; }
+
+        /* Nav */
+        .uv-nav { background: rgba(5,7,12,0.6); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .uv-nav-link { color: var(--uv-text-dim); transition: color .2s ease; }
+        .uv-nav-link:hover { color: var(--uv-text); }
+
+        /* Buttons */
+        .uv-btn-primary { background: linear-gradient(135deg, var(--uv-green) 0%, var(--uv-green-dim) 100%); color: #05130b; box-shadow: 0 0 0 1px rgba(52,224,138,0.25), 0 8px 30px -8px rgba(52,224,138,0.45); transition: transform .2s ease, box-shadow .2s ease; }
+        .uv-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(52,224,138,0.4), 0 12px 34px -6px rgba(52,224,138,0.55); }
+        .uv-btn-primary:active { transform: translateY(0); }
+        .uv-btn-ghost { border: 1px solid var(--uv-border); color: var(--uv-text); transition: border-color .2s ease, background .2s ease; }
+        .uv-btn-ghost:hover { border-color: rgba(52,224,138,0.4); background: rgba(52,224,138,0.06); }
+
+        /* Ecosystem cards */
+        .uv-card { background: var(--uv-surface); border: 1px solid var(--uv-border); transition: border-color .25s ease, transform .25s ease, background .25s ease; }
+        .uv-card:hover { border-color: rgba(52,224,138,0.35); background: rgba(255,255,255,0.05); transform: translateY(-4px); }
+
+        /* Scroll reveal */
+        .uv-reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+        .uv-reveal.uv-visible { opacity: 1; transform: translateY(0); }
+
+        /* Orbit visual */
+        .uv-orbit-wrap { position: relative; width: 100%; aspect-ratio: 1 / 1; max-width: 460px; margin: 0 auto; }
+        .uv-orbit-ring { position: absolute; inset: 0; border: 1px dashed rgba(255,255,255,0.12); border-radius: 50%; }
+        .uv-orbit-ring.ring-2 { inset: 13%; border-color: rgba(52,224,138,0.14); }
+        .uv-orbit-core {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+            width: 116px; height: 116px; border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, rgba(52,224,138,0.9), rgba(31,143,86,0.65) 60%, rgba(31,143,86,0.15) 100%);
+            box-shadow: 0 0 60px 10px rgba(52,224,138,0.35), inset 0 0 30px rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            animation: uv-pulse 4.5s ease-in-out infinite;
+        }
+        .uv-orbit-core span { font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: 0.08em; font-size: 0.85rem; color: #04150b; }
+        @keyframes uv-pulse { 0%,100% { box-shadow: 0 0 50px 8px rgba(52,224,138,0.3), inset 0 0 30px rgba(255,255,255,0.15);} 50% { box-shadow: 0 0 76px 16px rgba(52,224,138,0.45), inset 0 0 34px rgba(255,255,255,0.2);} }
+        .uv-orbit-spin { position: absolute; inset: 0; animation: uv-spin 48s linear infinite; }
+        .uv-orbit-node {
+            position: absolute; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            animation: uv-spin-rev 48s linear infinite;
+        }
+        .uv-orbit-node .uv-node-dot {
+            width: 54px; height: 54px; border-radius: 50%; background: rgba(10,14,24,0.9); border: 1px solid rgba(52,224,138,0.35);
+            display: flex; align-items: center; justify-content: center; color: var(--uv-green);
+            box-shadow: 0 0 22px -4px rgba(52,224,138,0.5);
+        }
+        .uv-orbit-node .uv-node-label { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; letter-spacing: 0.12em; color: var(--uv-text-dim); text-transform: uppercase; white-space: nowrap; }
+        @keyframes uv-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes uv-spin-rev { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+        .uv-particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(52,224,138,0.6); animation: uv-float 7s ease-in-out infinite; }
+        @keyframes uv-float { 0%,100% { transform: translateY(0); opacity: 0.4; } 50% { transform: translateY(-14px); opacity: 1; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .uv-orbit-spin, .uv-orbit-node, .uv-orbit-core, .uv-particle { animation: none !important; }
+            html { scroll-behavior: auto; }
+            .uv-reveal { opacity: 1; transform: none; transition: none; }
+        }
+
+        /* Auth modal */
+        .uv-auth-backdrop { background: rgba(3,5,9,0.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+
+        input[type="text"], input[type="email"], input[type="password"] { font-family: 'Inter', sans-serif; }
+
+        #mobileNav { transition: max-height .3s ease, opacity .25s ease; overflow: hidden; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="min-h-screen">
+    <div class="uv-bg-field"></div>
+    <div class="uv-grid"></div>
 
-    <div class="max-w-md w-full glass-card p-8 rounded-[2.5rem] shadow-2xl">
+    <!-- ============ TOP NAVIGATION ============ -->
+    <nav class="uv-nav fixed top-0 left-0 right-0 z-40">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="font-display text-xl font-bold tracking-tight text-white">Uni<span class="text-green-400" style="color:var(--uv-green)">Verse</span></div>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a href="#ecosystem" class="uv-nav-link">The Ecosystem</a>
+                <a href="#study" class="uv-nav-link">Study</a>
+                <a href="#connect" class="uv-nav-link">Connect</a>
+                <a href="#collaborate" class="uv-nav-link">Collaborate</a>
+            </div>
+            <div class="hidden md:flex items-center gap-3">
+                <button onclick="openAuthModal('login')" class="uv-nav-link text-sm font-semibold px-4 py-2">Log In</button>
+                <button onclick="openAuthModal('signup')" class="uv-btn-primary text-sm font-bold px-5 py-2.5 rounded-full">Join UniVerse</button>
+            </div>
+            <button id="mobileNavToggle" onclick="toggleMobileNav()" title="Menu" class="md:hidden w-10 h-10 rounded-full uv-btn-ghost flex items-center justify-center">
+                <i class="fas fa-bars text-white text-sm"></i>
+            </button>
+        </div>
+        <div id="mobileNav" class="md:hidden max-h-0 opacity-0 px-6">
+            <div class="flex flex-col gap-1 pb-5 pt-1 border-t border-white/5">
+                <a href="#ecosystem" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">The Ecosystem</a>
+                <a href="#study" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Study</a>
+                <a href="#connect" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Connect</a>
+                <a href="#collaborate" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Collaborate</a>
+                <div class="flex gap-3 pt-3">
+                    <button onclick="openAuthModal('login')" class="flex-1 uv-btn-ghost text-sm font-semibold py-2.5 rounded-full">Log In</button>
+                    <button onclick="openAuthModal('signup')" class="flex-1 uv-btn-primary text-sm font-bold py-2.5 rounded-full">Join</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============ HERO ============ -->
+    <header class="uv-relative pt-40 pb-24 px-6">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+            <div class="uv-reveal uv-visible">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-green-500/25 text-xs font-bold uppercase tracking-widest mb-6" style="color:var(--uv-green)">
+                    <span class="w-1.5 h-1.5 rounded-full" style="background:var(--uv-green)"></span>
+                    The digital campus ecosystem
+                </div>
+                <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight text-white">
+                    Your campus.<br>
+                    <span style="color:var(--uv-green)">One universe.</span>
+                </h1>
+                <p class="mt-6 text-lg leading-relaxed max-w-lg" style="color:var(--uv-text-dim)">
+                    UniVerse brings the student experience into one connected ecosystem — where you connect, learn, communicate and collaborate.
+                </p>
+                <div class="mt-10 flex flex-wrap gap-4">
+                    <button onclick="openAuthModal('login')" class="uv-btn-primary font-bold px-7 py-3.5 rounded-full text-sm">Enter UniVerse</button>
+                    <button onclick="openAuthModal('signup')" class="uv-btn-ghost font-bold px-7 py-3.5 rounded-full text-sm">Create your account</button>
+                </div>
+            </div>
+
+            <!-- Orbit visual -->
+            <div class="uv-reveal uv-visible relative">
+                <div class="uv-orbit-wrap">
+                    <div class="uv-orbit-ring"></div>
+                    <div class="uv-orbit-ring ring-2"></div>
+                    <div class="uv-particle" style="top:12%; left:20%;"></div>
+                    <div class="uv-particle" style="top:70%; left:82%; animation-delay:2s;"></div>
+                    <div class="uv-particle" style="top:82%; left:30%; animation-delay:4s;"></div>
+
+                    <div class="uv-orbit-core"><span>ORBIT</span></div>
+
+                    <div class="uv-orbit-spin">
+                        <div class="uv-orbit-node" style="top:-2%; left:50%; transform:translate(-50%,0);">
+                            <div class="uv-node-dot"><i class="fas fa-satellite text-sm"></i></div>
+                            <div class="uv-node-label">Orbit</div>
+                        </div>
+                        <div class="uv-orbit-node" style="top:50%; right:-2%; transform:translate(0,-50%);">
+                            <div class="uv-node-dot"><i class="fas fa-book text-sm"></i></div>
+                            <div class="uv-node-label">Study Hub</div>
+                        </div>
+                        <div class="uv-orbit-node" style="bottom:-2%; left:50%; transform:translate(-50%,0);">
+                            <div class="uv-node-dot"><i class="fas fa-comments text-sm"></i></div>
+                            <div class="uv-node-label">Campus Chat</div>
+                        </div>
+                        <div class="uv-orbit-node" style="top:50%; left:-2%; transform:translate(0,-50%);">
+                            <div class="uv-node-dot"><i class="fas fa-users text-sm"></i></div>
+                            <div class="uv-node-label">Study Tribes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============ WHAT IS UNIVERSE ============ -->
+    <section class="uv-relative px-6 py-20 border-t border-white/5">
+        <div class="max-w-3xl mx-auto text-center uv-reveal">
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">One ecosystem for campus life.</h2>
+            <p class="mt-5 text-base leading-relaxed" style="color:var(--uv-text-dim)">
+                UniVerse is designed to bring the fragmented student experience into one connected digital environment. Students shouldn't need to jump between countless disconnected platforms to communicate, study and participate in campus life. UniVerse brings those experiences together.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============ ECOSYSTEM ============ -->
+    <section id="ecosystem" class="uv-relative px-6 py-20 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-14 uv-reveal">
+                <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--uv-green)">The ecosystem</div>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white max-w-xl">Four systems. One campus.</h2>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div id="connect" class="uv-card uv-reveal rounded-3xl p-7">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-6" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-satellite"></i></div>
+                    <div class="text-[0.65rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-text-dim)">System 01</div>
+                    <h3 class="font-display text-xl font-bold text-white mb-2">Orbit</h3>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Your campus social layer. Connect with people around you, discover what's happening and participate in campus life.</p>
+                </div>
+                <div id="study" class="uv-card uv-reveal rounded-3xl p-7">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-6" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-book"></i></div>
+                    <div class="text-[0.65rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-text-dim)">System 02</div>
+                    <h3 class="font-display text-xl font-bold text-white mb-2">Study Hub</h3>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Your academic command center. Access learning resources, past questions, study materials and tools designed to make studying easier.</p>
+                </div>
+                <div class="uv-card uv-reveal rounded-3xl p-7">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-6" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-comments"></i></div>
+                    <div class="text-[0.65rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-text-dim)">System 03</div>
+                    <h3 class="font-display text-xl font-bold text-white mb-2">Campus Chat</h3>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Talk to your campus. Communicate directly with other students inside your campus ecosystem.</p>
+                </div>
+                <div id="collaborate" class="uv-card uv-reveal rounded-3xl p-7">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-6" style="background:rgba(52,224,138,0.12); color:var(--uv-green)"><i class="fas fa-users"></i></div>
+                    <div class="text-[0.65rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-text-dim)">System 04</div>
+                    <h3 class="font-display text-xl font-bold text-white mb-2">Study Tribes</h3>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Learn together, go further. Create or join focused learning communities and study with people pursuing the same goals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ THE CAMPUS, CONNECTED ============ -->
+    <section class="uv-relative px-6 py-20 border-t border-white/5">
+        <div class="max-w-5xl mx-auto text-center uv-reveal">
+            <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mb-10">Everything connects.</h2>
+            <div class="flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm font-semibold uppercase tracking-wider">
+                <span class="px-4 py-2 rounded-full glass-card" style="color:var(--uv-text-dim)">Students</span>
+                <i class="fas fa-arrow-right text-xs" style="color:var(--uv-green)"></i>
+                <span class="px-4 py-2 rounded-full glass-card" style="color:var(--uv-text-dim)">Conversations</span>
+                <i class="fas fa-arrow-right text-xs" style="color:var(--uv-green)"></i>
+                <span class="px-4 py-2 rounded-full glass-card" style="color:var(--uv-text-dim)">Study</span>
+                <i class="fas fa-arrow-right text-xs" style="color:var(--uv-green)"></i>
+                <span class="px-4 py-2 rounded-full glass-card" style="color:var(--uv-text-dim)">Communities</span>
+                <i class="fas fa-arrow-right text-xs" style="color:var(--uv-green)"></i>
+                <span class="px-4 py-2 rounded-full uv-btn-primary">Campus ecosystem</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ MVP POSITIONING ============ -->
+    <section class="uv-relative px-6 py-20 border-t border-white/5">
+        <div class="max-w-3xl mx-auto text-center uv-reveal">
+            <div class="inline-block text-xs font-bold uppercase tracking-widest mb-4 px-3 py-1 rounded-full border border-white/10" style="color:var(--uv-green)">UniVerse ICOS v1.0</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mb-5">The first layer of the campus operating system.</h2>
+            <p class="text-base leading-relaxed" style="color:var(--uv-text-dim)">
+                The current UniVerse experience focuses on the core student ecosystem — connect, learn, communicate and collaborate — with more of the campus operating system arriving as the platform grows.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============ FINAL CTA ============ -->
+    <section class="uv-relative px-6 py-20 border-t border-white/5">
+        <div class="max-w-3xl mx-auto text-center uv-reveal">
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mb-6">Ready to enter your universe?</h2>
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button onclick="openAuthModal('signup')" class="uv-btn-primary font-bold px-7 py-3.5 rounded-full text-sm">Create your account</button>
+                <button onclick="openAuthModal('login')" class="uv-btn-ghost font-bold px-7 py-3.5 rounded-full text-sm">Log In</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="uv-relative px-6 py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div>
+                <div class="font-display text-lg font-bold text-white">UniVerse ICOS</div>
+                <p class="text-sm mt-1" style="color:var(--uv-text-dim)">Connecting campus life into one ecosystem.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============ AUTH MODAL (wraps existing login/signup functionality) ============ -->
+    <div id="authModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 uv-auth-backdrop" onclick="if(event.target===this) closeAuthModal()">
+    <div class="max-w-md w-full glass-card p-8 rounded-[2.5rem] shadow-2xl relative">
+        <button onclick="closeAuthModal()" title="Close" class="absolute top-6 right-6 w-9 h-9 rounded-full uv-btn-ghost flex items-center justify-center text-white/70 hover:text-white">
+            <i class="fas fa-times text-sm"></i>
+        </button>
         <div class="text-center mb-10">
             <div class="inline-block px-4 py-1 rounded-full border border-green-500/30 text-green-500 text-xs font-bold uppercase tracking-widest mb-4">
                 Student verified
             </div>
-            <h1 class="text-4xl font-bold text-white tracking-tighter">Uni<span class="text-green-500">Verse</span></h1>
-            <p id="authSubtitle" class="text-slate-400 mt-2">Connecting the smartest hustlers.</p>
+            <h1 id="authTitle" class="font-display text-3xl font-bold text-white tracking-tight">Welcome back.</h1>
+            <p id="authSubtitle" class="text-slate-400 mt-2">Continue your journey through UniVerse.</p>
         </div>
 
         <div class="flex bg-white/5 p-1 rounded-2xl mb-8 border border-white/5">
@@ -35,7 +328,7 @@
         <form id="loginForm" class="space-y-4">
             <input type="email" id="loginEmail" placeholder="University Email" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
             <input type="password" id="loginPassword" placeholder="Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
-            <button type="button" onclick="handleLogin()" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Enter the Verse</button>
+            <button type="button" onclick="handleLogin()" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Enter UniVerse</button>
         </form>
 
         <form id="signupForm" class="space-y-4 hidden">
@@ -49,8 +342,9 @@
             <input type="hidden" id="signupUniversity">
 
             <input type="password" id="signupPassword" placeholder="Create Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
-            <button type="button" onclick="handleSignup()" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Join the Verse Scholars</button>
+            <button type="button" onclick="handleSignup()" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Join UniVerse</button>
         </form>
+    </div>
     </div>
 
     <div id="uniModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -259,6 +553,64 @@
                 signupBtn.className = "w-1/2 py-3 text-sm font-bold rounded-xl bg-green-500 text-white shadow-lg shadow-green-500/20";
                 loginBtn.className = "w-1/2 py-3 text-sm font-bold rounded-xl text-slate-400";
             }
+
+            const authTitle = document.getElementById('authTitle');
+            const authSubtitle = document.getElementById('authSubtitle');
+            if (authTitle && authSubtitle) {
+                if (isLogin) {
+                    authTitle.textContent = "Welcome back.";
+                    authSubtitle.textContent = "Continue your journey through UniVerse.";
+                } else {
+                    authTitle.textContent = "Join the Universe.";
+                    authSubtitle.textContent = "Create your place in your campus ecosystem.";
+                }
+            }
+        }
+
+        // ============ NEW UI: auth modal + mobile nav + scroll reveal ============
+        function openAuthModal(type) {
+            const modal = document.getElementById('authModal');
+            switchTab(type === 'signup' ? 'signup' : 'login');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobileNav');
+            const isOpen = nav.style.maxHeight && nav.style.maxHeight !== '0px';
+            if (isOpen) {
+                nav.style.maxHeight = '0px';
+                nav.style.opacity = '0';
+            } else {
+                nav.style.maxHeight = nav.scrollHeight + 'px';
+                nav.style.opacity = '1';
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const authModal = document.getElementById('authModal');
+                if (authModal && !authModal.classList.contains('hidden')) closeAuthModal();
+            }
+        });
+
+        if ('IntersectionObserver' in window) {
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('uv-visible');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.uv-reveal').forEach(el => revealObserver.observe(el));
+            });
         }
 
         function toggleUniModal() {

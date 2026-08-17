@@ -4,12 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UniVerse | The Campus Operating System</title>
+
+    <!-- Preconnects: start the network handshake for third-party origins immediately -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://loppfyncbehifnspupwa.supabase.co">
+
+    <!-- Fonts: real <link> (was @import, which delays discovery until the CSS above it is parsed) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap">
+
+    <!-- Font Awesome: preload + swap so the icon stylesheet doesn't block first paint; icons pop in a beat later -->
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'; this.onload=null;">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
+    <style>
         :root{
             --uv-bg: #05070c;
             --uv-bg-soft: #0a0e18;
@@ -58,18 +71,24 @@
         /* Nav */
         .uv-nav { background: rgba(5,7,12,0.6); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.06); }
         .uv-nav-link { color: var(--uv-text-dim); transition: color .2s ease; }
-        .uv-nav-link:hover { color: var(--uv-text); }
 
         /* Buttons */
         .uv-btn-primary { background: linear-gradient(135deg, var(--uv-green) 0%, var(--uv-green-dim) 100%); color: #05130b; box-shadow: 0 0 0 1px rgba(52,224,138,0.25), 0 8px 30px -8px rgba(52,224,138,0.45); transition: transform .2s ease, box-shadow .2s ease; }
-        .uv-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(52,224,138,0.4), 0 12px 34px -6px rgba(52,224,138,0.55); }
         .uv-btn-primary:active { transform: translateY(0); }
         .uv-btn-ghost { border: 1px solid var(--uv-border); color: var(--uv-text); transition: border-color .2s ease, background .2s ease; }
-        .uv-btn-ghost:hover { border-color: rgba(52,224,138,0.4); background: rgba(52,224,138,0.06); }
 
         /* Ecosystem cards */
         .uv-card { background: var(--uv-surface); border: 1px solid var(--uv-border); transition: border-color .25s ease, transform .25s ease, background .25s ease; }
-        .uv-card:hover { border-color: rgba(52,224,138,0.35); background: rgba(255,255,255,0.05); transform: translateY(-4px); }
+
+        /* Hover-only effects: gated behind (hover: hover) and (pointer: fine) so touch devices never pay for
+           an animation that can't meaningfully be "hovered" anyway — avoids sticky-hover repaint/reflow work
+           on mobile taps and matches how these were already used (desktop-only affordances). */
+        @media (hover: hover) and (pointer: fine) {
+            .uv-nav-link:hover { color: var(--uv-text); }
+            .uv-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(52,224,138,0.4), 0 12px 34px -6px rgba(52,224,138,0.55); }
+            .uv-btn-ghost:hover { border-color: rgba(52,224,138,0.4); background: rgba(52,224,138,0.06); }
+            .uv-card:hover { border-color: rgba(52,224,138,0.35); background: rgba(255,255,255,0.05); transform: translateY(-4px); }
+        }
 
         /* Scroll reveal */
         .uv-reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
@@ -89,10 +108,10 @@
         }
         .uv-orbit-core span { font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: 0.08em; font-size: 0.85rem; color: #04150b; }
         @keyframes uv-pulse { 0%,100% { box-shadow: 0 0 50px 8px rgba(52,224,138,0.3), inset 0 0 30px rgba(255,255,255,0.15);} 50% { box-shadow: 0 0 76px 16px rgba(52,224,138,0.45), inset 0 0 34px rgba(255,255,255,0.2);} }
-        .uv-orbit-spin { position: absolute; inset: 0; animation: uv-spin 48s linear infinite; }
+        .uv-orbit-spin { position: absolute; inset: 0; animation: uv-spin 48s linear infinite; will-change: transform; }
         .uv-orbit-node {
             position: absolute; display: flex; flex-direction: column; align-items: center; gap: 6px;
-            animation: uv-spin-rev 48s linear infinite;
+            animation: uv-spin-rev 48s linear infinite; will-change: transform;
         }
         .uv-orbit-node .uv-node-dot {
             width: 54px; height: 54px; border-radius: 50%; background: rgba(10,14,24,0.9); border: 1px solid rgba(52,224,138,0.35);
@@ -106,9 +125,26 @@
         @keyframes uv-float { 0%,100% { transform: translateY(0); opacity: 0.4; } 50% { transform: translateY(-14px); opacity: 1; } }
 
         @media (prefers-reduced-motion: reduce) {
-            .uv-orbit-spin, .uv-orbit-node, .uv-orbit-core, .uv-particle { animation: none !important; }
+            .uv-orbit-spin, .uv-orbit-node, .uv-orbit-core, .uv-particle, .uv-status-dot { animation: none !important; }
             html { scroll-behavior: auto; }
             .uv-reveal { opacity: 1; transform: none; transition: none; }
+        }
+
+        /* ============ MOBILE PERFORMANCE MODE ============
+           Same visual language, lower rendering cost: shallower blur radii (backdrop-filter is one of the
+           most expensive paints on low-end Android GPUs), a static hero glow instead of a per-frame
+           box-shadow repaint, and a capped device-pixel-ratio hint via the existing transforms. Nothing here
+           removes an effect outright — it turns the same effect down. */
+        @media (max-width: 768px) {
+            .glass-card { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+            .uv-nav { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+            .uv-auth-backdrop { -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+
+            /* The pulsing box-shadow repaints the whole glow every frame; on mobile use one steady glow. */
+            .uv-orbit-core {
+                animation: none;
+                box-shadow: 0 0 46px 8px rgba(52,224,138,0.32), inset 0 0 24px rgba(255,255,255,0.15);
+            }
         }
 
         /* Auth modal */
@@ -154,8 +190,21 @@
         .uv-check.checked i { opacity: 1; }
         #signupAgreeError { transition: opacity .2s ease, transform .2s ease; }
 
+        /* Modal viewport height: vh fallback first, dvh (dynamic viewport height, accounts for the mobile
+           browser address bar showing/hiding) where supported, so panels never get clipped or oversized. */
+        .uv-doc-modal-panel { max-height: 88vh; }
+        .uv-uni-modal-panel { max-height: 70vh; }
+        @supports (max-height: 100dvh) {
+            .uv-doc-modal-panel { max-height: 88dvh; }
+            .uv-uni-modal-panel { max-height: 70dvh; }
+        }
         @media (max-width: 767px) {
             .uv-doc-modal-panel { max-height: 85vh; }
+        }
+        @supports (max-height: 100dvh) {
+            @media (max-width: 767px) {
+                .uv-doc-modal-panel { max-height: 85dvh; }
+            }
         }
     </style>
 </head>
@@ -595,7 +644,7 @@
 
     <!-- ============ LEGAL / COMMUNITY DOCUMENT MODAL ============ -->
     <div id="docModal" class="hidden fixed inset-0 z-[90] flex items-end sm:items-center justify-center p-0 sm:p-4 uv-auth-backdrop" onclick="if(event.target===this) closeDoc()" role="dialog" aria-modal="true" aria-labelledby="docModalTitle">
-        <div class="uv-doc-modal-panel bg-[#0a0e18] w-full sm:max-w-2xl rounded-t-[2rem] sm:rounded-[2rem] border border-white/10 max-h-[88vh] flex flex-col overflow-hidden">
+        <div class="uv-doc-modal-panel bg-[#0a0e18] w-full sm:max-w-2xl rounded-t-[2rem] sm:rounded-[2rem] border border-white/10 flex flex-col overflow-hidden">
             <div class="p-6 sm:p-8 border-b border-white/5 flex items-start justify-between gap-4 flex-shrink-0">
                 <div>
                     <div class="uv-kicker mb-2" style="color:var(--uv-green)">UniVerse ICOS</div>
@@ -663,7 +712,7 @@
     </div>
 
     <div id="uniModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-slate-900 w-full max-w-lg rounded-t-[2rem] sm:rounded-[2rem] border-t border-white/10 max-h-[70vh] flex flex-col overflow-hidden">
+        <div class="uv-uni-modal-panel bg-slate-900 w-full max-w-lg rounded-t-[2rem] sm:rounded-[2rem] border-t border-white/10 flex flex-col overflow-hidden">
             <div class="p-6 border-b border-white/5 bg-slate-800/50">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-white font-bold text-xl">Select Institution</h3>

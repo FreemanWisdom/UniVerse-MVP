@@ -204,6 +204,81 @@
 body.light-mode .orbit-search,body.light-mode .orbit-composer-card,body.light-mode .orbit-post{background:#fff;border-color:rgba(15,23,42,.07)}body.light-mode .orbit-content{color:#334155}body.light-mode .orbit-modal{background:#fff}body.light-mode .orbit-menu-panel{background:#fff}.orbit-skeleton{height:150px;border-radius:22px;background:linear-gradient(90deg,rgba(255,255,255,.025),rgba(255,255,255,.07),rgba(255,255,255,.025));background-size:200%;animation:orbitShimmer 1.3s infinite}@keyframes orbitShimmer{to{background-position:-200%}}
 @media(max-width:640px){.orbit-head h2{font-size:1.35rem}.orbit-post{padding:.85rem}.orbit-actions{overflow-x:auto}.orbit-action{white-space:nowrap}.orbit-upload{flex-wrap:wrap}.orbit-upload small{width:100%;margin-left:0}.orbit-modal{padding:1rem!important}.orbit-media.three{grid-template-columns:1fr 1fr}.orbit-media.three button:first-child{grid-column:span 2}.orbit-new-banner{top:62px}}
 
+
+/* Study Hub — isolated production UI */
+.study-hub{min-width:0}
+.study-kicker{font-size:9px;font-weight:900;letter-spacing:.2em;color:#22c55e;text-transform:uppercase}
+.study-hero{display:flex;flex-direction:column;gap:1rem}
+.study-search{display:flex;align-items:center;gap:.65rem;padding:.8rem 1rem;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.025)}
+.study-search input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:inherit;font-size:.76rem}
+.study-search i{color:#64748b}
+.study-card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);border-radius:22px;padding:1rem}
+.study-card h3{font-weight:800}
+.study-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.study-stat{padding:.9rem;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:rgba(255,255,255,.018)}
+.study-stat strong{display:block;font-size:1.05rem}
+.study-stat span{display:block;margin-top:.2rem;font-size:.58rem;color:#64748b;text-transform:uppercase;letter-spacing:.12em;font-weight:800}
+.study-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem}
+.study-section-head p{font-size:.62rem;color:#64748b;margin-top:.2rem}
+.study-link-btn{font-size:.62rem;font-weight:800;color:#4ade80}
+.study-course-grid,.study-resource-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.study-course{min-width:0}
+.study-course-code{font-size:.58rem;color:#4ade80;font-weight:900;letter-spacing:.12em}
+.study-course-title{font-size:.8rem;font-weight:800;margin-top:.2rem;overflow-wrap:anywhere}
+.study-meta{font-size:.58rem;color:#64748b;line-height:1.45}
+.study-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.study-btn{min-height:38px;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border-radius:12px;padding:.55rem .7rem;font-size:.6rem;font-weight:800;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:#cbd5e1}
+.study-btn:hover{background:rgba(255,255,255,.07)}
+.study-btn.primary{background:#22c55e;color:#052e16;border-color:#22c55e}
+.study-btn.saved{color:#facc15}
+.study-filter-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem}
+.study-filter{width:100%;padding:.65rem .7rem;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025);color:inherit;font-size:.62rem;outline:0}
+.study-resource{display:flex;flex-direction:column;gap:.65rem;min-width:0}
+.study-resource-top{display:flex;align-items:flex-start;gap:.7rem}
+.study-file-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,.08);color:#4ade80;flex:0 0 auto}
+.study-resource-title{font-size:.72rem;font-weight:800;overflow-wrap:anywhere}
+.study-badge{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:.25rem .45rem;font-size:.48rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8}
+.study-empty{text-align:center;padding:2rem 1rem;color:#64748b;border:1px dashed rgba(255,255,255,.1);border-radius:22px}
+.study-empty-icon{width:52px;height:52px;border-radius:50%;margin:0 auto .9rem;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,.06);color:#22c55e}
+.study-empty h4{font-size:.85rem;font-weight:800;color:inherit}
+.study-empty p{font-size:.63rem;max-width:340px;margin:.35rem auto 0;line-height:1.5}
+.study-tabs{display:flex;gap:.2rem;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.07)}
+.study-tabs button{white-space:nowrap;padding:.65rem .75rem;color:#64748b;font-size:.62rem;font-weight:800}
+.study-tabs button.active{color:#fff;border-bottom:2px solid #22c55e}
+.study-modal-backdrop{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-end;justify-content:center;padding:.75rem;background:rgba(2,6,23,.78);backdrop-filter:blur(8px)}
+.study-modal{width:min(100%,760px);max-height:92dvh;overflow:auto;background:#0e1421;border:1px solid rgba(255,255,255,.1);border-radius:1.6rem 1.6rem .5rem .5rem;box-shadow:0 30px 90px rgba(0,0,0,.5);padding:1rem}
+.study-viewer{width:100%;height:min(72dvh,720px);border:0;border-radius:14px;background:#fff}
+.study-today-item{display:flex;align-items:center;gap:.65rem;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.study-today-item:last-child{border-bottom:0}
+.study-today-dot{width:10px;height:10px;border-radius:50%;border:1px solid #475569;flex:0 0 auto}
+.study-today-item.done .study-today-dot{background:#22c55e;border-color:#22c55e}
+.study-today-item span{font-size:.65rem;color:#cbd5e1}
+.study-note{font-size:.58rem;line-height:1.5;color:#64748b}
+.study-error{padding:.7rem .8rem;border:1px solid rgba(248,113,113,.2);background:rgba(248,113,113,.06);border-radius:12px;color:#fca5a5;font-size:.6rem}
+body.light-mode .study-search,body.light-mode .study-card,body.light-mode .study-stat,body.light-mode .study-resource{background:#fff;border-color:rgba(15,23,42,.07)}
+body.light-mode .study-filter{background:#f8fafc;border-color:rgba(15,23,42,.07);color:#0f172a}
+body.light-mode .study-modal{background:#fff;border-color:rgba(15,23,42,.08)}
+body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
+@media(max-width:640px){
+ .study-grid,.study-course-grid,.study-resource-grid{grid-template-columns:1fr}
+ .study-filter-row{grid-template-columns:1fr 1fr}
+ .study-section-head{align-items:flex-start;flex-direction:column}
+ .study-actions .study-btn{flex:1}
+ .study-modal{border-radius:1.5rem 1.5rem .5rem .5rem}
+}
+
+        /* Campus Whisper MVP — scoped styles only */
+        .whisper-shell{min-width:0;max-width:760px;margin:0 auto;}
+        .whisper-composer{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);box-shadow:0 20px 60px rgba(0,0,0,.12);}
+        .whisper-input{min-height:132px;resize:vertical;max-height:360px;overflow:auto;}
+        .whisper-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);}
+        .whisper-card:hover{border-color:rgba(34,197,94,.18);}
+        .whisper-action{min-height:40px;min-width:40px;}
+        .whisper-skeleton{height:150px;border-radius:1.75rem;background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.07),rgba(255,255,255,.03));background-size:200% 100%;animation:whisperShimmer 1.5s linear infinite;}
+        @keyframes whisperShimmer{to{background-position:-200% 0}}
+        body.light-mode .whisper-composer,body.light-mode .whisper-card{background:#fff;border-color:rgba(15,23,42,.07);box-shadow:0 10px 30px rgba(16,24,40,.05);}
+        body.light-mode .whisper-card:hover{border-color:rgba(16,185,129,.22);}
+        @media (max-width:640px){.whisper-input{min-height:120px;max-height:300px}.whisper-shell{width:100%}.whisper-action{min-height:44px;min-width:44px}}
 </style>
 </head>
 <body class="min-h-screen pb-32">
@@ -230,7 +305,7 @@ body.light-mode .orbit-search,body.light-mode .orbit-composer-card,body.light-mo
 
     <main class="p-6 md:p-8 max-w-2xl mx-auto space-y-4 md:space-y-6">
         
-        <div id="orbitPage" class="space-y-4 md:space-y-5">
+        <div id="orbitPage" class="orbit-page space-y-4 md:space-y-5">
   <section class="orbit-head">
     <div><div class="orbit-kicker"><span class="orbit-live-dot"></span> THE ORBIT</div><h2>What's happening on campus?</h2><p id="orbitUniName">Loading campus...</p></div>
     <div class="orbit-head-actions"><button type="button" onclick="focusOrbitSearch()" aria-label="Search Orbit"><i class="fas fa-search"></i></button><button type="button" onclick="openOrbitNotifications()" aria-label="Notifications"><i class="far fa-bell"></i></button></div>
@@ -559,60 +634,115 @@ body.light-mode .orbit-search,body.light-mode .orbit-composer-card,body.light-mo
         </div>
 
     <div id="studyPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
-        <div class="min-w-0">
-            <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">Academic Layer</p>
-            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Study</h2>
+        <div class="study-hub space-y-4 md:space-y-5">
+            <section class="study-hero">
+                <div>
+                    <p class="study-kicker">Academic Layer</p>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mt-1">Study Hub</h2>
+                    <p class="text-xs text-slate-500 mt-1">Everything you need to move forward.</p>
+                </div>
+                <div class="study-search">
+                    <i class="fas fa-search"></i>
+                    <input id="studySearchInput" type="search" autocomplete="off" placeholder="Search courses, materials or past questions..." aria-label="Search Study Hub">
+                    <button id="studySearchClear" class="hidden text-slate-500" type="button" aria-label="Clear search"><i class="fas fa-times"></i></button>
+                </div>
+            </section>
+
+            <div id="studyStatus" class="hidden" aria-live="polite"></div>
+
+            <section class="study-grid">
+                <button type="button" class="study-card text-left" onclick="studySetView('courses')">
+                    <div class="flex items-center justify-between gap-3"><div class="study-file-icon"><i class="fas fa-book-open"></i></div><i class="fas fa-chevron-right text-slate-600"></i></div>
+                    <h3 class="text-sm text-white mt-3">My Courses</h3>
+                    <p id="studyCourseCount" class="study-meta mt-1">0 courses</p>
+                </button>
+                <button type="button" class="study-card text-left" onclick="studySetView('resources')">
+                    <div class="flex items-center justify-between gap-3"><div class="study-file-icon"><i class="fas fa-folder-open"></i></div><i class="fas fa-chevron-right text-slate-600"></i></div>
+                    <h3 class="text-sm text-white mt-3">Course Materials</h3>
+                    <p id="studyResourceCount" class="study-meta mt-1">0 resources</p>
+                </button>
+                <button type="button" class="study-card text-left" onclick="studySetView('past')">
+                    <div class="flex items-center justify-between gap-3"><div class="study-file-icon"><i class="fas fa-file-circle-question"></i></div><i class="fas fa-chevron-right text-slate-600"></i></div>
+                    <h3 class="text-sm text-white mt-3">Past Questions</h3>
+                    <p id="studyPastCount" class="study-meta mt-1">0 papers</p>
+                </button>
+                <button type="button" class="study-card text-left" onclick="studyOpenTutor()">
+                    <div class="flex items-center justify-between gap-3"><div class="study-file-icon"><i class="fas fa-robot"></i></div><i class="fas fa-chevron-right text-slate-600"></i></div>
+                    <h3 class="text-sm text-white mt-3">AI Tutor</h3>
+                    <p id="studyTutorState" class="study-meta mt-1">Checking availability…</p>
+                </button>
+            </section>
+
+            <section class="study-card">
+                <div class="study-section-head">
+                    <div><h3 class="text-sm text-white">Today's Study</h3><p>Built from your actual activity on this device.</p></div>
+                </div>
+                <div id="studyToday" class="mt-2"></div>
+            </section>
+
+            <section class="study-card">
+                <div class="study-section-head">
+                    <div><h3 class="text-sm text-white">Study Progress</h3><p>Meaningful actions only — no fabricated statistics.</p></div>
+                    <span id="studyProgressLabel" class="study-badge">0 actions</span>
+                </div>
+                <div class="study-grid mt-3">
+                    <div class="study-stat"><strong id="studyOpenedCount">0</strong><span>Opened</span></div>
+                    <div class="study-stat"><strong id="studySavedCount">0</strong><span>Saved</span></div>
+                </div>
+            </section>
+
+            <section class="study-card">
+                <div class="study-section-head">
+                    <div><h3 class="text-sm text-white">Study Tribes</h3><p>Learn together. Go further.</p></div>
+                    <button type="button" class="study-link-btn" onclick="studyExploreTribes()">Explore</button>
+                </div>
+                <div id="studyTribesState" class="mt-3 study-note">Checking for real campus tribes…</div>
+            </section>
+
+            <section class="study-card">
+                <div class="study-tabs" role="tablist" aria-label="Study resources">
+                    <button type="button" data-study-view="courses" onclick="studySetView('courses')">Courses</button>
+                    <button type="button" data-study-view="resources" onclick="studySetView('resources')">Materials</button>
+                    <button type="button" data-study-view="past" onclick="studySetView('past')">Past Questions</button>
+                    <button type="button" data-study-view="saved" onclick="studySetView('saved')">Saved</button>
+                    <button type="button" data-study-view="recent" onclick="studySetView('recent')">Recent</button>
+                </div>
+                <div id="studyViewPanel" class="mt-4"></div>
+            </section>
         </div>
-        <div class="grid grid-cols-1 gap-3 md:gap-4">
-            <div class="glass-card rounded-[2rem] p-6 md:p-8 flex items-center justify-between opacity-70">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center flex-shrink-0"><i class="fas fa-book text-green-500"></i></div>
-                    <div>
-                        <h3 class="font-bold text-white text-sm md:text-base">Study Hub</h3>
-                        <p class="text-slate-500 text-[10px] md:text-xs">PDFs, past questions, lecture materials</p>
-                    </div>
-                </div>
-                <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-500 border border-white/10 rounded-full px-3 py-1 flex-shrink-0">Coming Soon</span>
+    </div>
+
+    <div id="studyResourceModal" class="study-modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Study resource viewer">
+        <div class="study-modal">
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <div class="min-w-0"><p class="study-kicker">Study Resource</p><h3 id="studyModalTitle" class="text-base font-bold text-white truncate mt-1">Resource</h3></div>
+                <button type="button" id="studyModalClose" class="study-btn" aria-label="Close"><i class="fas fa-times"></i></button>
             </div>
-            <div class="glass-card rounded-[2rem] p-6 md:p-8 flex items-center justify-between opacity-70">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center flex-shrink-0"><i class="fas fa-users text-green-500"></i></div>
-                    <div>
-                        <h3 class="font-bold text-white text-sm md:text-base">Study Tribes</h3>
-                        <p class="text-slate-500 text-[10px] md:text-xs">Join peer-learning communities</p>
-                    </div>
-                </div>
-                <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-500 border border-white/10 rounded-full px-3 py-1 flex-shrink-0">Coming Soon</span>
-            </div>
-            <div class="glass-card rounded-[2rem] p-6 md:p-8 flex items-center justify-between opacity-70">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center flex-shrink-0"><i class="fas fa-robot text-green-500"></i></div>
-                    <div>
-                        <h3 class="font-bold text-white text-sm md:text-base">AI Tutor</h3>
-                        <p class="text-slate-500 text-[10px] md:text-xs">Ask academic questions, get explanations</p>
-                    </div>
-                </div>
-                <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-500 border border-white/10 rounded-full px-3 py-1 flex-shrink-0">Coming Soon</span>
-            </div>
+            <div id="studyModalBody"></div>
         </div>
     </div>
 
     <div id="whisperPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
-        <div class="min-w-0">
-            <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">Anonymous, To Other Students Only</p>
-            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Campus Whisper</h2>
-        </div>
-        <div class="glass-card rounded-[2.5rem] p-10 md:p-14 text-center border-dashed border-white/10">
-            <div class="w-16 h-16 md:w-20 md:h-20 bg-green-500/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/10">
-                <i class="fas fa-user-secret text-2xl md:text-3xl text-green-500/50"></i>
+        <div class="whisper-shell space-y-4 md:space-y-5">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div class="min-w-0">
+                    <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">Anonymous, To Other Students Only</p>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Campus Whisper</h2>
+                    <p class="text-xs md:text-sm text-slate-500 mt-1">Say what you need to say. Your identity stays private.</p>
+                </div>
+                <div class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-green-400 bg-green-500/5 border border-green-500/10 rounded-full px-3 py-2 self-start sm:self-auto"><i class="fas fa-shield-halved"></i><span>Anonymous</span></div>
             </div>
-            <h3 class="text-lg md:text-xl font-bold text-white mb-2">Coming Soon</h3>
-            <p class="text-slate-500 text-xs md:text-sm max-w-[280px] mx-auto leading-relaxed">
-                Campus Whisper is being built as part of UniVerse ICOS V1.0 — anonymous campus conversation, with real moderation behind the scenes.
-            </p>
+            <section class="whisper-composer rounded-[2rem] p-4 md:p-5">
+                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-green-500/10 border border-green-500/15 flex items-center justify-center shrink-0"><i class="fas fa-user-secret text-green-500"></i></div><div class="min-w-0"><p class="text-sm font-bold text-white">Post anonymously</p><p class="text-[10px] text-slate-500">Only your campus sees this. Moderation still applies.</p></div></div>
+                <textarea id="whisperComposer" class="whisper-input w-full rounded-2xl bg-white/5 border border-white/10 p-4 text-sm md:text-base text-white outline-none focus:border-green-500/40 transition resize-y" maxlength="1000" rows="5" placeholder="What's on your mind?" aria-label="Whisper message"></textarea>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3"><div class="flex items-center justify-between sm:justify-start gap-3 text-[10px] text-slate-500"><span id="whisperCharCount">0/1000</span><span>Be respectful. Anonymous doesn't mean unaccountable.</span></div><button type="button" id="whisperPublishBtn" class="scholar-gradient w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm shadow-xl active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-paper-plane mr-2"></i>Publish Whisper</button></div>
+                <p id="whisperComposerStatus" class="text-[10px] min-h-[16px] mt-2 text-slate-500" aria-live="polite"></p>
+            </section>
+            <div class="flex items-center justify-between gap-3"><div><p class="text-[9px] font-black uppercase tracking-[0.18em] text-green-500">Campus Feed</p><h3 class="text-base md:text-lg font-bold text-white mt-1">Latest whispers</h3></div><button type="button" id="whisperRefreshBtn" class="whisper-action rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition" aria-label="Refresh whispers" title="Refresh"><i class="fas fa-rotate-right"></i></button></div>
+            <div id="whisperFeed" class="space-y-3" aria-live="polite"></div>
+            <div id="whisperLoadMoreWrap" class="hidden text-center pt-1"><button type="button" id="whisperLoadMoreBtn" class="rounded-xl bg-white/5 border border-white/10 px-5 py-3 text-xs font-bold text-slate-300 hover:text-white transition">Load more</button></div>
         </div>
     </div>
-
     <!-- Future ICOS Experiences — preserved, functional modules that
          are not part of the six V1.0 pillars. Reached from Profile,
          not the primary nav. -->
@@ -749,9 +879,42 @@ let appState = {
             }
             
             currentUserId = session.user.id;
-            userUniversity = session.user.user_metadata?.university || '';
-            userFullName = session.user.user_metadata?.full_name || '';
-            
+            const metadata = session.user.user_metadata || {};
+            const metadataUniversity = metadata.university || '';
+            const metadataFullName = metadata.full_name || '';
+
+            // The authenticated user's profile row is the authoritative campus identity
+            // for Orbit. Session metadata can be stale/missing after refresh or login.
+            let profile = null;
+            let profileError = null;
+            ({ data: profile, error: profileError } = await _supabase
+                .from('profiles')
+                .select('id, full_name, university, bio, profile_photo_url, wallet_balance, reputation_stars, created_at')
+                .eq('id', currentUserId)
+                .maybeSingle());
+
+            if (profileError) {
+                console.error('Failed to resolve authenticated profile:', profileError);
+            }
+
+            if (!profile) {
+                const { data: createdProfile, error: insertErr } = await _supabase.from('profiles').insert({
+                    id: currentUserId,
+                    full_name: metadataFullName || null,
+                    university: metadataUniversity || null,
+                    wallet_balance: 0,
+                    reputation_stars: 0
+                }).select('id, full_name, university, bio, profile_photo_url, wallet_balance, reputation_stars, created_at').single();
+                if (insertErr) {
+                    console.error('Failed to create default profile', insertErr);
+                } else {
+                    profile = createdProfile;
+                }
+            }
+
+            userUniversity = (profile?.university || metadataUniversity || '').trim();
+            userFullName = (profile?.full_name || metadataFullName || '').trim();
+
             document.getElementById('userUniDisplay').innerText = userUniversity || 'Unknown';
             document.getElementById('userInitial').innerText = userFullName ? userFullName[0].toUpperCase() : '?';
 
@@ -761,60 +924,14 @@ let appState = {
             const orbitUniNameEl = document.getElementById('orbitUniName');
             if (orbitUniNameEl) orbitUniNameEl.innerText = userUniversity || 'Unknown University';
 
-           const { data: profile } = await _supabase
-    .from('profiles')
-    .select('wallet_balance, reputation_stars')
-    .eq('id', currentUserId)
-    .single();
-    // Make sure the user has a profile row; if not, create a blank one so stars
-    // are always available immediately rather than only after some other action.
-    if (!profile) {
-        const { error: insertErr } = await _supabase.from('profiles').insert({
-            id: currentUserId,
-            wallet_balance: 0,
-            reputation_stars: 0
-        });
-        if (insertErr) console.error('Failed to create default profile', insertErr);
-    }
-    // Orbit realtime is initialized by the Orbit-only subscription manager below.
-setupOrbitRealtime();
+            // Orbit realtime is initialized only after the authenticated campus is known.
+            setupOrbitRealtime();
 
-// Listen for lodge changes
-_supabase
-    .channel('public:lodges')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'lodges' }, payload => {
-        console.log('Lodge change received!', payload);
-        if (lodgeReloadTimer) clearTimeout(lodgeReloadTimer);
-        lodgeReloadTimer = setTimeout(() => loadLodgeFeed(true), 500);
-    })
-    .subscribe();
-
-// Listen for profile changes to update stars and balance in real-time (INSERT/UPDATE)
-_supabase
-    .channel('public:profiles')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, payload => {
-        console.log('Profile change!', payload);
-        if (payload.new && payload.new.id === currentUserId) {
-            document.getElementById('userBalance').innerText = (payload.new.wallet_balance || 0).toFixed(2);
-            userReputation = payload.new.reputation_stars || 0;
-            renderStars(userReputation);
-        }
-    })
-    .subscribe();
-
-if (profile) {
-    document.getElementById('userBalance').innerText = (profile.wallet_balance || 0).toFixed(2);
-    userReputation = profile.reputation_stars || 0;
-    // This line sends the data to the stars function
-    renderStars(userReputation); 
-} else {
-    // If no profile found, show 0 stars
-    userReputation = 0;
-    renderStars(0);
-}
             loadFeed(true);
             loadLodgeFeed(true);
             loadErrands(true);
+            // Study Hub loads only its own scoped data after campus identity is resolved.
+            studyReload();
         }
         
 
@@ -1765,6 +1882,7 @@ function showPage(pageName) {
 
     // Page-specific data loads, preserved from the original implementation
     if (pageName === 'profile') loadProfileData();
+    else if (pageName === 'whisper') { initCampusWhisper(); loadWhispers({reset:true}); }
     else if (pageName === 'lodge') loadLodgeFeed(true);
     else if (pageName === 'errandPage') loadErrands(true);
 }
@@ -2078,7 +2196,7 @@ async function loadErrands(reset = false) {
 /* Orbit-only product logic — normalized Supabase integration */
 const ORBIT_POST_COLUMNS='id,content,images,school_tag,poster_name,poster_id,created_at,updated_at,edited_at,status,visibility';
 const ORBIT_COMMENT_PAGE_SIZE=25;
-const orbitState={mode:'for-you',posts:new Map(),profiles:new Map(),search:'',newPosts:[],media:[],mediaIndex:0,saved:new Set(),busy:new Set(),commentCursors:new Map(),comments:new Map(),commentLoading:new Set(),replyTo:new Map(),timer:null};
+const orbitState={mode:'for-you',posts:new Map(),profiles:new Map(),search:'',newPosts:[],media:[],mediaIndex:0,saved:new Set(),busy:new Set(),commentCursors:new Map(),comments:new Map(),commentLoading:new Set(),replyTo:new Map(),pendingComments:new Map(),pendingDeletes:new Set(),pendingLikes:new Map(),pendingSaves:new Map(),realtimeSeen:new Set(),timer:null};
 let orbitFeedCursor=null;
 let orbitFeedLoadedAll=false;
 let orbitRealtimeChannel=null;
@@ -2086,52 +2204,446 @@ let orbitRealtimeStarting=false;
 const oe=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const ou=v=>{try{const u=new URL(String(v||''),location.href);return /^https?:$/.test(u.protocol)?u.href:''}catch{return''}};
 const oi=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase()||'?';
+
+function setOrbitFeedMode(mode){
+    const allowed=new Set(['for-you','latest','trending']);
+    orbitState.mode=allowed.has(mode)?mode:'for-you';
+    document.querySelectorAll('[data-orbit-mode]').forEach(b=>b.classList.toggle('active',b.dataset.orbitMode===orbitState.mode));
+    orbitRender();
+}
+
+function focusOrbitSearch(){
+    const input=document.getElementById('orbitSearchInput');
+    if(!input)return;
+    input.focus();
+    input.select();
+    input.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function clearOrbitSearch(){
+    const input=document.getElementById('orbitSearchInput');
+    orbitState.search='';
+    if(input)input.value='';
+    document.getElementById('orbitSearchClear')?.classList.add('hidden');
+    orbitRender();
+    input?.focus();
+}
+
+function openOrbitNotifications(){
+    document.getElementById('orbitNotificationModal')?.classList.remove('hidden');
+}
+
+function closeOrbitNotifications(){
+    document.getElementById('orbitNotificationModal')?.classList.add('hidden');
+}
+
+function setOrbitReply(postId,commentId){
+    const post=orbitState.posts.get(postId);
+    const comment=(orbitState.comments.get(postId)||[]).find(c=>c.id===commentId);
+    if(!post||!comment)return;
+    orbitState.replyTo.set(postId,commentId);
+    const input=document.getElementById('commentInput-'+postId);
+    if(!input)return;
+    const prof=orbitState.profiles.get(comment.user_id)||{};
+    const name=prof.full_name||'Student';
+    input.placeholder=`Reply to ${name}…`;
+    let cancel=input.parentElement?.querySelector('[data-orbit-cancel-reply]');
+    if(!cancel){
+        cancel=document.createElement('button');
+        cancel.type='button';
+        cancel.dataset.orbitCancelReply='';
+        cancel.className='text-[9px] text-slate-500 px-1';
+        cancel.textContent='Cancel';
+        cancel.addEventListener('click',()=>cancelOrbitReply(postId));
+        input.parentElement?.insertBefore(cancel,input.parentElement.querySelector('button'));
+    }
+    input.focus();
+    input.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function cancelOrbitReply(postId){
+    orbitState.replyTo.delete(postId);
+    const input=document.getElementById('commentInput-'+postId);
+    if(input)input.placeholder='Add a comment…';
+    input?.parentElement?.querySelector('[data-orbit-cancel-reply]')?.remove();
+}
+
+function toggleOrbitMenu(id){
+    const target=document.getElementById('orbitMenu-'+id);
+    if(!target)return;
+    const willOpen=target.classList.contains('hidden');
+    document.querySelectorAll('.orbit-menu-panel').forEach(x=>x.classList.add('hidden'));
+    if(willOpen)target.classList.remove('hidden');
+}
+
+function orbitClosePublicProfile(){
+    document.getElementById('orbitPublicProfileModal')?.remove();
+}
 function orbitText(v){return oe(v).replace(/(^|\s)(#[\w-]+|@[\w-]+)/g,'$1<span class="orbit-tag">$2</span>')}
 function orbitAvatar(name,url){url=ou(url);return url?`<div class="orbit-avatar"><img src="${oe(url)}" alt="${oe(name||'Student')}" loading="lazy" decoding="async"></div>`:`<div class="orbit-avatar">${oe(oi(name))}</div>`}
 function orbitScore(p){const l=Number(p.likeCount)||0,c=Number(p.commentCount)||0,h=Math.max(1,(Date.now()-new Date(p.created_at))/36e5);return(l*3+c*5)/Math.pow(h,.65)}
-function orbitList(){let a=[...orbitState.posts.values()];if(orbitState.search){const q=orbitState.search.toLowerCase().replace(/^[@#]/,'');a=a.filter(p=>`${p.poster_name||''} ${p.content||''}`.toLowerCase().includes(q))}if(orbitState.mode==='trending')a.sort((x,y)=>orbitScore(y)-orbitScore(x));else if(orbitState.mode==='latest')a.sort((x,y)=>new Date(y.created_at)-new Date(x.created_at));else a.sort((x,y)=>orbitScore(y)*.2+new Date(y.created_at)/1e11-(orbitScore(x)*.2+new Date(x.created_at)/1e11));return a}
+function orbitList(){let a=[...orbitState.posts.values()];if(orbitState.search){const q=orbitState.search.toLowerCase().replace(/^[@#]/,'');a=a.filter(p=>`${p.poster_name||''} ${p.content||''}`.toLowerCase().includes(q))}if(orbitState.mode==='trending')a.sort((x,y)=>orbitScore(y)-orbitScore(x));else if(orbitState.mode==='latest')a.sort((x,y)=>{const t=new Date(y.created_at)-new Date(x.created_at);return t||String(y.id).localeCompare(String(x.id));});else a.sort((x,y)=>orbitScore(y)*.2+new Date(y.created_at)/1e11-(orbitScore(x)*.2+new Date(x.created_at)/1e11));return a}
 function orbitMedia(p){const a=(p.images||[]).map(ou).filter(Boolean);if(!a.length)return'';const shown=a.slice(0,4),cls=shown.length===1?'one':shown.length===2?'two':shown.length===3?'three':'four',more=a.length-4;return`<div class="orbit-media ${cls}">${shown.map((u,i)=>`<button type="button" class="${more&&i===3?'orbit-more':''}" ${more&&i===3?`data-more="+${more}"`:''} onclick="openOrbitMediaViewer('${oe(p.id)}',${i})"><img src="${oe(u)}" alt="Photo shared by ${oe(p.poster_name||'student')}" loading="lazy" decoding="async"></button>`).join('')}</div>`}
 function orbitCommentRows(id){const rows=orbitState.comments.get(id)||[];if(!rows.length)return'<div class="text-[10px] text-slate-500">No comments yet. Start the conversation.</div>';const p=orbitState.posts.get(id);return rows.map(c=>{const prof=orbitState.profiles.get(c.user_id)||{};const name=prof.full_name||c.user_id===currentUserId?userFullName:'Student';return`<div class="orbit-comment" data-comment-id="${oe(c.id)}">${orbitAvatar(name,prof.profile_photo_url)}<div class="orbit-comment-body"><div><span class="orbit-comment-name">${oe(name||'Student')}</span><span class="orbit-comment-time">${oe(timeAgo(c.created_at))}</span></div><div class="orbit-comment-text">${orbitText(c.content||'')}</div></div><div class="flex gap-2">${p?`<button onclick="setOrbitReply('${oe(id)}','${oe(c.id)}')" class="text-[9px] text-slate-500">Reply</button>`:''}${c.user_id===currentUserId?`<button onclick="deleteComment('${oe(id)}','${oe(c.id)}')" class="text-slate-500" aria-label="Delete comment"><i class="fas fa-times"></i></button>`:''}</div></div>`}).join('')}
 function renderPost(p){const liked=!!p.likedByCurrentUser,saved=!!p.savedByCurrentUser,own=p.poster_id===currentUserId,prof=orbitState.profiles.get(p.poster_id)||{};return`<article id="post-${oe(p.id)}" class="glass-card orbit-post space-y-3"><header class="orbit-post-head"><button class="orbit-author" onclick="openOrbitAuthor('${oe(p.poster_id||'')}')">${orbitAvatar(p.poster_name,prof.profile_photo_url)}<span class="orbit-author-meta"><strong class="orbit-author-name">${oe(p.poster_name||'Student')}</strong><span class="orbit-author-info">${oe(p.school_tag||userUniversity)} • ${oe(timeAgo(p.created_at))}${p.edited_at?' • edited':''}</span></span></button><div class="orbit-menu-wrap"><button class="orbit-menu" onclick="toggleOrbitMenu('${oe(p.id)}')" aria-label="Post options"><i class="fas fa-ellipsis-h"></i></button><div id="orbitMenu-${oe(p.id)}" class="orbit-menu-panel hidden">${own?`<button onclick="editPost('${oe(p.id)}')"><i class="fas fa-pen"></i> Edit post</button><button class="danger" onclick="deletePost('${oe(p.id)}')"><i class="fas fa-trash"></i> Delete post</button>`:`<button onclick="shareOrbitPost('${oe(p.id)}')"><i class="fas fa-share"></i> Share</button><button onclick="reportOrbitPost('${oe(p.id)}')"><i class="far fa-flag"></i> Report</button>`}<button onclick="toggleSavePost('${oe(p.id)}')"><i class="${saved?'fas':'far'} fa-bookmark"></i> ${saved?'Unsave':'Save'}</button></div></div></header>${p.content?`<div class="orbit-content">${orbitText(p.content)}</div>`:''}${orbitMedia(p)}<div class="orbit-actions"><button id="like-${oe(p.id)}" class="orbit-action ${liked?'liked':''}" onclick="toggleLike('${oe(p.id)}')"><i class="${liked?'fas':'far'} fa-heart"></i><span>${Number(p.likeCount)||0}</span></button><button class="orbit-action" onclick="toggleComments('${oe(p.id)}')"><i class="far fa-comment"></i><span id="comment-count-${oe(p.id)}">${Number(p.commentCount)||0}</span></button><button class="orbit-action" onclick="shareOrbitPost('${oe(p.id)}')"><i class="fas fa-share"></i> Share</button><button id="save-${oe(p.id)}" class="orbit-action ${saved?'saved':''}" onclick="toggleSavePost('${oe(p.id)}')"><i class="${saved?'fas':'far'} fa-bookmark"></i></button></div><section id="commentSection-${oe(p.id)}" class="orbit-comments hidden"><div id="commentList-${oe(p.id)}" class="orbit-comment-list"></div><button id="commentMore-${oe(p.id)}" type="button" class="hidden text-[10px] text-green-500 font-bold" onclick="loadComments('${oe(p.id)}',true)">Load more comments</button><form class="orbit-comment-input" onsubmit="event.preventDefault();addComment('${oe(p.id)}')"><input id="commentInput-${oe(p.id)}" maxlength="1000" placeholder="Add a comment..." autocomplete="off"><button type="submit" aria-label="Send"><i class="fas fa-paper-plane"></i></button></form></section></article>`}
 function orbitRender(){const f=document.getElementById('orbitFeed'),a=orbitList();document.getElementById('orbitSearchState')?.classList.toggle('hidden',!orbitState.search);if(document.getElementById('orbitSearchState')&&!document.getElementById('orbitSearchState').classList.contains('hidden'))document.getElementById('orbitSearchState').textContent=`${a.length} result${a.length===1?'':'s'} for “${oe(orbitState.search)}”`;if(!a.length){f.innerHTML=`<div class="orbit-empty"><div><i class="fas ${orbitState.search?'fa-search':'fa-satellite'}"></i></div><h4>${orbitState.search?'No results found':'Your Orbit is quiet.'}</h4><p>${orbitState.search?'Try another keyword or hashtag.':'Be the first to start the conversation.'}</p></div>`;return}f.innerHTML=a.map(renderPost).join('')+(orbitFeedLoadedAll||orbitState.search?'':`<button onclick="loadFeed()" class="w-full py-3 text-center text-xs text-green-500 font-bold">Load more</button>`)}
 async function orbitProfiles(posts){const ids=[...new Set(posts.map(p=>p.poster_id).filter(Boolean))].filter(id=>!orbitState.profiles.has(id));if(!ids.length)return;try{const{data,error}=await _supabase.from('profiles').select('id,full_name,profile_photo_url').in('id',ids);if(error)throw error;(data||[]).forEach(x=>orbitState.profiles.set(x.id,x))}catch(e){console.warn('Orbit profile hydration failed',e)}}
 async function hydrateOrbitSocial(posts){const ids=posts.map(p=>p.id).filter(Boolean);if(!ids.length)return;const [likes,comments,saves]=await Promise.all([_supabase.from('orbit_post_likes').select('post_id,user_id').in('post_id',ids),_supabase.from('orbit_comments').select('post_id').in('post_id',ids).is('deleted_at',null),_supabase.from('orbit_post_saves').select('post_id').in('post_id',ids).eq('user_id',currentUserId)]);if(likes.error)throw likes.error;if(comments.error)throw comments.error;if(saves.error)throw saves.error;const likeCounts=new Map(),liked=new Set(),commentCounts=new Map(),saved=new Set();(likes.data||[]).forEach(x=>{likeCounts.set(x.post_id,(likeCounts.get(x.post_id)||0)+1);if(x.user_id===currentUserId)liked.add(x.post_id)});(comments.data||[]).forEach(x=>commentCounts.set(x.post_id,(commentCounts.get(x.post_id)||0)+1));(saves.data||[]).forEach(x=>saved.add(x.post_id));posts.forEach(p=>{p.likeCount=likeCounts.get(p.id)||0;p.likedByCurrentUser=liked.has(p.id);p.commentCount=commentCounts.get(p.id)||0;p.savedByCurrentUser=saved.has(p.id);if(p.savedByCurrentUser)orbitState.saved.add(p.id);else orbitState.saved.delete(p.id)})}
-async function loadFeed(reset=false){if(isFeedLoading)return;isFeedLoading=true;const f=document.getElementById('orbitFeed');try{if(reset){orbitFeedCursor=null;orbitFeedLoadedAll=false;orbitState.posts.clear();orbitState.comments.clear();f.innerHTML='<div class="orbit-skeleton"></div><div class="orbit-skeleton"></div>'}if(orbitFeedLoadedAll&&!reset)return;let q=_supabase.from('orbit_feed').select(ORBIT_POST_COLUMNS).eq('school_tag',userUniversity).eq('status','active').eq('visibility','campus').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(FEED_PAGE_SIZE);if(orbitFeedCursor){q=q.or(`created_at.lt.${orbitFeedCursor.created_at},and(created_at.eq.${orbitFeedCursor.created_at},id.lt.${orbitFeedCursor.id})`)}const{data,error}=await q;if(error)throw error;if(!data?.length){orbitFeedLoadedAll=true;orbitRender();return}await orbitProfiles(data);await hydrateOrbitSocial(data);data.forEach(p=>orbitState.posts.set(p.id,p));const last=data[data.length-1];orbitFeedCursor={created_at:last.created_at,id:last.id};if(data.length<FEED_PAGE_SIZE)orbitFeedLoadedAll=true;orbitRender()}catch(e){console.error('Orbit feed load failed',e);if(!orbitState.posts.size)f.innerHTML='<div class="orbit-empty"><div><i class="fas fa-wifi"></i></div><h4>Could not load your Orbit</h4><p>Check your connection and try again.</p><button onclick="loadFeed(true)" class="orbit-submit" style="max-width:180px;margin:1rem auto">Retry</button></div>'}finally{isFeedLoading=false}}
+async function loadFeed(reset=false){if(isFeedLoading)return;if(!currentUserId)return;if(!userUniversity){const f=document.getElementById('orbitFeed');if(f)f.innerHTML='<div class="orbit-empty"><div><i class="fas fa-building"></i></div><h4>Campus unavailable</h4><p>Your university could not be resolved for this session.</p></div>';return;}isFeedLoading=true;const f=document.getElementById('orbitFeed');try{if(reset){orbitFeedCursor=null;orbitFeedLoadedAll=false;orbitState.posts.clear();orbitState.comments.clear();orbitState.commentCursors.clear();f.innerHTML='<div class="orbit-skeleton"></div><div class="orbit-skeleton"></div>'}if(orbitFeedLoadedAll&&!reset)return;let q=_supabase.from('orbit_feed').select(ORBIT_POST_COLUMNS).eq('school_tag',userUniversity).eq('status','active').eq('visibility','campus').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(FEED_PAGE_SIZE);if(orbitFeedCursor){q=q.or(`created_at.lt.${orbitFeedCursor.created_at},and(created_at.eq.${orbitFeedCursor.created_at},id.lt.${orbitFeedCursor.id})`)}const{data,error}=await q;if(error)throw error;if(!data?.length){orbitFeedLoadedAll=true;orbitRender();return}await orbitProfiles(data);await hydrateOrbitSocial(data);data.forEach(p=>orbitState.posts.set(p.id,p));const last=data[data.length-1];orbitFeedCursor={created_at:last.created_at,id:last.id};if(data.length<FEED_PAGE_SIZE)orbitFeedLoadedAll=true;orbitRender()}catch(e){console.error('Orbit feed load failed',e);if(!orbitState.posts.size)f.innerHTML='<div class="orbit-empty"><div><i class="fas fa-wifi"></i></div><h4>Could not load your Orbit</h4><p>Check your connection and try again.</p><button onclick="loadFeed(true)" class="orbit-submit" style="max-width:180px;margin:1rem auto">Retry</button></div>'}finally{isFeedLoading=false}}
 function updateLikeUI(p){const b=document.getElementById('like-'+p.id);if(!b)return;b.classList.toggle('liked',!!p.likedByCurrentUser);const i=b.querySelector('i');if(i)i.className=`${p.likedByCurrentUser?'fas':'far'} fa-heart`;const s=b.querySelector('span');if(s)s.textContent=String(Number(p.likeCount)||0)}
-async function toggleLike(id){const p=orbitState.posts.get(id);if(!p||orbitState.busy.has('like:'+id))return;orbitState.busy.add('like:'+id);const prev={likedByCurrentUser:!!p.likedByCurrentUser,likeCount:Number(p.likeCount)||0};p.likedByCurrentUser=!prev.likedByCurrentUser;p.likeCount=Math.max(0,prev.likeCount+(p.likedByCurrentUser?1:-1));updateLikeUI(p);try{const r=p.likedByCurrentUser?await _supabase.from('orbit_post_likes').insert({post_id:id,user_id:currentUserId}):await _supabase.from('orbit_post_likes').delete().eq('post_id',id).eq('user_id',currentUserId);if(r.error)throw r.error}catch(e){p.likedByCurrentUser=prev.likedByCurrentUser;p.likeCount=prev.likeCount;updateLikeUI(p);console.error('Orbit like failed',e)}finally{orbitState.busy.delete('like:'+id)}}
-async function loadComments(id,append=false){if(orbitState.commentLoading.has(id))return;orbitState.commentLoading.add(id);try{let q=_supabase.from('orbit_comments').select('id,post_id,user_id,parent_comment_id,content,created_at,updated_at').eq('post_id',id).is('deleted_at',null).order('created_at',{ascending:false}).order('id',{ascending:false}).limit(ORBIT_COMMENT_PAGE_SIZE);const cursor=orbitState.commentCursors.get(id);if(append&&cursor)q=q.or(`created_at.lt.${cursor.created_at},and(created_at.eq.${cursor.created_at},id.lt.${cursor.id})`);const{data,error}=await q;if(error)throw error;const rows=(data||[]).reverse();const existing=orbitState.comments.get(id)||[];const map=new Map(existing.map(x=>[x.id,x]));rows.forEach(x=>map.set(x.id,x));const merged=[...map.values()].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));orbitState.comments.set(id,merged);await orbitProfiles((data||[]).map(x=>({poster_id:x.user_id})));const last=data?.[data.length-1];if(last)orbitState.commentCursors.set(id,{created_at:last.created_at,id:last.id});const more=(data||[]).length===ORBIT_COMMENT_PAGE_SIZE;document.getElementById('commentMore-'+id)?.classList.toggle('hidden',!more);const list=document.getElementById('commentList-'+id);if(list)list.innerHTML=orbitCommentRows(id);const p=orbitState.posts.get(id);if(p)p.commentCount=merged.length;const count=document.getElementById('comment-count-'+id);if(count)count.textContent=String(Number(p?.commentCount)||merged.length)}catch(e){console.error('Orbit comments load failed',e)}finally{orbitState.commentLoading.delete(id)}}
+async function toggleLike(id){const p=orbitState.posts.get(id);if(!p||orbitState.busy.has('like:'+id))return;orbitState.busy.add('like:'+id);const prev={likedByCurrentUser:!!p.likedByCurrentUser,likeCount:Number(p.likeCount)||0},desired=!prev.likedByCurrentUser;orbitState.pendingLikes.set(id,desired);p.likedByCurrentUser=desired;p.likeCount=Math.max(0,prev.likeCount+(desired?1:-1));updateLikeUI(p);try{const r=desired?await _supabase.from('orbit_post_likes').insert({post_id:id,user_id:currentUserId}):await _supabase.from('orbit_post_likes').delete().eq('post_id',id).eq('user_id',currentUserId);if(r.error)throw r.error;const[countResult,userResult]=await Promise.all([_supabase.from('orbit_post_likes').select('post_id',{count:'exact',head:true}).eq('post_id',id),_supabase.from('orbit_post_likes').select('post_id').eq('post_id',id).eq('user_id',currentUserId).maybeSingle()]);if(countResult.error)throw countResult.error;if(userResult.error)throw userResult.error;p.likeCount=Number(countResult.count)||0;p.likedByCurrentUser=!!userResult.data;updateLikeUI(p)}catch(e){p.likedByCurrentUser=prev.likedByCurrentUser;p.likeCount=prev.likeCount;updateLikeUI(p);console.error('Orbit like failed',e)}finally{orbitState.pendingLikes.delete(id);orbitState.busy.delete('like:'+id)}}
+async function loadComments(id,append=false){if(orbitState.commentLoading.has(id))return;orbitState.commentLoading.add(id);try{let q=_supabase.from('orbit_comments').select('id,post_id,user_id,parent_comment_id,content,created_at,updated_at').eq('post_id',id).is('deleted_at',null).order('created_at',{ascending:false}).order('id',{ascending:false}).limit(ORBIT_COMMENT_PAGE_SIZE+1);const cursor=orbitState.commentCursors.get(id);if(append&&cursor)q=q.or(`created_at.lt.${cursor.created_at},and(created_at.eq.${cursor.created_at},id.lt.${cursor.id})`);const{data,error}=await q;if(error)throw error;const page=data||[],hasMore=page.length>ORBIT_COMMENT_PAGE_SIZE,displayRows=hasMore?page.slice(0,ORBIT_COMMENT_PAGE_SIZE):page;const rows=displayRows.reverse();const existing=orbitState.comments.get(id)||[];const map=new Map(existing.map(x=>[x.id,x]));rows.forEach(x=>map.set(x.id,x));const merged=[...map.values()].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));orbitState.comments.set(id,merged);await orbitProfiles(displayRows.map(x=>({poster_id:x.user_id})));const last=displayRows[displayRows.length-1];if(last)orbitState.commentCursors.set(id,{created_at:last.created_at,id:last.id});document.getElementById('commentMore-'+id)?.classList.toggle('hidden',!hasMore);const list=document.getElementById('commentList-'+id);if(list)list.innerHTML=orbitCommentRows(id);const p=orbitState.posts.get(id);if(p){const count=document.getElementById('comment-count-'+id);if(count)count.textContent=String(Number(p.commentCount)||0)}}catch(e){console.error('Orbit comments load failed',e)}finally{orbitState.commentLoading.delete(id)}}
 function toggleComments(id){const s=document.getElementById('commentSection-'+id);if(!s)return;const opening=s.classList.contains('hidden');s.classList.toggle('hidden');if(opening&&!orbitState.comments.has(id))loadComments(id)}
-async function addComment(id,parentCommentId=null){const input=document.getElementById('commentInput-'+id),text=input?.value.trim();if(!text||text.length>1000||orbitState.busy.has('comment:'+id))return;const p=orbitState.posts.get(id);if(!p)return;orbitState.busy.add('comment:'+id);const tempId=`optimistic-${crypto.randomUUID()}`,optimistic={id:tempId,post_id:id,user_id:currentUserId,parent_comment_id:parentCommentId,content:text,created_at:new Date().toISOString(),optimistic:true};const rows=orbitState.comments.get(id)||[];orbitState.comments.set(id,[...rows,optimistic]);p.commentCount=(Number(p.commentCount)||0)+1;input.value='';const list=document.getElementById('commentList-'+id);if(list)list.innerHTML=orbitCommentRows(id);const count=document.getElementById('comment-count-'+id);if(count)count.textContent=String(p.commentCount);try{const{data,error}=await _supabase.from('orbit_comments').insert({post_id:id,user_id:currentUserId,content:text,parent_comment_id:parentCommentId}).select('id,post_id,user_id,parent_comment_id,content,created_at,updated_at').single();if(error)throw error;const current=(orbitState.comments.get(id)||[]).filter(x=>x.id!==tempId);orbitState.comments.set(id,[...current,data]);orbitState.replyTo.delete(id);input.placeholder='Add a comment...';if(list)list.innerHTML=orbitCommentRows(id)}catch(e){orbitState.comments.set(id,(orbitState.comments.get(id)||[]).filter(x=>x.id!==tempId));p.commentCount=Math.max(0,(Number(p.commentCount)||1)-1);if(list)list.innerHTML=orbitCommentRows(id);if(count)count.textContent=String(p.commentCount);input.value=text;console.error('Orbit comment failed',e)}finally{orbitState.busy.delete('comment:'+id)}}
-async function deleteComment(postId,commentId){if(!confirm('Remove this comment?'))return;const p=orbitState.posts.get(postId),rows=orbitState.comments.get(postId)||[],idx=rows.findIndex(x=>x.id===commentId),target=rows[idx];if(!p||!target||target.user_id!==currentUserId)return;orbitState.comments.set(postId,rows.filter(x=>x.id!==commentId));p.commentCount=Math.max(0,(Number(p.commentCount)||0)-1);const list=document.getElementById('commentList-'+postId);if(list)list.innerHTML=orbitCommentRows(postId);const count=document.getElementById('comment-count-'+postId);if(count)count.textContent=String(p.commentCount);try{const{error}=await _supabase.from('orbit_comments').delete().eq('id',commentId).eq('user_id',currentUserId);if(error)throw error}catch(e){orbitState.comments.set(postId,rows);p.commentCount=Number(p.commentCount||0)+1;if(list)list.innerHTML=orbitCommentRows(postId);if(count)count.textContent=String(p.commentCount);console.error('Orbit comment delete failed',e)}}
-async function toggleSavePost(id){const p=orbitState.posts.get(id);if(!p||orbitState.busy.has('save:'+id))return;orbitState.busy.add('save:'+id);const prev=!!p.savedByCurrentUser;p.savedByCurrentUser=!prev;const b=document.getElementById('save-'+id);if(b){b.classList.toggle('saved',p.savedByCurrentUser);const i=b.querySelector('i');if(i)i.className=`${p.savedByCurrentUser?'fas':'far'} fa-bookmark`}try{const r=p.savedByCurrentUser?await _supabase.from('orbit_post_saves').insert({post_id:id,user_id:currentUserId}):await _supabase.from('orbit_post_saves').delete().eq('post_id',id).eq('user_id',currentUserId);if(r.error)throw r.error;if(p.savedByCurrentUser)orbitState.saved.add(id);else orbitState.saved.delete(id)}catch(e){p.savedByCurrentUser=prev;if(prev)orbitState.saved.add(id);else orbitState.saved.delete(id);if(b){b.classList.toggle('saved',prev);const i=b.querySelector('i');if(i)i.className=`${prev?'fas':'far'} fa-bookmark`}console.error('Orbit save failed',e)}finally{orbitState.busy.delete('save:'+id)}}
+async function addComment(id,parentCommentId=null){parentCommentId=parentCommentId||orbitState.replyTo.get(id)||null;const input=document.getElementById('commentInput-'+id),text=input?.value.trim();if(!text||text.length>1000||orbitState.busy.has('comment:'+id))return;const p=orbitState.posts.get(id);if(!p)return;orbitState.busy.add('comment:'+id);const commentId=crypto.randomUUID(),optimistic={id:commentId,post_id:id,user_id:currentUserId,parent_comment_id:parentCommentId,content:text,created_at:new Date().toISOString(),optimistic:true};orbitState.pendingComments.set(commentId,id);const rows=orbitState.comments.get(id)||[];orbitState.comments.set(id,[...rows,optimistic]);p.commentCount=(Number(p.commentCount)||0)+1;input.value='';const list=document.getElementById('commentList-'+id);if(list)list.innerHTML=orbitCommentRows(id);const count=document.getElementById('comment-count-'+id);if(count)count.textContent=String(p.commentCount);try{const{data,error}=await _supabase.from('orbit_comments').insert({id:commentId,post_id:id,user_id:currentUserId,content:text,parent_comment_id:parentCommentId}).select('id,post_id,user_id,parent_comment_id,content,created_at,updated_at').single();if(error)throw error;const current=(orbitState.comments.get(id)||[]).filter(x=>x.id!==commentId);orbitState.comments.set(id,[...current,data]);orbitState.pendingComments.delete(commentId);orbitState.replyTo.delete(id);input.placeholder='Add a comment...';if(list)list.innerHTML=orbitCommentRows(id)}catch(e){orbitState.pendingComments.delete(commentId);orbitState.comments.set(id,(orbitState.comments.get(id)||[]).filter(x=>x.id!==commentId));p.commentCount=Math.max(0,(Number(p.commentCount)||1)-1);if(list)list.innerHTML=orbitCommentRows(id);if(count)count.textContent=String(p.commentCount);input.value=text;console.error('Orbit comment failed',e)}finally{orbitState.busy.delete('comment:'+id)}}
+async function deleteComment(postId,commentId){if(!confirm('Remove this comment?'))return;const p=orbitState.posts.get(postId),rows=orbitState.comments.get(postId)||[],idx=rows.findIndex(x=>x.id===commentId),target=rows[idx];if(!p||!target||target.user_id!==currentUserId||orbitState.pendingDeletes.has(commentId))return;orbitState.pendingDeletes.add(commentId);orbitState.comments.set(postId,rows.filter(x=>x.id!==commentId));p.commentCount=Math.max(0,(Number(p.commentCount)||0)-1);const list=document.getElementById('commentList-'+postId);if(list)list.innerHTML=orbitCommentRows(postId);const count=document.getElementById('comment-count-'+postId);if(count)count.textContent=String(p.commentCount);try{const{error}=await _supabase.from('orbit_comments').delete().eq('id',commentId).eq('user_id',currentUserId);if(error)throw error}catch(e){orbitState.pendingDeletes.delete(commentId);orbitState.comments.set(postId,rows);p.commentCount=Number(p.commentCount||0)+1;if(list)list.innerHTML=orbitCommentRows(postId);if(count)count.textContent=String(p.commentCount);console.error('Orbit comment delete failed',e)}}
+async function toggleSavePost(id){const p=orbitState.posts.get(id);if(!p||orbitState.busy.has('save:'+id))return;orbitState.busy.add('save:'+id);const prev=!!p.savedByCurrentUser,desired=!prev;orbitState.pendingSaves.set(id,desired);p.savedByCurrentUser=desired;if(desired)orbitState.saved.add(id);else orbitState.saved.delete(id);patchOrbitPostSocial(id);try{const r=desired?await _supabase.from('orbit_post_saves').insert({post_id:id,user_id:currentUserId}):await _supabase.from('orbit_post_saves').delete().eq('post_id',id).eq('user_id',currentUserId);if(r.error)throw r.error;const{data,error}=await _supabase.from('orbit_post_saves').select('post_id').eq('post_id',id).eq('user_id',currentUserId).maybeSingle();if(error&&error.code!=='PGRST116')throw error;const serverSaved=!!data;p.savedByCurrentUser=serverSaved;if(serverSaved)orbitState.saved.add(id);else orbitState.saved.delete(id);patchOrbitPostSocial(id)}catch(e){p.savedByCurrentUser=prev;if(prev)orbitState.saved.add(id);else orbitState.saved.delete(id);patchOrbitPostSocial(id);console.error('Orbit save failed',e)}finally{orbitState.pendingSaves.delete(id);orbitState.busy.delete('save:'+id)}}
 async function editPost(id){const p=orbitState.posts.get(id);if(!p||p.poster_id!==currentUserId)return;const v=prompt('Edit your post',p.content||'');if(v===null)return;const content=v.trim();if(!content&&!(p.images||[]).length)return;const prev={...p};p.content=content;p.edited_at=new Date().toISOString();orbitRender();try{const{data,error}=await _supabase.from('orbit_feed').update({content}).eq('id',id).eq('poster_id',currentUserId).select(ORBIT_POST_COLUMNS).single();if(error)throw error;orbitState.posts.set(id,{...p,...data}) ;orbitRender()}catch(e){orbitState.posts.set(id,prev);orbitRender();alert('Unable to edit this post.')}}
 async function deletePost(id){const p=orbitState.posts.get(id);if(!p||p.poster_id!==currentUserId||!confirm('Delete this post? This cannot be undone.'))return;const backup=p;orbitState.posts.delete(id);orbitRender();try{const{error}=await _supabase.from('orbit_feed').delete().eq('id',id).eq('poster_id',currentUserId);if(error)throw error}catch(e){orbitState.posts.set(id,backup);orbitRender();alert('Unable to delete this post.')}}
 async function reportOrbitPost(id){const reasons=['Spam','Harassment','Inappropriate content','Misinformation','Other'];const reason=prompt(`Report reason:\n${reasons.join(', ')}`);if(!reason||!reasons.includes(reason))return;try{const{error}=await _supabase.rpc('orbit_create_report',{p_content_type:'post',p_content_id:id,p_reason:reason});if(error)throw error;alert('Report submitted. Thank you for helping keep Orbit safe.')}catch(e){console.error('Orbit report failed',e);alert('Unable to submit report right now.')}}
 function shareOrbitPost(id){const p=orbitState.posts.get(id),u=new URL(location.href);u.hash='orbit-post-'+id;try{if(navigator.share)navigator.share({title:`${p?.poster_name||'Student'} on UniVERSE Orbit`,text:p?.content||'Campus post',url:u.href});else navigator.clipboard.writeText(u.href).then(()=>alert('Post link copied.')).catch(()=>alert(u.href))}catch(e){console.error(e)}}
-function openOrbitAuthor(id){if(id===currentUserId&&typeof openProfilePage==='function')openProfilePage();else alert('Other-student profile navigation is not available in the current profile architecture.')}
+async function openOrbitAuthor(id){
+    if(!id)return;
+    if(id===currentUserId&&typeof openProfilePage==='function'){openProfilePage();return;}
+    orbitClosePublicProfile();
+    const modal=document.createElement('div');
+    modal.id='orbitPublicProfileModal';
+    modal.className='fixed inset-0 bg-black/75 backdrop-blur-sm hidden z-[118] flex items-end sm:items-center justify-center p-0 sm:p-4';
+    modal.innerHTML=`<div class="orbit-modal w-full max-w-md max-h-[88dvh] overflow-y-auto rounded-t-[2rem] sm:rounded-[2rem] p-5 sm:p-6">
+        <div class="flex items-center justify-between gap-3">
+            <div><p class="orbit-kicker">ORBIT PROFILE</p><h3 class="text-lg font-bold">Student profile</h3></div>
+            <button type="button" class="orbit-close" aria-label="Close profile"><i class="fas fa-times"></i></button>
+        </div>
+        <div data-orbit-profile-body class="py-6"><div class="orbit-skeleton"></div></div>
+    </div>`;
+    document.body.appendChild(modal);
+    modal.classList.remove('hidden');
+    modal.querySelector('.orbit-close')?.addEventListener('click',orbitClosePublicProfile);
+    modal.addEventListener('click',e=>{if(e.target===modal)orbitClosePublicProfile()});
+    try{
+        const {data:profile,error}=await _supabase.from('profiles')
+            .select('id,full_name,university,bio,profile_photo_url,reputation_stars')
+            .eq('id',id).maybeSingle();
+        if(error)throw error;
+        if(!profile){modal.querySelector('[data-orbit-profile-body]').innerHTML='<div class="orbit-empty"><div><i class="fas fa-user"></i></div><h4>Profile unavailable</h4><p>This student profile could not be loaded.</p></div>';return;}
+        const posts=[...orbitState.posts.values()].filter(p=>p.poster_id===id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
+        const body=modal.querySelector('[data-orbit-profile-body]');
+        body.innerHTML='';
+        const head=document.createElement('div');
+        head.className='flex items-start gap-3';
+        head.innerHTML=orbitAvatar(profile.full_name,profile.profile_photo_url);
+        const info=document.createElement('div');info.className='min-w-0 flex-1';
+        const name=document.createElement('h4');name.className='text-base font-bold';name.textContent=profile.full_name||'Student';
+        const uni=document.createElement('p');uni.className='text-[10px] text-slate-500 mt-1';uni.textContent=profile.university||'University not provided';
+        const bio=document.createElement('p');bio.className='text-xs text-slate-300 mt-3 break-words';bio.textContent=profile.bio||'No bio added yet.';
+        info.append(name,uni,bio);head.appendChild(info);body.appendChild(head);
+        const rep=document.createElement('div');rep.className='mt-4 text-[10px] text-slate-500';rep.textContent=`Reputation: ${Number(profile.reputation_stars)||0} stars`;body.appendChild(rep);
+        const title=document.createElement('h5');title.className='mt-5 mb-2 text-xs font-bold uppercase tracking-wider text-slate-500';title.textContent='Recent Orbit posts';body.appendChild(title);
+        if(posts.length){
+            posts.forEach(p=>{const item=document.createElement('div');item.className='border border-white/5 rounded-xl p-3 mb-2';const t=document.createElement('p');t.className='text-xs text-slate-300 whitespace-pre-wrap break-words';t.textContent=p.content||'Shared media';const meta=document.createElement('p');meta.className='text-[9px] text-slate-500 mt-2';meta.textContent=timeAgo(p.created_at);item.append(t,meta);body.appendChild(item);});
+        }else{
+            const empty=document.createElement('p');empty.className='text-xs text-slate-500';empty.textContent='No posts from this student are currently loaded in your Orbit feed.';body.appendChild(empty);
+        }
+    }catch(e){
+        console.error('Orbit public profile load failed',e);
+        modal.querySelector('[data-orbit-profile-body]').innerHTML='<div class="orbit-empty"><div><i class="fas fa-wifi"></i></div><h4>Could not load profile</h4><p>Check your connection and try again.</p></div>';
+    }
+}
 function openOrbitMediaViewer(id,i){const p=orbitState.posts.get(id),a=(p?.images||[]).map(ou).filter(Boolean);if(!a.length)return;orbitState.media=a;orbitState.mediaIndex=i;document.getElementById('orbitMediaViewer').classList.remove('hidden');document.getElementById('orbitMediaViewer').classList.add('flex');updateOrbitMediaViewer()}
 function updateOrbitMediaViewer(){const a=orbitState.media;document.getElementById('orbitViewerImage').src=a[orbitState.mediaIndex]||'';document.getElementById('orbitMediaPrev').classList.toggle('hidden',a.length<2);document.getElementById('orbitMediaNext').classList.toggle('hidden',a.length<2)}
 function stepOrbitMedia(d){orbitState.mediaIndex=(orbitState.mediaIndex+d+orbitState.media.length)%orbitState.media.length;updateOrbitMediaViewer()}
 function closeOrbitMediaViewer(){document.getElementById('orbitMediaViewer').classList.add('hidden');document.getElementById('orbitMediaViewer').classList.remove('flex');orbitState.media=[]}
 function showOrbitNewPosts(){const incoming=orbitState.newPosts.splice(0);incoming.forEach(p=>orbitState.posts.set(p.id,p));document.getElementById('orbitNewPostsBanner').classList.add('hidden');orbitProfiles(incoming).then(()=>hydrateOrbitSocial(incoming)).then(()=>orbitRender()).catch(()=>orbitRender());scrollTo({top:0,behavior:'smooth'})}
 function patchOrbitPostSocial(id){const p=orbitState.posts.get(id);if(!p)return;updateLikeUI(p);const c=document.getElementById('comment-count-'+id);if(c)c.textContent=String(Number(p.commentCount)||0);const s=document.getElementById('save-'+id);if(s){s.classList.toggle('saved',!!p.savedByCurrentUser);const i=s.querySelector('i');if(i)i.className=`${p.savedByCurrentUser?'fas':'far'} fa-bookmark`}}
-function handleOrbitRealtime(payload){const p=payload.new||payload.old;if(payload.table==='orbit_feed'){if(p?.school_tag&&p.school_tag!==userUniversity)return;if(payload.eventType==='INSERT'){if(orbitState.posts.has(p.id)||orbitState.newPosts.some(x=>x.id===p.id))return;if(window.scrollY<220){orbitProfiles([p]).then(()=>hydrateOrbitSocial([p])).then(()=>{orbitState.posts.set(p.id,p);orbitRender()})}else{orbitState.newPosts.push(p);const b=document.getElementById('orbitNewPostsBanner');b.classList.remove('hidden');document.getElementById('orbitNewPostsCount').textContent=`${orbitState.newPosts.length} new post${orbitState.newPosts.length===1?'':'s'}`}}else if(payload.eventType==='UPDATE'){const existing=orbitState.posts.get(p.id);if(existing)orbitState.posts.set(p.id,{...existing,...p});else if(p.status==='active'&&p.visibility==='campus')orbitState.posts.set(p.id,p);orbitProfiles([p]).then(()=>orbitRender())}else if(payload.eventType==='DELETE'){orbitState.posts.delete(p.id);orbitState.newPosts=orbitState.newPosts.filter(x=>x.id!==p.id);document.getElementById('post-'+p.id)?.remove()}}else if(payload.table==='orbit_post_likes'){const post=orbitState.posts.get(p?.post_id);if(!post)return;const isOwn=p.user_id===currentUserId;if(payload.eventType==='INSERT'){if(isOwn){if(post.likedByCurrentUser)return;post.likedByCurrentUser=true}else post.likeCount=(Number(post.likeCount)||0)+1}else if(payload.eventType==='DELETE'){if(isOwn){if(!post.likedByCurrentUser)return;post.likedByCurrentUser=false}else post.likeCount=Math.max(0,(Number(post.likeCount)||0)-1)}if(isOwn&&payload.eventType==='INSERT')post.likeCount=Math.max(1,(Number(post.likeCount)||0));if(isOwn&&payload.eventType==='DELETE')post.likeCount=Math.max(0,(Number(post.likeCount)||1)-1);patchOrbitPostSocial(post.id)}else if(payload.table==='orbit_comments'){const post=orbitState.posts.get(p?.post_id);if(!post)return;if(payload.eventType==='INSERT'){post.commentCount=(Number(post.commentCount)||0)+1;if(orbitState.comments.has(post.id)&&p.user_id===currentUserId&&!orbitState.comments.get(post.id).some(x=>x.id===p.id))orbitState.comments.get(post.id).push(p)}else if(payload.eventType==='DELETE'){post.commentCount=Math.max(0,(Number(post.commentCount)||0)-1);if(orbitState.comments.has(post.id))orbitState.comments.set(post.id,orbitState.comments.get(post.id).filter(x=>x.id!==p.id))}const c=document.getElementById('comment-count-'+post.id);if(c)c.textContent=String(post.commentCount);if(!document.getElementById('commentSection-'+post.id)?.classList.contains('hidden')){const l=document.getElementById('commentList-'+post.id);if(l)l.innerHTML=orbitCommentRows(post.id)}}else if(payload.table==='orbit_post_saves'){if(p?.user_id!==currentUserId)return;const post=orbitState.posts.get(p.post_id);if(!post)return;post.savedByCurrentUser=payload.eventType==='INSERT';if(post.savedByCurrentUser)orbitState.saved.add(post.id);else orbitState.saved.delete(post.id);patchOrbitPostSocial(post.id)}}
+function orbitRealtimeKey(payload){const row=payload.new||payload.old||{};const id=row.id||`${row.post_id||''}:${row.user_id||''}`;return `${payload.table}:${payload.eventType}:${id}`}
+function orbitMarkRealtime(payload){const key=orbitRealtimeKey(payload);if(orbitState.realtimeSeen.has(key))return false;orbitState.realtimeSeen.add(key);if(orbitState.realtimeSeen.size>5000){const first=orbitState.realtimeSeen.values().next().value;orbitState.realtimeSeen.delete(first)}return true}
+function handleOrbitRealtime(payload){if(!orbitMarkRealtime(payload))return;const p=payload.new||payload.old;if(payload.table==='orbit_feed'){if(p?.school_tag&&p.school_tag!==userUniversity)return;if(payload.eventType==='INSERT'){if(orbitState.posts.has(p.id)||orbitState.newPosts.some(x=>x.id===p.id))return;if(window.scrollY<220){orbitProfiles([p]).then(()=>hydrateOrbitSocial([p])).then(()=>{if(!orbitState.posts.has(p.id))orbitState.posts.set(p.id,p);orbitRender()})}else{orbitState.newPosts.push(p);const b=document.getElementById('orbitNewPostsBanner');b.classList.remove('hidden');document.getElementById('orbitNewPostsCount').textContent=`${orbitState.newPosts.length} new post${orbitState.newPosts.length===1?'':'s'}`}}else if(payload.eventType==='UPDATE'){const existing=orbitState.posts.get(p.id);if(existing)orbitState.posts.set(p.id,{...existing,...p});else if(p.status==='active'&&p.visibility==='campus')orbitState.posts.set(p.id,p);orbitProfiles([p]).then(()=>orbitRender())}else if(payload.eventType==='DELETE'){orbitState.posts.delete(p.id);orbitState.newPosts=orbitState.newPosts.filter(x=>x.id!==p.id);document.getElementById('post-'+p.id)?.remove()}}else if(payload.table==='orbit_post_likes'){const post=orbitState.posts.get(p?.post_id);if(!post)return;const isOwn=p.user_id===currentUserId;if(isOwn&&orbitState.pendingLikes.has(p.post_id))return;if(payload.eventType==='INSERT'){if(isOwn){if(post.likedByCurrentUser)return;post.likedByCurrentUser=true}post.likeCount=(Number(post.likeCount)||0)+1}else if(payload.eventType==='DELETE'){if(isOwn&&!post.likedByCurrentUser)return;if(isOwn)post.likedByCurrentUser=false;post.likeCount=Math.max(0,(Number(post.likeCount)||0)-1)}patchOrbitPostSocial(post.id)}else if(payload.table==='orbit_comments'){const post=orbitState.posts.get(p?.post_id);if(!post)return;if(payload.eventType==='INSERT'){const loaded=orbitState.comments.get(post.id)||[],alreadyLoaded=loaded.some(x=>x.id===p.id);if(isOwnCommentEvent(p)&&orbitState.pendingComments.has(p.id)){orbitState.pendingComments.delete(p.id);if(!alreadyLoaded)orbitState.comments.set(post.id,[...loaded,p]);return}if(!alreadyLoaded)post.commentCount=(Number(post.commentCount)||0)+1;if(!alreadyLoaded&&orbitState.comments.has(post.id))orbitState.comments.set(post.id,[...loaded,p])}else if(payload.eventType==='DELETE'){if(orbitState.pendingDeletes.has(p.id)){orbitState.pendingDeletes.delete(p.id);return}post.commentCount=Math.max(0,(Number(post.commentCount)||0)-1);if(orbitState.comments.has(post.id))orbitState.comments.set(post.id,(orbitState.comments.get(post.id)||[]).filter(x=>x.id!==p.id))}const c=document.getElementById('comment-count-'+post.id);if(c)c.textContent=String(post.commentCount);if(!document.getElementById('commentSection-'+post.id)?.classList.contains('hidden')){const l=document.getElementById('commentList-'+post.id);if(l)l.innerHTML=orbitCommentRows(post.id)}}else if(payload.table==='orbit_post_saves'){if(p?.user_id!==currentUserId)return;const post=orbitState.posts.get(p.post_id);if(!post)return;if(orbitState.pendingSaves.has(p.post_id))return;post.savedByCurrentUser=payload.eventType==='INSERT';if(post.savedByCurrentUser)orbitState.saved.add(post.id);else orbitState.saved.delete(post.id);patchOrbitPostSocial(post.id)}}
+function isOwnCommentEvent(row){return row?.user_id===currentUserId}
 async function setupOrbitRealtime(){if(!currentUserId||orbitRealtimeChannel||orbitRealtimeStarting)return;orbitRealtimeStarting=true;try{orbitRealtimeChannel=_supabase.channel(`orbit-live-${currentUserId}`).on('postgres_changes',{event:'*',schema:'public',table:'orbit_feed'},handleOrbitRealtime).on('postgres_changes',{event:'*',schema:'public',table:'orbit_post_likes'},handleOrbitRealtime).on('postgres_changes',{event:'*',schema:'public',table:'orbit_comments'},handleOrbitRealtime).on('postgres_changes',{event:'*',schema:'public',table:'orbit_post_saves',filter:`user_id=eq.${currentUserId}`},handleOrbitRealtime);await orbitRealtimeChannel.subscribe()}catch(e){console.error('Orbit realtime setup failed',e);if(orbitRealtimeChannel){try{await _supabase.removeChannel(orbitRealtimeChannel)}catch(_){ }orbitRealtimeChannel=null}}finally{orbitRealtimeStarting=false}}
 function orbitCleanupRealtime(){if(orbitRealtimeChannel){_supabase.removeChannel(orbitRealtimeChannel);orbitRealtimeChannel=null}}
 function openPostModal(){document.getElementById('postModal').classList.remove('hidden');document.getElementById('postComposerName').textContent=userFullName||'Scholar';document.getElementById('postComposerAvatar').textContent=oi(userFullName);document.getElementById('postContent').focus()}
 function closePostModal(){document.getElementById('postModal').classList.add('hidden');document.getElementById('imagePreviewContainer').innerHTML='';selectedFiles=[];document.getElementById('postContent').value='';document.getElementById('postImage').value='';document.getElementById('postSubmitStatus').classList.add('hidden');document.getElementById('postCharCount').textContent='0 / 5000'}
 function previewFiles(){const i=document.getElementById('postImage');selectedFiles=[...selectedFiles,...Array.from(i.files||[])].slice(0,10);i.value='';const c=document.getElementById('imagePreviewContainer');c.innerHTML='';selectedFiles.forEach((f,n)=>{const r=new FileReader();r.onload=e=>{const d=document.createElement('div');d.className='relative aspect-square rounded-xl overflow-hidden';const img=document.createElement('img');img.src=e.target.result;img.alt='Selected Orbit image';img.className='w-full h-full object-cover';const b=document.createElement('button');b.type='button';b.className='absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-white';b.textContent='×';b.onclick=()=>{selectedFiles.splice(n,1);previewFiles()};d.append(img,b);c.appendChild(d)};r.readAsDataURL(f)})}
-async function submitPost(){const content=document.getElementById('postContent').value.trim(),b=document.getElementById('submitBtn'),st=document.getElementById('postSubmitStatus');if((!content&&!selectedFiles.length)||b.disabled)return;b.disabled=true;st.classList.remove('hidden');const uploaded=[];const urls=[];try{for(let i=0;i<selectedFiles.length;i++){const f=selectedFiles[i];if(!f.type.startsWith('image/')||f.size>10*1024*1024)throw Error('Images must be valid files smaller than 10MB.');st.textContent=`Uploading image ${i+1} of ${selectedFiles.length}…`;const path=`${currentUserId}/${crypto.randomUUID()}_${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;const u=await _supabase.storage.from('orbit-images').upload(path,f);if(u.error)throw u.error;uploaded.push(path);urls.push(_supabase.storage.from('orbit-images').getPublicUrl(path).data.publicUrl)}st.textContent='Publishing to your campus…';const r=await _supabase.from('orbit_feed').insert([{content,images:urls,school_tag:userUniversity,poster_name:userFullName,poster_id:currentUserId,likes:[],comments:[]}]).select(ORBIT_POST_COLUMNS).single();if(r.error)throw r.error;const p={...r.data,likeCount:0,likedByCurrentUser:false,commentCount:0,savedByCurrentUser:false};orbitState.posts.set(p.id,p);orbitFeedLoadedAll=false;await orbitProfiles([p]);closePostModal();orbitRender();if(window.scrollY<220)scrollTo({top:0,behavior:'smooth'})}catch(e){console.error('Orbit post failed',e);st.textContent=e.message||'Unable to publish. Please try again.';if(uploaded.length){try{await _supabase.storage.from('orbit-images').remove(uploaded)}catch(cleanupError){console.warn('Orbit orphan cleanup failed',cleanupError)}}}finally{b.disabled=false}}
-(function(){const i=document.getElementById('orbitSearchInput');if(i)i.addEventListener('input',()=>{clearTimeout(orbitState.timer);orbitState.timer=setTimeout(()=>{orbitState.search=i.value.trim();document.getElementById('orbitSearchClear').classList.toggle('hidden',!orbitState.search);orbitRender()},280)});const c=document.getElementById('postContent');if(c)c.addEventListener('input',()=>document.getElementById('postCharCount').textContent=`${c.value.length} / 5000`);document.addEventListener('click',e=>{if(!e.target.closest('.orbit-menu-wrap'))document.querySelectorAll('.orbit-menu-panel').forEach(x=>x.classList.add('hidden'))});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOrbitMediaViewer();closeOrbitNotifications()}})})();
+async function submitPost(){const content=document.getElementById('postContent').value.trim(),b=document.getElementById('submitBtn'),st=document.getElementById('postSubmitStatus');if((!content&&!selectedFiles.length)||b.disabled)return;b.disabled=true;st.classList.remove('hidden');const uploaded=[];const urls=[];try{for(let i=0;i<selectedFiles.length;i++){const f=selectedFiles[i];if(!f.type.startsWith('image/')||f.size>10*1024*1024)throw Error('Images must be valid files smaller than 10MB.');st.textContent=`Uploading image ${i+1} of ${selectedFiles.length}…`;const path=`${currentUserId}/${crypto.randomUUID()}_${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;const u=await _supabase.storage.from('orbit-images').upload(path,f);if(u.error)throw u.error;uploaded.push(path);urls.push(_supabase.storage.from('orbit-images').getPublicUrl(path).data.publicUrl)}st.textContent='Publishing to your campus…';const r=await _supabase.from('orbit_feed').insert([{content,images:urls,school_tag:userUniversity,poster_name:userFullName,poster_id:currentUserId}]).select(ORBIT_POST_COLUMNS).single();if(r.error)throw r.error;const p={...r.data,likeCount:0,likedByCurrentUser:false,commentCount:0,savedByCurrentUser:false};orbitState.posts.set(p.id,p);orbitFeedLoadedAll=false;await orbitProfiles([p]);closePostModal();orbitRender();if(window.scrollY<220)scrollTo({top:0,behavior:'smooth'})}catch(e){console.error('Orbit post failed',e);st.textContent=e.message||'Unable to publish. Please try again.';if(uploaded.length){try{await _supabase.storage.from('orbit-images').remove(uploaded)}catch(cleanupError){console.warn('Orbit orphan cleanup failed',cleanupError)}}}finally{b.disabled=false}}
+(function(){const i=document.getElementById('orbitSearchInput');if(i)i.addEventListener('input',()=>{clearTimeout(orbitState.timer);orbitState.timer=setTimeout(()=>{orbitState.search=i.value.trim();document.getElementById('orbitSearchClear').classList.toggle('hidden',!orbitState.search);orbitRender()},280)});const c=document.getElementById('postContent');if(c)c.addEventListener('input',()=>document.getElementById('postCharCount').textContent=`${c.value.length} / 5000`);document.addEventListener('click',e=>{if(!e.target.closest('.orbit-menu-wrap'))document.querySelectorAll('.orbit-menu-panel').forEach(x=>x.classList.add('hidden'))});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOrbitMediaViewer();closeOrbitNotifications();orbitClosePublicProfile()}})})();
 
+
+/* ============================================================
+   STUDY HUB — isolated implementation
+   Uses existing study_resources/study_hub/tribes/AI tables.
+   No new tables, no global rewrites, no fake data.
+   ============================================================ */
+const studyState = {
+    resources: [],
+    legacy: [],
+    tribes: [],
+    view: 'courses',
+    query: '',
+    loaded: false,
+    loading: false,
+    timer: null,
+    saved: new Set(JSON.parse(localStorage.getItem('universe.study.saved') || '[]')),
+    recent: JSON.parse(localStorage.getItem('universe.study.recent') || '[]'),
+    progress: JSON.parse(localStorage.getItem('universe.study.progress') || '{}')
+};
+
+function studyPersist(){
+    localStorage.setItem('universe.study.saved', JSON.stringify([...studyState.saved]));
+    localStorage.setItem('universe.study.recent', JSON.stringify(studyState.recent.slice(0,50)));
+    localStorage.setItem('universe.study.progress', JSON.stringify(studyState.progress));
+}
+function studyEsc(v){const d=document.createElement('div');d.textContent=v==null?'':String(v);return d.innerHTML;}
+function studyFormatBytes(n){
+    if(!Number.isFinite(Number(n))||Number(n)<=0)return '';
+    const u=['B','KB','MB','GB']; let i=0,x=Number(n); while(x>=1024&&i<u.length-1){x/=1024;i++}
+    return `${x<10&&i?x.toFixed(1):Math.round(x)} ${u[i]}`;
+}
+function studyTime(v){
+    if(!v)return '';
+    const d=new Date(v); if(Number.isNaN(d.getTime()))return '';
+    return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+}
+function studyFileIcon(type){
+    const t=(type||'').toLowerCase();
+    if(t.includes('pdf'))return 'fa-file-pdf';
+    if(t.includes('powerpoint')||t.includes('presentation')||t.includes('ppt'))return 'fa-file-powerpoint';
+    if(t.includes('word')||t.includes('doc'))return 'fa-file-word';
+    if(t.includes('image')||t.includes('png')||t.includes('jpg')||t.includes('jpeg'))return 'fa-file-image';
+    return 'fa-file-lines';
+}
+function studyNormalizeResource(r,legacy=false){
+    if(legacy){
+        const code=(r.course_code||'').trim();
+        return {
+            id:r.id,title:code?`${code} material`:'Study material',description:'',
+            file_url:r.file_url,file_type:r.material_type||'resource',university:r.school_tag||userUniversity,
+            course_code:code,category:r.material_type||'material',uploader_id:null,created_at:null,
+            updated_at:null,download_count:0,legacy:true
+        };
+    }
+    return {...r,legacy:false};
+}
+function studyIsPast(r){
+    const c=(r.category||'').toLowerCase().replace(/[-_]/g,' ');
+    const t=(r.title||'').toLowerCase();
+    const d=(r.description||'').toLowerCase();
+    return c.includes('past question')||c.includes('past paper')||t.includes('past question')||t.includes('past paper')||d.includes('past question')||d.includes('past paper');
+}
+function studyCourses(){
+    const map=new Map();
+    studyState.resources.forEach(r=>{
+        const code=(r.course_code||'').trim();
+        if(!code)return;
+        if(!map.has(code))map.set(code,{code,title:code,resources:0,past:0,last:null});
+        const c=map.get(code); c.resources++; if(studyIsPast(r))c.past++;
+        if(r.created_at&&(!c.last||new Date(r.created_at)>new Date(c.last)))c.last=r.created_at;
+    });
+    return [...map.values()].sort((a,b)=>a.code.localeCompare(b.code));
+}
+function studyMatches(r){
+    if(!studyState.query)return true;
+    const q=studyState.query.toLowerCase();
+    return [r.title,r.description,r.course_code,r.category,r.file_type,r.department,r.level].filter(Boolean).join(' ').toLowerCase().includes(q);
+}
+function studySave(r){
+    if(studyState.saved.has(r.id))studyState.saved.delete(r.id);else studyState.saved.add(r.id);
+    studyPersist(); studyRender();
+}
+function studyRecordOpen(r){
+    const now=new Date().toISOString();
+    studyState.recent=[{id:r.id,at:now},...studyState.recent.filter(x=>x.id!==r.id)].slice(0,50);
+    studyState.progress.opened=Number(studyState.progress.opened||0)+1;
+    studyState.progress.lastCourse=r.course_code||'';
+    studyState.progress.lastTitle=r.title||'';
+    studyState.progress.lastOpened=now;
+    studyPersist();
+}
+function studyOpenUrl(r,download=false){
+    if(!r?.file_url){studyShowError('That document does not have an available file.');return;}
+    studyRecordOpen(r);
+    if(download){
+        const a=document.createElement('a'); a.href=r.file_url; a.target='_blank'; a.rel='noopener noreferrer'; a.download=''; a.click();
+    }else{
+        studyOpenViewer(r);
+    }
+}
+function studyOpenViewer(r){
+    const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
+    document.getElementById('studyModalTitle').textContent=r.title||'Resource';
+    const isPdf=(r.file_type||'').toLowerCase().includes('pdf')||(r.file_url||'').toLowerCase().includes('.pdf');
+    body.innerHTML=`<div class="study-note mb-3">${studyEsc(r.course_code||'Course not specified')} ${r.file_type?'• '+studyEsc(r.file_type):''}</div>`;
+    if(isPdf){
+        const iframe=document.createElement('iframe'); iframe.className='study-viewer'; iframe.src=r.file_url; iframe.title=r.title||'PDF viewer'; iframe.loading='lazy'; iframe.referrerPolicy='no-referrer';
+        body.appendChild(iframe);
+        const actions=document.createElement('div'); actions.className='study-actions mt-3';
+        actions.innerHTML=`<button type="button" class="study-btn primary" onclick="studyOpenUrl(studyFindResource('${JSON.stringify(String(r.id))}'),true)"><i class="fas fa-download"></i> Download</button><button type="button" class="study-btn" onclick="window.open(${JSON.stringify(r.file_url)},'_blank','noopener,noreferrer')"><i class="fas fa-external-link-alt"></i> Open</button>`;
+        body.appendChild(actions);
+    }else{
+        body.innerHTML+=`<div class="study-empty"><div class="study-empty-icon"><i class="fas ${studyFileIcon(r.file_type)}"></i></div><h4>Preview unavailable</h4><p>This file type cannot be embedded here. Open or download the original resource.</p><div class="study-actions justify-center mt-4"><button type="button" class="study-btn primary" onclick="window.open(${JSON.stringify(r.file_url)},'_blank','noopener,noreferrer')"><i class="fas fa-external-link-alt"></i> Open</button><button type="button" class="study-btn" onclick="studyOpenUrl(studyFindResource('${JSON.stringify(String(r.id))}'),true)"><i class="fas fa-download"></i> Download</button></div></div>`;
+    }
+    modal.classList.remove('hidden');
+}
+function studyFindResource(id){return studyState.resources.find(r=>String(r.id)===String(id));}
+function studyCloseViewer(){document.getElementById('studyResourceModal')?.classList.add('hidden')}
+function studyShowError(message){
+    const el=document.getElementById('studyStatus'); if(!el)return;
+    el.className='study-error'; el.textContent=message; el.classList.remove('hidden');
+    clearTimeout(studyState.errorTimer); studyState.errorTimer=setTimeout(()=>el.classList.add('hidden'),6000);
+}
+function studyEmpty(title,text,icon='fa-book-open'){
+    return `<div class="study-empty"><div class="study-empty-icon"><i class="fas ${icon}"></i></div><h4>${studyEsc(title)}</h4><p>${studyEsc(text)}</p></div>`;
+}
+function studyResourceCard(r){
+    const saved=studyState.saved.has(r.id);
+    return `<article class="study-card study-resource">
+      <div class="study-resource-top">
+        <div class="study-file-icon"><i class="fas ${studyFileIcon(r.file_type)}"></i></div>
+        <div class="min-w-0 flex-1"><div class="study-resource-title text-white">${studyEsc(r.title||'Untitled resource')}</div>
+        <div class="study-meta mt-1">${studyEsc(r.course_code||'Course not specified')} ${r.file_type?'• '+studyEsc(r.file_type):''}</div></div>
+        <button type="button" class="study-btn ${saved?'saved':''}" onclick="studySave(studyFindResource('${JSON.stringify(String(r.id))}'))" aria-label="${saved?'Unsave':'Save'}"><i class="${saved?'fas':'far'} fa-bookmark"></i></button>
+      </div>
+      ${r.description?`<p class="study-meta">${studyEsc(r.description)}</p>`:''}
+      <div class="flex flex-wrap gap-1"><span class="study-badge">${studyEsc(r.category||'material')}</span>${r.created_at?`<span class="study-badge">${studyEsc(studyTime(r.created_at))}</span>`:''}${r.download_count?`<span class="study-badge">${Number(r.download_count)} accessed</span>`:''}</div>
+      <div class="study-actions mt-auto">
+        <button type="button" class="study-btn primary" onclick="studyOpenUrl(studyFindResource('${JSON.stringify(String(r.id))}'))"><i class="fas fa-eye"></i> Open</button>
+        <button type="button" class="study-btn" onclick="studyOpenUrl(studyFindResource('${JSON.stringify(String(r.id))}'),true)"><i class="fas fa-download"></i> Download</button>
+      </div>
+    </article>`;
+}
+function studyRenderCourses(){
+    const q=studyState.query.toLowerCase();
+    const courses=studyCourses().filter(c=>!q||`${c.code} ${c.title}`.toLowerCase().includes(q));
+    if(!courses.length)return studyEmpty('Your study journey starts here.','Open a course or resource to begin building your study history.','fa-graduation-cap');
+    return `<div class="study-course-grid">${courses.map(c=>`<article class="study-card study-course">
+      <div class="study-course-code">${studyEsc(c.code)}</div><div class="study-course-title text-white">${studyEsc(c.title)}</div>
+      <p class="study-meta mt-2">${c.resources} material${c.resources===1?'':'s'} • ${c.past} past question${c.past===1?'':'s'}</p>
+      ${c.last?`<p class="study-meta mt-1">Latest: ${studyEsc(studyTime(c.last))}</p>`:''}
+      <div class="study-actions mt-3"><button type="button" class="study-btn primary" onclick="studySetView('resources');studySetCourseFilter(${JSON.stringify(c.code)})"><i class="fas fa-folder-open"></i> Open Course</button></div>
+    </article>`).join('')}</div>`;
+}
+function studySetCourseFilter(code){
+    const f=document.getElementById('studyCourseFilter'); if(f){f.value=code;studyRender()}
+}
+function studyFilterValues(){
+    return {
+        course:document.getElementById('studyCourseFilter')?.value||'',
+        year:document.getElementById('studyYearFilter')?.value||'',
+        semester:document.getElementById('studySemesterFilter')?.value||''
+    };
+}
+function studyRenderResources(mode='resources'){
+    const all=studyState.resources.filter(studyMatches);
+    let rows=all;
+    const filters=studyFilterValues();
+    if(filters.course)rows=rows.filter(r=>(r.course_code||'')===filters.course);
+    if(mode==='past')rows=rows.filter(studyIsPast);
+    if(mode==='saved')rows=rows.filter(r=>studyState.saved.has(r.id));
+    if(mode==='recent'){
+        const order=new Map(studyState.recent.map((x,i)=>[String(x.id),i]));
+        rows=rows.filter(r=>order.has(String(r.id))).sort((a,b)=>order.get(String(a.id))-order.get(String(b.id)));
+    }
+    if(mode!=='past'&&mode!=='saved'&&mode!=='recent')rows=rows.filter(r=>!studyIsPast(r));
+    if(!rows.length)return studyEmpty(mode==='past'?'No past questions yet.':mode==='saved'?'Nothing saved yet.':mode==='recent'?'Nothing recently viewed yet.':'No course materials found.','Only real Study Hub data is shown here. Uploads can be enabled once a secure Study Storage bucket is provisioned.','fa-folder-open');
+    return `<div class="study-resource-grid">${rows.slice(0,40).map(studyResourceCard).join('')}</div>${rows.length>40?`<p class="study-note mt-3">Showing the first 40 matching resources for performance.</p>`:''}`;
+}
+function studyRender(){
+    if(!studyState.loaded)return;
+    document.getElementById('studyCourseCount').textContent=`${studyCourses().length} course${studyCourses().length===1?'':'s'}`;
+    document.getElementById('studyResourceCount').textContent=`${studyState.resources.length} resource${studyState.resources.length===1?'':'s'}`;
+    document.getElementById('studyPastCount').textContent=`${studyState.resources.filter(studyIsPast).length} paper${studyState.resources.filter(studyIsPast).length===1?'':'s'}`;
+    const opened=Number(studyState.progress.opened||0), saved=studyState.saved.size;
+    document.getElementById('studyOpenedCount').textContent=opened;
+    document.getElementById('studySavedCount').textContent=saved;
+    document.getElementById('studyProgressLabel').textContent=`${opened+saved} action${opened+saved===1?'':'s'}`;
+    const today=document.getElementById('studyToday');
+    const last=studyState.progress.lastOpened?new Date(studyState.progress.lastOpened):null;
+    const sameDay=last&&last.toDateString()===new Date().toDateString();
+    today.innerHTML=`<div class="study-today-item ${sameDay?'done':''}"><div class="study-today-dot"></div><span>${sameDay&&studyState.progress.lastTitle?`Continue <strong>${studyEsc(studyState.progress.lastTitle)}</strong>`:'Open a course or resource'}</span></div>
+      <div class="study-today-item ${saved?'done':''}"><div class="study-today-dot"></div><span>${saved?'Review a saved resource':'Save a resource for later'}</span></div>
+      <div class="study-today-item ${studyState.resources.some(studyIsPast)?'':'done'}"><div class="study-today-dot"></div><span>Attempt a past question</span></div>`;
+    const panel=document.getElementById('studyViewPanel');
+    document.querySelectorAll('[data-study-view]').forEach(b=>b.classList.toggle('active',b.dataset.studyView===studyState.view));
+    if(studyState.view==='courses')panel.innerHTML=studyRenderCourses();
+    else if(studyState.view==='resources')panel.innerHTML=`<div class="study-filter-row mb-3"><select id="studyCourseFilter" class="study-filter"><option value="">All courses</option>${studyCourses().map(c=>`<option value="${studyEsc(c.code)}">${studyEsc(c.code)}</option>`).join('')}</select><select id="studyYearFilter" class="study-filter" disabled><option>Year filter unavailable</option></select><select id="studySemesterFilter" class="study-filter" disabled><option>Semester unavailable</option></select><button type="button" class="study-btn" onclick="studyReload()"><i class="fas fa-rotate"></i> Refresh</button></div>${studyRenderResources('resources')}`;
+    else if(studyState.view==='past')panel.innerHTML=`<div class="study-filter-row mb-3"><select id="studyCourseFilter" class="study-filter"><option value="">All courses</option>${studyCourses().map(c=>`<option value="${studyEsc(c.code)}">${studyEsc(c.code)}</option>`).join('')}</select><select id="studyYearFilter" class="study-filter" disabled><option>Year unavailable</option></select><select id="studySemesterFilter" class="study-filter" disabled><option>Semester unavailable</option></select><button type="button" class="study-btn" onclick="studyReload()"><i class="fas fa-rotate"></i> Refresh</button></div>${studyRenderResources('past')}<p class="study-note mt-3">Year/semester filtering is deferred because the existing Study schema has no dedicated past-question year/semester fields.</p>`;
+    else panel.innerHTML=studyRenderResources(studyState.view);
+    studyBindFilters();
+}
+function studySetView(view){studyState.view=view;studyRender();document.querySelector('#studyViewPanel')?.scrollIntoView({behavior:'smooth',block:'start'})}
+function studyBindFilters(){
+    ['studyCourseFilter','studyYearFilter','studySemesterFilter'].forEach(id=>document.getElementById(id)?.addEventListener('change',studyRender));
+}
+async function studyReload(){
+    if(studyState.loading)return;
+    studyState.loading=true;
+    try{
+        const [res,tribes]=await Promise.all([
+            _supabase.from('study_resources').select('id,title,description,file_url,file_type,university,course_code,department,level,category,tribe_id,uploader_id,download_count,created_at').eq('university',userUniversity).order('created_at',{ascending:false}).limit(100),
+            _supabase.from('tribes').select('id,name,description,university,course_code,department,level,category,creator_id,created_at').eq('university',userUniversity).order('created_at',{ascending:false}).limit(12)
+        ]);
+        if(res.error)throw res.error;
+        if(tribes.error)console.warn('Study Tribes query failed:',tribes.error);
+        studyState.resources=(res.data||[]).map(r=>studyNormalizeResource(r));
+        studyState.tribes=tribes.data||[];
+        studyState.loaded=true;
+        document.getElementById('studyTutorState').textContent='Not configured — safe entry point only';
+        document.getElementById('studyTribesState').textContent=studyState.tribes.length?`${studyState.tribes.length} real campus ${studyState.tribes.length===1?'tribe':'tribes'} available.`:'No Study Tribes are available for your campus yet.';
+        studyRender(); studyBindFilters();
+    }catch(e){
+        console.error('Study Hub load failed:',e);
+        studyShowError("Couldn't load your study materials. Try again.");
+        studyState.loaded=true; studyRender();
+    }finally{studyState.loading=false}
+}
+function studySearch(){
+    clearTimeout(studyState.timer);
+    studyState.timer=setTimeout(()=>{studyState.query=document.getElementById('studySearchInput')?.value.trim()||'';studyRender()},320);
+}
+function studyOpenTutor(){
+    const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
+    document.getElementById('studyModalTitle').textContent='AI Tutor';
+    body.innerHTML=`<div class="study-empty"><div class="study-empty-icon"><i class="fas fa-robot"></i></div><h4>AI Tutor is not configured</h4><p>UniVerse currently has no deployed AI Tutor Edge Function. The existing tutor database tables are present, but there is no backend response engine, so this entry point is intentionally disabled rather than showing fake answers.</p></div>`;
+    modal.classList.remove('hidden');
+}
+function studyExploreTribes(){
+    if(studyState.tribes.length){
+        const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
+        document.getElementById('studyModalTitle').textContent='Study Tribes';
+        body.innerHTML=`<div class="space-y-2">${studyState.tribes.map(t=>`<div class="study-card"><div class="study-course-code">${studyEsc(t.course_code||'CAMPUS TRIBE')}</div><h4 class="text-sm font-bold text-white mt-1">${studyEsc(t.name)}</h4><p class="study-meta mt-1">${studyEsc(t.description||'No description provided.')}</p></div>`).join('')}</div><p class="study-note mt-3">Tribe participation remains in the existing Study Tribes module; Study Hub only provides discovery.</p>`;
+        modal.classList.remove('hidden');
+    }else studyShowError('Study Tribes are coming together. No real campus tribes are available yet.');
+}
+(function initStudyHub(){
+    const input=document.getElementById('studySearchInput');
+    input?.addEventListener('input',studySearch);
+    document.getElementById('studySearchClear')?.addEventListener('click',()=>{input.value='';studyState.query='';document.getElementById('studySearchClear').classList.add('hidden');studyRender()});
+    input?.addEventListener('input',()=>document.getElementById('studySearchClear')?.classList.toggle('hidden',!input.value));
+    document.getElementById('studyModalClose')?.addEventListener('click',studyCloseViewer);
+    document.getElementById('studyResourceModal')?.addEventListener('click',e=>{if(e.target.id==='studyResourceModal')studyCloseViewer()});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')studyCloseViewer()});
+})();
+
+</script>
+
+<script>
+// Campus Whisper MVP — isolated feature logic. Public queries never select author_id.
+const whisperState={items:[],loading:false,posting:false,loadingMore:false,hasMore:true,cursor:null,reported:new Set(),initialized:false};
+const WHISPER_PAGE_SIZE=20, WHISPER_MAX_LENGTH=1000;
+function whisperEscape(value=''){const d=document.createElement('div');d.textContent=String(value??'');return d.innerHTML;}
+function whisperTime(value){const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const diff=Date.now()-d.getTime();if(diff<60000)return 'just now';if(diff<3600000)return `${Math.floor(diff/60000)}m ago`;if(diff<86400000)return `${Math.floor(diff/3600000)}h ago`;return d.toLocaleDateString([],{month:'short',day:'numeric'});}
+function whisperStatus(message='',kind='muted'){const el=document.getElementById('whisperComposerStatus');if(!el)return;el.textContent=message;el.className=`text-[10px] min-h-[16px] mt-2 ${kind==='error'?'text-red-400':kind==='success'?'text-green-400':'text-slate-500'}`;}
+function whisperRenderSkeleton(){const feed=document.getElementById('whisperFeed');if(feed)feed.innerHTML='<div class="whisper-skeleton"></div><div class="whisper-skeleton"></div><div class="whisper-skeleton"></div>';}
+function whisperRender(){const feed=document.getElementById('whisperFeed'),wrap=document.getElementById('whisperLoadMoreWrap');if(!feed)return;if(!whisperState.items.length){feed.innerHTML='<div class="whisper-card rounded-[2rem] p-8 text-center"><div class="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/10 flex items-center justify-center mx-auto mb-4"><i class="fas fa-comment-slash text-green-500"></i></div><h4 class="text-sm font-bold text-white">Nothing whispered yet.</h4><p class="text-xs text-slate-500 mt-1">Be the first to say it.</p></div>';wrap?.classList.add('hidden');return;}feed.innerHTML=whisperState.items.map(p=>{const own=p.is_mine;return `<article class="whisper-card rounded-[1.75rem] p-4 md:p-5" data-whisper-id="${whisperEscape(p.id)}"><div class="flex items-start justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="w-9 h-9 rounded-full bg-green-500/10 border border-green-500/10 flex items-center justify-center shrink-0"><i class="fas fa-user-secret text-green-500 text-sm"></i></div><div class="min-w-0"><p class="text-xs font-bold text-white truncate">${whisperEscape(p.anon_label||'Anonymous')}</p><p class="text-[9px] text-slate-500">${whisperEscape(whisperTime(p.created_at))}</p></div></div><button type="button" class="whisper-report-btn whisper-action rounded-xl bg-white/5 text-slate-500 hover:text-red-400 transition" data-id="${whisperEscape(p.id)}" aria-label="Report whisper" title="Report"><i class="fas fa-flag"></i></button></div><p class="text-sm md:text-[15px] leading-7 text-slate-200 whitespace-pre-wrap break-words mt-4">${whisperEscape(p.content)}</p><div class="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-white/5"><button type="button" class="whisper-like-btn inline-flex items-center gap-2 text-xs text-slate-500 hover:text-green-400 transition" data-id="${whisperEscape(p.id)}" aria-label="Like whisper"><i class="${p.liked?'fas':'far'} fa-heart"></i><span>${Number(p.like_count||0)}</span></button>${own?`<button type="button" class="whisper-delete-btn text-xs font-bold text-slate-500 hover:text-red-400 transition" data-id="${whisperEscape(p.id)}"><i class="fas fa-trash-can mr-1"></i>Delete</button>`:''}</div></article>`;}).join('');wrap?.classList.toggle('hidden',!whisperState.hasMore);}
+async function loadWhispers({reset=true}={}){if(!currentUserId||whisperState.loading||whisperState.loadingMore)return;if(reset){whisperState.loading=true;whisperState.hasMore=true;whisperState.cursor=null;whisperState.items=[];whisperRenderSkeleton();}else{if(!whisperState.hasMore)return;whisperState.loadingMore=true;}try{let q=_supabase.from('whisper_posts_public').select('id,anon_label,content,like_count,created_at').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(WHISPER_PAGE_SIZE);if(whisperState.cursor){q=q.or(`created_at.lt.${whisperState.cursor.created_at},and(created_at.eq.${whisperState.cursor.created_at},id.lt.${whisperState.cursor.id})`);}const{data,error}=await q;if(error)throw error;const rows=(data||[]).map(x=>({...x,is_mine:false,liked:false}));const ids=rows.map(x=>x.id);if(ids.length){const{data:state,error:stateErr}=await _supabase.rpc('get_my_whisper_state',{p_post_ids:ids});if(!stateErr){const stateMap=new Map((state||[]).map(x=>[x.post_id,x]));rows.forEach(x=>{const st=stateMap.get(x.id);x.is_mine=!!st?.is_mine;x.liked=!!st?.liked;});}}if(reset)whisperState.items=rows;else{const seen=new Set(whisperState.items.map(x=>x.id));whisperState.items.push(...rows.filter(x=>!seen.has(x.id)));}if(rows.length<WHISPER_PAGE_SIZE)whisperState.hasMore=false;else{const last=rows[rows.length-1];whisperState.cursor={created_at:last.created_at,id:last.id};}whisperRender();}catch(e){console.error('Campus Whisper load failed:',e);if(reset){document.getElementById('whisperFeed').innerHTML='<div class="whisper-card rounded-[2rem] p-8 text-center"><div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4"><i class="fas fa-triangle-exclamation text-red-400"></i></div><h4 class="text-sm font-bold text-white">We couldn’t load Campus Whisper.</h4><p class="text-xs text-slate-500 mt-1">Please check your connection and try again.</p><button type="button" onclick="loadWhispers({reset:true})" class="mt-4 rounded-xl bg-white/5 border border-white/10 px-4 py-2 text-xs font-bold text-slate-300">Retry</button></div>';}}finally{whisperState.loading=false;whisperState.loadingMore=false;}}
+async function createWhisper(){if(whisperState.posting)return;const input=document.getElementById('whisperComposer'),btn=document.getElementById('whisperPublishBtn');if(!input||!btn)return;const content=input.value.replace(/\r\n/g,'\n').replace(/[\t ]+/g,' ').trim();if(!content){whisperStatus('Write something before publishing.','error');input.focus();return;}if(content.length>WHISPER_MAX_LENGTH){whisperStatus(`Keep your Whisper under ${WHISPER_MAX_LENGTH} characters.`,'error');return;}whisperState.posting=true;btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin mr-2"></i>Publishing…';whisperStatus('Publishing privately…');try{const{data,error}=await _supabase.rpc('create_whisper',{p_content:content});if(error)throw error;const created=Array.isArray(data)?data[0]:data;if(!created?.id)throw new Error('Whisper was not created');input.value='';document.getElementById('whisperCharCount').textContent='0/1000';whisperStatus('Whisper published anonymously.','success');await loadWhispers({reset:true});setTimeout(()=>whisperStatus(''),2500);}catch(e){console.error('Campus Whisper publish failed:',e);const msg=String(e?.message||'').toLowerCase();whisperStatus(msg.includes('rate')||msg.includes('too many')?'You’re posting a little too quickly. Please try again shortly.':msg.includes('not authenticated')?'Please sign in again to publish a Whisper.':'We couldn’t publish your Whisper right now. Please try again.','error');}finally{whisperState.posting=false;btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane mr-2"></i>Publish Whisper';}}
+async function deleteWhisper(id){if(!id||!confirm('Delete this Whisper? This cannot be undone.'))return;try{const{error}=await _supabase.rpc('delete_whisper',{p_post_id:id});if(error)throw error;whisperState.items=whisperState.items.filter(x=>x.id!==id);whisperRender();whisperStatus('Whisper deleted.','success');setTimeout(()=>whisperStatus(''),2000);}catch(e){console.error('Campus Whisper delete failed:',e);whisperStatus('We couldn’t delete that Whisper. Please try again.','error');}}
+async function reportWhisper(id){if(!id||whisperState.reported.has(id))return;const reasons=['Harassment','Bullying','Hate/Discrimination','Threats','Sexual/Explicit Content','Spam','Scam/Fraud','Other'];const choice=prompt(`Report reason:\n${reasons.map((r,i)=>`${i+1}. ${r}`).join('\n')}\n\nEnter the number:`);const index=Number(choice)-1;if(!Number.isInteger(index)||!reasons[index])return;try{whisperState.reported.add(id);const{error}=await _supabase.rpc('create_whisper_report',{p_content_id:id,p_reason:reasons[index]});if(error)throw error;alert('Report received. Thank you for helping keep Campus Whisper safe.');}catch(e){whisperState.reported.delete(id);console.error('Campus Whisper report failed:',e);alert('We couldn’t submit the report right now. Please try again.');}}
+async function toggleWhisperLike(id){if(!id)return;try{const{data,error}=await _supabase.rpc('toggle_whisper_like',{p_post_id:id});if(error)throw error;const item=whisperState.items.find(x=>x.id===id);if(item&&data){item.liked=!!data.liked;item.like_count=Number(data.like_count||0);whisperRender();}}catch(e){console.error('Campus Whisper like failed:',e);}}
+function initCampusWhisper(){if(whisperState.initialized)return;whisperState.initialized=true;const input=document.getElementById('whisperComposer');input?.addEventListener('input',()=>{const len=input.value.length;document.getElementById('whisperCharCount').textContent=`${len}/${WHISPER_MAX_LENGTH}`;});document.getElementById('whisperPublishBtn')?.addEventListener('click',createWhisper);document.getElementById('whisperRefreshBtn')?.addEventListener('click',()=>loadWhispers({reset:true}));document.getElementById('whisperLoadMoreBtn')?.addEventListener('click',()=>loadWhispers({reset:false}));document.getElementById('whisperFeed')?.addEventListener('click',e=>{const report=e.target.closest('.whisper-report-btn');if(report)return reportWhisper(report.dataset.id);const del=e.target.closest('.whisper-delete-btn');if(del)return deleteWhisper(del.dataset.id);const like=e.target.closest('.whisper-like-btn');if(like)return toggleWhisperLike(like.dataset.id);});input?.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')createWhisper();});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initCampusWhisper);else initCampusWhisper();
 </script>
 
     <div class="fixed bottom-0 left-0 right-0 p-2 md:p-4 z-[100]">
         <div class="max-w-2xl mx-auto relative h-16 md:h-20">
-            <button id="navPlusBtn" type="button" title="Create a new broadcast" onclick="openPostModal()" class="absolute -top-6 md:-top-7 left-1/2 -translate-x-1/2 w-12 h-12 md:w-14 md:h-14 scholar-gradient rounded-xl md:rounded-2xl shadow-xl shadow-green-500/20 flex items-center justify-center border-4 border-[#0b0f1a] active:scale-90 transition-all z-20">
-                <i class="fas fa-plus text-white text-base md:text-xl"></i>
-            </button>
-
                 <div class="nav-glass rounded-2xl md:rounded-[2.5rem] p-3 md:p-4 flex flex-row items-stretch justify-around md:justify-between px-2 md:px-6 border border-white/5 shadow-2xl relative z-10 min-w-0">
                 <div onclick="showPage('orbit')" class="flex flex-col items-center gap-0.5 cursor-pointer p-1 flex-1 md:flex-none">
                     <i id="orbitIcon" class="fas fa-rocket text-green-500 text-base md:text-lg"></i>

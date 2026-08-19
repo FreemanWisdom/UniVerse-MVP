@@ -267,18 +267,36 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
  .study-modal{border-radius:1.5rem 1.5rem .5rem .5rem}
 }
 
-        /* Campus Whisper MVP — scoped styles only */
-        .whisper-shell{min-width:0;max-width:760px;margin:0 auto;}
-        .whisper-composer{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);box-shadow:0 20px 60px rgba(0,0,0,.12);}
-        .whisper-input{min-height:132px;resize:vertical;max-height:360px;overflow:auto;}
-        .whisper-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);}
-        .whisper-card:hover{border-color:rgba(34,197,94,.18);}
-        .whisper-action{min-height:40px;min-width:40px;}
-        .whisper-skeleton{height:150px;border-radius:1.75rem;background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.07),rgba(255,255,255,.03));background-size:200% 100%;animation:whisperShimmer 1.5s linear infinite;}
-        @keyframes whisperShimmer{to{background-position:-200% 0}}
-        body.light-mode .whisper-composer,body.light-mode .whisper-card{background:#fff;border-color:rgba(15,23,42,.07);box-shadow:0 10px 30px rgba(16,24,40,.05);}
-        body.light-mode .whisper-card:hover{border-color:rgba(16,185,129,.22);}
-        @media (max-width:640px){.whisper-input{min-height:120px;max-height:300px}.whisper-shell{width:100%}.whisper-action{min-height:44px;min-width:44px}}
+
+/* ============================================================
+   CAMPUS WHISPER — scoped production UI
+   ============================================================ */
+.whisper-shell{max-width:900px;margin:0 auto;padding-bottom:5.5rem}
+.whisper-composer,.whisper-card,.whisper-state{background:rgba(15,23,42,.58);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.light-mode .whisper-composer,.light-mode .whisper-card,.light-mode .whisper-state{background:rgba(255,255,255,.78);border-color:rgba(15,23,42,.08)}
+.whisper-composer{border-radius:28px;padding:18px}
+.whisper-textarea{width:100%;min-height:130px;resize:vertical;border:0;outline:0;background:transparent;color:#f8fafc;font-size:15px;line-height:1.65}
+.light-mode .whisper-textarea{color:#0f172a}
+.whisper-textarea::placeholder{color:#64748b}
+.whisper-composer-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.whisper-counter{font-size:11px;color:#64748b;font-weight:700}
+.whisper-submit{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:14px;border:1px solid rgba(34,197,94,.28);background:rgba(34,197,94,.14);color:#86efac;font-weight:800;font-size:12px;transition:.18s ease}
+.whisper-submit:hover{background:rgba(34,197,94,.2);transform:translateY(-1px)}
+.whisper-submit:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.whisper-notice{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:15px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.12);color:#94a3b8;font-size:11px;line-height:1.5}
+.whisper-tabs{display:flex;gap:8px;overflow:auto;padding:2px 0;scrollbar-width:none}.whisper-tabs::-webkit-scrollbar{display:none}
+.whisper-tab{flex:0 0 auto;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#64748b;border-radius:999px;padding:9px 13px;font-size:11px;font-weight:800}
+.whisper-tab.active{color:#bbf7d0;border-color:rgba(34,197,94,.28);background:rgba(34,197,94,.1)}
+.whisper-feed{display:grid;gap:12px}
+.whisper-card{border-radius:24px;padding:17px}
+.whisper-card-head{display:flex;align-items:center;gap:10px}.whisper-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.16);color:#86efac;flex:0 0 auto}.whisper-author{font-size:12px;font-weight:800;color:#e2e8f0}.light-mode .whisper-author{color:#0f172a}.whisper-time{font-size:10px;color:#64748b;margin-top:2px}.whisper-menu{margin-left:auto;position:relative}.whisper-menu-btn{width:34px;height:34px;border-radius:10px;border:0;background:transparent;color:#64748b}.whisper-menu-btn:hover{background:rgba(255,255,255,.05);color:#cbd5e1}.whisper-content{margin:14px 0 16px;color:#e2e8f0;font-size:14px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}.light-mode .whisper-content{color:#1e293b}.whisper-actions{display:flex;align-items:center;gap:8px}.whisper-action{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 11px;border-radius:11px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);color:#94a3b8;font-size:11px;font-weight:800}.whisper-action:hover{background:rgba(255,255,255,.06);color:#e2e8f0}.whisper-action.liked{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.08)}
+.whisper-load-more{width:100%;min-height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#94a3b8;font-weight:800;font-size:11px}.whisper-load-more:hover{background:rgba(255,255,255,.06);color:#e2e8f0}.whisper-load-more:disabled{opacity:.5}
+.whisper-state{border-radius:24px;padding:34px 20px;text-align:center;color:#64748b}.whisper-state h3{color:#e2e8f0;font-size:14px;font-weight:800;margin:8px 0 5px}.light-mode .whisper-state h3{color:#0f172a}.whisper-state p{font-size:11px;line-height:1.6;max-width:420px;margin:0 auto}.whisper-retry{margin-top:14px;min-height:40px;padding:0 14px;border-radius:12px;border:1px solid rgba(34,197,94,.2);background:rgba(34,197,94,.08);color:#86efac;font-weight:800;font-size:11px}
+.whisper-modal{position:fixed;inset:0;z-index:160;display:grid;place-items:center;padding:18px;background:rgba(2,6,23,.76);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}.whisper-modal.hidden{display:none}.whisper-dialog{width:min(100%,430px);border-radius:24px;background:#0f172a;border:1px solid rgba(255,255,255,.09);padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.4)}.light-mode .whisper-dialog{background:#fff;border-color:rgba(15,23,42,.1)}
+.whisper-report-options{display:grid;gap:8px;margin:14px 0}.whisper-report-option{display:flex;align-items:center;gap:10px;padding:12px;border-radius:13px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);color:#cbd5e1;font-size:12px;text-align:left}.light-mode .whisper-report-option{color:#334155;border-color:rgba(15,23,42,.08);background:rgba(15,23,42,.025)}.whisper-report-option input{accent-color:#22c55e}
+.whisper-toast{position:fixed;left:50%;bottom:94px;transform:translate(-50%,10px);z-index:170;max-width:min(92vw,430px);padding:11px 14px;border-radius:13px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:700;opacity:0;pointer-events:none;transition:.2s ease;box-shadow:0 14px 35px rgba(0,0,0,.3)}.whisper-toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:640px){.whisper-shell{padding-bottom:6rem}.whisper-composer{padding:14px;border-radius:22px}.whisper-textarea{min-height:115px;font-size:14px}.whisper-composer-footer{align-items:flex-end}.whisper-submit{min-height:42px;padding:0 14px}.whisper-card{padding:15px;border-radius:20px}.whisper-content{font-size:14px}.whisper-action{flex:1;justify-content:center;min-width:0}.whisper-action span{display:none}.whisper-modal{padding:12px}.whisper-dialog{border-radius:20px}}
+
 </style>
 </head>
 <body class="min-h-screen pb-32">
@@ -703,6 +721,7 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
                 <div class="study-tabs" role="tablist" aria-label="Study resources">
                     <button type="button" data-study-view="courses" onclick="studySetView('courses')">Courses</button>
                     <button type="button" data-study-view="resources" onclick="studySetView('resources')">Materials</button>
+                    <button type="button" data-study-view="pdf" onclick="studySetView('pdf')">PDF Library</button>
                     <button type="button" data-study-view="past" onclick="studySetView('past')">Past Questions</button>
                     <button type="button" data-study-view="saved" onclick="studySetView('saved')">Saved</button>
                     <button type="button" data-study-view="recent" onclick="studySetView('recent')">Recent</button>
@@ -724,25 +743,62 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
 
     <div id="whisperPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
         <div class="whisper-shell space-y-4 md:space-y-5">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div class="min-w-0">
-                    <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">Anonymous, To Other Students Only</p>
-                    <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Campus Whisper</h2>
-                    <p class="text-xs md:text-sm text-slate-500 mt-1">Say what you need to say. Your identity stays private.</p>
+            <header class="min-w-0">
+                <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">Anonymous, To Other Students Only</p>
+                <div class="flex items-end justify-between gap-3">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Campus Whisper</h2>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1">Say what you need to say. Your identity stays private.</p>
+                    </div>
+                    <div class="hidden sm:flex items-center gap-2 text-[9px] uppercase tracking-[0.16em] font-black text-slate-500"><i class="fas fa-shield-halved text-green-500"></i> Campus-only</div>
                 </div>
-                <div class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-green-400 bg-green-500/5 border border-green-500/10 rounded-full px-3 py-2 self-start sm:self-auto"><i class="fas fa-shield-halved"></i><span>Anonymous</span></div>
-            </div>
-            <section class="whisper-composer rounded-[2rem] p-4 md:p-5">
-                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-green-500/10 border border-green-500/15 flex items-center justify-center shrink-0"><i class="fas fa-user-secret text-green-500"></i></div><div class="min-w-0"><p class="text-sm font-bold text-white">Post anonymously</p><p class="text-[10px] text-slate-500">Only your campus sees this. Moderation still applies.</p></div></div>
-                <textarea id="whisperComposer" class="whisper-input w-full rounded-2xl bg-white/5 border border-white/10 p-4 text-sm md:text-base text-white outline-none focus:border-green-500/40 transition resize-y" maxlength="1000" rows="5" placeholder="What's on your mind?" aria-label="Whisper message"></textarea>
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3"><div class="flex items-center justify-between sm:justify-start gap-3 text-[10px] text-slate-500"><span id="whisperCharCount">0/1000</span><span>Be respectful. Anonymous doesn't mean unaccountable.</span></div><button type="button" id="whisperPublishBtn" class="scholar-gradient w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm shadow-xl active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-paper-plane mr-2"></i>Publish Whisper</button></div>
-                <p id="whisperComposerStatus" class="text-[10px] min-h-[16px] mt-2 text-slate-500" aria-live="polite"></p>
+            </header>
+
+            <section class="whisper-composer" aria-label="Create anonymous Whisper">
+                <div class="whisper-notice mb-3"><i class="fas fa-user-secret text-green-500 mt-0.5"></i><span>Your post is anonymous to other students. UniVerse still keeps an internal ownership link for safety and moderation.</span></div>
+                <textarea id="whisperComposerInput" class="whisper-textarea" maxlength="1000" placeholder="What's on your mind?" aria-label="Write an anonymous Whisper"></textarea>
+                <div class="whisper-composer-footer">
+                    <span id="whisperCharCount" class="whisper-counter">0 / 1000</span>
+                    <button id="whisperSubmitBtn" type="button" class="whisper-submit"><i class="fas fa-paper-plane"></i><span>Whisper</span></button>
+                </div>
+                <div id="whisperPostStatus" class="hidden text-[11px] mt-2" role="status" aria-live="polite"></div>
             </section>
-            <div class="flex items-center justify-between gap-3"><div><p class="text-[9px] font-black uppercase tracking-[0.18em] text-green-500">Campus Feed</p><h3 class="text-base md:text-lg font-bold text-white mt-1">Latest whispers</h3></div><button type="button" id="whisperRefreshBtn" class="whisper-action rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition" aria-label="Refresh whispers" title="Refresh"><i class="fas fa-rotate-right"></i></button></div>
-            <div id="whisperFeed" class="space-y-3" aria-live="polite"></div>
-            <div id="whisperLoadMoreWrap" class="hidden text-center pt-1"><button type="button" id="whisperLoadMoreBtn" class="rounded-xl bg-white/5 border border-white/10 px-5 py-3 text-xs font-bold text-slate-300 hover:text-white transition">Load more</button></div>
+
+            <div class="flex items-center justify-between gap-3">
+                <div class="whisper-tabs" role="tablist" aria-label="Whisper feed sorting">
+                    <button type="button" class="whisper-tab active" data-whisper-sort="latest" role="tab" aria-selected="true">Latest</button>
+                    <button type="button" class="whisper-tab" data-whisper-sort="trending" role="tab" aria-selected="false">Trending</button>
+                </div>
+                <button id="whisperRefreshBtn" type="button" class="whisper-action" aria-label="Refresh Whisper feed"><i class="fas fa-rotate"></i><span>Refresh</span></button>
+            </div>
+
+            <div id="whisperFeed" class="whisper-feed" aria-live="polite"></div>
+            <div id="whisperLoadMoreWrap" class="hidden"><button id="whisperLoadMoreBtn" type="button" class="whisper-load-more">Load more</button></div>
         </div>
     </div>
+
+    <div id="whisperReportModal" class="whisper-modal hidden" role="dialog" aria-modal="true" aria-labelledby="whisperReportTitle">
+        <div class="whisper-dialog">
+            <div class="flex items-start justify-between gap-3">
+                <div><p class="text-[9px] uppercase tracking-[0.18em] font-black text-green-500">Safety</p><h3 id="whisperReportTitle" class="text-base font-bold text-white mt-1">Report Whisper</h3></div>
+                <button type="button" id="whisperReportClose" class="w-9 h-9 rounded-xl bg-white/5 text-slate-400" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <p class="text-xs text-slate-500 mt-3">Choose the reason that best describes the problem. Your identity will not be shown to the author.</p>
+            <div id="whisperReportOptions" class="whisper-report-options">
+                <label class="whisper-report-option"><input type="radio" name="whisperReportReason" value="Harassment"><span>Harassment</span></label>
+                <label class="whisper-report-option"><input type="radio" name="whisperReportReason" value="Bullying"><span>Bullying</span></label>
+                <label class="whisper-report-option"><input type="radio" name="whisperReportReason" value="Hate/Discrimination"><span>Hate/Discrimination</span></label>
+                <label class="whisper-report-option"><input type="radio" name="whisperReportReason" value="Threats"><span>Threats</span></label>
+                <label class="whisper-report-option"><input type="radio" name="whisperReportReason" value="Sexual/Explicit Content"><span>Sexual/Explicit Content</span></label>
+                <label class="whisper-report-option"><input type="radio" name="whisperReportReason" value="Spam"><span>Spam</span></label>
+                <label class="whisper-report-option"><input type="radio" name="whisperReportReason" value="Scam/Fraud"><span>Scam/Fraud</span></label>
+                <label class="whisper-report-option"><input type="radio" name="whisperReportReason" value="Other"><span>Other</span></label>
+            </div>
+            <div class="flex gap-2 mt-4"><button type="button" id="whisperReportCancel" class="flex-1 min-h-[42px] rounded-xl bg-white/5 text-slate-300 text-xs font-bold">Cancel</button><button type="button" id="whisperReportSubmit" class="flex-1 min-h-[42px] rounded-xl bg-green-500/15 border border-green-500/20 text-green-300 text-xs font-bold">Submit report</button></div>
+        </div>
+    </div>
+    <div id="whisperToast" class="whisper-toast" role="status" aria-live="polite"></div>
+
     <!-- Future ICOS Experiences — preserved, functional modules that
          are not part of the six V1.0 pillars. Reached from Profile,
          not the primary nav. -->
@@ -930,8 +986,6 @@ let appState = {
             loadFeed(true);
             loadLodgeFeed(true);
             loadErrands(true);
-            // Study Hub loads only its own scoped data after campus identity is resolved.
-            studyReload();
         }
         
 
@@ -1827,6 +1881,264 @@ async function handleChatSend(e){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initCampusChat);else initCampusChat();
 
+// ============================================================
+// CAMPUS WHISPER — production implementation (scoped)
+// ============================================================
+const whisperState = {
+    initialized: false,
+    loading: false,
+    loadingMore: false,
+    loadedAll: false,
+    sort: 'latest',
+    cursor: null,
+    offset: 0,
+    posts: [],
+    mine: new Set(),
+    liked: new Set(),
+    pendingReportId: null,
+    pageSize: 15
+};
+
+const WHISPER_MAX_LENGTH = 1000;
+const WHISPER_REPORT_REASONS = new Set(['Harassment','Bullying','Hate/Discrimination','Threats','Sexual/Explicit Content','Spam','Scam/Fraud','Other']);
+
+function whisperEscapeTime(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    const diff = Math.max(0, Date.now() - d.getTime());
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+    return d.toLocaleDateString(undefined, {month:'short', day:'numeric'});
+}
+
+function whisperShowToast(message) {
+    const el = document.getElementById('whisperToast');
+    if (!el) return;
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(whisperShowToast.timer);
+    whisperShowToast.timer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+function whisperHumanError(error, fallback='Something went wrong. Please try again.') {
+    const msg = String(error?.message || error || '').toLowerCase();
+    if (msg.includes('rate limit')) return 'You’re posting a little too quickly. Please wait a moment and try again.';
+    if (msg.includes('duplicate whisper')) return 'You already posted that recently. Try saying it another way.';
+    if (msg.includes('campus unavailable') || msg.includes('invalid campus')) return 'Your campus profile is unavailable. Please refresh and try again.';
+    if (msg.includes('not authenticated') || msg.includes('jwt') || msg.includes('session')) return 'Your session has expired. Please sign in again.';
+    if (msg.includes('content not reportable')) return 'That Whisper is no longer available to report.';
+    if (msg.includes('invalid report reason')) return 'Please choose a valid report reason.';
+    if (msg.includes('permission') || msg.includes('row-level security') || msg.includes('rls')) return fallback;
+    if (msg.includes('network') || msg.includes('fetch')) return 'We couldn’t reach UniVerse. Check your connection and try again.';
+    return fallback;
+}
+
+function whisperSetComposerStatus(message='', isError=false) {
+    const el=document.getElementById('whisperPostStatus');
+    if(!el) return;
+    el.textContent=message;
+    el.classList.toggle('hidden', !message);
+    el.classList.toggle('text-red-400', !!isError);
+    el.classList.toggle('text-green-400', !isError);
+}
+
+function whisperRenderState(type, message, retry=true) {
+    const feed=document.getElementById('whisperFeed');
+    if(!feed) return;
+    const icons={loading:'fa-circle-notch fa-spin',empty:'fa-comment-slash',error:'fa-triangle-exclamation'};
+    const title={loading:'Loading Whispers…',empty:'Nothing whispered yet.',error:'Couldn’t load Campus Whisper.'};
+    feed.innerHTML=`<div class="whisper-state"><i class="fas ${icons[type]||icons.error} text-green-500 text-xl"></i><h3>${title[type]||title.error}</h3><p>${message}</p>${type==='error'&&retry?'<button type="button" class="whisper-retry" id="whisperRetryBtn">Try again</button>':''}</div>`;
+    document.getElementById('whisperRetryBtn')?.addEventListener('click',()=>loadWhisperFeed(true));
+}
+
+function whisperUpdateCounter() {
+    const input=document.getElementById('whisperComposerInput');
+    const count=document.getElementById('whisperCharCount');
+    if(!input||!count) return;
+    count.textContent=`${input.value.length} / ${WHISPER_MAX_LENGTH}`;
+}
+
+function whisperRenderFeed() {
+    const feed=document.getElementById('whisperFeed');
+    const wrap=document.getElementById('whisperLoadMoreWrap');
+    if(!feed) return;
+    if(!whisperState.posts.length){
+        whisperRenderState('empty','Be the first to say what’s on your mind.');
+        wrap?.classList.add('hidden');
+        return;
+    }
+    feed.innerHTML='';
+    const frag=document.createDocumentFragment();
+    whisperState.posts.forEach(post=>{
+        const card=document.createElement('article');
+        card.className='whisper-card';
+        card.dataset.postId=post.id;
+        const head=document.createElement('div'); head.className='whisper-card-head';
+        const avatar=document.createElement('div'); avatar.className='whisper-avatar'; avatar.innerHTML='<i class="fas fa-user-secret"></i>';
+        const who=document.createElement('div');
+        const author=document.createElement('div'); author.className='whisper-author'; author.textContent=post.anon_label || 'Anonymous';
+        const time=document.createElement('div'); time.className='whisper-time'; time.textContent=whisperEscapeTime(post.created_at);
+        who.append(author,time); head.append(avatar,who);
+        const menu=document.createElement('div'); menu.className='whisper-menu';
+        const menuBtn=document.createElement('button'); menuBtn.type='button'; menuBtn.className='whisper-menu-btn'; menuBtn.setAttribute('aria-label', whisperState.mine.has(post.id)?'Whisper options':'Report Whisper'); menuBtn.innerHTML='<i class="fas fa-ellipsis"></i>';
+        menuBtn.addEventListener('click',()=>{
+            if(whisperState.mine.has(post.id)){
+                if(confirm('Delete this Whisper? This cannot be undone.')) whisperDelete(post.id);
+            } else whisperOpenReport(post.id);
+        });
+        menu.append(menuBtn); head.append(menu);
+        const content=document.createElement('div'); content.className='whisper-content'; content.textContent=post.content || '';
+        const actions=document.createElement('div'); actions.className='whisper-actions';
+        const like=document.createElement('button'); like.type='button'; like.className='whisper-action'+(whisperState.liked.has(post.id)?' liked':''); like.setAttribute('aria-label',whisperState.liked.has(post.id)?'Unlike Whisper':'Like Whisper');
+        const likeIcon=document.createElement('i'); likeIcon.className=whisperState.liked.has(post.id)?'fas fa-heart':'far fa-heart';
+        const likeCount=document.createElement('span'); likeCount.textContent=String(Number(post.like_count)||0);
+        like.append(likeIcon,likeCount); like.addEventListener('click',()=>whisperToggleLike(post.id,like));
+        const report=document.createElement('button'); report.type='button'; report.className='whisper-action'; report.setAttribute('aria-label','Report Whisper'); report.innerHTML='<i class="far fa-flag"></i><span>Report</span>'; report.addEventListener('click',()=>whisperOpenReport(post.id));
+        actions.append(like,report);
+        card.append(head,content,actions); frag.appendChild(card);
+    });
+    feed.appendChild(frag);
+    wrap?.classList.toggle('hidden', whisperState.loadedAll || !whisperState.posts.length);
+    const btn=document.getElementById('whisperLoadMoreBtn'); if(btn) btn.disabled=whisperState.loadingMore;
+}
+
+async function whisperLoadMineState() {
+    const ids=whisperState.posts.map(p=>p.id).filter(Boolean);
+    whisperState.mine.clear(); whisperState.liked.clear();
+    if(!ids.length) return;
+    const {data,error}=await _supabase.rpc('get_my_whisper_state',{p_post_ids:ids});
+    if(error) throw error;
+    (data||[]).forEach(row=>{if(row.is_mine) whisperState.mine.add(row.post_id); if(row.liked) whisperState.liked.add(row.post_id);});
+}
+
+function whisperBuildFeedQuery(reset=false) {
+    let q=_supabase.from('whisper_posts_public').select('id, anon_label, content, like_count, created_at');
+    if(whisperState.sort==='trending') {
+        q=q.gte('created_at',new Date(Date.now()-7*24*60*60*1000).toISOString()).order('like_count',{ascending:false}).order('created_at',{ascending:false}).order('id',{ascending:false});
+    } else {
+        q=q.order('created_at',{ascending:false}).order('id',{ascending:false});
+        if(!reset && whisperState.cursor){
+            const c=whisperState.cursor;
+            q=q.or(`created_at.lt.${c.created_at},and(created_at.eq.${c.created_at},id.lt.${c.id})`);
+        }
+    }
+    const start=whisperState.sort==='trending' ? whisperState.offset : 0;
+    return q.range(start,start+whisperState.pageSize-1);
+}
+
+async function loadWhisperFeed(reset=true) {
+    if(!currentUserId) return;
+    if(whisperState.loading || whisperState.loadingMore) return;
+    whisperState.initialized=true;
+    if(reset){
+        whisperState.loading=true; whisperState.loadedAll=false; whisperState.cursor=null; whisperState.offset=0; whisperState.posts=[];
+        whisperRenderState('loading','Checking your campus and loading the latest anonymous posts.',false);
+    } else whisperState.loadingMore=true;
+    try {
+        const {data,error}=await whisperBuildFeedQuery(reset);
+        if(error) throw error;
+        const rows=data||[];
+        if(whisperState.sort==='trending' && !reset) whisperState.offset += rows.length;
+        const existing=new Set(whisperState.posts.map(p=>p.id));
+        rows.forEach(row=>{if(!existing.has(row.id)) whisperState.posts.push(row);});
+        if(whisperState.sort==='latest' && rows.length){ const last=rows[rows.length-1]; whisperState.cursor={created_at:last.created_at,id:last.id}; }
+        whisperState.loadedAll=rows.length<whisperState.pageSize;
+        await whisperLoadMineState();
+        whisperRenderFeed();
+    } catch(e) {
+        console.error('Campus Whisper load failed',e);
+        if(reset) whisperRenderState('error','Your Whispers are still safe. We couldn’t load the feed right now.');
+        else whisperShowToast(whisperHumanError(e,'Couldn’t load more Whispers. Please try again.'));
+    } finally { whisperState.loading=false; whisperState.loadingMore=false; const b=document.getElementById('whisperLoadMoreBtn'); if(b) b.disabled=false; }
+}
+
+async function whisperCreate() {
+    if(!currentUserId){whisperSetComposerStatus('Your session has expired. Please sign in again.',true);return;}
+    const input=document.getElementById('whisperComposerInput'), btn=document.getElementById('whisperSubmitBtn');
+    if(!input||!btn) return;
+    const content=input.value.replace(/[\\t ]+/g,' ').trim();
+    if(!content){whisperSetComposerStatus('Write something before posting.',true);input.focus();return;}
+    if(content.length>WHISPER_MAX_LENGTH){whisperSetComposerStatus(`Your Whisper must be ${WHISPER_MAX_LENGTH} characters or fewer.`,true);return;}
+    if(btn.disabled) return;
+    btn.disabled=true; btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i><span>Posting…</span>'; whisperSetComposerStatus('Publishing anonymously…',false);
+    try {
+        const {data,error}=await _supabase.rpc('create_whisper',{p_content:content});
+        if(error) throw error;
+        const created=Array.isArray(data)?data[0]:data;
+        if(!created?.id) throw new Error('publish failed');
+        input.value=''; whisperUpdateCounter(); whisperSetComposerStatus('Whisper posted.',false);
+        whisperShowToast('Your Whisper is live.');
+        whisperState.posts=[created,...whisperState.posts.filter(p=>p.id!==created.id)];
+        whisperState.mine.add(created.id); whisperState.liked.delete(created.id);
+        whisperRenderFeed();
+        setTimeout(()=>whisperSetComposerStatus('',false),2200);
+    } catch(e) {
+        console.error('Campus Whisper create failed',e);
+        whisperSetComposerStatus(whisperHumanError(e,'We couldn’t publish your Whisper right now. Please try again.'),true);
+    } finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i><span>Whisper</span>'; }
+}
+
+async function whisperDelete(postId) {
+    try {
+        const {data,error}=await _supabase.rpc('delete_whisper',{p_post_id:postId});
+        if(error) throw error;
+        if(!data) throw new Error('delete not permitted');
+        whisperState.posts=whisperState.posts.filter(p=>p.id!==postId); whisperState.mine.delete(postId); whisperState.liked.delete(postId); whisperRenderFeed(); whisperShowToast('Whisper deleted.');
+    } catch(e){ console.error('Campus Whisper delete failed',e); whisperShowToast(whisperHumanError(e,'We couldn’t delete that Whisper. Please try again.')); }
+}
+
+async function whisperToggleLike(postId,button) {
+    if(button.disabled) return;
+    button.disabled=true;
+    try {
+        const {data,error}=await _supabase.rpc('toggle_whisper_like',{p_post_id:postId});
+        if(error) throw error;
+        const row=whisperState.posts.find(p=>p.id===postId); if(row){row.like_count=Number(data?.like_count)||0;}
+        if(data?.liked) whisperState.liked.add(postId); else whisperState.liked.delete(postId);
+        whisperRenderFeed();
+    } catch(e){console.error('Campus Whisper like failed',e);whisperShowToast(whisperHumanError(e,'We couldn’t update that reaction. Please try again.'));button.disabled=false;}
+}
+
+function whisperOpenReport(postId){
+    whisperState.pendingReportId=postId;
+    document.querySelectorAll('input[name="whisperReportReason"]').forEach(i=>i.checked=false);
+    document.getElementById('whisperReportModal')?.classList.remove('hidden');
+}
+function whisperCloseReport(){whisperState.pendingReportId=null;document.getElementById('whisperReportModal')?.classList.add('hidden');}
+async function whisperSubmitReport(){
+    const postId=whisperState.pendingReportId; const selected=document.querySelector('input[name="whisperReportReason"]:checked')?.value; const btn=document.getElementById('whisperReportSubmit');
+    if(!postId) return whisperCloseReport();
+    if(!WHISPER_REPORT_REASONS.has(selected)){whisperShowToast('Choose a report reason first.');return;}
+    btn.disabled=true; btn.textContent='Sending…';
+    try { const {error}=await _supabase.rpc('create_whisper_report',{p_content_id:postId,p_reason:selected}); if(error) throw error; whisperCloseReport(); whisperShowToast('Report received. Thank you for helping keep Whisper safe.'); }
+    catch(e){console.error('Campus Whisper report failed',e);whisperShowToast(whisperHumanError(e,'We couldn’t send the report. Please try again.'));}
+    finally{btn.disabled=false;btn.textContent='Submit report';}
+}
+
+function initCampusWhisper(){
+    if(whisperState.initialized) return;
+    whisperState.initialized=true;
+    const input=document.getElementById('whisperComposerInput'); input?.addEventListener('input',whisperUpdateCounter);
+    document.getElementById('whisperSubmitBtn')?.addEventListener('click',whisperCreate);
+    document.getElementById('whisperRefreshBtn')?.addEventListener('click',()=>loadWhisperFeed(true));
+    document.getElementById('whisperLoadMoreBtn')?.addEventListener('click',()=>loadWhisperFeed(false));
+    document.querySelectorAll('[data-whisper-sort]').forEach(tab=>tab.addEventListener('click',()=>{
+        const sort=tab.dataset.whisperSort; if(!['latest','trending'].includes(sort)||sort===whisperState.sort) return;
+        whisperState.sort=sort; document.querySelectorAll('[data-whisper-sort]').forEach(t=>{const active=t.dataset.whisperSort===sort;t.classList.toggle('active',active);t.setAttribute('aria-selected',String(active));}); loadWhisperFeed(true);
+    }));
+    document.getElementById('whisperReportClose')?.addEventListener('click',whisperCloseReport);
+    document.getElementById('whisperReportCancel')?.addEventListener('click',whisperCloseReport);
+    document.getElementById('whisperReportSubmit')?.addEventListener('click',whisperSubmitReport);
+    document.getElementById('whisperReportModal')?.addEventListener('click',e=>{if(e.target.id==='whisperReportModal') whisperCloseReport();});
+    whisperUpdateCounter();
+}
+initCampusWhisper();
+
 // --- PAGE SWITCHER LOGIC ---
 // V1.0 primary pages (bottom nav) + preserved future-module pages
 // (lodge, errandPage) which are reachable via the Future ICOS modal
@@ -1882,7 +2194,7 @@ function showPage(pageName) {
 
     // Page-specific data loads, preserved from the original implementation
     if (pageName === 'profile') loadProfileData();
-    else if (pageName === 'whisper') { initCampusWhisper(); loadWhispers({reset:true}); }
+    else if (pageName === 'whisper') loadWhisperFeed(true);
     else if (pageName === 'lodge') loadLodgeFeed(true);
     else if (pageName === 'errandPage') loadErrands(true);
 }
@@ -2368,278 +2680,215 @@ async function submitPost(){const content=document.getElementById('postContent')
 
 
 /* ============================================================
-   STUDY HUB — isolated implementation
-   Uses existing study_resources/study_hub/tribes/AI tables.
-   No new tables, no global rewrites, no fake data.
+   STUDY HUB — production implementation (surgical / isolated)
    ============================================================ */
 const studyState = {
     resources: [],
-    legacy: [],
+    courses: [],
+    enrolledCourseIds: new Set(),
     tribes: [],
+    savedIds: new Set(),
+    recent: [],
+    progress: [],
     view: 'courses',
     query: '',
+    course: '',
+    year: '',
+    semester: '',
+    page: 0,
+    pageSize: 20,
+    hasMore: false,
     loaded: false,
     loading: false,
+    error: null,
     timer: null,
-    saved: new Set(JSON.parse(localStorage.getItem('universe.study.saved') || '[]')),
-    recent: JSON.parse(localStorage.getItem('universe.study.recent') || '[]'),
-    progress: JSON.parse(localStorage.getItem('universe.study.progress') || '{}')
+    accessUrl: null
 };
 
-function studyPersist(){
-    localStorage.setItem('universe.study.saved', JSON.stringify([...studyState.saved]));
-    localStorage.setItem('universe.study.recent', JSON.stringify(studyState.recent.slice(0,50)));
-    localStorage.setItem('universe.study.progress', JSON.stringify(studyState.progress));
-}
 function studyEsc(v){const d=document.createElement('div');d.textContent=v==null?'':String(v);return d.innerHTML;}
-function studyFormatBytes(n){
-    if(!Number.isFinite(Number(n))||Number(n)<=0)return '';
-    const u=['B','KB','MB','GB']; let i=0,x=Number(n); while(x>=1024&&i<u.length-1){x/=1024;i++}
-    return `${x<10&&i?x.toFixed(1):Math.round(x)} ${u[i]}`;
-}
-function studyTime(v){
-    if(!v)return '';
-    const d=new Date(v); if(Number.isNaN(d.getTime()))return '';
-    return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
-}
-function studyFileIcon(type){
-    const t=(type||'').toLowerCase();
-    if(t.includes('pdf'))return 'fa-file-pdf';
-    if(t.includes('powerpoint')||t.includes('presentation')||t.includes('ppt'))return 'fa-file-powerpoint';
-    if(t.includes('word')||t.includes('doc'))return 'fa-file-word';
-    if(t.includes('image')||t.includes('png')||t.includes('jpg')||t.includes('jpeg'))return 'fa-file-image';
-    return 'fa-file-lines';
-}
-function studyNormalizeResource(r,legacy=false){
-    if(legacy){
-        const code=(r.course_code||'').trim();
-        return {
-            id:r.id,title:code?`${code} material`:'Study material',description:'',
-            file_url:r.file_url,file_type:r.material_type||'resource',university:r.school_tag||userUniversity,
-            course_code:code,category:r.material_type||'material',uploader_id:null,created_at:null,
-            updated_at:null,download_count:0,legacy:true
-        };
-    }
-    return {...r,legacy:false};
-}
-function studyIsPast(r){
-    const c=(r.category||'').toLowerCase().replace(/[-_]/g,' ');
-    const t=(r.title||'').toLowerCase();
-    const d=(r.description||'').toLowerCase();
-    return c.includes('past question')||c.includes('past paper')||t.includes('past question')||t.includes('past paper')||d.includes('past question')||d.includes('past paper');
-}
-function studyCourses(){
-    const map=new Map();
-    studyState.resources.forEach(r=>{
-        const code=(r.course_code||'').trim();
-        if(!code)return;
-        if(!map.has(code))map.set(code,{code,title:code,resources:0,past:0,last:null});
-        const c=map.get(code); c.resources++; if(studyIsPast(r))c.past++;
-        if(r.created_at&&(!c.last||new Date(r.created_at)>new Date(c.last)))c.last=r.created_at;
-    });
-    return [...map.values()].sort((a,b)=>a.code.localeCompare(b.code));
-}
-function studyMatches(r){
-    if(!studyState.query)return true;
-    const q=studyState.query.toLowerCase();
-    return [r.title,r.description,r.course_code,r.category,r.file_type,r.department,r.level].filter(Boolean).join(' ').toLowerCase().includes(q);
-}
-function studySave(r){
-    if(studyState.saved.has(r.id))studyState.saved.delete(r.id);else studyState.saved.add(r.id);
-    studyPersist(); studyRender();
-}
-function studyRecordOpen(r){
-    const now=new Date().toISOString();
-    studyState.recent=[{id:r.id,at:now},...studyState.recent.filter(x=>x.id!==r.id)].slice(0,50);
-    studyState.progress.opened=Number(studyState.progress.opened||0)+1;
-    studyState.progress.lastCourse=r.course_code||'';
-    studyState.progress.lastTitle=r.title||'';
-    studyState.progress.lastOpened=now;
-    studyPersist();
-}
-function studyOpenUrl(r,download=false){
-    if(!r?.file_url){studyShowError('That document does not have an available file.');return;}
-    studyRecordOpen(r);
-    if(download){
-        const a=document.createElement('a'); a.href=r.file_url; a.target='_blank'; a.rel='noopener noreferrer'; a.download=''; a.click();
-    }else{
-        studyOpenViewer(r);
-    }
-}
-function studyOpenViewer(r){
-    const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
-    document.getElementById('studyModalTitle').textContent=r.title||'Resource';
-    const isPdf=(r.file_type||'').toLowerCase().includes('pdf')||(r.file_url||'').toLowerCase().includes('.pdf');
-    body.innerHTML=`<div class="study-note mb-3">${studyEsc(r.course_code||'Course not specified')} ${r.file_type?'• '+studyEsc(r.file_type):''}</div>`;
-    if(isPdf){
-        const iframe=document.createElement('iframe'); iframe.className='study-viewer'; iframe.src=r.file_url; iframe.title=r.title||'PDF viewer'; iframe.loading='lazy'; iframe.referrerPolicy='no-referrer';
-        body.appendChild(iframe);
-        const actions=document.createElement('div'); actions.className='study-actions mt-3';
-        actions.innerHTML=`<button type="button" class="study-btn primary" onclick="studyOpenUrl(studyFindResource('${JSON.stringify(String(r.id))}'),true)"><i class="fas fa-download"></i> Download</button><button type="button" class="study-btn" onclick="window.open(${JSON.stringify(r.file_url)},'_blank','noopener,noreferrer')"><i class="fas fa-external-link-alt"></i> Open</button>`;
-        body.appendChild(actions);
-    }else{
-        body.innerHTML+=`<div class="study-empty"><div class="study-empty-icon"><i class="fas ${studyFileIcon(r.file_type)}"></i></div><h4>Preview unavailable</h4><p>This file type cannot be embedded here. Open or download the original resource.</p><div class="study-actions justify-center mt-4"><button type="button" class="study-btn primary" onclick="window.open(${JSON.stringify(r.file_url)},'_blank','noopener,noreferrer')"><i class="fas fa-external-link-alt"></i> Open</button><button type="button" class="study-btn" onclick="studyOpenUrl(studyFindResource('${JSON.stringify(String(r.id))}'),true)"><i class="fas fa-download"></i> Download</button></div></div>`;
-    }
-    modal.classList.remove('hidden');
-}
+function studyFormatBytes(n){if(!Number.isFinite(Number(n))||Number(n)<=0)return '';const u=['B','KB','MB','GB'];let i=0,x=Number(n);while(x>=1024&&i<u.length-1){x/=1024;i++;}return `${x<10&&i?x.toFixed(1):Math.round(x)} ${u[i]}`;}
+function studyTime(v){if(!v)return '';const d=new Date(v);if(Number.isNaN(d.getTime()))return '';return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});}
+function studyFileIcon(type){const t=(type||'').toLowerCase();if(t.includes('pdf'))return 'fa-file-pdf';if(t.includes('powerpoint')||t.includes('presentation')||t.includes('ppt'))return 'fa-file-powerpoint';if(t.includes('word')||t.includes('doc'))return 'fa-file-word';if(t.includes('image')||t.includes('png')||t.includes('jpg')||t.includes('jpeg'))return 'fa-file-image';return 'fa-file-lines';}
+function studyIsPast(r){return (r.resource_type||'').toLowerCase()==='past_question';}
+function studyShowError(message){const el=document.getElementById('studyStatus');if(!el)return;el.className='study-error';el.textContent=message;el.classList.remove('hidden');clearTimeout(studyState.errorTimer);studyState.errorTimer=setTimeout(()=>el.classList.add('hidden'),7000);}
+function studyEmpty(title,text,icon='fa-book-open'){return `<div class="study-empty"><div class="study-empty-icon"><i class="fas ${icon}"></i></div><h4>${studyEsc(title)}</h4><p>${studyEsc(text)}</p></div>`;}
 function studyFindResource(id){return studyState.resources.find(r=>String(r.id)===String(id));}
-function studyCloseViewer(){document.getElementById('studyResourceModal')?.classList.add('hidden')}
-function studyShowError(message){
-    const el=document.getElementById('studyStatus'); if(!el)return;
-    el.className='study-error'; el.textContent=message; el.classList.remove('hidden');
-    clearTimeout(studyState.errorTimer); studyState.errorTimer=setTimeout(()=>el.classList.add('hidden'),6000);
+
+async function studyLoadOverview(){
+    const [coursesRes,enrollRes,tribesRes,progressRes,recentRes] = await Promise.all([
+        _supabase.from('study_courses').select('id,university,course_code,course_title,department,level,created_at,updated_at').eq('university',userUniversity).order('course_code').limit(100),
+        _supabase.from('study_course_enrollments').select('course_id').eq('user_id',currentUserId),
+        _supabase.from('tribes').select('id,name,description,university,course_code,department,level,category,creator_id,created_at').eq('university',userUniversity).order('created_at',{ascending:false}).limit(12),
+        _supabase.from('study_progress').select('course_id,resources_opened,last_resource_id,last_opened_at,updated_at').eq('user_id',currentUserId).order('updated_at',{ascending:false}).limit(100),
+        _supabase.from('study_recent_activity').select('resource_id,opened_at,resource:study_resources(id,title,description,file_type,mime_type,university,course_code,course_id,category,resource_type,academic_year,semester,download_count,created_at)').eq('user_id',currentUserId).order('opened_at',{ascending:false}).limit(10)
+    ]);
+    if(coursesRes.error)throw coursesRes.error;
+    if(enrollRes.error)throw enrollRes.error;
+    if(progressRes.error)throw progressRes.error;
+    if(recentRes.error)throw recentRes.error;
+    studyState.courses=coursesRes.data||[];
+    studyState.enrolledCourseIds=new Set((enrollRes.data||[]).map(x=>String(x.course_id)));
+    studyState.tribes=tribesRes.error?[]:(tribesRes.data||[]);
+    studyState.progress=progressRes.data||[];
+    studyState.recent=(recentRes.data||[]).filter(x=>x.resource).map(x=>({...x.resource,opened_at:x.opened_at}));
+    await studyLoadBookmarks();
 }
-function studyEmpty(title,text,icon='fa-book-open'){
-    return `<div class="study-empty"><div class="study-empty-icon"><i class="fas ${icon}"></i></div><h4>${studyEsc(title)}</h4><p>${studyEsc(text)}</p></div>`;
+
+async function studyLoadBookmarks(){
+    const {data,error}=await _supabase.from('study_bookmarks').select('resource_id').eq('user_id',currentUserId);
+    if(error)throw error;
+    studyState.savedIds=new Set((data||[]).map(x=>String(x.resource_id)));
 }
-function studyResourceCard(r){
-    const saved=studyState.saved.has(r.id);
-    return `<article class="study-card study-resource">
-      <div class="study-resource-top">
-        <div class="study-file-icon"><i class="fas ${studyFileIcon(r.file_type)}"></i></div>
-        <div class="min-w-0 flex-1"><div class="study-resource-title text-white">${studyEsc(r.title||'Untitled resource')}</div>
-        <div class="study-meta mt-1">${studyEsc(r.course_code||'Course not specified')} ${r.file_type?'• '+studyEsc(r.file_type):''}</div></div>
-        <button type="button" class="study-btn ${saved?'saved':''}" onclick="studySave(studyFindResource('${JSON.stringify(String(r.id))}'))" aria-label="${saved?'Unsave':'Save'}"><i class="${saved?'fas':'far'} fa-bookmark"></i></button>
-      </div>
-      ${r.description?`<p class="study-meta">${studyEsc(r.description)}</p>`:''}
-      <div class="flex flex-wrap gap-1"><span class="study-badge">${studyEsc(r.category||'material')}</span>${r.created_at?`<span class="study-badge">${studyEsc(studyTime(r.created_at))}</span>`:''}${r.download_count?`<span class="study-badge">${Number(r.download_count)} accessed</span>`:''}</div>
-      <div class="study-actions mt-auto">
-        <button type="button" class="study-btn primary" onclick="studyOpenUrl(studyFindResource('${JSON.stringify(String(r.id))}'))"><i class="fas fa-eye"></i> Open</button>
-        <button type="button" class="study-btn" onclick="studyOpenUrl(studyFindResource('${JSON.stringify(String(r.id))}'),true)"><i class="fas fa-download"></i> Download</button>
-      </div>
-    </article>`;
+
+function studyBuildResourceQuery(mode){
+    let q=_supabase.from('study_resources').select('id,title,description,file_type,mime_type,university,course_code,course_id,department,level,category,resource_type,academic_year,semester,tribe_id,uploader_id,download_count,file_size_bytes,original_filename,created_at', {count:'exact'});
+    if(studyState.query){const x=studyState.query.replace(/[(),]/g,' ');q=q.or(`title.ilike.%${x}%,description.ilike.%${x}%,course_code.ilike.%${x}%,category.ilike.%${x}%,department.ilike.%${x}%,level.ilike.%${x}%`);}
+    if(studyState.course)q=q.eq('course_code',studyState.course);
+    if(studyState.year)q=q.eq('academic_year',Number(studyState.year));
+    if(studyState.semester)q=q.eq('semester',studyState.semester);
+    if(mode==='past')q=q.eq('resource_type','past_question');
+    else if(mode==='pdf')q=q.or('mime_type.ilike.%pdf%,file_type.ilike.%pdf%');
+    else if(mode==='resources')q=q.neq('resource_type','past_question');
+    q=q.order('created_at',{ascending:false}).order('id',{ascending:false});
+    return q.range(studyState.page*studyState.pageSize,(studyState.page+1)*studyState.pageSize-1);
 }
-function studyRenderCourses(){
-    const q=studyState.query.toLowerCase();
-    const courses=studyCourses().filter(c=>!q||`${c.code} ${c.title}`.toLowerCase().includes(q));
-    if(!courses.length)return studyEmpty('Your study journey starts here.','Open a course or resource to begin building your study history.','fa-graduation-cap');
-    return `<div class="study-course-grid">${courses.map(c=>`<article class="study-card study-course">
-      <div class="study-course-code">${studyEsc(c.code)}</div><div class="study-course-title text-white">${studyEsc(c.title)}</div>
-      <p class="study-meta mt-2">${c.resources} material${c.resources===1?'':'s'} • ${c.past} past question${c.past===1?'':'s'}</p>
-      ${c.last?`<p class="study-meta mt-1">Latest: ${studyEsc(studyTime(c.last))}</p>`:''}
-      <div class="study-actions mt-3"><button type="button" class="study-btn primary" onclick="studySetView('resources');studySetCourseFilter(${JSON.stringify(c.code)})"><i class="fas fa-folder-open"></i> Open Course</button></div>
-    </article>`).join('')}</div>`;
-}
-function studySetCourseFilter(code){
-    const f=document.getElementById('studyCourseFilter'); if(f){f.value=code;studyRender()}
-}
-function studyFilterValues(){
-    return {
-        course:document.getElementById('studyCourseFilter')?.value||'',
-        year:document.getElementById('studyYearFilter')?.value||'',
-        semester:document.getElementById('studySemesterFilter')?.value||''
-    };
-}
-function studyRenderResources(mode='resources'){
-    const all=studyState.resources.filter(studyMatches);
-    let rows=all;
-    const filters=studyFilterValues();
-    if(filters.course)rows=rows.filter(r=>(r.course_code||'')===filters.course);
-    if(mode==='past')rows=rows.filter(studyIsPast);
-    if(mode==='saved')rows=rows.filter(r=>studyState.saved.has(r.id));
-    if(mode==='recent'){
-        const order=new Map(studyState.recent.map((x,i)=>[String(x.id),i]));
-        rows=rows.filter(r=>order.has(String(r.id))).sort((a,b)=>order.get(String(a.id))-order.get(String(b.id)));
+
+async function studyLoadResources(mode=studyState.view){
+    if(mode==='saved'){
+        const {data,error}=await _supabase.from('study_bookmarks').select('resource_id,created_at,resource:study_resources(id,title,description,file_type,mime_type,university,course_code,course_id,department,level,category,resource_type,academic_year,semester,download_count,file_size_bytes,original_filename,created_at)').eq('user_id',currentUserId).order('created_at',{ascending:false}).range(studyState.page*studyState.pageSize,(studyState.page+1)*studyState.pageSize-1);
+        if(error)throw error; studyState.resources=(data||[]).filter(x=>x.resource).map(x=>x.resource);studyState.hasMore=(data||[]).length===studyState.pageSize;return;
     }
-    if(mode!=='past'&&mode!=='saved'&&mode!=='recent')rows=rows.filter(r=>!studyIsPast(r));
-    if(!rows.length)return studyEmpty(mode==='past'?'No past questions yet.':mode==='saved'?'Nothing saved yet.':mode==='recent'?'Nothing recently viewed yet.':'No course materials found.','Only real Study Hub data is shown here. Uploads can be enabled once a secure Study Storage bucket is provisioned.','fa-folder-open');
-    return `<div class="study-resource-grid">${rows.slice(0,40).map(studyResourceCard).join('')}</div>${rows.length>40?`<p class="study-note mt-3">Showing the first 40 matching resources for performance.</p>`:''}`;
+    if(mode==='recent'){const start=studyState.page*studyState.pageSize;studyState.resources=studyState.recent.slice(start,start+studyState.pageSize);studyState.hasMore=studyState.recent.length>start+studyState.pageSize;return;}
+    const {data,error,count}=await studyBuildResourceQuery(mode);if(error)throw error;studyState.resources=data||[];studyState.hasMore=(count??0)>(studyState.page+1)*studyState.pageSize;
 }
-function studyRender(){
-    if(!studyState.loaded)return;
-    document.getElementById('studyCourseCount').textContent=`${studyCourses().length} course${studyCourses().length===1?'':'s'}`;
-    document.getElementById('studyResourceCount').textContent=`${studyState.resources.length} resource${studyState.resources.length===1?'':'s'}`;
-    document.getElementById('studyPastCount').textContent=`${studyState.resources.filter(studyIsPast).length} paper${studyState.resources.filter(studyIsPast).length===1?'':'s'}`;
-    const opened=Number(studyState.progress.opened||0), saved=studyState.saved.size;
-    document.getElementById('studyOpenedCount').textContent=opened;
-    document.getElementById('studySavedCount').textContent=saved;
-    document.getElementById('studyProgressLabel').textContent=`${opened+saved} action${opened+saved===1?'':'s'}`;
-    const today=document.getElementById('studyToday');
-    const last=studyState.progress.lastOpened?new Date(studyState.progress.lastOpened):null;
-    const sameDay=last&&last.toDateString()===new Date().toDateString();
-    today.innerHTML=`<div class="study-today-item ${sameDay?'done':''}"><div class="study-today-dot"></div><span>${sameDay&&studyState.progress.lastTitle?`Continue <strong>${studyEsc(studyState.progress.lastTitle)}</strong>`:'Open a course or resource'}</span></div>
-      <div class="study-today-item ${saved?'done':''}"><div class="study-today-dot"></div><span>${saved?'Review a saved resource':'Save a resource for later'}</span></div>
-      <div class="study-today-item ${studyState.resources.some(studyIsPast)?'':'done'}"><div class="study-today-dot"></div><span>Attempt a past question</span></div>`;
-    const panel=document.getElementById('studyViewPanel');
-    document.querySelectorAll('[data-study-view]').forEach(b=>b.classList.toggle('active',b.dataset.studyView===studyState.view));
-    if(studyState.view==='courses')panel.innerHTML=studyRenderCourses();
-    else if(studyState.view==='resources')panel.innerHTML=`<div class="study-filter-row mb-3"><select id="studyCourseFilter" class="study-filter"><option value="">All courses</option>${studyCourses().map(c=>`<option value="${studyEsc(c.code)}">${studyEsc(c.code)}</option>`).join('')}</select><select id="studyYearFilter" class="study-filter" disabled><option>Year filter unavailable</option></select><select id="studySemesterFilter" class="study-filter" disabled><option>Semester unavailable</option></select><button type="button" class="study-btn" onclick="studyReload()"><i class="fas fa-rotate"></i> Refresh</button></div>${studyRenderResources('resources')}`;
-    else if(studyState.view==='past')panel.innerHTML=`<div class="study-filter-row mb-3"><select id="studyCourseFilter" class="study-filter"><option value="">All courses</option>${studyCourses().map(c=>`<option value="${studyEsc(c.code)}">${studyEsc(c.code)}</option>`).join('')}</select><select id="studyYearFilter" class="study-filter" disabled><option>Year unavailable</option></select><select id="studySemesterFilter" class="study-filter" disabled><option>Semester unavailable</option></select><button type="button" class="study-btn" onclick="studyReload()"><i class="fas fa-rotate"></i> Refresh</button></div>${studyRenderResources('past')}<p class="study-note mt-3">Year/semester filtering is deferred because the existing Study schema has no dedicated past-question year/semester fields.</p>`;
-    else panel.innerHTML=studyRenderResources(studyState.view);
-    studyBindFilters();
-}
-function studySetView(view){studyState.view=view;studyRender();document.querySelector('#studyViewPanel')?.scrollIntoView({behavior:'smooth',block:'start'})}
-function studyBindFilters(){
-    ['studyCourseFilter','studyYearFilter','studySemesterFilter'].forEach(id=>document.getElementById(id)?.addEventListener('change',studyRender));
-}
+
 async function studyReload(){
     if(studyState.loading)return;
-    studyState.loading=true;
-    try{
-        const [res,tribes]=await Promise.all([
-            _supabase.from('study_resources').select('id,title,description,file_url,file_type,university,course_code,department,level,category,tribe_id,uploader_id,download_count,created_at').eq('university',userUniversity).order('created_at',{ascending:false}).limit(100),
-            _supabase.from('tribes').select('id,name,description,university,course_code,department,level,category,creator_id,created_at').eq('university',userUniversity).order('created_at',{ascending:false}).limit(12)
-        ]);
-        if(res.error)throw res.error;
-        if(tribes.error)console.warn('Study Tribes query failed:',tribes.error);
-        studyState.resources=(res.data||[]).map(r=>studyNormalizeResource(r));
-        studyState.tribes=tribes.data||[];
-        studyState.loaded=true;
-        document.getElementById('studyTutorState').textContent='Not configured — safe entry point only';
-        document.getElementById('studyTribesState').textContent=studyState.tribes.length?`${studyState.tribes.length} real campus ${studyState.tribes.length===1?'tribe':'tribes'} available.`:'No Study Tribes are available for your campus yet.';
-        studyRender(); studyBindFilters();
-    }catch(e){
-        console.error('Study Hub load failed:',e);
-        studyShowError("Couldn't load your study materials. Try again.");
-        studyState.loaded=true; studyRender();
-    }finally{studyState.loading=false}
+    if(!currentUserId||!userUniversity){studyShowError('Your study profile is not ready yet. Please refresh and try again.');return;}
+    studyState.loading=true;studyState.error=null;studyRender();
+    try{await studyLoadOverview();await studyLoadResources(studyState.view);studyState.loaded=true;studyRender();}
+    catch(e){console.error('Study Hub load failed:',e);studyState.error='Couldn\'t load your study materials. Try again.';studyState.loaded=true;studyShowError(studyState.error);studyRender();}
+    finally{studyState.loading=false;studyRender();}
 }
-function studySearch(){
-    clearTimeout(studyState.timer);
-    studyState.timer=setTimeout(()=>{studyState.query=document.getElementById('studySearchInput')?.value.trim()||'';studyRender()},320);
+
+async function studyRefreshResources(){studyState.page=0;await studyReload();}
+async function studyNextPage(){if(!studyState.hasMore)return;studyState.page++;await studyLoadResources(studyState.view);studyRender();document.getElementById('studyViewPanel')?.scrollIntoView({behavior:'smooth',block:'start'});}
+async function studyPrevPage(){if(studyState.page<=0)return;studyState.page--;await studyLoadResources(studyState.view);studyRender();}
+
+function studyCourses(){
+    const enrolled=studyState.courses.filter(c=>studyState.enrolledCourseIds.has(String(c.id)));
+    return enrolled.length?enrolled:studyState.courses;
 }
-function studyOpenTutor(){
+
+async function studyEnroll(courseId){
+    const course=studyState.courses.find(c=>String(c.id)===String(courseId));if(!course)return;
+    const {error}=await _supabase.from('study_course_enrollments').insert({course_id:course.id,user_id:currentUserId});
+    if(error){console.error(error);studyShowError('Couldn\'t add that course. Try again.');return;}
+    studyState.enrolledCourseIds.add(String(course.id));studyRender();
+}
+
+async function studySave(r){
+    if(!r?.id)return;
+    const id=String(r.id),saved=studyState.savedIds.has(id);
+    if(saved){const {error}=await _supabase.from('study_bookmarks').delete().eq('user_id',currentUserId).eq('resource_id',r.id);if(error){console.error(error);studyShowError('Couldn\'t remove the saved resource. Try again.');return;}studyState.savedIds.delete(id);}
+    else{const {error}=await _supabase.from('study_bookmarks').insert({user_id:currentUserId,resource_id:r.id});if(error){console.error(error);studyShowError('Couldn\'t save this resource. Try again.');return;}studyState.savedIds.add(id);}
+    if(studyState.view==='saved')await studyLoadResources('saved');
+    studyRender();
+}
+
+async function studyGetAccessUrl(r,download=false){
+    const {data,error}=await _supabase.functions.invoke('study-resource-access',{body:{resource_id:r.id,download}});
+    if(error||!data?.url){console.error('Study resource access failed:',error||data);const code=data?.error;if(code==='resource_file_not_migrated')throw new Error('This resource file is not yet stored in secure Study Storage.');throw new Error('That document could not be opened.');}
+    return data.url;
+}
+
+async function studyOpenUrl(r,download=false){
+    if(!r?.id)return;
+    try{const url=await studyGetAccessUrl(r,download);if(download){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.download='';a.click();}else await studyOpenViewer(r,url);}catch(e){console.error(e);studyShowError(e.message||'That document could not be opened.');}
+}
+
+async function studyOpenViewer(r,url){
     const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
-    document.getElementById('studyModalTitle').textContent='AI Tutor';
-    body.innerHTML=`<div class="study-empty"><div class="study-empty-icon"><i class="fas fa-robot"></i></div><h4>AI Tutor is not configured</h4><p>UniVerse currently has no deployed AI Tutor Edge Function. The existing tutor database tables are present, but there is no backend response engine, so this entry point is intentionally disabled rather than showing fake answers.</p></div>`;
+    document.getElementById('studyModalTitle').textContent=r.title||'Resource';
+    const isPdf=(r.mime_type||r.file_type||'').toLowerCase().includes('pdf');
+    body.innerHTML=`<div class="study-note mb-3">${studyEsc(r.course_code||'Course not specified')} ${r.file_type?'• '+studyEsc(r.file_type):''} ${r.academic_year?`• ${studyEsc(r.academic_year)}`:''} ${r.semester?`• ${studyEsc(r.semester)}`:''}</div>`;
+    if(isPdf){const iframe=document.createElement('iframe');iframe.className='study-viewer';iframe.src=url;iframe.title=r.title||'PDF viewer';iframe.loading='lazy';iframe.referrerPolicy='no-referrer';body.appendChild(iframe);}
+    else body.insertAdjacentHTML('beforeend',studyEmpty('Preview unavailable','This file type cannot be embedded here. Use the secure download or open action.','fa-file-lines'));
+    const actions=document.createElement('div');actions.className='study-actions mt-3';actions.innerHTML=`<button type="button" class="study-btn primary" id="studyModalDownload"><i class="fas fa-download"></i> Download</button><button type="button" class="study-btn" id="studyModalOpen"><i class="fas fa-external-link-alt"></i> Open</button><button type="button" class="study-btn" id="studyModalReport"><i class="fas fa-flag"></i> Report</button>`;body.appendChild(actions);
+    actions.querySelector('#studyModalDownload').onclick=()=>studyOpenUrl(r,true);
+    actions.querySelector('#studyModalOpen').onclick=async()=>{try{const fresh=await studyGetAccessUrl(r,false);window.open(fresh,'_blank','noopener,noreferrer');}catch(e){studyShowError(e.message||'That document could not be opened.');}};
+    actions.querySelector('#studyModalReport').onclick=()=>studyReportResource(r);
     modal.classList.remove('hidden');
 }
-function studyExploreTribes(){
-    if(studyState.tribes.length){
-        const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
-        document.getElementById('studyModalTitle').textContent='Study Tribes';
-        body.innerHTML=`<div class="space-y-2">${studyState.tribes.map(t=>`<div class="study-card"><div class="study-course-code">${studyEsc(t.course_code||'CAMPUS TRIBE')}</div><h4 class="text-sm font-bold text-white mt-1">${studyEsc(t.name)}</h4><p class="study-meta mt-1">${studyEsc(t.description||'No description provided.')}</p></div>`).join('')}</div><p class="study-note mt-3">Tribe participation remains in the existing Study Tribes module; Study Hub only provides discovery.</p>`;
-        modal.classList.remove('hidden');
-    }else studyShowError('Study Tribes are coming together. No real campus tribes are available yet.');
+function studyCloseViewer(){document.getElementById('studyResourceModal')?.classList.add('hidden');}
+
+async function studyReportResource(r){
+    const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
+    document.getElementById('studyModalTitle').textContent='Report resource';
+    body.innerHTML=`<p class="study-meta mb-3">Tell us what is wrong with <strong>${studyEsc(r.title||'this resource')}</strong>.</p><select id="studyReportReason" class="study-filter w-full"><option value="Wrong course">Wrong course</option><option value="Incorrect material">Incorrect material</option><option value="Duplicate">Duplicate</option><option value="Inappropriate">Inappropriate</option><option value="Copyright concern">Copyright concern</option><option value="Other">Other</option></select><textarea id="studyReportDetails" class="study-filter w-full mt-3" rows="4" maxlength="1000" placeholder="Optional details"></textarea><div class="study-actions mt-3"><button class="study-btn primary" id="studyReportSubmit">Submit report</button><button class="study-btn" onclick="studyOpenUrl(studyFindResource('${String(r.id)}'))">Cancel</button></div>`;
+    document.getElementById('studyReportSubmit').onclick=async()=>{const reason=document.getElementById('studyReportReason').value,details=document.getElementById('studyReportDetails').value.trim();const {error}=await _supabase.from('reports').insert({reporter_id:currentUserId,content_type:'study_resource',content_id:r.id,reason:details?`${reason}: ${details}`:reason});if(error){console.error(error);studyShowError('Couldn\'t submit the report. Try again.');return;}body.innerHTML=studyEmpty('Report submitted','Thanks. Your report has been recorded for moderation.','fa-circle-check');};
+    modal.classList.remove('hidden');
 }
+
+function studyResourceCard(r){
+    const saved=studyState.savedIds.has(String(r.id));
+    return `<article class="study-card study-resource"><div class="study-resource-top"><div class="study-file-icon"><i class="fas ${studyFileIcon(r.mime_type||r.file_type)}"></i></div><div class="min-w-0 flex-1"><div class="study-resource-title text-white">${studyEsc(r.title||'Untitled resource')}</div><div class="study-meta mt-1">${studyEsc(r.course_code||'Course not specified')} ${r.file_type?'• '+studyEsc(r.file_type):''}</div></div><button type="button" class="study-btn ${saved?'saved':''}" onclick="studySave(studyFindResource('${String(r.id)}'))" aria-label="${saved?'Unsave':'Save'}"><i class="${saved?'fas':'far'} fa-bookmark"></i></button></div>${r.description?`<p class="study-meta">${studyEsc(r.description)}</p>`:''}<div class="flex flex-wrap gap-1"><span class="study-badge">${studyEsc(r.resource_type==='past_question'?'Past Question':r.category||'Material')}</span>${r.academic_year?`<span class="study-badge">${studyEsc(r.academic_year)}</span>`:''}${r.semester?`<span class="study-badge">${studyEsc(r.semester)}</span>`:''}${r.file_size_bytes?`<span class="study-badge">${studyEsc(studyFormatBytes(r.file_size_bytes))}</span>`:''}</div><div class="study-actions mt-auto"><button type="button" class="study-btn primary" onclick="studyOpenUrl(studyFindResource('${String(r.id)}'))"><i class="fas fa-eye"></i> Open</button><button type="button" class="study-btn" onclick="studyOpenUrl(studyFindResource('${String(r.id)}'),true)"><i class="fas fa-download"></i> Download</button><button type="button" class="study-btn" onclick="studyReportResource(studyFindResource('${String(r.id)}'))" aria-label="Report resource"><i class="fas fa-flag"></i></button></div></article>`;
+}
+
+function studyRenderCourses(){
+    const enrolled=studyCourses();
+    if(!studyState.courses.length)return studyEmpty('No courses are available yet','Your university has not published any Study courses yet. Once courses are added, they will appear here.','fa-graduation-cap');
+    const q=studyState.query.toLowerCase();
+    const rows=studyState.courses.filter(c=>!q||`${c.course_code} ${c.course_title} ${c.department||''} ${c.level||''}`.toLowerCase().includes(q));
+    if(!rows.length)return studyEmpty('No matching courses','Try another course code or title.','fa-magnifying-glass');
+    return `<div class="study-course-grid">${rows.map(c=>{const isEnrolled=studyState.enrolledCourseIds.has(String(c.id));return `<article class="study-card study-course"><div class="study-course-code">${studyEsc(c.course_code)}</div><div class="study-course-title text-white">${studyEsc(c.course_title)}</div><p class="study-meta mt-2">${studyEsc(c.department||'')} ${c.level?`• ${studyEsc(c.level)}`:''}</p><div class="study-actions mt-3">${isEnrolled?`<button type="button" class="study-btn primary" onclick="studySetCourseFilter(${JSON.stringify(c.course_code)})"><i class="fas fa-folder-open"></i> Open Course</button>`:`<button type="button" class="study-btn primary" onclick="studyEnroll('${String(c.id)}')"><i class="fas fa-plus"></i> Add to My Courses</button>`}</div></article>`;}).join('')}</div>`;
+}
+
+function studyFilterValues(){return {course:document.getElementById('studyCourseFilter')?.value||studyState.course,year:document.getElementById('studyYearFilter')?.value||studyState.year,semester:document.getElementById('studySemesterFilter')?.value||studyState.semester};}
+function studyRenderResources(mode='resources'){
+    if(studyState.loading)return studyEmpty('Loading Study Hub','Fetching your real academic data securely.','fa-spinner fa-spin');
+    if(!studyState.resources.length)return studyEmpty(mode==='past'?'No past questions yet.':mode==='pdf'?'No PDF resources yet.':mode==='saved'?'Nothing saved yet.':mode==='recent'?'Nothing recently viewed yet.':'No course materials found.','Only real Study Hub data is shown here.','fa-folder-open');
+    return `<div class="study-resource-grid">${studyState.resources.map(studyResourceCard).join('')}</div><div class="study-actions justify-between mt-4"><button class="study-btn" ${studyState.page===0?'disabled':''} onclick="studyPrevPage()"><i class="fas fa-chevron-left"></i> Previous</button><span class="study-note">Page ${studyState.page+1}</span><button class="study-btn" ${studyState.hasMore?'':'disabled'} onclick="studyNextPage()">Next <i class="fas fa-chevron-right"></i></button></div>`;
+}
+
+function studyRenderFilters(){
+    const courses=studyState.courses;return `<div class="study-filter-row mb-3"><select id="studyCourseFilter" class="study-filter"><option value="">All courses</option>${courses.map(c=>`<option value="${studyEsc(c.course_code)}" ${studyState.course===c.course_code?'selected':''}>${studyEsc(c.course_code)} — ${studyEsc(c.course_title)}</option>`).join('')}</select><select id="studyYearFilter" class="study-filter"><option value="">All years</option>${[...new Set(studyState.resources.map(r=>r.academic_year).filter(Boolean))].sort((a,b)=>b-a).map(y=>`<option value="${y}" ${String(studyState.year)===String(y)?'selected':''}>${y}</option>`).join('')}</select><select id="studySemesterFilter" class="study-filter"><option value="">All semesters</option><option value="first" ${studyState.semester==='first'?'selected':''}>First</option><option value="second" ${studyState.semester==='second'?'selected':''}>Second</option><option value="summer" ${studyState.semester==='summer'?'selected':''}>Summer</option></select><button type="button" class="study-btn" onclick="studyRefreshResources()"><i class="fas fa-rotate"></i> Refresh</button></div>`;
+}
+
+function studyRender(){
+    const panel=document.getElementById('studyViewPanel');if(!panel)return;
+    document.querySelectorAll('[data-study-view]').forEach(b=>b.classList.toggle('active',b.dataset.studyView===studyState.view));
+    const allCourses=studyState.courses.length, resourceCount=studyState.resources.length;
+    document.getElementById('studyCourseCount').textContent=`${allCourses} course${allCourses===1?'':'s'}`;
+    document.getElementById('studyResourceCount').textContent=`${resourceCount} resource${resourceCount===1?'':'s'}`;
+    document.getElementById('studyPastCount').textContent=`${studyState.view==='past'?resourceCount:'—'} paper${resourceCount===1?'':'s'}`;
+    const opened=studyState.progress.reduce((n,p)=>n+Number(p.resources_opened||0),0);document.getElementById('studyOpenedCount').textContent=opened;document.getElementById('studySavedCount').textContent=studyState.savedIds.size;document.getElementById('studyProgressLabel').textContent=studyState.progress.length?`${opened} resource opening${opened===1?'':'s'} recorded`:'No study activity yet';
+    const last=studyState.recent[0];document.getElementById('studyToday').innerHTML=last?`<div class="study-today-item done"><div class="study-today-dot"></div><span>Continue <strong>${studyEsc(last.title||'your recent resource')}</strong></span></div><div class="study-today-item ${studyState.savedIds.size?'done':''}"><div class="study-today-dot"></div><span>${studyState.savedIds.size?'Review a saved resource':'Save a resource for later'}</span></div>`:`<div class="study-today-item"><div class="study-today-dot"></div><span>Your study journey starts here.</span></div>`;
+    if(studyState.view==='courses')panel.innerHTML=studyRenderCourses();
+    else if(studyState.view==='resources'||studyState.view==='pdf'||studyState.view==='past')panel.innerHTML=studyRenderFilters()+studyRenderResources(studyState.view);
+    else if(studyState.view==='saved'||studyState.view==='recent')panel.innerHTML=studyRenderResources(studyState.view);
+    else panel.innerHTML=studyRenderResources(studyState.view);
+    studyBindFilters();
+    document.getElementById('studyTribesState').textContent=studyState.tribes.length?`${studyState.tribes.length} real campus ${studyState.tribes.length===1?'tribe':'tribes'} available.`:'No Study Tribes are available for your campus yet.';
+    document.getElementById('studyTutorState').textContent='Not configured — safe entry point only';
+}
+
+function studyBindFilters(){
+    const c=document.getElementById('studyCourseFilter'),y=document.getElementById('studyYearFilter'),s=document.getElementById('studySemesterFilter');
+    if(c)c.onchange=async()=>{studyState.course=c.value;studyState.page=0;await studyLoadResources(studyState.view);studyRender();};
+    if(y)y.onchange=async()=>{studyState.year=y.value;studyState.page=0;await studyLoadResources(studyState.view);studyRender();};
+    if(s)s.onchange=async()=>{studyState.semester=s.value;studyState.page=0;await studyLoadResources(studyState.view);studyRender();};
+}
+async function studySetView(view){studyState.view=view;studyState.page=0;await studyLoadResources(view);studyRender();document.querySelector('#studyViewPanel')?.scrollIntoView({behavior:'smooth',block:'start'});}
+async function studySetCourseFilter(code){studyState.course=code;studyState.view='resources';studyState.page=0;await studyLoadResources('resources');studyRender();document.querySelector('#studyViewPanel')?.scrollIntoView({behavior:'smooth',block:'start'});}
+function studySearch(){clearTimeout(studyState.timer);studyState.timer=setTimeout(async()=>{studyState.query=document.getElementById('studySearchInput')?.value.trim()||'';studyState.page=0;if(studyState.view==='courses'){studyRender();return;}try{await studyLoadResources(studyState.view);studyRender();}catch(e){console.error(e);studyShowError('Couldn\'t search your study materials. Try again.');}},320);}
+function studyOpenTutor(){const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');document.getElementById('studyModalTitle').textContent='AI Tutor';body.innerHTML=studyEmpty('AI Tutor is not configured','UniVerse has the existing AI Tutor data model, but no deployed response engine is available yet. This entry point remains safely disabled rather than showing fake answers.','fa-robot');modal.classList.remove('hidden');}
+function studyExploreTribes(){const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');document.getElementById('studyModalTitle').textContent='Study Tribes';if(!studyState.tribes.length){body.innerHTML=studyEmpty('No Study Tribes yet','No real campus tribes are available for your university yet.','fa-users');}else{body.innerHTML=`<div class="space-y-2">${studyState.tribes.map(t=>`<div class="study-card"><div class="study-course-code">${studyEsc(t.course_code||'CAMPUS TRIBE')}</div><h4 class="text-sm font-bold text-white mt-1">${studyEsc(t.name)}</h4><p class="study-meta mt-1">${studyEsc(t.description||'No description provided.')}</p></div>`).join('')}</div>`;}modal.classList.remove('hidden');}
+
 (function initStudyHub(){
-    const input=document.getElementById('studySearchInput');
-    input?.addEventListener('input',studySearch);
-    document.getElementById('studySearchClear')?.addEventListener('click',()=>{input.value='';studyState.query='';document.getElementById('studySearchClear').classList.add('hidden');studyRender()});
-    input?.addEventListener('input',()=>document.getElementById('studySearchClear')?.classList.toggle('hidden',!input.value));
-    document.getElementById('studyModalClose')?.addEventListener('click',studyCloseViewer);
-    document.getElementById('studyResourceModal')?.addEventListener('click',e=>{if(e.target.id==='studyResourceModal')studyCloseViewer()});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape')studyCloseViewer()});
+    const input=document.getElementById('studySearchInput');input?.addEventListener('input',studySearch);document.getElementById('studySearchClear')?.addEventListener('click',()=>{input.value='';studyState.query='';document.getElementById('studySearchClear').classList.add('hidden');studyState.page=0;studyReload();});input?.addEventListener('input',()=>document.getElementById('studySearchClear')?.classList.toggle('hidden',!input.value));document.getElementById('studyModalClose')?.addEventListener('click',studyCloseViewer);document.getElementById('studyResourceModal')?.addEventListener('click',e=>{if(e.target.id==='studyResourceModal')studyCloseViewer();});
+    document.querySelectorAll('[onclick="showPage(\'study\')"]').forEach(el=>el.addEventListener('click',()=>{if(!studyState.loaded)window.setTimeout(()=>studyReload(),0);}));
 })();
-
-</script>
-
-<script>
-// Campus Whisper MVP — isolated feature logic. Public queries never select author_id.
-const whisperState={items:[],loading:false,posting:false,loadingMore:false,hasMore:true,cursor:null,reported:new Set(),initialized:false};
-const WHISPER_PAGE_SIZE=20, WHISPER_MAX_LENGTH=1000;
-function whisperEscape(value=''){const d=document.createElement('div');d.textContent=String(value??'');return d.innerHTML;}
-function whisperTime(value){const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const diff=Date.now()-d.getTime();if(diff<60000)return 'just now';if(diff<3600000)return `${Math.floor(diff/60000)}m ago`;if(diff<86400000)return `${Math.floor(diff/3600000)}h ago`;return d.toLocaleDateString([],{month:'short',day:'numeric'});}
-function whisperStatus(message='',kind='muted'){const el=document.getElementById('whisperComposerStatus');if(!el)return;el.textContent=message;el.className=`text-[10px] min-h-[16px] mt-2 ${kind==='error'?'text-red-400':kind==='success'?'text-green-400':'text-slate-500'}`;}
-function whisperRenderSkeleton(){const feed=document.getElementById('whisperFeed');if(feed)feed.innerHTML='<div class="whisper-skeleton"></div><div class="whisper-skeleton"></div><div class="whisper-skeleton"></div>';}
-function whisperRender(){const feed=document.getElementById('whisperFeed'),wrap=document.getElementById('whisperLoadMoreWrap');if(!feed)return;if(!whisperState.items.length){feed.innerHTML='<div class="whisper-card rounded-[2rem] p-8 text-center"><div class="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/10 flex items-center justify-center mx-auto mb-4"><i class="fas fa-comment-slash text-green-500"></i></div><h4 class="text-sm font-bold text-white">Nothing whispered yet.</h4><p class="text-xs text-slate-500 mt-1">Be the first to say it.</p></div>';wrap?.classList.add('hidden');return;}feed.innerHTML=whisperState.items.map(p=>{const own=p.is_mine;return `<article class="whisper-card rounded-[1.75rem] p-4 md:p-5" data-whisper-id="${whisperEscape(p.id)}"><div class="flex items-start justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="w-9 h-9 rounded-full bg-green-500/10 border border-green-500/10 flex items-center justify-center shrink-0"><i class="fas fa-user-secret text-green-500 text-sm"></i></div><div class="min-w-0"><p class="text-xs font-bold text-white truncate">${whisperEscape(p.anon_label||'Anonymous')}</p><p class="text-[9px] text-slate-500">${whisperEscape(whisperTime(p.created_at))}</p></div></div><button type="button" class="whisper-report-btn whisper-action rounded-xl bg-white/5 text-slate-500 hover:text-red-400 transition" data-id="${whisperEscape(p.id)}" aria-label="Report whisper" title="Report"><i class="fas fa-flag"></i></button></div><p class="text-sm md:text-[15px] leading-7 text-slate-200 whitespace-pre-wrap break-words mt-4">${whisperEscape(p.content)}</p><div class="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-white/5"><button type="button" class="whisper-like-btn inline-flex items-center gap-2 text-xs text-slate-500 hover:text-green-400 transition" data-id="${whisperEscape(p.id)}" aria-label="Like whisper"><i class="${p.liked?'fas':'far'} fa-heart"></i><span>${Number(p.like_count||0)}</span></button>${own?`<button type="button" class="whisper-delete-btn text-xs font-bold text-slate-500 hover:text-red-400 transition" data-id="${whisperEscape(p.id)}"><i class="fas fa-trash-can mr-1"></i>Delete</button>`:''}</div></article>`;}).join('');wrap?.classList.toggle('hidden',!whisperState.hasMore);}
-async function loadWhispers({reset=true}={}){if(!currentUserId||whisperState.loading||whisperState.loadingMore)return;if(reset){whisperState.loading=true;whisperState.hasMore=true;whisperState.cursor=null;whisperState.items=[];whisperRenderSkeleton();}else{if(!whisperState.hasMore)return;whisperState.loadingMore=true;}try{let q=_supabase.from('whisper_posts_public').select('id,anon_label,content,like_count,created_at').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(WHISPER_PAGE_SIZE);if(whisperState.cursor){q=q.or(`created_at.lt.${whisperState.cursor.created_at},and(created_at.eq.${whisperState.cursor.created_at},id.lt.${whisperState.cursor.id})`);}const{data,error}=await q;if(error)throw error;const rows=(data||[]).map(x=>({...x,is_mine:false,liked:false}));const ids=rows.map(x=>x.id);if(ids.length){const{data:state,error:stateErr}=await _supabase.rpc('get_my_whisper_state',{p_post_ids:ids});if(!stateErr){const stateMap=new Map((state||[]).map(x=>[x.post_id,x]));rows.forEach(x=>{const st=stateMap.get(x.id);x.is_mine=!!st?.is_mine;x.liked=!!st?.liked;});}}if(reset)whisperState.items=rows;else{const seen=new Set(whisperState.items.map(x=>x.id));whisperState.items.push(...rows.filter(x=>!seen.has(x.id)));}if(rows.length<WHISPER_PAGE_SIZE)whisperState.hasMore=false;else{const last=rows[rows.length-1];whisperState.cursor={created_at:last.created_at,id:last.id};}whisperRender();}catch(e){console.error('Campus Whisper load failed:',e);if(reset){document.getElementById('whisperFeed').innerHTML='<div class="whisper-card rounded-[2rem] p-8 text-center"><div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4"><i class="fas fa-triangle-exclamation text-red-400"></i></div><h4 class="text-sm font-bold text-white">We couldn’t load Campus Whisper.</h4><p class="text-xs text-slate-500 mt-1">Please check your connection and try again.</p><button type="button" onclick="loadWhispers({reset:true})" class="mt-4 rounded-xl bg-white/5 border border-white/10 px-4 py-2 text-xs font-bold text-slate-300">Retry</button></div>';}}finally{whisperState.loading=false;whisperState.loadingMore=false;}}
-async function createWhisper(){if(whisperState.posting)return;const input=document.getElementById('whisperComposer'),btn=document.getElementById('whisperPublishBtn');if(!input||!btn)return;const content=input.value.replace(/\r\n/g,'\n').replace(/[\t ]+/g,' ').trim();if(!content){whisperStatus('Write something before publishing.','error');input.focus();return;}if(content.length>WHISPER_MAX_LENGTH){whisperStatus(`Keep your Whisper under ${WHISPER_MAX_LENGTH} characters.`,'error');return;}whisperState.posting=true;btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin mr-2"></i>Publishing…';whisperStatus('Publishing privately…');try{const{data,error}=await _supabase.rpc('create_whisper',{p_content:content});if(error)throw error;const created=Array.isArray(data)?data[0]:data;if(!created?.id)throw new Error('Whisper was not created');input.value='';document.getElementById('whisperCharCount').textContent='0/1000';whisperStatus('Whisper published anonymously.','success');await loadWhispers({reset:true});setTimeout(()=>whisperStatus(''),2500);}catch(e){console.error('Campus Whisper publish failed:',e);const msg=String(e?.message||'').toLowerCase();whisperStatus(msg.includes('rate')||msg.includes('too many')?'You’re posting a little too quickly. Please try again shortly.':msg.includes('not authenticated')?'Please sign in again to publish a Whisper.':'We couldn’t publish your Whisper right now. Please try again.','error');}finally{whisperState.posting=false;btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane mr-2"></i>Publish Whisper';}}
-async function deleteWhisper(id){if(!id||!confirm('Delete this Whisper? This cannot be undone.'))return;try{const{error}=await _supabase.rpc('delete_whisper',{p_post_id:id});if(error)throw error;whisperState.items=whisperState.items.filter(x=>x.id!==id);whisperRender();whisperStatus('Whisper deleted.','success');setTimeout(()=>whisperStatus(''),2000);}catch(e){console.error('Campus Whisper delete failed:',e);whisperStatus('We couldn’t delete that Whisper. Please try again.','error');}}
-async function reportWhisper(id){if(!id||whisperState.reported.has(id))return;const reasons=['Harassment','Bullying','Hate/Discrimination','Threats','Sexual/Explicit Content','Spam','Scam/Fraud','Other'];const choice=prompt(`Report reason:\n${reasons.map((r,i)=>`${i+1}. ${r}`).join('\n')}\n\nEnter the number:`);const index=Number(choice)-1;if(!Number.isInteger(index)||!reasons[index])return;try{whisperState.reported.add(id);const{error}=await _supabase.rpc('create_whisper_report',{p_content_id:id,p_reason:reasons[index]});if(error)throw error;alert('Report received. Thank you for helping keep Campus Whisper safe.');}catch(e){whisperState.reported.delete(id);console.error('Campus Whisper report failed:',e);alert('We couldn’t submit the report right now. Please try again.');}}
-async function toggleWhisperLike(id){if(!id)return;try{const{data,error}=await _supabase.rpc('toggle_whisper_like',{p_post_id:id});if(error)throw error;const item=whisperState.items.find(x=>x.id===id);if(item&&data){item.liked=!!data.liked;item.like_count=Number(data.like_count||0);whisperRender();}}catch(e){console.error('Campus Whisper like failed:',e);}}
-function initCampusWhisper(){if(whisperState.initialized)return;whisperState.initialized=true;const input=document.getElementById('whisperComposer');input?.addEventListener('input',()=>{const len=input.value.length;document.getElementById('whisperCharCount').textContent=`${len}/${WHISPER_MAX_LENGTH}`;});document.getElementById('whisperPublishBtn')?.addEventListener('click',createWhisper);document.getElementById('whisperRefreshBtn')?.addEventListener('click',()=>loadWhispers({reset:true}));document.getElementById('whisperLoadMoreBtn')?.addEventListener('click',()=>loadWhispers({reset:false}));document.getElementById('whisperFeed')?.addEventListener('click',e=>{const report=e.target.closest('.whisper-report-btn');if(report)return reportWhisper(report.dataset.id);const del=e.target.closest('.whisper-delete-btn');if(del)return deleteWhisper(del.dataset.id);const like=e.target.closest('.whisper-like-btn');if(like)return toggleWhisperLike(like.dataset.id);});input?.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')createWhisper();});}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initCampusWhisper);else initCampusWhisper();
 </script>
 
     <div class="fixed bottom-0 left-0 right-0 p-2 md:p-4 z-[100]">

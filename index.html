@@ -207,6 +207,295 @@
             }
         }
     </style>
+    <!-- UniVerse visual system: palette-only layer. No layout, markup, data, or behavior changes. -->
+    <style id="universe-visual-system">
+        :root {
+            --uv-bg: #050505;
+            --uv-bg-soft: #0a0a0a;
+            --uv-surface: rgba(255,255,255,0.045);
+            --uv-surface-strong: rgba(255,255,255,0.065);
+            --uv-border: rgba(255,255,255,0.085);
+            --uv-green: #58e600;
+            --uv-green-dim: #35a800;
+            --uv-green-soft: rgba(88,230,0,0.10);
+            --uv-text: #f4f6f2;
+            --uv-text-dim: #8d958b;
+            --uv-text-faint: #626960;
+        }
+
+        body {
+            background: var(--uv-bg) !important;
+            color: var(--uv-text) !important;
+        }
+
+        .uv-bg-field {
+            background:
+                radial-gradient(ellipse 62% 48% at 18% 7%, rgba(88,230,0,0.085), transparent 62%),
+                radial-gradient(ellipse 48% 38% at 88% 14%, rgba(88,230,0,0.045), transparent 64%),
+                linear-gradient(180deg, #050505 0%, #080808 45%, #050505 100%) !important;
+        }
+
+        .uv-grid {
+            background-image:
+                linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.026) 1px, transparent 1px) !important;
+            opacity: .28 !important;
+        }
+
+        .uv-nav {
+            background: rgba(5,5,5,0.78) !important;
+            border-bottom-color: rgba(255,255,255,0.065) !important;
+        }
+
+        .glass-card,
+        .uv-card {
+            background: var(--uv-surface) !important;
+            border-color: var(--uv-border) !important;
+        }
+
+        .glass-card:hover,
+        .uv-card:hover {
+            background: var(--uv-surface-strong) !important;
+            border-color: rgba(88,230,0,0.26) !important;
+        }
+
+        .uv-btn-primary,
+        .scholar-gradient {
+            background: linear-gradient(135deg, #63f20b 0%, #42bd00 100%) !important;
+            color: #071000 !important;
+            box-shadow: 0 0 0 1px rgba(88,230,0,0.24), 0 10px 28px -10px rgba(88,230,0,0.34) !important;
+        }
+
+        .uv-btn-ghost {
+            border-color: rgba(255,255,255,0.105) !important;
+            color: var(--uv-text) !important;
+            background: rgba(255,255,255,0.018) !important;
+        }
+
+        .uv-btn-ghost:hover {
+            border-color: rgba(88,230,0,0.34) !important;
+            background: rgba(88,230,0,0.055) !important;
+        }
+
+        .uv-nav-link,
+        .uv-kicker,
+        .uv-orbit-node .uv-node-label {
+            color: var(--uv-text-dim) !important;
+        }
+
+        .uv-nav-link:hover,
+        .uv-nav-link.uv-active {
+            color: var(--uv-text) !important;
+        }
+
+        .uv-nav-link.uv-active::after,
+        .uv-eyebrow,
+        .uv-kicker[style*="--uv-green"] {
+            background-color: var(--uv-green);
+        }
+
+        .uv-eyebrow,
+        [style*="color:var(--uv-green)"],
+        [style*="color: var(--uv-green)"] {
+            color: var(--uv-green) !important;
+        }
+
+        .uv-status-dot,
+        .uv-particle,
+        .uv-dot-particle {
+            background: var(--uv-green) !important;
+        }
+
+        .uv-status-dot {
+            box-shadow: 0 0 0 3px rgba(88,230,0,0.16) !important;
+        }
+
+        .uv-orbit-ring.ring-2 {
+            border-color: rgba(88,230,0,0.15) !important;
+        }
+
+        .uv-orbit-core {
+            background: radial-gradient(circle at 35% 30%, rgba(99,242,11,0.96), rgba(53,168,0,0.68) 60%, rgba(53,168,0,0.13) 100%) !important;
+            box-shadow: 0 0 60px 10px rgba(88,230,0,0.28), inset 0 0 30px rgba(255,255,255,0.13) !important;
+        }
+
+        .uv-orbit-node .uv-node-dot {
+            background: rgba(10,10,10,0.92) !important;
+            border-color: rgba(88,230,0,0.34) !important;
+            color: var(--uv-green) !important;
+            box-shadow: 0 0 22px -5px rgba(88,230,0,0.42) !important;
+        }
+
+        .uv-divider {
+            background: linear-gradient(90deg, rgba(88,230,0,0.30), rgba(255,255,255,0.035) 60%, transparent) !important;
+        }
+
+        .uv-flow-line {
+            background: linear-gradient(180deg, rgba(88,230,0,0.44), rgba(255,255,255,0.045)) !important;
+        }
+
+        .uv-check {
+            border-color: rgba(255,255,255,0.22) !important;
+            background: rgba(255,255,255,0.025) !important;
+        }
+
+        .uv-check.checked {
+            border-color: var(--uv-green) !important;
+            background: rgba(88,230,0,0.14) !important;
+        }
+
+        .uv-check i { color: var(--uv-green) !important; }
+
+        /* Keep the existing auth markup and functionality; only restyle its existing classes. */
+        #authModal .bg-white\/5,
+        #uniModal .bg-white\/5,
+        #otpPortal .bg-white\/5 {
+            background: rgba(255,255,255,0.045) !important;
+        }
+
+        #authModal .border-white\/5,
+        #uniModal .border-white\/5,
+        #otpPortal .border-white\/10,
+        #authModal input,
+        #uniModal input,
+        #otpPortal input {
+            border-color: rgba(255,255,255,0.085) !important;
+        }
+
+        #authModal .text-slate-400,
+        #authModal .text-slate-500,
+        #uniModal .text-slate-500,
+        #otpPortal .text-slate-400,
+        #otpPortal .text-slate-500 {
+            color: var(--uv-text-dim) !important;
+        }
+
+        #authModal .text-green-500,
+        #uniModal .text-green-500,
+        #otpPortal .text-green-500 {
+            color: var(--uv-green) !important;
+        }
+
+        #authModal .bg-green-500,
+        #uniModal .bg-green-500,
+        #otpPortal .bg-green-500 {
+            background: var(--uv-green) !important;
+            color: #071000 !important;
+        }
+
+        #uniModal .bg-slate-900,
+        #uniModal .bg-slate-800\/50 {
+            background: #0b0b0b !important;
+        }
+
+        #otpPortal,
+        #uniModal.fixed {
+            background: rgba(0,0,0,0.88) !important;
+        }
+
+        .uv-auth-backdrop {
+            background: rgba(0,0,0,0.86) !important;
+        }
+
+        /* Light mode: same UniVerse palette, translated to a clean warm-white surface.
+           This is class-based only; no theme logic or unrelated JavaScript is changed. */
+        body.light-mode {
+            --uv-bg: #f5f7f2;
+            --uv-bg-soft: #ffffff;
+            --uv-surface: rgba(255,255,255,0.82);
+            --uv-surface-strong: rgba(255,255,255,0.96);
+            --uv-border: rgba(8,20,5,0.09);
+            --uv-green: #3eaf00;
+            --uv-green-dim: #2f8500;
+            --uv-green-soft: rgba(62,175,0,0.09);
+            --uv-text: #10150f;
+            --uv-text-dim: #697267;
+            --uv-text-faint: #8b9388;
+            background: var(--uv-bg) !important;
+            color: var(--uv-text) !important;
+        }
+
+        body.light-mode .uv-bg-field {
+            background:
+                radial-gradient(ellipse 62% 48% at 18% 7%, rgba(62,175,0,0.09), transparent 62%),
+                radial-gradient(ellipse 48% 38% at 88% 14%, rgba(62,175,0,0.045), transparent 64%),
+                linear-gradient(180deg, #f8faf6 0%, #f2f5ef 48%, #f7f9f5 100%) !important;
+        }
+
+        body.light-mode .uv-grid {
+            background-image:
+                linear-gradient(rgba(8,20,5,0.028) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(8,20,5,0.028) 1px, transparent 1px) !important;
+        }
+
+        body.light-mode .uv-nav {
+            background: rgba(248,250,246,0.86) !important;
+            border-bottom-color: rgba(8,20,5,0.07) !important;
+        }
+
+        body.light-mode .text-white,
+        body.light-mode #authModal .text-white,
+        body.light-mode #uniModal .text-white,
+        body.light-mode #otpPortal .text-white {
+            color: var(--uv-text) !important;
+        }
+
+        body.light-mode .border-white\/5,
+        body.light-mode .border-white\/10,
+        body.light-mode .border-white\/15 {
+            border-color: rgba(8,20,5,0.08) !important;
+        }
+
+        body.light-mode .bg-white\/5,
+        body.light-mode .bg-white\/10 {
+            background: rgba(8,20,5,0.035) !important;
+        }
+
+        body.light-mode .glass-card,
+        body.light-mode .uv-card {
+            background: rgba(255,255,255,0.82) !important;
+            border-color: rgba(8,20,5,0.085) !important;
+            box-shadow: 0 10px 35px rgba(8,20,5,0.045) !important;
+        }
+
+        body.light-mode .uv-card:hover,
+        body.light-mode .glass-card:hover {
+            background: #ffffff !important;
+            border-color: rgba(62,175,0,0.25) !important;
+        }
+
+        body.light-mode .uv-orbit-node .uv-node-dot {
+            background: rgba(255,255,255,0.94) !important;
+            border-color: rgba(62,175,0,0.28) !important;
+        }
+
+        body.light-mode .uv-auth-backdrop,
+        body.light-mode #otpPortal,
+        body.light-mode #uniModal.fixed {
+            background: rgba(8,12,7,0.52) !important;
+        }
+
+        body.light-mode #uniModal .bg-slate-900,
+        body.light-mode #uniModal .bg-slate-800\/50 {
+            background: #ffffff !important;
+        }
+
+        body.light-mode #authModal input,
+        body.light-mode #uniModal input,
+        body.light-mode #otpPortal input {
+            background: rgba(8,20,5,0.035) !important;
+            color: var(--uv-text) !important;
+            border-color: rgba(8,20,5,0.09) !important;
+        }
+
+        body.light-mode #authModal .text-slate-400,
+        body.light-mode #authModal .text-slate-500,
+        body.light-mode #uniModal .text-slate-500,
+        body.light-mode #otpPortal .text-slate-400,
+        body.light-mode #otpPortal .text-slate-500 {
+            color: var(--uv-text-dim) !important;
+        }
+    </style>
 </head>
 <body class="min-h-screen">
     <div class="uv-bg-field"></div>

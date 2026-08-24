@@ -112,6 +112,13 @@
 
         /* Campus Chat MVP — scoped styles only */
         .chat-shell { min-width:0; max-width:100%; overflow-x:hidden; }
+        .chat-requests-section { border-top:1px solid rgba(255,255,255,.06); padding-top:1rem; flex:0 0 auto; }
+        .chat-request-list { max-height:190px; overflow-y:auto; overscroll-behavior:contain; }
+        .chat-request-card { padding:.7rem; border:1px solid rgba(255,255,255,.06); border-radius:1rem; background:rgba(255,255,255,.025); }
+        .chat-request-actions { display:grid; grid-template-columns:1fr 1fr; gap:.4rem; margin-top:.55rem; }
+        .chat-request-actions button { min-height:34px; border-radius:.75rem; font-size:.62rem; font-weight:800; }
+        .chat-load-older { align-self:center; margin:.55rem auto 0; padding:.45rem .75rem; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.035); color:#94a3b8; font-size:.62rem; font-weight:800; }
+        .chat-load-older:hover { background:rgba(255,255,255,.07); color:#fff; }
         .chat-workspace { display:grid; grid-template-columns:300px minmax(0,1fr); min-height:620px; height:min(72dvh,760px); overflow:hidden; border:1px solid rgba(255,255,255,.08); border-radius:2rem; background:rgba(255,255,255,.018); box-shadow:0 24px 70px rgba(0,0,0,.18); }
         .chat-sidebar { min-width:0; padding:1rem; border-right:1px solid rgba(255,255,255,.06); background:rgba(11,15,26,.34); display:flex; flex-direction:column; }
         .chat-conversation-list { overflow-y:auto; min-height:0; overscroll-behavior:contain; }
@@ -205,6 +212,19 @@ body.light-mode .orbit-search,body.light-mode .orbit-composer-card,body.light-mo
 @media(max-width:640px){.orbit-head h2{font-size:1.35rem}.orbit-post{padding:.85rem}.orbit-actions{overflow-x:auto}.orbit-action{white-space:nowrap}.orbit-upload{flex-wrap:wrap}.orbit-upload small{width:100%;margin-left:0}.orbit-modal{padding:1rem!important}.orbit-media.three{grid-template-columns:1fr 1fr}.orbit-media.three button:first-child{grid-column:span 2}.orbit-new-banner{top:62px}}
 
 
+/* AI Tutor — isolated Study Hub presentation only */
+.study-tutor-shell{display:flex;flex-direction:column;gap:.8rem;min-height:420px}
+.study-tutor-messages{display:flex;flex-direction:column;gap:.7rem;max-height:55vh;overflow:auto;padding:.15rem .1rem}
+.study-tutor-message{max-width:92%;padding:.8rem .9rem;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:rgba(255,255,255,.025);color:#cbd5e1;line-height:1.65;font-size:.75rem}
+.study-tutor-message.user{align-self:flex-end;background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.18);color:#e2e8f0}
+.study-tutor-message.assistant{align-self:flex-start}
+.study-tutor-label{font-size:.55rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#22c55e;margin-bottom:.35rem}
+.study-tutor-content h3,.study-tutor-content h4,.study-tutor-content h5{color:#fff;font-weight:900;margin:.8rem 0 .35rem;line-height:1.3}
+.study-tutor-content h3{font-size:.95rem}.study-tutor-content h4{font-size:.85rem}.study-tutor-content h5{font-size:.8rem}
+.study-tutor-content p{margin:.35rem 0}.study-tutor-content ul,.study-tutor-content ol{padding-left:1.25rem;margin:.45rem 0}.study-tutor-content li{margin:.25rem 0}
+.study-tutor-content code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.7rem;background:rgba(0,0,0,.25);padding:.1rem .3rem;border-radius:5px}.study-tutor-content pre{overflow:auto;padding:.7rem;border-radius:10px;background:rgba(0,0,0,.3);margin:.55rem 0}.study-tutor-content pre code{background:none;padding:0}.study-tutor-math{font-family:Georgia,serif;font-style:italic;display:inline-block;margin:0 .12rem;color:#f8fafc}
+.study-tutor-form{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);border-radius:16px;padding:.7rem}.study-tutor-form textarea{width:100%;resize:vertical;min-height:72px;background:transparent;border:0;outline:0;color:inherit;font-size:.75rem;line-height:1.5}.study-tutor-form-row{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.45rem}.study-tutor-status{padding:.55rem .7rem;border-radius:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);color:#fca5a5;font-size:.65rem}
+@media(max-width:640px){.study-tutor-message{max-width:100%}.study-tutor-messages{max-height:48vh}.study-tutor-form-row{align-items:flex-end}.study-tutor-form-row .study-note{max-width:55%}}
 /* Study Hub — isolated production UI */
 .study-hub{min-width:0}
 .study-kicker{font-size:9px;font-weight:900;letter-spacing:.2em;color:#22c55e;text-transform:uppercase}
@@ -295,6 +315,58 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
 .whisper-modal{position:fixed;inset:0;z-index:160;display:grid;place-items:center;padding:18px;background:rgba(2,6,23,.76);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}.whisper-modal.hidden{display:none}.whisper-dialog{width:min(100%,430px);border-radius:24px;background:#0f172a;border:1px solid rgba(255,255,255,.09);padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.4)}.light-mode .whisper-dialog{background:#fff;border-color:rgba(15,23,42,.1)}
 .whisper-report-options{display:grid;gap:8px;margin:14px 0}.whisper-report-option{display:flex;align-items:center;gap:10px;padding:12px;border-radius:13px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);color:#cbd5e1;font-size:12px;text-align:left}.light-mode .whisper-report-option{color:#334155;border-color:rgba(15,23,42,.08);background:rgba(15,23,42,.025)}.whisper-report-option input{accent-color:#22c55e}
 .whisper-toast{position:fixed;left:50%;bottom:94px;transform:translate(-50%,10px);z-index:170;max-width:min(92vw,430px);padding:11px 14px;border-radius:13px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:700;opacity:0;pointer-events:none;transition:.2s ease;box-shadow:0 14px 35px rgba(0,0,0,.3)}.whisper-toast.show{opacity:1;transform:translate(-50%,0)}
+        /* Profile section — scoped styles only */
+        .profile-toast{position:fixed;left:50%;bottom:94px;transform:translate(-50%,10px);z-index:170;max-width:min(92vw,380px);padding:11px 16px;border-radius:13px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(255,255,255,.1);font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:.2s ease;box-shadow:0 14px 35px rgba(0,0,0,.3)}
+        .profile-toast.show{opacity:1;transform:translate(-50%,0)}
+        .profile-toast.profile-toast-error{border-color:rgba(239,68,68,.35);background:#1c1013}
+        .profile-skel{background:linear-gradient(90deg,rgba(255,255,255,.035),rgba(255,255,255,.08),rgba(255,255,255,.035));background-size:200% 100%;animation:profileShimmer 1.3s infinite;border-radius:10px}
+        @keyframes profileShimmer{to{background-position:-200% 0}}
+        .profile-cover{height:116px;background:radial-gradient(circle at 12% 15%,rgba(34,197,94,.2),transparent 35%),radial-gradient(circle at 88% 25%,rgba(34,197,94,.12),transparent 32%),linear-gradient(135deg,#0e1726 0%,#0b0f1a 55%,#0a1320 100%);position:relative;overflow:hidden}
+        .profile-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 15%,rgba(11,15,26,.1) 50%,rgba(11,15,26,.72) 100%)}
+        .profile-cover-orbit{position:absolute;width:280px;height:120px;right:-80px;top:-70px;border:1px solid rgba(34,197,94,.18);border-radius:50%;transform:rotate(-18deg);box-shadow:0 0 70px rgba(34,197,94,.08)}
+        .profile-photo-frame{transition:box-shadow .2s ease,transform .2s ease}
+        .profile-photo-frame:hover{box-shadow:0 18px 40px rgba(0,0,0,.35)}
+        .profile-camera-btn{transition:transform .15s ease,background .15s ease}
+        .profile-camera-btn:active{transform:scale(.92)}
+        .profile-camera-btn:focus-visible,.profile-edit-input:focus-visible,.profile-edit-textarea:focus-visible,#editProfileBtn:focus-visible,#saveProfileBtn:focus-visible,#cancelProfileEditBtn:focus-visible{outline:2px solid #22c55e;outline-offset:2px}
+        .profile-field-value{overflow-wrap:anywhere;word-break:break-word}
+        .profile-edit-input:focus,.profile-edit-textarea:focus{box-shadow:0 0 0 3px rgba(34,197,94,.2)}
+        .profile-meta-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .6rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:#cbd5e1;font-size:.6rem;font-weight:800;line-height:1}
+        .profile-meta-chip i{color:#4ade80}
+        .profile-meta-chip-empty{color:#64748b}
+        .profile-meta-chip-empty i{color:#64748b}
+        .profile-verified-badge{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .55rem;border-radius:999px;background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.18);color:#86efac;font-size:.55rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+        .profile-detail-card{border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.018);border-radius:18px;padding:14px}
+        .profile-detail-label{font-size:9px;text-transform:uppercase;letter-spacing:.14em;font-weight:900;color:#64748b;margin-bottom:5px}
+        .profile-detail-value{font-size:.82rem;color:#dbe4ef;line-height:1.6}
+        .profile-interest-chip,.profile-badge-chip,.profile-empty-chip{display:inline-flex;align-items:center;gap:.35rem;border-radius:999px;padding:.42rem .62rem;font-size:.58rem;font-weight:800}
+        .profile-interest-chip{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.14);color:#a7f3d0}
+        .profile-badge-chip{background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.14);color:#fde68a}
+        .profile-empty-chip{background:rgba(255,255,255,.025);border:1px dashed rgba(255,255,255,.09);color:#64748b}
+        .profile-icon-btn{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#94a3b8}
+        .profile-icon-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+        .profile-setting-row{width:100%;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;border-radius:15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.04);color:#cbd5e1;font-size:.78rem;font-weight:700;text-align:left;transition:.18s ease}
+        .profile-setting-row:hover{background:rgba(255,255,255,.06);color:#fff}
+        .profile-setting-row > span{display:flex;align-items:center;gap:.65rem;min-width:0}
+        .profile-setting-row > span > span{overflow-wrap:anywhere}
+        .profile-setting-row-disabled{opacity:.55;cursor:default}
+        .profile-setting-row-disabled:hover{background:rgba(255,255,255,.035);color:#cbd5e1}
+        .profile-setting-row-danger{color:#fca5a5;background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.12)}
+        .profile-setting-row-danger:hover{background:rgba(239,68,68,.1);color:#fecaca}
+        body.light-mode .profile-cover{background:radial-gradient(circle at 12% 15%,rgba(16,185,129,.12),transparent 35%),linear-gradient(135deg,#edf6f1 0%,#ffffff 60%,#f6faf8 100%)}
+        body.light-mode .profile-cover::after{background:linear-gradient(180deg,transparent 15%,rgba(255,255,255,.05) 50%,rgba(255,255,255,.82) 100%)}
+        body.light-mode .profile-detail-card{background:#f8fafc;border-color:rgba(15,23,42,.06)}
+        body.light-mode .profile-meta-chip{background:#f8fafc;border-color:rgba(15,23,42,.07);color:#475569}
+        body.light-mode .profile-verified-badge{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.15);color:#047857}
+        body.light-mode .profile-interest-chip{background:rgba(16,185,129,.07);color:#047857}
+        body.light-mode .profile-badge-chip{background:rgba(250,204,21,.08);color:#a16207}
+        body.light-mode .profile-empty-chip{background:#f8fafc;border-color:rgba(15,23,42,.08);color:#64748b}
+        @media (max-width: 640px){
+            .profile-cover{height:96px}
+            .profile-hero-actions{width:100%}
+            .profile-setting-row{padding:.8rem .85rem}
+        }
+
 @media (max-width:640px){.whisper-shell{padding-bottom:6rem}.whisper-composer{padding:14px;border-radius:22px}.whisper-textarea{min-height:115px;font-size:14px}.whisper-composer-footer{align-items:flex-end}.whisper-submit{min-height:42px;padding:0 14px}.whisper-card{padding:15px;border-radius:20px}.whisper-content{font-size:14px}.whisper-action{flex:1;justify-content:center;min-width:0}.whisper-action span{display:none}.whisper-modal{padding:12px}.whisper-dialog{border-radius:20px}}
 
 </style>
@@ -418,112 +490,267 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
     </div>
 
     <div id="profilePage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
-        <div class="glass-card p-8 md:p-10 rounded-[2.5rem] text-center space-y-6">
-            <!-- Profile Photo Section -->
-            <div class="relative w-24 h-24 md:w-32 md:h-32 mx-auto">
-                <div id="profilePhotoDisplay" class="w-full h-full rounded-full scholar-gradient flex items-center justify-center font-bold text-4xl md:text-5xl text-white border-4 border-green-500/30 shadow-lg">
-                    <img id="profilePhotoImg" style="display: none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
-                </div>
-                <label class="absolute bottom-0 right-0 w-10 h-10 md:w-12 md:h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center cursor-pointer transition shadow-lg">
-                    <i class="fas fa-camera text-white text-lg md:text-xl"></i>
-                    <input type="file" id="profilePhotoInput" accept="image/*" class="hidden" onchange="handleProfilePhotoUpload()">
-                </label>
-            </div>
 
-            <!-- Edit Profile Button -->
-            <button onclick="toggleProfileEdit()" id="editProfileBtn" class="w-full scholar-gradient py-3 md:py-4 rounded-2xl font-bold text-sm md:text-base hover:opacity-90 transition">
-                <i class="fas fa-edit mr-2"></i> Edit Profile
-            </button>
-
-            <!-- Profile Info in Display Mode -->
-            <div id="profileDisplayMode" class="space-y-6">
-                <div class="space-y-4">
-                    <div>
-                        <p class="text-xs md:text-sm text-slate-500 uppercase font-bold mb-1">Full Name</p>
-                        <h2 id="profileNameDisplay" class="text-xl md:text-2xl font-bold text-white">Loading...</h2>
-                    </div>
-                    <div>
-                        <p class="text-xs md:text-sm text-slate-500 uppercase font-bold mb-1">University Email</p>
-                        <p id="profileEmailDisplay" class="text-sm md:text-base text-slate-400">Loading...</p>
-                    </div>
-                    <div>
-                        <p class="text-xs md:text-sm text-slate-500 uppercase font-bold mb-1">Institution</p>
-                        <p id="profileUniDisplay" class="text-sm md:text-base text-slate-400">Loading...</p>
-                    </div>
-                    <div>
-                        <p class="text-xs md:text-sm text-slate-500 uppercase font-bold mb-1">Bio</p>
-                        <p id="profileBioDisplay" class="text-sm md:text-base text-slate-300 min-h-[3rem]">No bio added yet. Click Edit Profile to add one.</p>
-                    </div>
-                </div>
-
-                <!-- Stats -->
-                <div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/10">
-                    <div class="space-y-2">
-                        <p class="text-xs text-slate-500 uppercase font-bold">Wallet Balance</p>
-                        <p class="text-lg md:text-xl font-bold text-green-500">₦<span id="profileBalanceDisplay">0.00</span></p>
-                    </div>
-                    <div class="space-y-2">
-                        <p class="text-xs text-slate-500 uppercase font-bold">Reputation</p>
-                        <div id="profileStarsDisplay" class="flex items-center justify-center gap-1"></div>
-                    </div>
-                </div>
-
-                <!-- Joined Date -->
-                <div class="text-xs text-slate-500 font-bold">
-                    Joined <span id="joinedDateDisplay">Loading...</span>
-                </div>
-            </div>
-
-            <!-- Profile Edit Form -->
-            <div id="profileEditMode" class="hidden space-y-4">
-                <input type="text" id="editProfileName" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition text-sm md:text-base">
-                <textarea id="editProfileBio" placeholder="Tell us about yourself (bio)..." rows="4" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition text-sm md:text-base resize-none"></textarea>
-                <div class="flex gap-3 md:gap-4">
-                    <button onclick="saveProfileChanges()" class="flex-1 scholar-gradient py-3 md:py-4 rounded-2xl font-bold text-sm md:text-base hover:opacity-90 transition">
-                        <i class="fas fa-check mr-2"></i> Save Changes
-                    </button>
-                    <button onclick="toggleProfileEdit()" class="flex-1 bg-white/10 hover:bg-white/20 py-3 md:py-4 rounded-2xl font-bold text-white text-sm md:text-base transition">
-                        <i class="fas fa-times mr-2"></i> Cancel
-                    </button>
-                </div>
+    <div id="profileLoadingState" class="glass-card p-6 md:p-8 rounded-[2.5rem]" aria-busy="true">
+        <div class="flex flex-col items-center text-center md:flex-row md:items-center md:text-left gap-5 md:gap-6">
+            <div class="profile-skel w-24 h-24 md:w-28 md:h-28 rounded-full flex-shrink-0"></div>
+            <div class="flex-1 w-full space-y-3">
+                <div class="profile-skel h-6 w-44 max-w-full mx-auto md:mx-0"></div>
+                <div class="profile-skel h-4 w-36 max-w-full mx-auto md:mx-0"></div>
+                <div class="profile-skel h-4 w-full max-w-[280px] mx-auto md:mx-0"></div>
             </div>
         </div>
-
-        <!-- Settings Section -->
-        <div class="glass-card p-6 md:p-8 rounded-[2.5rem] space-y-4">
-            <h3 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
-                <i class="fas fa-cog text-green-500"></i> Settings
-            </h3>
-            <div class="space-y-3 border-t border-white/10 pt-4">
-                <button onclick="toggleJourneyModal(true)" class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition text-slate-300 text-sm md:text-base">
-                    <span class="flex items-center gap-2"><i class="fas fa-route text-green-500"></i> The UniVerse Journey</span>
-                    <i class="fas fa-chevron-right text-slate-500"></i>
-                </button>
-                <button onclick="toggleFutureModal(true)" class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition text-slate-300 text-sm md:text-base">
-                    <span class="flex items-center gap-2"><i class="fas fa-flask text-green-500"></i> Future ICOS Experiences</span>
-                    <i class="fas fa-chevron-right text-slate-500"></i>
-                </button>
-                <button class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 transition text-slate-500 text-sm md:text-base opacity-60 cursor-default">
-                    <span>Privacy Settings</span>
-                    <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
-                </button>
-                <button class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 transition text-slate-500 text-sm md:text-base opacity-60 cursor-default">
-                    <span>Notification Preferences</span>
-                    <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
-                </button>
-                <button class="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 transition text-slate-500 text-sm md:text-base opacity-60 cursor-default">
-                    <span>Change Password</span>
-                    <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
-                </button>
-                <button onclick="toggleLogoutModal(true)" class="w-full flex items-center justify-between p-4 rounded-2xl bg-red-500/10 hover:bg-red-500/20 transition text-red-400 text-sm md:text-base font-bold">
-                    <span>Logout</span>
-                    <i class="fas fa-sign-out-alt text-red-500"></i>
-                </button>
-            </div>
-        </div>
+        <span class="sr-only">Loading your profile…</span>
     </div>
 
-    <div id="errandPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
+    <div id="profileErrorState" class="hidden glass-card p-8 md:p-10 rounded-[2.5rem] text-center space-y-4">
+        <div class="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto border border-red-500/20">
+            <i class="fas fa-triangle-exclamation text-red-400" aria-hidden="true"></i>
+        </div>
+        <div>
+            <h3 class="text-base font-bold text-white">Couldn't load your profile.</h3>
+            <p class="text-xs text-slate-500 mt-1">Your profile data could not be retrieved right now.</p>
+        </div>
+        <button type="button" onclick="loadProfileData()" class="scholar-gradient px-6 py-3 rounded-2xl font-bold text-sm hover:opacity-90 transition">
+            <i class="fas fa-rotate-right mr-2" aria-hidden="true"></i>Try again
+        </button>
+    </div>
+
+    <div id="profileContent" class="hidden space-y-4 md:space-y-6">
+
+        <section class="profile-hero-card glass-card overflow-hidden rounded-[2.5rem]">
+            <div class="profile-cover" aria-hidden="true"><div class="profile-cover-orbit"></div></div>
+
+            <div class="relative px-5 pb-6 md:px-8 md:pb-8">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
+                    <div class="relative -mt-12 sm:-mt-14 self-center sm:self-auto">
+                        <div class="relative w-28 h-28 md:w-32 md:h-32">
+                            <div id="profilePhotoDisplay" class="profile-photo-frame w-full h-full rounded-full scholar-gradient flex items-center justify-center font-bold text-3xl md:text-4xl text-white border-[5px] border-[#0b0f1a] shadow-2xl overflow-hidden ring-1 ring-white/10">
+                                <img id="profilePhotoImg" alt="Your profile photo" class="hidden w-full h-full object-cover">
+                            </div>
+                            <label class="profile-camera-btn absolute bottom-1 right-1 w-10 h-10 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center cursor-pointer shadow-xl border-2 border-[#0b0f1a]" aria-label="Upload a new profile photo" tabindex="0">
+                                <i class="fas fa-camera text-white text-sm" aria-hidden="true"></i>
+                                <input type="file" id="profilePhotoInput" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden" onchange="handleProfilePhotoUpload()" aria-label="Choose a profile photo image file">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 min-w-0 text-center sm:text-left">
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                            <h2 id="profileNameDisplay" class="profile-field-value text-2xl md:text-3xl font-bold text-white leading-tight">Student</h2>
+                            <span id="profileVerifiedBadge" class="hidden profile-verified-badge" title="Verified profile">
+                                <i class="fas fa-badge-check"></i><span>Verified</span>
+                            </span>
+                        </div>
+                        <p id="profileUniHero" class="profile-field-value text-sm md:text-base text-slate-400 mt-1">University not added</p>
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-3">
+                            <span id="profileDepartmentChip" class="profile-meta-chip"><i class="fas fa-building-columns"></i><span>Department not added</span></span>
+                            <span id="profileLevelChip" class="profile-meta-chip"><i class="fas fa-layer-group"></i><span>Level not added</span></span>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="toggleProfileEdit()" id="editProfileBtn"
+                        class="profile-hero-actions w-full sm:w-auto scholar-gradient px-5 py-3 rounded-2xl font-bold text-sm hover:opacity-90 transition flex items-center justify-center gap-2 flex-shrink-0"
+                        aria-label="Edit your profile">
+                        <i class="fas fa-pen text-xs" aria-hidden="true"></i><span>Edit Profile</span>
+                    </button>
+                </div>
+
+                <div class="mt-5 pt-5 border-t border-white/10">
+                    <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                        <div class="min-w-0">
+                            <p class="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500">About</p>
+                            <p id="profileBioHero" class="profile-field-value text-sm md:text-base text-slate-300 leading-relaxed mt-1">Add a short bio so people know you.</p>
+                        </div>
+                        <div class="inline-flex items-center gap-2 self-start md:self-auto bg-white/5 border border-white/10 rounded-full px-3 py-2">
+                            <div id="profileStarsDisplay" class="flex items-center gap-0.5" role="img" aria-label="Reputation rating"></div>
+                            <span id="profileRepCount" class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">0/5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card p-5 md:p-6 rounded-[2rem]">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500">Profile strength</p>
+                    <h3 class="text-sm md:text-base font-bold text-white mt-1">Complete your student profile</h3>
+                    <p id="profileCompletionHint" class="text-[10px] text-slate-500 mt-1">Keep your profile current so your campus identity is accurate.</p>
+                </div>
+                <span id="profileCompletionPercent" class="text-sm font-black text-green-400">0%</span>
+            </div>
+            <div class="h-2 rounded-full bg-white/5 overflow-hidden mt-4">
+                <div id="profileCompletionBar" class="h-full rounded-full scholar-gradient transition-all duration-500" style="width:0%"></div>
+            </div>
+        </section>
+
+        <section class="glass-card p-5 md:p-6 rounded-[2rem]">
+            <div class="grid grid-cols-3 divide-x divide-white/10">
+                <div class="text-center px-2 min-w-0">
+                    <p class="text-[9px] md:text-[10px] text-slate-500 uppercase font-bold tracking-widest">Wallet</p>
+                    <p class="text-base md:text-lg font-bold text-green-500 mt-1 truncate">₦<span id="profileBalanceDisplay">0.00</span></p>
+                </div>
+                <div class="text-center px-2 min-w-0">
+                    <p class="text-[9px] md:text-[10px] text-slate-500 uppercase font-bold tracking-widest">Reputation</p>
+                    <p id="profileRepStat" class="text-base md:text-lg font-bold text-white mt-1">0/5</p>
+                </div>
+                <div class="text-center px-2 min-w-0">
+                    <p class="text-[9px] md:text-[10px] text-slate-500 uppercase font-bold tracking-widest">Member since</p>
+                    <p id="joinedDateDisplay" class="text-xs md:text-sm font-bold text-white mt-1.5 truncate">—</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card p-6 md:p-8 rounded-[2.5rem]">
+            <div class="flex items-center justify-between gap-3">
+                <div>
+                    <p class="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500">Identity</p>
+                    <h3 class="text-lg md:text-xl font-bold text-white mt-1">About you</h3>
+                </div>
+                <i class="fas fa-id-card text-green-500" aria-hidden="true"></i>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mt-5">
+                <div class="profile-detail-card">
+                    <p class="profile-detail-label">University Email</p>
+                    <p id="profileEmailDisplay" class="profile-field-value profile-detail-value">—</p>
+                </div>
+                <div class="profile-detail-card">
+                    <p class="profile-detail-label">Institution</p>
+                    <p id="profileUniDisplay" class="profile-field-value profile-detail-value">University not added</p>
+                </div>
+                <div class="profile-detail-card">
+                    <p class="profile-detail-label">Department</p>
+                    <p id="profileDepartmentDisplay" class="profile-field-value profile-detail-value">Department not added</p>
+                </div>
+                <div class="profile-detail-card">
+                    <p class="profile-detail-label">Level</p>
+                    <p id="profileLevelDisplay" class="profile-field-value profile-detail-value">Level not added</p>
+                </div>
+            </div>
+
+            <div class="profile-detail-card mt-3 md:mt-4">
+                <p class="profile-detail-label">Bio</p>
+                <p id="profileBioDisplay" class="profile-field-value profile-detail-value min-h-[1.5rem]">Add a short bio so people know you.</p>
+            </div>
+
+            <div class="profile-detail-card mt-3 md:mt-4">
+                <div class="flex items-center justify-between gap-3">
+                    <p class="profile-detail-label !mb-0">Interests</p>
+                    <span class="text-[9px] uppercase tracking-widest text-slate-600">Campus identity</span>
+                </div>
+                <div id="profileInterestsDisplay" class="flex flex-wrap gap-2 mt-3">
+                    <span class="profile-empty-chip">No interests added yet</span>
+                </div>
+            </div>
+
+            <div id="profileBadgesBlock" class="hidden mt-3 md:mt-4">
+                <div class="profile-detail-card">
+                    <div class="flex items-center justify-between gap-3">
+                        <p class="profile-detail-label !mb-0">Badges</p>
+                        <span class="text-[9px] uppercase tracking-widest text-slate-600">Achievements</span>
+                    </div>
+                    <div id="profileBadgesDisplay" class="flex flex-wrap gap-2 mt-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="profileEditMode" class="hidden glass-card p-6 md:p-8 rounded-[2.5rem] space-y-5">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500">Profile editor</p>
+                    <h3 class="text-lg md:text-xl font-bold text-white mt-1">Keep your identity current</h3>
+                </div>
+                <button type="button" onclick="toggleProfileEdit()" class="profile-icon-btn" aria-label="Close profile editor">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div id="profileEditError" class="hidden text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3" role="alert"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="editProfileName" class="block profile-detail-label">Full Name</label>
+                    <input type="text" id="editProfileName" maxlength="100" autocomplete="name" placeholder="Your full name"
+                        class="profile-edit-input w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 outline-none transition">
+                </div>
+                <div>
+                    <label for="editProfileDepartment" class="block profile-detail-label">Department</label>
+                    <input type="text" id="editProfileDepartment" maxlength="120" placeholder="e.g. Computer Science"
+                        class="profile-edit-input w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 outline-none transition">
+                </div>
+                <div>
+                    <label for="editProfileLevel" class="block profile-detail-label">Level</label>
+                    <input type="text" id="editProfileLevel" maxlength="40" placeholder="e.g. 300 Level"
+                        class="profile-edit-input w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 outline-none transition">
+                </div>
+                <div>
+                    <label for="editProfileInterests" class="block profile-detail-label">Interests</label>
+                    <input type="text" id="editProfileInterests" maxlength="300" placeholder="e.g. Design, AI, Football"
+                        class="profile-edit-input w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 outline-none transition">
+                    <p class="text-[9px] text-slate-600 mt-1.5">Separate interests with commas.</p>
+                </div>
+            </div>
+
+            <div>
+                <label for="editProfileBio" class="block profile-detail-label">Bio</label>
+                <textarea id="editProfileBio" placeholder="Tell your campus community a little about yourself…" rows="4" maxlength="280"
+                    class="profile-edit-textarea w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 outline-none transition resize-none"></textarea>
+                <div class="flex justify-end mt-1">
+                    <span id="profileBioCount" class="text-[9px] text-slate-600">0 / 280</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col-reverse sm:flex-row gap-3 md:gap-4">
+                <button type="button" onclick="toggleProfileEdit()" id="cancelProfileEditBtn"
+                    class="flex-1 bg-white/10 hover:bg-white/20 py-3.5 rounded-2xl font-bold text-white text-sm transition disabled:opacity-60 disabled:cursor-not-allowed">
+                    Cancel
+                </button>
+                <button type="button" onclick="saveProfileChanges()" id="saveProfileBtn"
+                    class="flex-1 scholar-gradient py-3.5 rounded-2xl font-bold text-sm hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed">
+                    <i class="fas fa-check mr-2" aria-hidden="true"></i><span id="saveProfileBtnLabel">Save Changes</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="glass-card p-6 md:p-8 rounded-[2.5rem] space-y-4">
+            <div>
+                <p class="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500">Account</p>
+                <h3 class="text-lg md:text-xl font-bold text-white mt-1">Settings</h3>
+            </div>
+
+            <div class="space-y-3 border-t border-white/10 pt-4">
+                <button type="button" onclick="toggleJourneyModal(true)" class="profile-setting-row">
+                    <span><i class="fas fa-route text-green-500"></i><span>The UniVerse Journey</span></span>
+                    <i class="fas fa-chevron-right text-slate-500"></i>
+                </button>
+                <button type="button" onclick="toggleFutureModal(true)" class="profile-setting-row">
+                    <span><i class="fas fa-flask text-green-500"></i><span>Future ICOS Experiences</span></span>
+                    <i class="fas fa-chevron-right text-slate-500"></i>
+                </button>
+                <div class="profile-setting-row profile-setting-row-disabled">
+                    <span><i class="fas fa-lock"></i><span>Privacy Settings</span></span>
+                    <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
+                </div>
+                <div class="profile-setting-row profile-setting-row-disabled">
+                    <span><i class="far fa-bell"></i><span>Notification Preferences</span></span>
+                    <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
+                </div>
+                <div class="profile-setting-row profile-setting-row-disabled">
+                    <span><i class="fas fa-key"></i><span>Change Password</span></span>
+                    <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
+                </div>
+                <button type="button" onclick="toggleLogoutModal(true)" class="profile-setting-row profile-setting-row-danger">
+                    <span><i class="fas fa-sign-out-alt"></i><span>Logout</span></span>
+                    <i class="fas fa-arrow-right-to-bracket"></i>
+                </button>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div id="errandPage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 md:gap-4">
             <div class="min-w-0">
                 <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">Campus Services</p>
@@ -609,6 +836,16 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
                             <button type="button" id="chatMobileSearch" class="chat-icon-btn md:hidden" aria-label="Search conversations"><i class="fas fa-search"></i></button>
                         </div>
                         <div id="chatConversationList" class="chat-conversation-list custom-scrollbar"></div>
+                        <section class="chat-requests-section mt-4" aria-labelledby="chatRequestsHeading">
+                            <div class="flex items-center justify-between px-1 mb-2">
+                                <div>
+                                    <p id="chatRequestsHeading" class="text-[9px] uppercase tracking-[0.2em] font-black text-slate-500">Message requests</p>
+                                    <p id="chatRequestCount" class="text-[10px] text-slate-600 mt-0.5">0 pending</p>
+                                </div>
+                                <button type="button" id="chatRequestsRefresh" class="chat-icon-btn" aria-label="Refresh message requests"><i class="fas fa-rotate"></i></button>
+                            </div>
+                            <div id="chatRequestList" class="chat-request-list custom-scrollbar"></div>
+                        </section>
                     </aside>
 
                     <section id="chatConversationView" class="chat-conversation-view" aria-live="polite">
@@ -638,6 +875,7 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
                                 </div>
                             </header>
 
+                            <button type="button" id="chatLoadOlder" class="chat-load-older hidden" aria-label="Load older messages">Load older messages</button>
                             <div id="chatMessageList" class="chat-message-list custom-scrollbar"></div>
                             <button type="button" id="chatNewMessageIndicator" class="chat-new-message hidden" aria-label="Jump to newest message">New message</button>
                             <form id="chatComposer" class="chat-composer">
@@ -659,10 +897,13 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
                     <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mt-1">Study Hub</h2>
                     <p class="text-xs text-slate-500 mt-1">Everything you need to move forward.</p>
                 </div>
-                <div class="study-search">
-                    <i class="fas fa-search"></i>
-                    <input id="studySearchInput" type="search" autocomplete="off" placeholder="Search courses, materials or past questions..." aria-label="Search Study Hub">
-                    <button id="studySearchClear" class="hidden text-slate-500" type="button" aria-label="Clear search"><i class="fas fa-times"></i></button>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <div class="study-search flex-1">
+                        <i class="fas fa-search"></i>
+                        <input id="studySearchInput" type="search" autocomplete="off" placeholder="Search courses, materials or past questions..." aria-label="Search Study Hub">
+                        <button id="studySearchClear" class="hidden text-slate-500" type="button" aria-label="Clear search"><i class="fas fa-times"></i></button>
+                    </div>
+                    <button type="button" class="study-btn primary whitespace-nowrap" onclick="studyOpenUpload()"><i class="fas fa-cloud-arrow-up"></i> Upload Material</button>
                 </div>
             </section>
 
@@ -725,6 +966,7 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
                     <button type="button" data-study-view="past" onclick="studySetView('past')">Past Questions</button>
                     <button type="button" data-study-view="saved" onclick="studySetView('saved')">Saved</button>
                     <button type="button" data-study-view="recent" onclick="studySetView('recent')">Recent</button>
+                    <button type="button" data-study-view="uploads" onclick="studySetView('uploads')">My Uploads</button>
                 </div>
                 <div id="studyViewPanel" class="mt-4"></div>
             </section>
@@ -755,7 +997,7 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
             </header>
 
             <section class="whisper-composer" aria-label="Create anonymous Whisper">
-                <div class="whisper-notice mb-3"><i class="fas fa-user-secret text-green-500 mt-0.5"></i><span>Your post is anonymous to other students. UniVerse still keeps an internal ownership link for safety and moderation.</span></div>
+                <div class="whisper-notice mb-3"><i class="fas fa-user-secret text-green-500 mt-0.5"></i><span>Your post is anonymous to other students. Each Whisper receives a fresh random label; UniVerse keeps an internal ownership link only for safety and moderation.</span></div>
                 <textarea id="whisperComposerInput" class="whisper-textarea" maxlength="1000" placeholder="What's on your mind?" aria-label="Write an anonymous Whisper"></textarea>
                 <div class="whisper-composer-footer">
                     <span id="whisperCharCount" class="whisper-counter">0 / 1000</span>
@@ -774,6 +1016,14 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
 
             <div id="whisperFeed" class="whisper-feed" aria-live="polite"></div>
             <div id="whisperLoadMoreWrap" class="hidden"><button id="whisperLoadMoreBtn" type="button" class="whisper-load-more">Load more</button></div>
+
+            <section id="whisperModerationPanel" class="hidden mt-5 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4" aria-label="Whisper moderation queue">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div><p class="text-[9px] uppercase tracking-[0.18em] font-black text-amber-400">Moderation</p><h3 class="text-sm font-bold text-white mt-1">Campus Whisper safety queue</h3></div>
+                    <button id="whisperModerationRefresh" type="button" class="whisper-action" aria-label="Refresh moderation queue"><i class="fas fa-rotate"></i></button>
+                </div>
+                <div id="whisperModerationList" class="space-y-2"></div>
+            </section>
         </div>
     </div>
 
@@ -798,6 +1048,7 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
         </div>
     </div>
     <div id="whisperToast" class="whisper-toast" role="status" aria-live="polite"></div>
+    <div id="profileToast" class="profile-toast" role="status" aria-live="polite"></div>
 
     <!-- Future ICOS Experiences — preserved, functional modules that
          are not part of the six V1.0 pillars. Reached from Profile,
@@ -873,6 +1124,8 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
         const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         let userUniversity = '', userFullName = '', currentUserId = '', selectedFiles = [], selectedLodgeFiles = [], userReputation = 0;
+        let currentSessionUser = null;
+        let currentProfileRecord = null;
 
         // pagination / throttle constants to avoid loading millions of rows at once
         const FEED_PAGE_SIZE = 20;
@@ -934,6 +1187,7 @@ let appState = {
                 return window.location.href = 'index.html';
             }
             
+            currentSessionUser = session.user;
             currentUserId = session.user.id;
             const metadata = session.user.user_metadata || {};
             const metadataUniversity = metadata.university || '';
@@ -945,7 +1199,7 @@ let appState = {
             let profileError = null;
             ({ data: profile, error: profileError } = await _supabase
                 .from('profiles')
-                .select('id, full_name, university, bio, profile_photo_url, wallet_balance, reputation_stars, created_at')
+                .select('id, full_name, university, bio, avatar_url, wallet_balance, reputation_stars, department, level, interests, badges, is_verified')
                 .eq('id', currentUserId)
                 .maybeSingle());
 
@@ -960,7 +1214,7 @@ let appState = {
                     university: metadataUniversity || null,
                     wallet_balance: 0,
                     reputation_stars: 0
-                }).select('id, full_name, university, bio, profile_photo_url, wallet_balance, reputation_stars, created_at').single();
+                }).select('id, full_name, university, bio, avatar_url, wallet_balance, reputation_stars, department, level, interests, badges, is_verified').single();
                 if (insertErr) {
                     console.error('Failed to create default profile', insertErr);
                 } else {
@@ -968,6 +1222,7 @@ let appState = {
                 }
             }
 
+            currentProfileRecord = profile || null;
             userUniversity = (profile?.university || metadataUniversity || '').trim();
             userFullName = (profile?.full_name || metadataFullName || '').trim();
 
@@ -990,189 +1245,519 @@ let appState = {
         
 
         // --- PROFILE PAGE FUNCTIONS ---
-        function openProfilePage() {
-            showPage('profile');
-            loadProfileData();
+        let profilePhotoUploading = false;
+        let profileSavingChanges = false;
+        let profileDraft = null;
+
+        function profileShowToast(message, isError = false) {
+            const el = document.getElementById('profileToast');
+            if (!el) return;
+            el.textContent = message;
+            el.classList.toggle('profile-toast-error', !!isError);
+            el.classList.add('show');
+            clearTimeout(profileShowToast.timer);
+            profileShowToast.timer = setTimeout(() => el.classList.remove('show'), 3200);
         }
 
-        async function loadProfileData() {
+        function profileText(value, fallback = '') {
+            const clean = String(value ?? '').trim();
+            return clean || fallback;
+        }
+
+        function profileInitials(name) {
+            return profileText(name, 'Student').split(/\s+/).filter(Boolean).slice(0, 2)
+                .map(part => part[0]).join('').toUpperCase() || '?';
+        }
+
+        function profileSafeUrl(value) {
+            const raw = String(value ?? '').trim();
+            if (!raw) return '';
             try {
-                const { data: session } = await _supabase.auth.getSession();
-                if (!session?.user) return;
-
-                const userEmail = session.user.email;
-
-                // Get profile data
-                const { data: profile, error } = await _supabase
-                    .from('profiles')
-                    .select('bio, profile_photo_url, wallet_balance, reputation_stars, created_at')
-                    .eq('id', currentUserId)
-                    .single();
-
-                if (error && error.code !== 'PGRST116') {
-                    console.error('Error loading profile:', error);
-                }
-
-                // Update display
-                document.getElementById('profileNameDisplay').innerText = userFullName || 'User';
-                document.getElementById('profileEmailDisplay').innerText = userEmail;
-                document.getElementById('profileUniDisplay').innerText = userUniversity || 'Unknown';
-                document.getElementById('profileBioDisplay').innerText = profile?.bio || 'No bio added yet. Click Edit Profile to add one.';
-                document.getElementById('profileBalanceDisplay').innerText = (profile?.wallet_balance || 0).toFixed(2);
-
-                // Profile initials
-                const initials = userFullName ? userFullName.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
-                document.getElementById('profilePhotoDisplay').innerText = initials;
-
-                // Profile photo
-                if (profile?.profile_photo_url) {
-                    document.getElementById('profilePhotoImg').src = profile.profile_photo_url;
-                    document.getElementById('profilePhotoImg').style.display = 'block';
-                    document.getElementById('profilePhotoDisplay').innerText = '';
-                } else {
-                    document.getElementById('profilePhotoImg').style.display = 'none';
-                    document.getElementById('profilePhotoDisplay').innerText = initials;
-                }
-
-                // Reputation stars
-                const stars = profile?.reputation_stars || 0;
-                const starsContainer = document.getElementById('profileStarsDisplay');
-                starsContainer.innerHTML = '';
-                for (let i = 1; i <= 5; i++) {
-                    const star = document.createElement('i');
-                    if (i <= stars) {
-                        star.className = 'fas fa-star text-green-500 text-lg md:text-xl';
-                    } else {
-                        star.className = 'far fa-star text-slate-600 text-lg md:text-xl';
-                    }
-                    starsContainer.appendChild(star);
-                }
-
-                // Joined date
-                if (profile?.created_at) {
-                    const joinedDate = new Date(profile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                    document.getElementById('joinedDateDisplay').innerText = joinedDate;
-                }
-
-                // Populate edit form
-                document.getElementById('editProfileName').value = userFullName || '';
-                document.getElementById('editProfileBio').value = profile?.bio || '';
-
-            } catch (err) {
-                console.error('Error in loadProfileData:', err);
+                const url = new URL(raw, window.location.origin);
+                return (url.protocol === 'https:' || url.protocol === 'http:') ? url.href : '';
+            } catch (_) {
+                return '';
             }
         }
 
+        function profileEscapeHtml(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, char => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'
+            }[char]));
+        }
+
+        function profileSetChip(id, icon, text, fallback) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerHTML = `<i class="fas ${icon}" aria-hidden="true"></i><span>${profileEscapeHtml(text || fallback)}</span>`;
+            el.classList.toggle('profile-meta-chip-empty', !text);
+        }
+
+        function renderProfileStars(rating) {
+            const stars = Math.max(0, Math.min(5, Number(rating) || 0));
+            const container = document.getElementById('profileStarsDisplay');
+            if (!container) return;
+
+            container.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('i');
+                star.className = i <= stars
+                    ? 'fas fa-star text-green-400 text-sm'
+                    : 'far fa-star text-slate-700 text-sm';
+                star.setAttribute('aria-hidden', 'true');
+                container.appendChild(star);
+            }
+            container.setAttribute('aria-label', `${stars} out of 5 reputation stars`);
+
+            const count = `${Number.isInteger(stars) ? stars : stars.toFixed(1)}/5`;
+            document.getElementById('profileRepCount')?.replaceChildren(document.createTextNode(count));
+            document.getElementById('profileRepStat')?.replaceChildren(document.createTextNode(count));
+        }
+
+        function renderProfileInterests(interests) {
+            const container = document.getElementById('profileInterestsDisplay');
+            if (!container) return;
+
+            const values = Array.isArray(interests)
+                ? interests.map(v => String(v ?? '').trim()).filter(Boolean).slice(0, 12)
+                : String(interests || '').split(',').map(v => v.trim()).filter(Boolean).slice(0, 12);
+
+            if (!values.length) {
+                container.innerHTML = '<span class="profile-empty-chip">No interests added yet</span>';
+                return;
+            }
+
+            container.innerHTML = values.map(value =>
+                `<span class="profile-interest-chip">${profileEscapeHtml(value)}</span>`
+            ).join('');
+        }
+
+        function renderProfileBadges(badges) {
+            const block = document.getElementById('profileBadgesBlock');
+            const container = document.getElementById('profileBadgesDisplay');
+            if (!block || !container) return;
+
+            const values = Array.isArray(badges) ? badges.map(v => String(v ?? '').trim()).filter(Boolean).slice(0, 12) : [];
+            if (!values.length) {
+                block.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+
+            block.classList.remove('hidden');
+            container.innerHTML = values.map(value =>
+                `<span class="profile-badge-chip"><i class="fas fa-award" aria-hidden="true"></i>${profileEscapeHtml(value)}</span>`
+            ).join('');
+        }
+
+        function renderProfileCompletion(profile) {
+            const fields = [
+                !!profileText(userFullName),
+                !!profileText(profile?.university || userUniversity),
+                !!profileText(profile?.bio),
+                !!profileText(profile?.department),
+                !!profileText(profile?.level),
+                Array.isArray(profile?.interests) && profile.interests.length > 0,
+                !!profile?.avatar_url
+            ];
+            const completed = fields.filter(Boolean).length;
+            const percent = Math.round((completed / fields.length) * 100);
+
+            document.getElementById('profileCompletionPercent')?.replaceChildren(document.createTextNode(`${percent}%`));
+            const bar = document.getElementById('profileCompletionBar');
+            if (bar) bar.style.width = `${percent}%`;
+
+            const hint = document.getElementById('profileCompletionHint');
+            if (hint) {
+                hint.textContent = percent >= 100
+                    ? 'Your campus identity is fully set up.'
+                    : `${fields.length - completed} profile detail${fields.length - completed === 1 ? '' : 's'} still missing.`;
+            }
+        }
+
+        function syncProfileForm(profile = {}) {
+            const nameInput = document.getElementById('editProfileName');
+            const bioInput = document.getElementById('editProfileBio');
+            const deptInput = document.getElementById('editProfileDepartment');
+            const levelInput = document.getElementById('editProfileLevel');
+            const interestsInput = document.getElementById('editProfileInterests');
+            const bioCount = document.getElementById('profileBioCount');
+
+            const bio = profileText(profile.bio);
+            const interests = Array.isArray(profile.interests) ? profile.interests : [];
+
+            if (nameInput) nameInput.value = userFullName || profileText(profile.full_name);
+            if (bioInput) bioInput.value = bio;
+            if (deptInput) deptInput.value = profileText(profile.department);
+            if (levelInput) levelInput.value = profileText(profile.level);
+            if (interestsInput) interestsInput.value = interests.join(', ');
+            if (bioCount) bioCount.textContent = `${bio.length} / 280`;
+        }
+
+        function updateProfileUI(profile, sessionUser) {
+            const authName = profileText(sessionUser?.user_metadata?.full_name);
+            const profileName = profileText(profile?.full_name);
+            const displayName = profileName || authName || userFullName || 'Student';
+            const displayUni = profileText(profile?.university) || userUniversity || profileText(sessionUser?.user_metadata?.university);
+            const displayBio = profileText(profile?.bio);
+            const department = profileText(profile?.department);
+            const level = profileText(profile?.level);
+
+            userFullName = displayName;
+            userUniversity = displayUni;
+
+            document.getElementById('profileNameDisplay').textContent = displayName;
+            document.getElementById('profileUniHero').textContent = displayUni || 'University not added';
+            document.getElementById('profileUniDisplay').textContent = displayUni || 'University not added';
+            document.getElementById('profileEmailDisplay').textContent = profileText(sessionUser?.email, 'Not available');
+            document.getElementById('profileBioHero').textContent = displayBio || 'Add a short bio so people know you.';
+            document.getElementById('profileBioDisplay').textContent = displayBio || 'Add a short bio so people know you.';
+            document.getElementById('profileDepartmentDisplay').textContent = department || 'Department not added';
+            document.getElementById('profileLevelDisplay').textContent = level || 'Level not added';
+
+            profileSetChip('profileDepartmentChip', 'fa-building-columns', department, 'Department not added');
+            profileSetChip('profileLevelChip', 'fa-layer-group', level, 'Level not added');
+
+            document.getElementById('profileVerifiedBadge')?.classList.toggle('hidden', profile?.is_verified !== true);
+            document.getElementById('profileBalanceDisplay').textContent = (Number(profile?.wallet_balance) || 0).toFixed(2);
+
+            renderProfileStars(profile?.reputation_stars);
+            renderProfileInterests(profile?.interests);
+            renderProfileBadges(profile?.badges);
+
+            const joined = sessionUser?.created_at ? new Date(sessionUser.created_at) : null;
+            document.getElementById('joinedDateDisplay').textContent = joined && !Number.isNaN(joined.getTime())
+                ? joined.toLocaleDateString([], { year:'numeric', month:'short' })
+                : 'Not available';
+
+            const photoImg = document.getElementById('profilePhotoImg');
+            const photoDisplay = document.getElementById('profilePhotoDisplay');
+            const photoUrl = profileSafeUrl(profile?.avatar_url);
+
+            if (photoImg && photoDisplay) {
+                const initials = profileInitials(displayName);
+                if (photoUrl) {
+                    photoImg.onerror = () => {
+                        photoImg.classList.add('hidden');
+                        photoImg.removeAttribute('src');
+                        photoDisplay.textContent = initials;
+                    };
+                    photoImg.src = photoUrl;
+                    photoImg.classList.remove('hidden');
+                    photoImg.alt = `${displayName} profile photo`;
+                    photoDisplay.textContent = '';
+                } else {
+                    photoImg.removeAttribute('src');
+                    photoImg.classList.add('hidden');
+                    photoDisplay.textContent = initials;
+                }
+            }
+
+            renderProfileCompletion(profile);
+            syncProfileForm(profile);
+        }
+
+        async function getCurrentProfileRecord(sessionUser) {
+            if (!sessionUser?.id) throw new Error('No active session');
+
+            const { data, error } = await _supabase
+                .from('profiles')
+                .select('id, full_name, avatar_url, university, bio, wallet_balance, reputation_stars, is_verified, department, level, interests, badges')
+                .eq('id', sessionUser.id)
+                .maybeSingle();
+
+            if (error) throw error;
+            if (data) return data;
+
+            const metadata = sessionUser.user_metadata || {};
+            const initialProfile = {
+                id: sessionUser.id,
+                full_name: profileText(metadata.full_name) || null,
+                university: profileText(metadata.university) || null,
+                bio: null,
+                wallet_balance: 0,
+                reputation_stars: 0,
+                is_verified: false,
+                department: null,
+                level: null,
+                interests: [],
+                badges: []
+            };
+
+            const { data: created, error: insertError } = await _supabase
+                .from('profiles')
+                .insert(initialProfile)
+                .select('id, full_name, avatar_url, university, bio, wallet_balance, reputation_stars, is_verified, department, level, interests, badges')
+                .single();
+
+            if (insertError) throw insertError;
+            return created;
+        }
+
+        // Profile loading is single-flight and reuses the authenticated session/profile
+        // established during app initialization whenever possible.
+        let profileLoadPromise = null;
+
+        function withProfileTimeout(promise, timeoutMs = 10000) {
+            let timer;
+            return Promise.race([
+                promise,
+                new Promise((_, reject) => {
+                    timer = setTimeout(() => reject(new Error('Profile request timed out')), timeoutMs);
+                })
+            ]).finally(() => clearTimeout(timer));
+        }
+
+        async function openProfilePage() {
+            showPage('profile');
+            return loadProfileData();
+        }
+
+        async function loadProfileData(forceRefresh = false) {
+            if (profileLoadPromise) return profileLoadPromise;
+
+            const loadingEl = document.getElementById('profileLoadingState');
+            const errorEl = document.getElementById('profileErrorState');
+            const contentEl = document.getElementById('profileContent');
+            if (!loadingEl || !errorEl || !contentEl) return;
+
+            profileLoadPromise = (async () => {
+                loadingEl.classList.remove('hidden');
+                loadingEl.setAttribute('aria-busy', 'true');
+                errorEl.classList.add('hidden');
+                contentEl.classList.add('hidden');
+
+                try {
+                    let sessionUser = currentSessionUser;
+                    if (!sessionUser?.id) {
+                        const { data: sessionResult, error: sessionError } = await withProfileTimeout(_supabase.auth.getSession());
+                        if (sessionError) throw sessionError;
+                        sessionUser = sessionResult?.session?.user || null;
+                        if (sessionUser) currentSessionUser = sessionUser;
+                    }
+                    if (!sessionUser?.id) throw new Error('No active session');
+                    currentUserId = sessionUser.id;
+
+                    let profile = (!forceRefresh && currentProfileRecord?.id === sessionUser.id)
+                        ? currentProfileRecord
+                        : null;
+                    if (!profile) {
+                        profile = await withProfileTimeout(getCurrentProfileRecord(sessionUser));
+                        currentProfileRecord = profile;
+                    }
+
+                    updateProfileUI(profile, sessionUser);
+                    loadingEl.classList.add('hidden');
+                    loadingEl.setAttribute('aria-busy', 'false');
+                    contentEl.classList.remove('hidden');
+                } catch (err) {
+                    console.error('Error in loadProfileData:', err);
+                    loadingEl.classList.add('hidden');
+                    loadingEl.setAttribute('aria-busy', 'false');
+                    contentEl.classList.add('hidden');
+                    errorEl.classList.remove('hidden');
+                } finally {
+                    profileLoadPromise = null;
+                }
+            })();
+            return profileLoadPromise;
+        }
+
         function toggleProfileEdit() {
-            const displayMode = document.getElementById('profileDisplayMode');
+            const editBtn = document.getElementById('editProfileBtn');
             const editMode = document.getElementById('profileEditMode');
-            
-            displayMode.classList.toggle('hidden');
-            editMode.classList.toggle('hidden');
+            if (!editBtn || !editMode) return;
+
+            const opening = editMode.classList.contains('hidden');
+            editMode.classList.toggle('hidden', !opening);
+            editBtn.classList.toggle('hidden', opening);
+
+            document.getElementById('profileEditError')?.classList.add('hidden');
+
+            if (opening) {
+                syncProfileForm(profileDraft || {});
+                document.getElementById('editProfileName')?.focus();
+                editMode.scrollIntoView({ behavior:'smooth', block:'start' });
+            } else {
+                profileDraft = null;
+            }
         }
 
         async function handleProfilePhotoUpload() {
             const fileInput = document.getElementById('profilePhotoInput');
-            const file = fileInput.files[0];
-
-            if (!file) return;
+            const file = fileInput?.files?.[0];
+            if (!file || profilePhotoUploading) return;
 
             if (!file.type.startsWith('image/')) {
-                alert('Please upload an image file');
+                profileShowToast('Please upload an image file.', true);
+                fileInput.value = '';
                 return;
             }
 
-            const maxSize = 5 * 1024 * 1024; // 5MB
+            const maxSize = 5 * 1024 * 1024;
             if (file.size > maxSize) {
-                alert('File size should be less than 5MB');
+                profileShowToast('File size should be less than 5MB.', true);
+                fileInput.value = '';
                 return;
             }
+
+            const photoImg = document.getElementById('profilePhotoImg');
+            const photoDisplay = document.getElementById('profilePhotoDisplay');
+            const previousSrc = photoImg?.getAttribute('src') || '';
+            const previousVisible = photoImg ? !photoImg.classList.contains('hidden') : false;
+            const previousInitials = photoDisplay?.textContent || profileInitials(userFullName);
+
+            profilePhotoUploading = true;
 
             try {
-                // Show preview
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = document.getElementById('profilePhotoImg');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                    document.getElementById('profilePhotoDisplay').innerText = '';
-                };
-                reader.readAsDataURL(file);
+                await new Promise((resolve, reject) => {
+                    reader.onload = event => {
+                        if (photoImg && photoDisplay) {
+                            photoImg.src = String(event.target?.result || '');
+                            photoImg.classList.remove('hidden');
+                            photoDisplay.textContent = '';
+                        }
+                        resolve();
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
 
-                // Upload to Supabase storage
                 const fileName = `${currentUserId}-${Date.now()}`;
-                const { data, error: uploadError } = await _supabase.storage
+                const { error: uploadError } = await _supabase.storage
                     .from('profile-photos')
-                    .upload(fileName, file, { upsert: true });
-
+                    .upload(fileName, file, { upsert:true });
                 if (uploadError) throw uploadError;
 
-                // Get public URL
                 const { data: urlData } = _supabase.storage
                     .from('profile-photos')
                     .getPublicUrl(fileName);
 
-                // Save URL to database
+                const publicUrl = profileSafeUrl(urlData?.publicUrl);
+                if (!publicUrl) throw new Error('Profile photo URL could not be created.');
+
                 const { error: updateError } = await _supabase
                     .from('profiles')
-                    .update({ profile_photo_url: urlData.publicUrl })
+                    .update({ avatar_url: publicUrl })
                     .eq('id', currentUserId);
-
                 if (updateError) throw updateError;
 
-                alert('Profile photo updated successfully!');
+                profileShowToast('Profile photo updated.');
+                await loadProfileData(true);
             } catch (err) {
                 console.error('Error uploading profile photo:', err);
-                alert('Error uploading profile photo: ' + err.message);
+                if (photoImg && photoDisplay) {
+                    if (previousSrc && previousVisible) {
+                        photoImg.src = previousSrc;
+                        photoImg.classList.remove('hidden');
+                        photoDisplay.textContent = '';
+                    } else {
+                        photoImg.removeAttribute('src');
+                        photoImg.classList.add('hidden');
+                        photoDisplay.textContent = previousInitials;
+                    }
+                }
+                profileShowToast('Could not upload photo. Please try again.', true);
+            } finally {
+                profilePhotoUploading = false;
+                if (fileInput) fileInput.value = '';
             }
         }
 
         async function saveProfileChanges() {
-            const newName = document.getElementById('editProfileName').value.trim();
-            const newBio = document.getElementById('editProfileBio').value.trim();
+            if (profileSavingChanges) return;
+
+            const newName = profileText(document.getElementById('editProfileName')?.value);
+            const newBio = profileText(document.getElementById('editProfileBio')?.value);
+            const newDepartment = profileText(document.getElementById('editProfileDepartment')?.value);
+            const newLevel = profileText(document.getElementById('editProfileLevel')?.value);
+            const newInterests = [...new Set(
+                String(document.getElementById('editProfileInterests')?.value || '')
+                    .split(',')
+                    .map(value => value.trim())
+                    .filter(Boolean)
+                    .slice(0, 12)
+            )];
+
+            const errorEl = document.getElementById('profileEditError');
+            const btn = document.getElementById('saveProfileBtn');
+            const btnLabel = document.getElementById('saveProfileBtnLabel');
+            const cancelBtn = document.getElementById('cancelProfileEditBtn');
+
+            errorEl?.classList.add('hidden');
 
             if (!newName) {
-                alert('Name cannot be empty');
+                if (errorEl) {
+                    errorEl.textContent = 'Full name is required.';
+                    errorEl.classList.remove('hidden');
+                }
                 return;
             }
 
-            try {
-                const btn = document.querySelector('#profileEditMode button:first-child');
-                const originalText = btn.innerText;
-                btn.innerText = 'Saving...';
-                btn.disabled = true;
+            if (newBio.length > 280) {
+                if (errorEl) {
+                    errorEl.textContent = 'Bio must be 280 characters or less.';
+                    errorEl.classList.remove('hidden');
+                }
+                return;
+            }
 
-                // Update profile in database
-                const { error } = await _supabase
+            profileSavingChanges = true;
+            if (btn) btn.disabled = true;
+            if (cancelBtn) cancelBtn.disabled = true;
+            if (btnLabel) btnLabel.textContent = 'Saving…';
+
+            try {
+                const { error: profileError } = await _supabase
                     .from('profiles')
-                    .update({ 
-                        bio: newBio,
-                        updated_at: new Date().toISOString()
+                    .update({
+                        full_name: newName,
+                        bio: newBio || null,
+                        department: newDepartment || null,
+                        level: newLevel || null,
+                        interests: newInterests
                     })
                     .eq('id', currentUserId);
 
-                if (error) throw error;
+                if (profileError) throw profileError;
 
-                // Update user metadata with new name
-                const { error: authError } = await _supabase.auth.updateUser({
-                    data: { full_name: newName, university: userUniversity }
-                });
+                const { data: currentAuth } = await _supabase.auth.getUser();
+                const nextMetadata = {
+                    ...(currentAuth?.user?.user_metadata || {}),
+                    full_name: newName,
+                    university: userUniversity
+                };
 
+                const { error: authError } = await _supabase.auth.updateUser({ data: nextMetadata });
                 if (authError) throw authError;
 
                 userFullName = newName;
-                alert('Profile updated successfully!');
+                profileDraft = null;
+                profileShowToast('Profile updated successfully.');
                 toggleProfileEdit();
-                loadProfileData();
-
-                btn.innerText = originalText;
-                btn.disabled = false;
-
+                await loadProfileData(true);
             } catch (err) {
                 console.error('Error saving profile:', err);
-                alert('Error saving profile: ' + err.message);
+                if (errorEl) {
+                    errorEl.textContent = "Couldn't save your changes. Please try again.";
+                    errorEl.classList.remove('hidden');
+                }
+                profileShowToast('Could not save profile changes.', true);
+            } finally {
+                profileSavingChanges = false;
+                if (btn) btn.disabled = false;
+                if (cancelBtn) cancelBtn.disabled = false;
+                if (btnLabel) btnLabel.textContent = 'Save Changes';
             }
         }
+
+        document.addEventListener('input', event => {
+            if (event.target?.id === 'editProfileBio') {
+                const count = document.getElementById('profileBioCount');
+                if (count) count.textContent = `${event.target.value.length} / 280`;
+            }
+        });
 
         function toggleLogoutModal(show) { document.getElementById('logoutModal').classList.toggle('hidden', !show); }
         async function handleLogout() { await _supabase.auth.signOut(); window.location.href = 'index.html'; }
@@ -1419,466 +2004,120 @@ let appState = {
 // Campus Chat only: async-safety, optimistic sending, targeted realtime updates,
 // recoverable errors and mobile-safe interaction state.
 const chatState = {
-    conversations: [],
-    students: [],
-    messages: {},
-    activeConversationId: null,
-    currentProfile: null,
-    loading: false,
-    searchTimer: null,
-    searchRequestId: 0,
-    messageRequestId: 0,
-    initialized: false,
-    initializing: false,
-    sending: false,
-    lastSearchQuery: ''
+    conversations: [], students: [], messages: {}, requests: [],
+    activeConversationId: null, currentProfile: null,
+    loading: false, searchTimer: null, searchRequestId: 0,
+    messageRequestId: 0, initialized: false, initializing: false,
+    sending: false, lastSearchQuery: '', messagePagination: {}
 };
 let chatRealtimeChannel = null;
+let chatPresenceChannel = null;
 
-function chatEscape(value='') {
-    return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-}
-function chatInitials(name='Student') {
-    return String(name || 'Student').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase() || '?';
-}
+function chatEscape(value='') { return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function chatInitials(name='Student') { return String(name || 'Student').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase() || '?'; }
 function chatAvatarHTML(student, large=false) {
     const size = large ? 'chat-avatar-lg' : '';
-    return student?.avatar_url
-        ? `<span class="chat-avatar ${size}"><img src="${chatEscape(student.avatar_url)}" alt="${chatEscape(student.full_name || 'Student')}" class="w-full h-full object-cover rounded-full" loading="lazy"></span>`
-        : `<span class="chat-avatar ${size}">${chatEscape(chatInitials(student?.full_name))}</span>`;
+    return student?.avatar_url ? `<span class="chat-avatar ${size}"><img src="${chatEscape(student.avatar_url)}" alt="${chatEscape(student.full_name || 'Student')}" class="w-full h-full object-cover rounded-full" loading="lazy"></span>` : `<span class="chat-avatar ${size}">${chatEscape(chatInitials(student?.full_name))}</span>`;
 }
-function chatDisplayUsername(student) {
-    if (!student) return 'student';
-    return (student.username || student.full_name || 'student').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,24) || 'student';
-}
-function chatTime(value) {
-    if (!value) return '';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return '';
-    const now = new Date();
-    if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
-    return d.toLocaleDateString([], {month:'short', day:'numeric'});
-}
-function chatStatusText() { return 'On your campus'; }
-function chatStudent(id) { return chatState.students.find(s => s.id === id) || null; }
+function chatDisplayUsername(student) { if (!student) return 'student'; return String(student.username || student.full_name || 'student').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,24) || 'student'; }
+function chatTime(value) { if (!value) return ''; const d=new Date(value); if(Number.isNaN(d.getTime())) return ''; const now=new Date(); if(d.toDateString()===now.toDateString()) return d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); return d.toLocaleDateString([], {month:'short',day:'numeric'}); }
+function chatStatusText(studentId) { return chatPresenceUsers.has(studentId) ? 'Online now' : 'On your campus'; }
 function chatError(error) { console.error('Campus Chat:', error); return error; }
 function chatSetComposerStatus(message='') { const el=document.getElementById('chatComposerStatus'); if(el) el.textContent=message; }
-function chatIsNearBottom(box=document.getElementById('chatMessageList')) { if(!box) return true; return box.scrollHeight - box.scrollTop - box.clientHeight < 120; }
-function chatHideNewMessage() { document.getElementById('chatNewMessageIndicator')?.classList.add('hidden'); }
-function chatShowNewMessage() { document.getElementById('chatNewMessageIndicator')?.classList.remove('hidden'); }
-function chatScrollToBottom(smooth=false) { const box=document.getElementById('chatMessageList'); if(!box) return; box.scrollTo({top:box.scrollHeight, behavior:smooth?'smooth':'auto'}); chatHideNewMessage(); }
-function chatMergeMessage(conversationId, message) {
-    if (!conversationId || !message) return;
-    const current=Array.isArray(chatState.messages[conversationId]) ? chatState.messages[conversationId] : [];
-    const existingIndex=current.findIndex(m=>m.id===message.id);
-    if(existingIndex>=0) current[existingIndex]={...current[existingIndex],...message};
-    else current.push(message);
-    current.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-    chatState.messages[conversationId]=current;
+function chatIsNearBottom(box=document.getElementById('chatMessageList')) { if(!box) return true; return box.scrollHeight-box.scrollTop-box.clientHeight<120; }
+function chatHideNewMessage(){document.getElementById('chatNewMessageIndicator')?.classList.add('hidden');}
+function chatShowNewMessage(){document.getElementById('chatNewMessageIndicator')?.classList.remove('hidden');}
+function chatScrollToBottom(smooth=false){const box=document.getElementById('chatMessageList');if(!box)return;box.scrollTo({top:box.scrollHeight,behavior:smooth?'smooth':'auto'});chatHideNewMessage();}
+function chatMergeMessage(conversationId,message){if(!conversationId||!message)return;const current=Array.isArray(chatState.messages[conversationId])?chatState.messages[conversationId]:[];const i=current.findIndex(m=>m.id===message.id);if(i>=0)current[i]=message;else current.push(message);current.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));chatState.messages[conversationId]=current;}
+function chatRemoveMessage(conversationId,messageId){const current=chatState.messages[conversationId]||[];chatState.messages[conversationId]=current.filter(m=>m.id!==messageId);}
+function chatUpsertConversationPreview(conversationId,message,fromOther=false){const c=chatState.conversations.find(x=>x.id===conversationId);if(!c)return;c.last_message=message.content||'';c.last_message_at=message.created_at||c.last_message_at;if(fromOther&&chatState.activeConversationId!==conversationId)c.unread=(c.unread||0)+1;chatState.conversations.sort((a,b)=>new Date(b.last_message_at||0)-new Date(a.last_message_at||0));}
+function chatConversationSkeleton(count=4){return `<div class="space-y-2" aria-hidden="true">${Array.from({length:count},()=>'<div class="chat-skeleton"></div>').join('')}</div>`;}
+
+const chatPresenceUsers = new Set();
+function updateChatPresenceUI(){
+    const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId),id=c?.participantId;
+    const el=document.getElementById('chatHeaderStatus'); if(el) el.textContent=id&&chatPresenceUsers.has(id)?'Online now':'On your campus';
+    if(c) renderChatConversations();
 }
-function chatRemoveMessage(conversationId, messageId) {
-    if(!chatState.messages[conversationId]) return;
-    chatState.messages[conversationId]=chatState.messages[conversationId].filter(m=>m.id!==messageId);
-}
-function chatUpsertConversationPreview(conversationId, message, fromOther) {
-    const c=chatState.conversations.find(x=>x.id===conversationId);
-    if(!c) return false;
-    c.last_message=message?.content || c.last_message || '';
-    c.last_message_at=message?.created_at || c.last_message_at || c.created_at;
-    if(fromOther && chatState.activeConversationId!==conversationId) c.unread=(Number(c.unread)||0)+1;
-    chatState.conversations.sort((a,b)=>new Date(b.last_message_at)-new Date(a.last_message_at));
-    return true;
-}
-function chatConversationSkeleton(count=4) {
-    return `<div class="space-y-2" aria-hidden="true">${Array.from({length:count},()=>'<div class="chat-skeleton"></div>').join('')}</div>`;
+function subscribeChatPresence(){
+    if(!currentUserId)return;
+    if(chatPresenceChannel){_supabase.removeChannel(chatPresenceChannel);chatPresenceChannel=null;}
+    const campus=chatState.currentProfile?.university||userUniversity||'campus';
+    chatPresenceChannel=_supabase.channel(`campus-chat-presence-${String(campus).replace(/[^a-z0-9]/gi,'-').slice(0,50)}`);
+    const sync=()=>{chatPresenceUsers.clear();const state=chatPresenceChannel.presenceState();Object.keys(state||{}).forEach(key=>(state[key]||[]).forEach(meta=>{if(meta?.user_id)chatPresenceUsers.add(meta.user_id);}));updateChatPresenceUI();};
+    chatPresenceChannel.on('presence',{event:'sync'},sync).on('presence',{event:'join'},sync).on('presence',{event:'leave'},sync).subscribe(async status=>{if(status==='SUBSCRIBED'){try{await chatPresenceChannel.track({user_id:currentUserId,online_at:new Date().toISOString()});}catch(e){chatError(e);}}});
 }
 
 const chat = {
-    async getSessionUser() {
-        const { data:{session}, error }=await _supabase.auth.getSession();
-        if(error) throw error;
-        return session?.user || null;
-    },
-    async loadCurrentProfile() {
-        if(!currentUserId) return null;
-        const { data,error }=await _supabase.from('profiles')
-            .select('id, full_name, avatar_url, university, department, level, bio, reputation_stars, is_verified')
-            .eq('id',currentUserId).maybeSingle();
-        if(error) throw error;
-        chatState.currentProfile=data || {id:currentUserId,full_name:userFullName||'Student',university:userUniversity||''};
-        return chatState.currentProfile;
-    },
-    async searchStudents(query='') {
-        if(!currentUserId) return [];
-        const profile=chatState.currentProfile || await this.loadCurrentProfile();
-        const clean=query.trim();
-        if(clean.length<2) return [];
-        let request=_supabase.from('profiles')
-            .select('id, full_name, avatar_url, university, department, level, bio, reputation_stars, is_verified')
-            .neq('id',currentUserId).limit(30);
-        if(profile?.university) request=request.eq('university',profile.university);
-        const q=clean.replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
-        if(!q) return [];
-        request=request.or(`full_name.ilike.%${q}%,department.ilike.%${q}%,university.ilike.%${q}%`);
-        const {data,error}=await request;
-        if(error) throw error;
-        return (data||[]).filter(s=>s.id!==currentUserId).map(s=>({...s,username:chatDisplayUsername(s)}));
-    },
-    async loadConversations() {
-        if(!currentUserId) return [];
-        const {data:memberships,error:memberError}=await _supabase.from('conversation_members')
-            .select('conversation_id, user_id, joined_at, last_read_at').eq('user_id',currentUserId);
-        if(memberError) throw memberError;
-        if(!memberships?.length){ chatState.messages={}; return []; }
+    async getSessionUser(){const {data:{session},error}=await _supabase.auth.getSession();if(error)throw error;return session?.user||null;},
+    async loadCurrentProfile(){if(!currentUserId)return null;const {data,error}=await _supabase.from('profiles').select('id, full_name, avatar_url, university, department, level, bio, reputation_stars, is_verified').eq('id',currentUserId).maybeSingle();if(error)throw error;chatState.currentProfile=data||{id:currentUserId,full_name:userFullName||'Student',university:userUniversity||''};return chatState.currentProfile;},
+    async searchStudents(query=''){if(!currentUserId)return [];const clean=query.trim();if(clean.length<2)return [];const {data,error}=await _supabase.rpc('campus_chat_search_students',{p_query:clean});if(error)throw error;return (data||[]).map(s=>({...s,username:chatDisplayUsername(s)}));},
+    async loadConversations(){
+        if(!currentUserId)return [];
+        const {data:memberships,error:memberError}=await _supabase.from('conversation_members').select('conversation_id,user_id,joined_at,last_read_at').eq('user_id',currentUserId);
+        if(memberError)throw memberError;if(!memberships?.length){chatState.messages={};return [];}
         const ids=[...new Set(memberships.map(m=>m.conversation_id).filter(Boolean))];
-        const {data:conversations,error:conversationError}=await _supabase.from('conversations')
-            .select('id, is_group, title, school_tag, created_by, created_at').in('id',ids);
-        if(conversationError) throw conversationError;
-        const {data:allMembers,error:allMemberError}=await _supabase.from('conversation_members')
-            .select('conversation_id, user_id, last_read_at').in('conversation_id',ids);
-        if(allMemberError) throw allMemberError;
-        const otherIds=[...new Set((allMembers||[]).map(m=>m.user_id).filter(id=>id&&id!==currentUserId))];
-        let profiles=[];
-        if(otherIds.length){
-            const {data,error}=await _supabase.from('profiles')
-                .select('id, full_name, avatar_url, university, department, level, bio, reputation_stars, is_verified')
-                .in('id',otherIds);
-            if(error) throw error;
-            profiles=data||[];
-        }
+        const {data:conversations,error:conversationError}=await _supabase.from('conversations').select('id,is_group,title,school_tag,created_by,created_at').in('id',ids);if(conversationError)throw conversationError;
+        const {data:allMembers,error:allMemberError}=await _supabase.from('conversation_members').select('conversation_id,user_id,last_read_at').in('conversation_id',ids);if(allMemberError)throw allMemberError;
+        const otherIds=[...new Set((allMembers||[]).map(m=>m.user_id).filter(id=>id&&id!==currentUserId))];let profiles=[];
+        if(otherIds.length){const {data,error}=await _supabase.from('profiles').select('id,full_name,avatar_url,university,department,level,bio,reputation_stars,is_verified').in('id',otherIds);if(error)throw error;profiles=data||[];}
         const profileMap=Object.fromEntries(profiles.map(p=>[p.id,{...p,username:chatDisplayUsername(p)}]));
-        const {data:messages,error:messageError}=await _supabase.from('messages')
-            .select('id, conversation_id, sender_id, content, created_at').in('conversation_id',ids).order('created_at',{ascending:false});
-        if(messageError) throw messageError;
-        const messageMap={};
-        (messages||[]).forEach(m=>{if(!m?.conversation_id)return;if(!messageMap[m.conversation_id])messageMap[m.conversation_id]=[];messageMap[m.conversation_id].push(m);});
-        Object.keys(messageMap).forEach(id=>messageMap[id].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)));
-        chatState.messages=messageMap;
-        return (conversations||[]).map(c=>{
-            const membership=memberships.find(m=>m.conversation_id===c.id);
-            const members=(allMembers||[]).filter(m=>m.conversation_id===c.id);
-            const otherMember=members.find(m=>m.user_id!==currentUserId);
-            const participant=otherMember ? (profileMap[otherMember.user_id] || {id:otherMember.user_id,full_name:'Student'}) : null;
-            const listMessages=messageMap[c.id]||[];
-            const latest=listMessages[listMessages.length-1];
-            const unreadCount=listMessages.filter(m=>m.sender_id!==currentUserId && (!membership?.last_read_at || new Date(m.created_at)>new Date(membership.last_read_at))).length;
-            return {...c,participantId:otherMember?.user_id||null,participant,unread:unreadCount,last_message:latest?.content||'',last_message_at:latest?.created_at||c.created_at,last_read_at:membership?.last_read_at||null};
-        }).sort((a,b)=>new Date(b.last_message_at)-new Date(a.last_message_at));
+        const {data:recentMessages,error:messageError}=await _supabase.from('messages').select('id,conversation_id,sender_id,content,created_at').in('conversation_id',ids).order('created_at',{ascending:false}).limit(Math.min(500,Math.max(100,ids.length*6)));if(messageError)throw messageError;
+        const messageMap={};(recentMessages||[]).forEach(m=>{(messageMap[m.conversation_id]??=[]).push(m);});Object.keys(messageMap).forEach(id=>messageMap[id].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)));chatState.messages=messageMap;
+        return (conversations||[]).map(c=>{const membership=memberships.find(m=>m.conversation_id===c.id);const members=(allMembers||[]).filter(m=>m.conversation_id===c.id);const other=members.find(m=>m.user_id!==currentUserId);const participant=other?(profileMap[other.user_id]||{id:other.user_id,full_name:'Student'}):null;const msgs=messageMap[c.id]||[];const latest=msgs[msgs.length-1];const unread=msgs.filter(m=>m.sender_id!==currentUserId&&(!membership?.last_read_at||new Date(m.created_at)>new Date(membership.last_read_at))).length;return {...c,participantId:other?.user_id||null,participant,unread,last_message:latest?.content||'',last_message_at:latest?.created_at||c.created_at,last_read_at:membership?.last_read_at||null};}).sort((a,b)=>new Date(b.last_message_at)-new Date(a.last_message_at));
     },
-    async loadMessages(conversationId, requestId=++chatState.messageRequestId) {
-        const {data,error}=await _supabase.from('messages').select('id, conversation_id, sender_id, content, created_at')
-            .eq('conversation_id',conversationId).order('created_at',{ascending:true});
-        if(error) throw error;
-        if(requestId!==chatState.messageRequestId || chatState.activeConversationId!==conversationId) return null;
-        chatState.messages[conversationId]=data||[];
-        return data||[];
+    async loadMessages(conversationId,requestId=++chatState.messageRequestId,before=null){
+        let q=_supabase.from('messages').select('id,conversation_id,sender_id,content,created_at').eq('conversation_id',conversationId).order('created_at',{ascending:false}).limit(50);if(before)q=q.lt('created_at',before);const {data,error}=await q;if(error)throw error;const rows=(data||[]).reverse();if(requestId!==chatState.messageRequestId||chatState.activeConversationId!==conversationId)return null;const existing=before?(chatState.messages[conversationId]||[]):[];chatState.messages[conversationId]=[...rows,...existing].filter((m,i,a)=>a.findIndex(x=>x.id===m.id)===i).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));chatState.messagePagination[conversationId]={hasMore:rows.length===50,oldest:chatState.messages[conversationId][0]?.created_at||null};return rows;
     },
-    async sendMessage(conversationId, content) {
-        if(!currentUserId) throw new Error('Your session has expired. Please sign in again.');
-        const {data,error}=await _supabase.from('messages').insert({conversation_id:conversationId,sender_id:currentUserId,content})
-            .select('id, conversation_id, sender_id, content, created_at').single();
-        if(error) throw error;
-        return data;
-    },
-    async startConversation(userId) {
-        if(!currentUserId || !userId || userId===currentUserId) throw new Error('You cannot start a conversation with yourself.');
-        const {data:target,error:targetError}=await _supabase.from('profiles')
-            .select('id, full_name, avatar_url, university, department, level, bio, reputation_stars, is_verified')
-            .eq('id',userId).maybeSingle();
-        if(targetError) throw targetError;
-        if(!target) throw new Error('That student is no longer available.');
-        if(chatState.currentProfile?.university && target.university && chatState.currentProfile.university!==target.university) throw new Error('You can only message students from your campus.');
-        const {data:mine,error:mineError}=await _supabase.from('conversation_members').select('conversation_id').eq('user_id',currentUserId);
-        if(mineError) throw mineError;
-        const mineIds=(mine||[]).map(x=>x.conversation_id).filter(Boolean);
-        if(mineIds.length){
-            const {data:theirs,error:theirsError}=await _supabase.from('conversation_members').select('conversation_id').eq('user_id',userId).in('conversation_id',mineIds);
-            if(theirsError) throw theirsError;
-            const shared=new Set((theirs||[]).map(x=>x.conversation_id));
-            const existing=chatState.conversations.find(c=>!c.is_group && shared.has(c.id));
-            if(existing) return existing;
-        }
-        const conversationId=crypto.randomUUID();
-        const createdAt=new Date().toISOString();
-        const {error:conversationError}=await _supabase.from('conversations').insert({id:conversationId,is_group:false,title:null,school_tag:userUniversity||chatState.currentProfile?.university||target.university||null,created_by:currentUserId,created_at:createdAt});
-        if(conversationError) throw conversationError;
-        const {error:memberError}=await _supabase.from('conversation_members').insert([
-            {conversation_id:conversationId,user_id:currentUserId,joined_at:createdAt},
-            {conversation_id:conversationId,user_id:userId,joined_at:createdAt}
-        ]);
-        if(memberError){try{await _supabase.from('conversations').delete().eq('id',conversationId).eq('created_by',currentUserId);}catch(_){};throw memberError;}
-        const participant={...target,username:chatDisplayUsername(target)};
-        const created={id:conversationId,is_group:false,title:null,school_tag:userUniversity||target.university||null,created_by:currentUserId,created_at:createdAt,participantId:userId,participant,unread:0,last_message:'',last_message_at:createdAt,last_read_at:null};
-        chatState.messages[conversationId]=[];
-        chatState.conversations=[created,...chatState.conversations.filter(c=>c.id!==conversationId)];
-        renderChatConversations();
-        return created;
-    },
-    async markAsRead(conversationId) {
-        const {error}=await _supabase.from('conversation_members').update({last_read_at:new Date().toISOString()}).eq('conversation_id',conversationId).eq('user_id',currentUserId);
-        if(error) throw error;
-    },
-    async blockUser(userId) {
-        const {error}=await _supabase.from('blocks').upsert({blocker_id:currentUserId,blocked_id:userId},{onConflict:'blocker_id,blocked_id'});
-        if(error) throw error;
-    },
-    async reportUser({conversationId,messageId,reason,note=''}) {
-        const contentType=messageId?'message':'conversation';
-        const contentId=messageId||conversationId;
-        const safeReason=note.trim() ? `${reason} — ${note.trim()}` : reason;
-        const {error}=await _supabase.from('reports').insert({reporter_id:currentUserId,content_type:contentType,content_id:contentId,reason:safeReason,status:'pending'});
-        if(error) throw error;
-    },
-    async refreshConversations({render=true}={}) {
-        const previousActive=chatState.activeConversationId;
-        chatState.conversations=await this.loadConversations();
-        if(previousActive && !chatState.conversations.some(c=>c.id===previousActive)){
-            chatState.activeConversationId=null;
-            closeChatConversation();
-        }
-        if(render) renderChatConversations();
-        return chatState.conversations;
-    },
-    subscribeRealtime() {
-        if(!currentUserId) return;
-        if(chatRealtimeChannel){ _supabase.removeChannel(chatRealtimeChannel); chatRealtimeChannel=null; }
+    async sendMessage(conversationId,content){if(!currentUserId)throw new Error('Your session has expired. Please sign in again.');const {data,error}=await _supabase.from('messages').insert({conversation_id:conversationId,sender_id:currentUserId,content}).select('id,conversation_id,sender_id,content,created_at').single();if(error)throw error;return data;},
+    async sendRequest(recipientId,message){const {data,error}=await _supabase.rpc('campus_chat_send_request',{p_recipient_id:recipientId,p_message:message});if(error)throw error;return data;},
+    async listRequests(){const {data,error}=await _supabase.rpc('campus_chat_list_requests');if(error)throw error;chatState.requests=data||[];return chatState.requests;},
+    async respondRequest(requestId,action){const {data,error}=await _supabase.rpc('campus_chat_respond_request',{p_request_id:requestId,p_action:action});if(error)throw error;return data;},
+    async cancelRequest(requestId){const {data,error}=await _supabase.rpc('campus_chat_cancel_request',{p_request_id:requestId});if(error)throw error;return data;},
+    async markAsRead(conversationId){const {error}=await _supabase.from('conversation_members').update({last_read_at:new Date().toISOString()}).eq('conversation_id',conversationId).eq('user_id',currentUserId);if(error)throw error;},
+    async blockUser(userId){const {error}=await _supabase.from('blocks').upsert({blocker_id:currentUserId,blocked_id:userId},{onConflict:'blocker_id,blocked_id'});if(error)throw error;},
+    async reportUser({conversationId,messageId,reason,note=''}){const contentType=messageId?'message':'conversation';const contentId=messageId||conversationId;const safeReason=note.trim()?`${reason} — ${note.trim()}`:reason;const {error}=await _supabase.from('reports').insert({reporter_id:currentUserId,content_type:contentType,content_id:contentId,reason:safeReason,status:'pending'});if(error)throw error;},
+    async refreshConversations({render=true}={}){const previous=chatState.activeConversationId;chatState.conversations=await this.loadConversations();if(previous&&!chatState.conversations.some(c=>c.id===previous)){chatState.activeConversationId=null;closeChatConversation();}if(render)renderChatConversations();return chatState.conversations;},
+    async refreshRequests(){await this.listRequests();renderChatRequests();return chatState.requests;},
+    subscribeRealtime(){
+        if(!currentUserId)return;if(chatRealtimeChannel){_supabase.removeChannel(chatRealtimeChannel);chatRealtimeChannel=null;}
         chatRealtimeChannel=_supabase.channel(`campus-chat-${currentUserId}`)
-            .on('postgres_changes',{event:'*',schema:'public',table:'messages'},async payload=>{
-                const message=payload.new || payload.old;
-                const conversationId=message?.conversation_id;
-                if(!conversationId) return;
-                const known=chatState.conversations.some(c=>c.id===conversationId);
-                if(payload.eventType==='DELETE'){
-                    chatRemoveMessage(conversationId,message.id);
-                    if(chatState.activeConversationId===conversationId) renderChatMessages(chatState.messages[conversationId]||[],{forceBottom:false});
-                    if(known) await chat.refreshConversations();
-                    return;
-                }
-                if(!known){
-                    try{await chat.refreshConversations();}catch(error){chatError(error);} 
-                }
-                chatMergeMessage(conversationId,message);
-                const fromOther=message.sender_id!==currentUserId;
-                const wasNearBottom=chatIsNearBottom();
-                const isActive=chatState.activeConversationId===conversationId;
-                if(chatState.conversations.some(c=>c.id===conversationId)){
-                    chatUpsertConversationPreview(conversationId,message,fromOther);
-                    renderChatConversations();
-                }
-                if(isActive){
-                    renderChatMessages(chatState.messages[conversationId]||[],{forceBottom:wasNearBottom});
-                    if(fromOther && !wasNearBottom) chatShowNewMessage();
-                }
-            })
-            .on('postgres_changes',{event:'*',schema:'public',table:'conversation_members'},async payload=>{
-                const conversationId=payload.new?.conversation_id || payload.old?.conversation_id;
-                if(!conversationId) return;
-                try{
-                    await chat.refreshConversations();
-                    if(!chatState.conversations.some(c=>c.id===chatState.activeConversationId)) closeChatConversation();
-                }catch(error){chatError(error);}
-            })
-            .subscribe((status,error)=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT') chatError(error||status);});
+        .on('postgres_changes',{event:'*',schema:'public',table:'messages'},async payload=>{const m=payload.new||payload.old,cid=m?.conversation_id;if(!cid)return;const known=chatState.conversations.some(c=>c.id===cid);if(payload.eventType==='DELETE'){chatRemoveMessage(cid,m.id);if(chatState.activeConversationId===cid)renderChatMessages(chatState.messages[cid]||[],{forceBottom:false});return;}if(!known){try{await chat.refreshConversations();}catch(e){chatError(e);}}chatMergeMessage(cid,m);const fromOther=m.sender_id!==currentUserId,near=chatIsNearBottom(),active=chatState.activeConversationId===cid;if(chatState.conversations.some(c=>c.id===cid)){chatUpsertConversationPreview(cid,m,fromOther);renderChatConversations();}if(active){renderChatMessages(chatState.messages[cid]||[],{forceBottom:near});if(fromOther&&!near)chatShowNewMessage();}})
+        .on('postgres_changes',{event:'*',schema:'public',table:'conversation_members'},async()=>{try{await chat.refreshConversations();}catch(e){chatError(e);}})
+        .on('postgres_changes',{event:'*',schema:'public',table:'message_requests',filter:`recipient_id=eq.${currentUserId}`},async()=>{try{await chat.refreshRequests();}catch(e){chatError(e);}})
+        .on('postgres_changes',{event:'*',schema:'public',table:'message_requests',filter:`sender_id=eq.${currentUserId}`},async()=>{try{await chat.refreshRequests();}catch(e){chatError(e);}})
+        .subscribe((status,error)=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')chatError(error||status);});
     }
 };
 
-function renderChatConversations() {
-    const list=document.getElementById('chatConversationList'),count=document.getElementById('chatConversationCount');
-    if(!list||!count)return;
-    count.textContent=`${chatState.conversations.length} conversation${chatState.conversations.length===1?'':'s'}`;
-    if(!chatState.conversations.length){
-        list.innerHTML=`<div class="py-10 px-3 text-center"><div class="text-slate-600 text-2xl mb-3"><i class="far fa-comments"></i></div><p class="text-xs font-bold text-slate-400">Your conversations will appear here.</p><p class="text-[10px] text-slate-600 mt-1">Find a student and start your first conversation.</p><button type="button" class="chat-action-btn mt-4" data-chat-start-first>Start a conversation</button></div>`;
-        list.querySelector('[data-chat-start-first]')?.addEventListener('click',openChatSearch);
-        return;
-    }
-    list.innerHTML=chatState.conversations.map(c=>{
-        const s=c.participant||{full_name:c.is_group?(c.title||'Campus Group'):'Student'};
-        const active=c.id===chatState.activeConversationId;
-        return `<button type="button" class="chat-conversation-item ${active?'active ':''}${c.unread?'unread':''}" data-conversation-id="${chatEscape(c.id)}" aria-current="${active?'true':'false'}">
-            ${chatAvatarHTML(s)}<span class="min-w-0 flex-1"><span class="flex items-center justify-between gap-2"><span class="chat-preview-name text-xs font-bold text-slate-200 truncate">${chatEscape(s.full_name||c.title||'Conversation')}</span><span class="text-[8px] text-slate-600 flex-shrink-0">${chatTime(c.last_message_at)}</span></span><span class="flex items-center justify-between gap-2 mt-1"><span class="chat-preview text-[10px] text-slate-500 truncate">${chatEscape(c.last_message||'No messages yet')}</span>${c.unread?`<span class="chat-unread" aria-label="${c.unread} unread messages">${c.unread}</span>`:''}</span></span>
-        </button>`;
-    }).join('');
-    list.querySelectorAll('[data-conversation-id]').forEach(btn=>btn.addEventListener('click',()=>openChatConversation(btn.dataset.conversationId)));
-}
+function renderChatConversations(){const list=document.getElementById('chatConversationList'),count=document.getElementById('chatConversationCount');if(!list||!count)return;count.textContent=`${chatState.conversations.length} conversation${chatState.conversations.length===1?'':'s'}`;if(!chatState.conversations.length){list.innerHTML=`<div class="py-8 px-2 text-center"><div class="text-slate-600 text-2xl mb-3"><i class="far fa-comments"></i></div><p class="text-xs font-bold text-slate-400">No conversations yet.</p><p class="text-[10px] text-slate-600 mt-1">Find a student below and send a request.</p></div>`;return;}list.innerHTML=chatState.conversations.map(c=>{const s=c.participant||{full_name:c.is_group?(c.title||'Campus Group'):'Student'};const active=c.id===chatState.activeConversationId;const online=c.participantId&&chatPresenceUsers.has(c.participantId);return `<button type="button" class="chat-conversation-item ${active?'active ':''}${c.unread?'unread':''}" data-conversation-id="${chatEscape(c.id)}" aria-current="${active?'true':'false'}">${chatAvatarHTML(s)}<span class="min-w-0 flex-1"><span class="flex items-center justify-between gap-2"><span class="chat-preview-name text-xs font-bold text-slate-200 truncate">${chatEscape(s.full_name||c.title||'Conversation')}</span><span class="text-[8px] text-slate-600 flex-shrink-0">${chatTime(c.last_message_at)}</span></span><span class="flex items-center justify-between gap-2 mt-1"><span class="chat-preview text-[10px] text-slate-500 truncate">${chatEscape(c.last_message||'No messages yet')}</span><span class="flex items-center gap-1">${online?'<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>':''}${c.unread?`<span class="chat-unread" aria-label="${c.unread} unread messages">${c.unread}</span>`:''}</span></span></span></button>`;}).join('');list.querySelectorAll('[data-conversation-id]').forEach(btn=>btn.addEventListener('click',()=>openChatConversation(btn.dataset.conversationId)));}
 
-async function openChatConversation(conversationId) {
-    const conversation=chatState.conversations.find(c=>c.id===conversationId); if(!conversation)return;
-    chatState.activeConversationId=conversationId;
-    ++chatState.messageRequestId;
-    chatHideNewMessage();
-    chatSetComposerStatus('');
-    const empty=document.getElementById('chatEmptyConversation'),active=document.getElementById('chatActiveConversation');
-    empty?.classList.add('hidden'); active?.classList.remove('hidden'); document.getElementById('chatConversationView')?.classList.add('chat-mobile-open');
-    const s=conversation.participant||{full_name:conversation.title||'Conversation'};
-    const avatarHost=document.getElementById('chatHeaderAvatar');
-    if(avatarHost) avatarHost.innerHTML=s.avatar_url?`<img src="${chatEscape(s.avatar_url)}" alt="" class="w-full h-full object-cover rounded-full">`:chatEscape(chatInitials(s.full_name));
-    const nameEl=document.getElementById('chatHeaderName'); if(nameEl) nameEl.textContent=s.full_name||'Student';
-    const statusEl=document.getElementById('chatHeaderStatus'); if(statusEl) statusEl.textContent=chatStatusText();
-    const box=document.getElementById('chatMessageList'); if(box) box.innerHTML=chatConversationSkeleton(5);
-    renderChatConversations();
-    try{
-        await chat.markAsRead(conversationId);
-        conversation.unread=0;
-        renderChatConversations();
-        const requestId=chatState.messageRequestId;
-        const messages=await chat.loadMessages(conversationId,requestId);
-        if(messages===null)return;
-        renderChatMessages(messages,{forceBottom:true});
-    }catch(error){
-        if(chatState.activeConversationId!==conversationId)return;
-        renderChatMessagesError(); chatError(error);
-    }
-}
+function renderChatRequests(){const list=document.getElementById('chatRequestList'),count=document.getElementById('chatRequestCount');if(!list||!count)return;const pending=chatState.requests.filter(r=>r.status==='pending');const received=pending.filter(r=>r.recipient_id===currentUserId);const sent=pending.filter(r=>r.sender_id===currentUserId);count.textContent=`${pending.length} pending`;if(!pending.length){list.innerHTML='<p class="text-[10px] text-slate-600 px-1 pb-2">No pending requests.</p>';return;}list.innerHTML=pending.slice(0,8).map(r=>{const incoming=r.recipient_id===currentUserId;const person=incoming?{id:r.sender_id,full_name:r.sender_full_name,avatar_url:r.sender_avatar_url,university:r.sender_university,department:r.sender_department,level:r.sender_level}:{id:r.recipient_id,full_name:r.recipient_full_name,avatar_url:r.recipient_avatar_url};return `<article class="chat-request-card mb-2"> <div class="flex items-center gap-2">${chatAvatarHTML(person)}<div class="min-w-0"><p class="text-[10px] font-bold text-white truncate">${chatEscape(person.full_name||'Student')}</p><p class="text-[9px] text-slate-500 truncate">${incoming?'Wants to connect with you':'Request sent'} · ${chatTime(r.created_at)}</p></div></div><p class="text-[10px] text-slate-400 mt-2 line-clamp-2">${chatEscape(r.message||'No message')}</p>${incoming?`<div class="chat-request-actions"><button type="button" class="chat-primary-btn !min-h-0 !py-2" data-request-action="accept" data-request-id="${chatEscape(r.id)}">Accept</button><button type="button" class="chat-action-btn !min-h-0 !py-2" data-request-action="decline" data-request-id="${chatEscape(r.id)}">Decline</button></div>`:`<div class="chat-request-actions"><button type="button" class="chat-action-btn !min-h-0 !py-2 col-span-2" data-request-action="cancel" data-request-id="${chatEscape(r.id)}">Cancel request</button></div>`}</article>`;}).join('');list.querySelectorAll('[data-request-action]').forEach(btn=>btn.addEventListener('click',()=>handleChatRequestAction(btn.dataset.requestId,btn.dataset.requestAction)));}
+async function handleChatRequestAction(requestId,action){const button=document.querySelector(`[data-request-id="${CSS.escape(requestId)}"][data-request-action="${CSS.escape(action)}"]`);if(button)button.disabled=true;try{const conversationId=action==='cancel'?await chat.cancelRequest(requestId):await chat.respondRequest(requestId,action==='accept'?'accept':'decline');await chat.refreshRequests();if(action==='accept'){await chat.refreshConversations();if(conversationId)await openChatConversation(conversationId);}}catch(error){chatError(error);chatOpenModal(`<div class="p-5"><h3 class="text-lg font-bold text-white">Request update failed</h3><p class="text-xs text-slate-500 mt-2">We couldn't update that request. Please try again.</p><button type="button" class="chat-primary-btn w-full mt-5" onclick="chatCloseModal()">Close</button></div>`);}finally{if(button)button.disabled=false;}}
 
-function renderChatMessages(messages=[],{forceBottom=false}={}) {
-    const box=document.getElementById('chatMessageList'); if(!box)return;
-    if(!messages.length){box.innerHTML=`<div class="h-full flex items-center justify-center"><div class="text-center"><div class="text-2xl text-slate-700 mb-2"><i class="far fa-comment"></i></div><p class="text-xs font-bold text-slate-400">Start the conversation.</p><p class="text-[10px] text-slate-600 mt-1">Send a message to begin.</p></div></div>`; if(forceBottom)chatScrollToBottom(false); return;}
-    const shouldStick=forceBottom || chatIsNearBottom(box);
-    let lastDay='';
-    box.innerHTML=messages.map(m=>{
-        const day=new Date(m.created_at).toLocaleDateString([], {weekday:'short',month:'short',day:'numeric'});
-        const separator=day!==lastDay?`<div class="chat-date-separator"><span>${chatEscape(day)}</span></div>`:''; lastDay=day;
-        const mine=m.sender_id===currentUserId;
-        const optimistic=String(m.id).startsWith('optimistic-');
-        return `${separator}<div class="chat-bubble-row ${mine?'sent':''}"><div class="chat-bubble ${mine?'sent':'received'} ${optimistic?'optimistic':''}"><div>${chatEscape(m.content)}</div><div class="chat-meta">${chatTime(m.created_at)}${mine?` · ${optimistic?'Sending…':'✓✓'}`:''}</div></div></div>`;
-    }).join('');
-    if(shouldStick) chatScrollToBottom(false); else if(!forceBottom) chatShowNewMessage();
-}
-function renderChatMessagesError(){
-    const id=chatState.activeConversationId||''; const box=document.getElementById('chatMessageList'); if(!box)return;
-    box.innerHTML=`<div class="h-full flex items-center justify-center"><div class="text-center"><div class="text-red-400 text-xl mb-2"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Couldn't load this conversation.</p><button type="button" class="chat-action-btn mt-3" data-chat-retry-messages>Try Again</button></div></div>`;
-    box.querySelector('[data-chat-retry-messages]')?.addEventListener('click',()=>openChatConversation(id));
-}
+async function openChatConversation(conversationId){const conversation=chatState.conversations.find(c=>c.id===conversationId);if(!conversation)return;chatState.activeConversationId=conversationId;++chatState.messageRequestId;chatHideNewMessage();chatSetComposerStatus('');const empty=document.getElementById('chatEmptyConversation'),active=document.getElementById('chatActiveConversation');empty?.classList.add('hidden');active?.classList.remove('hidden');document.getElementById('chatConversationView')?.classList.add('chat-mobile-open');const s=conversation.participant||{full_name:conversation.title||'Conversation'};const avatarHost=document.getElementById('chatHeaderAvatar');if(avatarHost)avatarHost.innerHTML=s.avatar_url?`<img src="${chatEscape(s.avatar_url)}" alt="" class="w-full h-full object-cover rounded-full">`:chatEscape(chatInitials(s.full_name));const nameEl=document.getElementById('chatHeaderName');if(nameEl)nameEl.textContent=s.full_name||'Student';const statusEl=document.getElementById('chatHeaderStatus');if(statusEl)statusEl.textContent=chatStatusText(conversation.participantId);const box=document.getElementById('chatMessageList');if(box)box.innerHTML=chatConversationSkeleton(5);renderChatConversations();try{await chat.markAsRead(conversationId);conversation.unread=0;renderChatConversations();chatState.messages[conversationId]=[];chatState.messagePagination[conversationId]={hasMore:false,oldest:null};const requestId=chatState.messageRequestId;await chat.loadMessages(conversationId,requestId);renderChatMessages(chatState.messages[conversationId]||[],{forceBottom:true});updateChatOlderButton(conversationId);}catch(error){if(chatState.activeConversationId!==conversationId)return;renderChatMessagesError();chatError(error);}}
+function updateChatOlderButton(conversationId){const b=document.getElementById('chatLoadOlder'),p=chatState.messagePagination[conversationId]||{};if(!b)return;b.classList.toggle('hidden',!p.hasMore);b.disabled=false;}
+async function loadOlderChatMessages(){const cid=chatState.activeConversationId;if(!cid)return;const p=chatState.messagePagination[cid]||{};if(!p.hasMore||!p.oldest)return;const box=document.getElementById('chatMessageList');const previousHeight=box?.scrollHeight||0;const previousTop=box?.scrollTop||0;const b=document.getElementById('chatLoadOlder');if(b){b.disabled=true;b.textContent='Loading…';}try{await chat.loadMessages(cid,chatState.messageRequestId,p.oldest);renderChatMessages(chatState.messages[cid]||[],{forceBottom:false});if(box)box.scrollTop=box.scrollHeight-previousHeight+previousTop;updateChatOlderButton(cid);}catch(e){chatError(e);if(b){b.disabled=false;b.textContent='Load older messages';}}}
+function renderChatMessages(messages=[],{forceBottom=false}={}){const box=document.getElementById('chatMessageList');if(!box)return;if(!messages.length){box.innerHTML=`<div class="h-full flex items-center justify-center"><div class="text-center"><div class="text-2xl text-slate-700 mb-2"><i class="far fa-comment"></i></div><p class="text-xs font-bold text-slate-400">Start the conversation.</p><p class="text-[10px] text-slate-600 mt-1">Send a message to begin.</p></div></div>`;if(forceBottom)chatScrollToBottom(false);return;}const shouldStick=forceBottom||chatIsNearBottom(box);let lastDay='';box.innerHTML=messages.map(m=>{const day=new Date(m.created_at).toLocaleDateString([], {weekday:'short',month:'short',day:'numeric'});const separator=day!==lastDay?`<div class="chat-date-separator"><span>${chatEscape(day)}</span></div>`:'';lastDay=day;const mine=m.sender_id===currentUserId;const optimistic=String(m.id).startsWith('optimistic-');return `${separator}<div class="chat-bubble-row ${mine?'sent':''}"><div class="chat-bubble ${mine?'sent':'received'} ${optimistic?'optimistic':''}"><div>${chatEscape(m.content)}</div><div class="chat-meta">${chatTime(m.created_at)}${mine?` · ${optimistic?'Sending…':'✓✓'}`:''}</div></div></div>`;}).join('');if(shouldStick)chatScrollToBottom(false);else if(!forceBottom)chatShowNewMessage();updateChatOlderButton(chatState.activeConversationId);}
+function renderChatMessagesError(){const id=chatState.activeConversationId||'';const box=document.getElementById('chatMessageList');if(!box)return;box.innerHTML=`<div class="h-full flex items-center justify-center"><div class="text-center"><div class="text-red-400 text-xl mb-2"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Couldn't load this conversation.</p><button type="button" class="chat-action-btn mt-3" data-chat-retry-messages>Try Again</button></div></div>`;box.querySelector('[data-chat-retry-messages]')?.addEventListener('click',()=>openChatConversation(id));}
 
-function renderChatSearchResults(query='') {
-    const box=document.getElementById('chatSearchResults'); if(!box)return;
-    const clean=query.trim(); chatState.lastSearchQuery=clean; clearTimeout(chatState.searchTimer); const requestId=++chatState.searchRequestId;
-    if(!clean){box.innerHTML=`<div class="py-5 text-center text-[10px] text-slate-600">Search by a student's name or department.</div>`;return;}
-    if(clean.length<2){box.innerHTML=`<div class="py-5 text-center text-[10px] text-slate-600">Type at least 2 characters to search.</div>`;return;}
-    box.innerHTML=`<div class="space-y-2">${chatConversationSkeleton(3)}</div>`;
-    chatState.searchTimer=setTimeout(async()=>{
-        try{
-            const students=await chat.searchStudents(clean);
-            if(requestId!==chatState.searchRequestId || document.getElementById('chatStudentSearch')?.value.trim()!==clean)return;
-            chatState.students=students;
-            if(!students.length){box.innerHTML=`<div class="py-6 text-center"><div class="text-slate-600 text-xl mb-2"><i class="far fa-user"></i></div><p class="text-xs font-bold text-slate-400">No students found.</p><p class="text-[10px] text-slate-600 mt-1">Try another name or department.</p></div>`;return;}
-            box.innerHTML=students.map(s=>`<div class="chat-search-result"><div class="flex items-center gap-3 min-w-0">${chatAvatarHTML(s)}<div class="min-w-0"><p class="text-xs font-bold text-white truncate">${chatEscape(s.full_name||'Student')}</p><p class="text-[9px] text-slate-500 truncate">@${chatEscape(s.username)} · ${chatEscape(s.department||s.university||'Campus student')} · ${chatEscape(s.level||'')}</p></div></div><button type="button" class="chat-primary-btn !px-3 !py-2 text-[10px]" data-student-id="${chatEscape(s.id)}">Message</button></div>`).join('');
-            box.querySelectorAll('[data-student-id]').forEach(b=>b.addEventListener('click',()=>startChatWithStudent(b.dataset.studentId)));
-        }catch(error){
-            if(requestId!==chatState.searchRequestId)return;
-            box.innerHTML=`<div class="py-6 text-center"><div class="text-red-400 text-xl mb-2"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Search couldn't be completed.</p><button type="button" class="chat-action-btn mt-3" data-chat-retry-search>Try Again</button></div>`;
-            box.querySelector('[data-chat-retry-search]')?.addEventListener('click',()=>renderChatSearchResults(document.getElementById('chatStudentSearch')?.value||''));
-            chatError(error);
-        }
-    },250);
-}
-
-async function startChatWithStudent(studentId) {
-    const searchValue=document.getElementById('chatStudentSearch')?.value||chatState.lastSearchQuery;
-    const button=document.querySelector(`[data-student-id="${CSS.escape(studentId)}"]`); if(button)button.disabled=true;
-    try{
-        const existing=chatState.conversations.find(c=>c.participantId===studentId&&!c.is_group);
-        const conversation=existing||await chat.startConversation(studentId);
-        closeChatSearch();
-        await openChatConversation(conversation.id);
-    }catch(error){
-        chatError(error);
-        const message=error?.code==='42501'?'You do not have permission to start this conversation.':(error?.message||'We could not start this conversation.');
-        chatOpenModal(`<div class="p-5"><h3 class="text-lg font-bold text-white">Couldn't start chat</h3><p class="text-xs text-slate-500 mt-2">${chatEscape(message)}</p><div class="flex gap-2 mt-5"><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal()">Cancel</button><button type="button" class="chat-primary-btn flex-1" onclick="chatCloseModal();startChatWithStudent('${chatEscape(studentId)}')">Retry</button></div></div>`);
-        if(searchValue && document.getElementById('chatStudentSearch')) document.getElementById('chatStudentSearch').value=searchValue;
-    }finally{if(button)button.disabled=false;}
-}
+function renderChatSearchResults(query=''){const box=document.getElementById('chatSearchResults');if(!box)return;const clean=query.trim();chatState.lastSearchQuery=clean;clearTimeout(chatState.searchTimer);const requestId=++chatState.searchRequestId;if(!clean){box.innerHTML='<div class="py-5 text-center text-[10px] text-slate-600">Search by a student name or department.</div>';return;}if(clean.length<2){box.innerHTML='<div class="py-5 text-center text-[10px] text-slate-600">Enter at least 2 characters.</div>';return;}box.innerHTML=chatConversationSkeleton(3);chatState.searchTimer=setTimeout(async()=>{try{const students=await chat.searchStudents(clean);if(requestId!==chatState.searchRequestId||document.getElementById('chatStudentSearch')?.value.trim()!==clean)return;chatState.students=students;if(!students.length){box.innerHTML='<div class="py-6 text-center"><div class="text-slate-600 text-xl mb-2"><i class="far fa-user"></i></div><p class="text-xs font-bold text-slate-400">No students found.</p><p class="text-[10px] text-slate-600 mt-1">Try another name or department.</p></div>';return;}box.innerHTML=students.map(s=>{const existing=chatState.conversations.find(c=>c.participantId===s.id&&!c.is_group);const pending=chatState.requests.some(r=>r.status==='pending'&&r.sender_id===currentUserId&&r.recipient_id===s.id);return `<div class="chat-search-result"><div class="flex items-center gap-3 min-w-0">${chatAvatarHTML(s)}<div class="min-w-0"><p class="text-xs font-bold text-white truncate">${chatEscape(s.full_name||'Student')}</p><p class="text-[9px] text-slate-500 truncate">@${chatEscape(s.username||'student')} · ${chatEscape(s.department||s.university||'Campus student')} · ${chatEscape(s.level||'')}</p></div></div><button type="button" class="${existing?'chat-primary-btn':'chat-action-btn'} !px-3 !py-2 text-[10px]" data-student-id="${chatEscape(s.id)}">${existing?'Open chat':pending?'Pending':'Message'}</button></div>`;}).join('');box.querySelectorAll('[data-student-id]').forEach(b=>b.addEventListener('click',()=>startChatWithStudent(b.dataset.studentId)));}catch(error){if(requestId!==chatState.searchRequestId)return;box.innerHTML='<div class="py-6 text-center"><div class="text-red-400 text-xl mb-2"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">We couldn\'t search students right now.</p><button type="button" class="chat-action-btn mt-3" data-chat-retry-search>Try Again</button></div>';box.querySelector('[data-chat-retry-search]')?.addEventListener('click',()=>renderChatSearchResults(document.getElementById('chatStudentSearch')?.value||''));chatError(error);}},250);}
+async function startChatWithStudent(studentId){const existing=chatState.conversations.find(c=>c.participantId===studentId&&!c.is_group);if(existing){closeChatSearch();await openChatConversation(existing.id);return;}const pending=chatState.requests.find(r=>r.status==='pending'&&r.sender_id===currentUserId&&r.recipient_id===studentId);if(pending){chatOpenModal(`<div class="p-5"><h3 class="text-lg font-bold text-white">Request already sent</h3><p class="text-xs text-slate-500 mt-2">This student has a pending message request from you.</p><button type="button" class="chat-primary-btn w-full mt-5" onclick="chatCloseModal()">Done</button></div>`);return;}openChatRequestComposer(studentId);}
+function openChatRequestComposer(studentId){const s=chatStudent(studentId)||chatState.students.find(x=>x.id===studentId);if(!s)return;chatOpenModal(`<div class="p-5"><div class="flex items-start justify-between"><div class="flex items-center gap-3">${chatAvatarHTML(s)}<div><h3 class="text-base font-bold text-white">Message ${chatEscape(s.full_name||'Student')}</h3><p class="text-[10px] text-slate-500 mt-1">Send a request before starting a conversation.</p></div></div><button type="button" class="chat-icon-btn" onclick="chatCloseModal()" aria-label="Close"><i class="fas fa-times"></i></button></div><textarea id="chatRequestMessage" class="w-full mt-5 rounded-xl bg-white/5 border border-white/10 p-3 text-xs text-white outline-none focus:border-green-500/40" rows="4" maxlength="2000" placeholder="Hi! I'd like to connect with you on campus..."></textarea><p id="chatRequestStatus" class="text-[10px] text-red-400 mt-2 min-h-[14px]"></p><button type="button" id="chatRequestSend" class="chat-primary-btn w-full mt-3">Send message request</button></div>`);document.getElementById('chatRequestSend')?.addEventListener('click',async()=>{const btn=document.getElementById('chatRequestSend'),status=document.getElementById('chatRequestStatus'),message=document.getElementById('chatRequestMessage')?.value.trim()||'';if(!message){status.textContent='Write a short message first.';return;}btn.disabled=true;btn.textContent='Sending…';status.textContent='';try{await chat.sendRequest(studentId,message);await chat.refreshRequests();chatCloseModal();closeChatSearch();chatSetComposerStatus('Message request sent.');}catch(error){chatError(error);btn.disabled=false;btn.textContent='Send message request';status.textContent=error?.code==='42501'?'You cannot message this student.':'We couldn\'t send the request. Please try again.';}});}
 function openChatSearch(){const panel=document.getElementById('chatSearchPanel');panel?.classList.remove('hidden');const input=document.getElementById('chatStudentSearch');if(input){input.focus();if(input.value)renderChatSearchResults(input.value);}}
-function closeChatSearch(){document.getElementById('chatSearchPanel')?.classList.add('hidden');const input=document.getElementById('chatStudentSearch');if(input)input.value='';document.getElementById('chatSearchResults').innerHTML='';chatState.lastSearchQuery='';}
+function closeChatSearch(){document.getElementById('chatSearchPanel')?.classList.add('hidden');const input=document.getElementById('chatStudentSearch');if(input)input.value='';const box=document.getElementById('chatSearchResults');if(box)box.innerHTML='';chatState.lastSearchQuery='';}
 function chatOpenModal(content){const old=document.getElementById('chatTransientModal');old?.remove();const wrap=document.createElement('div');wrap.className='chat-modal-backdrop';wrap.id='chatTransientModal';wrap.innerHTML=`<div class="chat-modal">${content}</div>`;document.body.appendChild(wrap);wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.remove();});return wrap;}
 function chatCloseModal(){document.getElementById('chatTransientModal')?.remove();}
 
-function openChatProfile(){
-    const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId); if(!c?.participant)return; const s=c.participant;
-    chatOpenModal(`<div class="p-5"><div class="flex items-start justify-between"><div>${chatAvatarHTML(s,true)}</div><button type="button" class="chat-icon-btn" onclick="chatCloseModal()" aria-label="Close"><i class="fas fa-times"></i></button></div><h3 class="text-lg font-bold text-white mt-4">${chatEscape(s.full_name||'Student')}</h3><p class="text-xs text-slate-500 mt-1">@${chatEscape(chatDisplayUsername(s))}</p><div class="grid grid-cols-2 gap-2 mt-5">${[['University',s.university],['Faculty','Not provided'],['Department',s.department],['Level',s.level],['Bio',s.bio]].map(x=>`<div class="rounded-xl bg-white/5 p-3"><p class="text-[8px] uppercase tracking-widest text-slate-600 font-bold">${x[0]}</p><p class="text-[10px] text-slate-300 mt-1 break-words">${chatEscape(x[1]||'—')}</p></div>`).join('')}</div><div class="flex gap-2 mt-5"><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatBlock()">Block</button><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatReport()">Report</button></div></div>`);
-}
-function openChatBlock(){
-    const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId); if(!c?.participant)return; const s=c.participant;
-    chatOpenModal(`<div class="p-5"><div class="w-11 h-11 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center"><i class="fas fa-ban"></i></div><h3 class="text-lg font-bold text-white mt-4">Block this student?</h3><p class="text-xs text-slate-500 mt-2">This conversation will be removed from your chat list. Backend blocking must enforce messaging restrictions.</p><div class="flex gap-2 mt-6"><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal()">Cancel</button><button type="button" class="chat-action-btn flex-1 !text-red-300 !border-red-500/20" onclick="confirmChatBlock('${chatEscape(s.id)}')">Block</button></div></div>`);
-}
-async function confirmChatBlock(userId){
-    try{await chat.blockUser(userId);chatState.conversations=chatState.conversations.filter(c=>c.participantId!==userId);chatState.activeConversationId=null;chatState.messageRequestId++;chatCloseModal();closeChatConversation();renderChatConversations();document.getElementById('chatActiveConversation')?.classList.add('hidden');document.getElementById('chatEmptyConversation')?.classList.remove('hidden');chatSetComposerStatus('');}
-    catch(error){chatError(error);chatOpenModal(`<div class="p-5"><h3 class="text-lg font-bold text-white">Block failed</h3><p class="text-xs text-slate-500 mt-2">We couldn't complete the block request.</p><button type="button" class="chat-primary-btn w-full mt-5" onclick="chatCloseModal()">Close</button></div>`);}
-}
-function openChatReport(){
-    const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId); if(!c?.participant)return; const s=c.participant;
-    chatOpenModal(`<div class="p-5"><div class="flex items-center justify-between"><h3 class="text-lg font-bold text-white">Report conversation</h3><button type="button" class="chat-icon-btn" onclick="chatCloseModal()" aria-label="Close"><i class="fas fa-times"></i></button></div><p class="text-xs text-slate-500 mt-1">Tell us what happened with ${chatEscape(s.full_name||'this student')}.</p><div class="grid grid-cols-2 gap-2 mt-5">${['Spam','Harassment','Inappropriate content','Fake account'].map(r=>`<button type="button" class="chat-action-btn report-reason" data-reason="${chatEscape(r)}">${chatEscape(r)}</button>`).join('')}<button type="button" class="chat-action-btn report-reason col-span-2" data-reason="Other">Other</button></div><textarea id="chatReportNote" class="w-full mt-3 rounded-xl bg-white/5 border border-white/10 p-3 text-xs text-white outline-none" rows="3" maxlength="1000" placeholder="Optional note"></textarea><p id="chatReportStatus" class="text-[10px] text-red-400 mt-2 min-h-[14px]"></p><button type="button" id="chatReportSubmit" class="chat-primary-btn w-full mt-3">Submit Report</button></div>`);
-    let reason=''; const modal=document.getElementById('chatTransientModal');
-    modal?.querySelectorAll('.report-reason').forEach(b=>b.addEventListener('click',()=>{reason=b.dataset.reason||'';modal.querySelectorAll('.report-reason').forEach(x=>x.classList.remove('!bg-green-500/10','!text-green-400'));b.classList.add('!bg-green-500/10','!text-green-400');}));
-    document.getElementById('chatReportSubmit')?.addEventListener('click',async()=>{
-        const submit=document.getElementById('chatReportSubmit'),status=document.getElementById('chatReportStatus'),note=document.getElementById('chatReportNote')?.value||'';
-        if(!reason){if(status)status.textContent='Select a reason first.';return;}
-        submit.disabled=true;submit.textContent='Submitting…';if(status)status.textContent='';
-        try{await chat.reportUser({reportedUserId:s.id,conversationId:c.id,reason,note});chatCloseModal();chatSetComposerStatus('Report submitted. Thank you for helping keep Campus Chat safe.');}
-        catch(error){chatError(error);submit.disabled=false;submit.textContent='Submit Report';if(status)status.textContent='We could not submit the report. Please try again.';}
-    });
-}
-function closeChatConversation(){
-    chatState.activeConversationId=null; chatState.messageRequestId++; chatHideNewMessage(); chatSetComposerStatus('');
-    document.getElementById('chatConversationView')?.classList.remove('chat-mobile-open');document.getElementById('chatMoreMenu')?.classList.add('hidden');document.getElementById('chatMoreButton')?.setAttribute('aria-expanded','false');
-    document.getElementById('chatActiveConversation')?.classList.add('hidden');document.getElementById('chatEmptyConversation')?.classList.remove('hidden');renderChatConversations();
-}
+function openChatProfile(){const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId);if(!c?.participant)return;const s=c.participant;chatOpenModal(`<div class="p-5"><div class="flex items-start justify-between"><div>${chatAvatarHTML(s,true)}</div><button type="button" class="chat-icon-btn" onclick="chatCloseModal()" aria-label="Close"><i class="fas fa-times"></i></button></div><h3 class="text-lg font-bold text-white mt-4">${chatEscape(s.full_name||'Student')}</h3><p class="text-xs text-slate-500 mt-1">@${chatEscape(chatDisplayUsername(s))}</p><div class="grid grid-cols-2 gap-2 mt-5">${[['University',s.university],['Faculty','Not provided'],['Department',s.department],['Level',s.level],['Bio',s.bio]].map(x=>`<div class="rounded-xl bg-white/5 p-3"><p class="text-[8px] uppercase tracking-widest text-slate-600 font-bold">${x[0]}</p><p class="text-[10px] text-slate-300 mt-1 break-words">${chatEscape(x[1]||'—')}</p></div>`).join('')}</div><div class="flex gap-2 mt-5"><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatBlock()">Block</button><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal();openChatReport()">Report</button></div></div>`);}
+function openChatBlock(){const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId);if(!c?.participant)return;const s=c.participant;chatOpenModal(`<div class="p-5"><div class="w-11 h-11 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center"><i class="fas fa-ban"></i></div><h3 class="text-lg font-bold text-white mt-4">Block this student?</h3><p class="text-xs text-slate-500 mt-2">This conversation will be removed from your chat list. Messaging restrictions are enforced by Supabase.</p><div class="flex gap-2 mt-6"><button type="button" class="chat-action-btn flex-1" onclick="chatCloseModal()">Cancel</button><button type="button" class="chat-action-btn flex-1 !text-red-300 !border-red-500/20" onclick="confirmChatBlock('${chatEscape(s.id)}')">Block</button></div></div>`);}
+async function confirmChatBlock(userId){try{await chat.blockUser(userId);chatState.conversations=chatState.conversations.filter(c=>c.participantId!==userId);chatState.activeConversationId=null;chatState.messageRequestId++;chatCloseModal();closeChatConversation();renderChatConversations();document.getElementById('chatActiveConversation')?.classList.add('hidden');document.getElementById('chatEmptyConversation')?.classList.remove('hidden');chatSetComposerStatus('');await chat.refreshRequests();}catch(error){chatError(error);chatOpenModal(`<div class="p-5"><h3 class="text-lg font-bold text-white">Block failed</h3><p class="text-xs text-slate-500 mt-2">We couldn't complete the block request.</p><button type="button" class="chat-primary-btn w-full mt-5" onclick="chatCloseModal()">Close</button></div>`);}}
+function openChatReport(){const c=chatState.conversations.find(x=>x.id===chatState.activeConversationId);if(!c?.participant)return;const s=c.participant;chatOpenModal(`<div class="p-5"><div class="flex items-center justify-between"><h3 class="text-lg font-bold text-white">Report conversation</h3><button type="button" class="chat-icon-btn" onclick="chatCloseModal()" aria-label="Close"><i class="fas fa-times"></i></button></div><p class="text-xs text-slate-500 mt-1">Tell us what happened with ${chatEscape(s.full_name||'this student')}.</p><div class="grid grid-cols-2 gap-2 mt-5">${['Spam','Harassment','Inappropriate content','Fake account'].map(r=>`<button type="button" class="chat-action-btn report-reason" data-reason="${chatEscape(r)}">${chatEscape(r)}</button>`).join('')}<button type="button" class="chat-action-btn report-reason col-span-2" data-reason="Other">Other</button></div><textarea id="chatReportNote" class="w-full mt-3 rounded-xl bg-white/5 border border-white/10 p-3 text-xs text-white outline-none" rows="3" maxlength="1000" placeholder="Optional note"></textarea><p id="chatReportStatus" class="text-[10px] text-red-400 mt-2 min-h-[14px]"></p><button type="button" id="chatReportSubmit" class="chat-primary-btn w-full mt-3">Submit Report</button></div>`);let reason='';const modal=document.getElementById('chatTransientModal');modal?.querySelectorAll('.report-reason').forEach(b=>b.addEventListener('click',()=>{reason=b.dataset.reason||'';modal.querySelectorAll('.report-reason').forEach(x=>x.classList.remove('!bg-green-500/10','!text-green-400'));b.classList.add('!bg-green-500/10','!text-green-400');}));document.getElementById('chatReportSubmit')?.addEventListener('click',async()=>{const submit=document.getElementById('chatReportSubmit'),status=document.getElementById('chatReportStatus'),note=document.getElementById('chatReportNote')?.value||'';if(!reason){if(status)status.textContent='Select a reason first.';return;}submit.disabled=true;submit.textContent='Submitting…';try{await chat.reportUser({reportedUserId:s.id,conversationId:c.id,reason,note});chatCloseModal();chatSetComposerStatus('Report submitted. Thank you for helping keep Campus Chat safe.');}catch(error){chatError(error);submit.disabled=false;submit.textContent='Submit Report';if(status)status.textContent='We could not submit the report. Please try again.';}});}
+function closeChatConversation(){chatState.activeConversationId=null;chatState.messageRequestId++;chatHideNewMessage();chatSetComposerStatus('');document.getElementById('chatConversationView')?.classList.remove('chat-mobile-open');document.getElementById('chatMoreMenu')?.classList.add('hidden');document.getElementById('chatMoreButton')?.setAttribute('aria-expanded','false');document.getElementById('chatActiveConversation')?.classList.add('hidden');document.getElementById('chatEmptyConversation')?.classList.remove('hidden');renderChatConversations();}
 
-async function initCampusChat(){
-    if(chatState.initializing)return;
-    chatState.initializing=true;
-    const list=document.getElementById('chatConversationList');
-    if(list && !chatState.initialized) list.innerHTML=chatConversationSkeleton(4);
-    try{
-        const user=await chat.getSessionUser(); if(!user)return;
-        currentUserId=user.id;
-        if(!userFullName)userFullName=user.user_metadata?.full_name||'';
-        if(!userUniversity)userUniversity=user.user_metadata?.university||'';
-        await chat.loadCurrentProfile();
-        await chat.refreshConversations();
-        chat.subscribeRealtime();
-        chatState.initialized=true;
-    }catch(error){
-        if(list)list.innerHTML=`<div class="py-10 px-3 text-center"><div class="text-red-400 text-xl mb-3"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Couldn't load your conversations.</p><button type="button" class="chat-action-btn mt-3" data-chat-retry-init>Try Again</button></div>`;
-        list?.querySelector('[data-chat-retry-init]')?.addEventListener('click',initCampusChat); chatError(error);
-    }finally{chatState.initializing=false;}
-    if(chatState.initialized) bindCampusChatEvents();
-}
-function bindCampusChatEvents(){
-    if(window.__uniVerseCampusChatBound)return; window.__uniVerseCampusChatBound=true;
-    document.getElementById('chatSearchToggle')?.addEventListener('click',openChatSearch);
-    document.getElementById('chatMobileSearch')?.addEventListener('click',openChatSearch);
-    document.getElementById('chatSearchClose')?.addEventListener('click',closeChatSearch);
-    document.getElementById('chatStudentSearch')?.addEventListener('input',e=>renderChatSearchResults(e.target.value));
-    document.getElementById('chatNewButton')?.addEventListener('click',openChatSearch);
-    document.getElementById('chatEmptyNewButton')?.addEventListener('click',openChatSearch);
-    document.getElementById('chatBackButton')?.addEventListener('click',closeChatConversation);
-    document.getElementById('chatHeaderProfile')?.addEventListener('click',openChatProfile);
-    document.getElementById('chatMoreButton')?.addEventListener('click',e=>{e.stopPropagation();const menu=document.getElementById('chatMoreMenu');const open=menu?.classList.toggle('hidden')===false;document.getElementById('chatMoreButton')?.setAttribute('aria-expanded',String(open));});
-    document.querySelectorAll('#chatMoreMenu [data-chat-action]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.chatAction;if(a==='mute')return;document.getElementById('chatMoreMenu')?.classList.add('hidden');document.getElementById('chatMoreButton')?.setAttribute('aria-expanded','false');if(a==='profile')openChatProfile();else if(a==='block')openChatBlock();else if(a==='report')openChatReport();}));
-    document.getElementById('chatNewMessageIndicator')?.addEventListener('click',()=>chatScrollToBottom(true));
-    document.getElementById('chatMessageList')?.addEventListener('scroll',()=>{if(chatIsNearBottom())chatHideNewMessage();});
-    document.getElementById('chatComposer')?.addEventListener('submit',handleChatSend);
-    document.addEventListener('click',e=>{if(!e.target.closest('#chatMoreButton')&&!e.target.closest('#chatMoreMenu')){document.getElementById('chatMoreMenu')?.classList.add('hidden');document.getElementById('chatMoreButton')?.setAttribute('aria-expanded','false');}});
-}
-async function handleChatSend(e){
-    e.preventDefault();
-    if(chatState.sending)return;
-    const input=document.getElementById('chatMessageInput'),conversationId=chatState.activeConversationId,content=input?.value.trim();
-    if(!input||!conversationId||!content)return;
-    chatState.sending=true; const sendButton=e.submitter||document.querySelector('#chatComposer .chat-send-btn'); if(sendButton)sendButton.disabled=true; chatSetComposerStatus('');
-    const optimisticId=`optimistic-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    const optimistic={id:optimisticId,conversation_id:conversationId,sender_id:currentUserId,content,created_at:new Date().toISOString()};
-    chatMergeMessage(conversationId,optimistic); input.value=''; renderChatMessages(chatState.messages[conversationId]||[],{forceBottom:true});
-    try{
-        const saved=await chat.sendMessage(conversationId,content);
-        chatRemoveMessage(conversationId,optimisticId); chatMergeMessage(conversationId,saved);
-        const c=chatState.conversations.find(x=>x.id===conversationId); if(c){c.last_message=saved.content;c.last_message_at=saved.created_at;c.unread=0;chatState.conversations.sort((a,b)=>new Date(b.last_message_at)-new Date(a.last_message_at));renderChatConversations();}
-        if(chatState.activeConversationId===conversationId)renderChatMessages(chatState.messages[conversationId]||[],{forceBottom:true});
-    }catch(error){
-        chatRemoveMessage(conversationId,optimisticId); input.value=content; renderChatMessages(chatState.messages[conversationId]||[],{forceBottom:false}); chatSetComposerStatus('Message wasn’t sent. You can retry.'); chatError(error);
-    }finally{chatState.sending=false;if(sendButton)sendButton.disabled=false;input.focus();}
-}
+async function initCampusChat(){if(chatState.initializing)return;chatState.initializing=true;const list=document.getElementById('chatConversationList');if(list&&!chatState.initialized)list.innerHTML=chatConversationSkeleton(4);try{const user=await chat.getSessionUser();if(!user)return;currentUserId=user.id;if(!userFullName)userFullName=user.user_metadata?.full_name||'';if(!userUniversity)userUniversity=user.user_metadata?.university||'';await chat.loadCurrentProfile();await chat.refreshConversations();await chat.refreshRequests();chat.subscribeRealtime();subscribeChatPresence();chatState.initialized=true;}catch(error){if(list)list.innerHTML=`<div class="py-10 px-3 text-center"><div class="text-red-400 text-xl mb-3"><i class="fas fa-circle-exclamation"></i></div><p class="text-xs font-bold text-slate-300">Couldn't load Campus Chat.</p><p class="text-[10px] text-slate-600 mt-2">Please try again.</p><button type="button" class="chat-action-btn mt-3" data-chat-retry-init>Try Again</button></div>`;list?.querySelector('[data-chat-retry-init]')?.addEventListener('click',initCampusChat);chatError(error);}finally{chatState.initializing=false;}if(chatState.initialized)bindCampusChatEvents();}
+function bindCampusChatEvents(){if(window.__uniVerseCampusChatBound)return;window.__uniVerseCampusChatBound=true;document.getElementById('chatSearchToggle')?.addEventListener('click',openChatSearch);document.getElementById('chatMobileSearch')?.addEventListener('click',openChatSearch);document.getElementById('chatSearchClose')?.addEventListener('click',closeChatSearch);document.getElementById('chatStudentSearch')?.addEventListener('input',e=>renderChatSearchResults(e.target.value));document.getElementById('chatNewButton')?.addEventListener('click',openChatSearch);document.getElementById('chatEmptyNewButton')?.addEventListener('click',openChatSearch);document.getElementById('chatBackButton')?.addEventListener('click',closeChatConversation);document.getElementById('chatHeaderProfile')?.addEventListener('click',openChatProfile);document.getElementById('chatMoreButton')?.addEventListener('click',e=>{e.stopPropagation();const menu=document.getElementById('chatMoreMenu');const open=menu?.classList.toggle('hidden')===false;document.getElementById('chatMoreButton')?.setAttribute('aria-expanded',String(open));});document.querySelectorAll('#chatMoreMenu [data-chat-action]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.chatAction;if(a==='mute')return;document.getElementById('chatMoreMenu')?.classList.add('hidden');document.getElementById('chatMoreButton')?.setAttribute('aria-expanded','false');if(a==='profile')openChatProfile();else if(a==='block')openChatBlock();else if(a==='report')openChatReport();}));document.getElementById('chatNewMessageIndicator')?.addEventListener('click',()=>chatScrollToBottom(true));document.getElementById('chatMessageList')?.addEventListener('scroll',()=>{if(chatIsNearBottom())chatHideNewMessage();});document.getElementById('chatComposer')?.addEventListener('submit',handleChatSend);document.getElementById('chatLoadOlder')?.addEventListener('click',loadOlderChatMessages);document.getElementById('chatRequestsRefresh')?.addEventListener('click',()=>chat.refreshRequests().catch(chatError));document.addEventListener('click',e=>{if(!e.target.closest('#chatMoreButton')&&!e.target.closest('#chatMoreMenu')){document.getElementById('chatMoreMenu')?.classList.add('hidden');document.getElementById('chatMoreButton')?.setAttribute('aria-expanded','false');}});}
+async function handleChatSend(e){e.preventDefault();if(chatState.sending)return;const input=document.getElementById('chatMessageInput'),conversationId=chatState.activeConversationId,content=input?.value.trim();if(!input||!conversationId||!content)return;chatState.sending=true;const sendButton=e.submitter||document.querySelector('#chatComposer .chat-send-btn');if(sendButton)sendButton.disabled=true;chatSetComposerStatus('');const optimisticId=`optimistic-${Date.now()}-${Math.random().toString(36).slice(2)}`;const optimistic={id:optimisticId,conversation_id:conversationId,sender_id:currentUserId,content,created_at:new Date().toISOString()};chatMergeMessage(conversationId,optimistic);input.value='';renderChatMessages(chatState.messages[conversationId]||[],{forceBottom:true});try{const saved=await chat.sendMessage(conversationId,content);chatRemoveMessage(conversationId,optimisticId);chatMergeMessage(conversationId,saved);const c=chatState.conversations.find(x=>x.id===conversationId);if(c){c.last_message=saved.content;c.last_message_at=saved.created_at;c.unread=0;chatState.conversations.sort((a,b)=>new Date(b.last_message_at)-new Date(a.last_message_at));renderChatConversations();}if(chatState.activeConversationId===conversationId)renderChatMessages(chatState.messages[conversationId]||[],{forceBottom:true});}catch(error){chatRemoveMessage(conversationId,optimisticId);input.value=content;renderChatMessages(chatState.messages[conversationId]||[],{forceBottom:false});chatSetComposerStatus('Message wasn’t sent. You can retry.');chatError(error);}finally{chatState.sending=false;if(sendButton)sendButton.disabled=false;input.focus();}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initCampusChat);else initCampusChat();
 
 // ============================================================
@@ -1927,6 +2166,8 @@ function whisperShowToast(message) {
 
 function whisperHumanError(error, fallback='Something went wrong. Please try again.') {
     const msg = String(error?.message || error || '').toLowerCase();
+    if (msg.includes('hourly rate limit')) return 'You’ve reached the hourly Whisper limit. Please try again later.';
+    if (msg.includes('daily rate limit')) return 'You’ve reached today’s Whisper limit. Please try again tomorrow.';
     if (msg.includes('rate limit')) return 'You’re posting a little too quickly. Please wait a moment and try again.';
     if (msg.includes('duplicate whisper')) return 'You already posted that recently. Try saying it another way.';
     if (msg.includes('campus unavailable') || msg.includes('invalid campus')) return 'Your campus profile is unavailable. Please refresh and try again.';
@@ -2120,6 +2361,42 @@ async function whisperSubmitReport(){
     finally{btn.disabled=false;btn.textContent='Submit report';}
 }
 
+async function whisperInitModeration(){
+    const panel=document.getElementById('whisperModerationPanel');
+    if(!panel||!currentUserId) return;
+    try{
+        const {data,error}=await _supabase.rpc('is_whisper_moderator');
+        if(error) throw error;
+        if(!data){panel.classList.add('hidden');return;}
+        panel.classList.remove('hidden');
+        await whisperLoadModeration();
+    }catch(e){console.warn('Whisper moderation access check failed',e);panel.classList.add('hidden');}
+}
+
+async function whisperLoadModeration(){
+    const list=document.getElementById('whisperModerationList'); if(!list) return;
+    list.innerHTML='<div class="text-[10px] text-slate-500">Loading reports…</div>';
+    try{
+        const {data,error}=await _supabase.rpc('get_whisper_moderation_queue',{p_limit:50});
+        if(error) throw error;
+        if(!data?.length){list.innerHTML='<div class="text-[10px] text-slate-500">No pending Whisper reports.</div>';return;}
+        list.innerHTML='';
+        data.forEach(r=>{
+            const card=document.createElement('article');
+            card.className='rounded-xl border border-white/10 bg-black/10 p-3';
+            const text=document.createElement('p'); text.className='text-xs text-slate-200 whitespace-pre-wrap break-words'; text.textContent=r.post_content||'';
+            const meta=document.createElement('p'); meta.className='text-[9px] text-slate-500 mt-2'; meta.textContent=`${r.anon_label||'Whisper'} • ${r.reason||'Report'} • ${whisperEscapeTime(r.report_created_at)}`;
+            const actions=document.createElement('div'); actions.className='flex gap-2 mt-3';
+            [['dismiss','Dismiss'],['remove','Remove'],['restore','Restore']].forEach(([action,label])=>{
+                const b=document.createElement('button'); b.type='button'; b.className='flex-1 min-h-[34px] rounded-lg bg-white/5 text-[9px] font-bold text-slate-300'; b.textContent=label;
+                b.addEventListener('click',async()=>{b.disabled=true;try{const {error}=await _supabase.rpc('review_whisper_report',{p_report_id:r.report_id,p_action:action});if(error)throw error;whisperShowToast(`Report ${label.toLowerCase()}.`);await whisperLoadModeration();if(action!=='dismiss')loadWhisperFeed(true);}catch(e){console.error(e);whisperShowToast(whisperHumanError(e,'Moderation action failed.'));b.disabled=false;}});
+                actions.appendChild(b);
+            });
+            card.append(text,meta,actions); list.appendChild(card);
+        });
+    }catch(e){console.error('Whisper moderation load failed',e);list.innerHTML='<div class="text-[10px] text-red-400">Could not load the moderation queue.</div>';}
+}
+
 function initCampusWhisper(){
     if(whisperState.initialized) return;
     whisperState.initialized=true;
@@ -2136,6 +2413,8 @@ function initCampusWhisper(){
     document.getElementById('whisperReportSubmit')?.addEventListener('click',whisperSubmitReport);
     document.getElementById('whisperReportModal')?.addEventListener('click',e=>{if(e.target.id==='whisperReportModal') whisperCloseReport();});
     whisperUpdateCounter();
+    document.getElementById('whisperModerationRefresh')?.addEventListener('click',whisperLoadModeration);
+    setTimeout(whisperInitModeration,0);
 }
 initCampusWhisper();
 
@@ -2175,8 +2454,10 @@ function showPage(pageName) {
     const targetEl = document.getElementById(targetPageId);
     if (targetEl) targetEl.classList.remove('hidden');
 
-    // Only Orbit shows the central "+" broadcast button
-    navPlus.classList.toggle('hidden', pageName !== 'orbit');
+    // Only Orbit shows the central "+" broadcast button.
+    // The button is not present in every dashboard build, so navigation
+    // must never abort just because this optional element is absent.
+    navPlus?.classList.toggle('hidden', pageName !== 'orbit');
 
     // Reset every nav icon to dim, then highlight the active one
     // (lodge/errandPage aren't in the nav, so nothing highlights for them)
@@ -2192,9 +2473,9 @@ function showPage(pageName) {
         document.getElementById(text)?.classList.replace('text-slate-400', 'text-green-500');
     }
 
-    // Page-specific data loads, preserved from the original implementation
-    if (pageName === 'profile') loadProfileData();
-    else if (pageName === 'whisper') loadWhisperFeed(true);
+    // Page-specific data loads, preserved from the original implementation.
+    // Profile is owned by openProfilePage to avoid duplicate/concurrent loads.
+    if (pageName === 'whisper') loadWhisperFeed(true);
     else if (pageName === 'lodge') loadLodgeFeed(true);
     else if (pageName === 'errandPage') loadErrands(true);
 }
@@ -2741,7 +3022,7 @@ async function studyLoadBookmarks(){
 }
 
 function studyBuildResourceQuery(mode){
-    let q=_supabase.from('study_resources').select('id,title,description,file_type,mime_type,university,course_code,course_id,department,level,category,resource_type,academic_year,semester,tribe_id,uploader_id,download_count,file_size_bytes,original_filename,created_at', {count:'exact'});
+    let q=_supabase.from('study_resources').select('id,title,description,file_type,mime_type,university,course_code,course_id,department,level,category,resource_type,academic_year,semester,tribe_id,uploader_id,download_count,file_size_bytes,original_filename,storage_path,created_at', {count:'exact'});
     if(studyState.query){const x=studyState.query.replace(/[(),]/g,' ');q=q.or(`title.ilike.%${x}%,description.ilike.%${x}%,course_code.ilike.%${x}%,category.ilike.%${x}%,department.ilike.%${x}%,level.ilike.%${x}%`);}
     if(studyState.course)q=q.eq('course_code',studyState.course);
     if(studyState.year)q=q.eq('academic_year',Number(studyState.year));
@@ -2749,16 +3030,18 @@ function studyBuildResourceQuery(mode){
     if(mode==='past')q=q.eq('resource_type','past_question');
     else if(mode==='pdf')q=q.or('mime_type.ilike.%pdf%,file_type.ilike.%pdf%');
     else if(mode==='resources')q=q.neq('resource_type','past_question');
+    else if(mode==='uploads')q=q.eq('uploader_id',currentUserId);
     q=q.order('created_at',{ascending:false}).order('id',{ascending:false});
     return q.range(studyState.page*studyState.pageSize,(studyState.page+1)*studyState.pageSize-1);
 }
 
 async function studyLoadResources(mode=studyState.view){
     if(mode==='saved'){
-        const {data,error}=await _supabase.from('study_bookmarks').select('resource_id,created_at,resource:study_resources(id,title,description,file_type,mime_type,university,course_code,course_id,department,level,category,resource_type,academic_year,semester,download_count,file_size_bytes,original_filename,created_at)').eq('user_id',currentUserId).order('created_at',{ascending:false}).range(studyState.page*studyState.pageSize,(studyState.page+1)*studyState.pageSize-1);
+        const {data,error}=await _supabase.from('study_bookmarks').select('resource_id,created_at,resource:study_resources(id,title,description,file_type,mime_type,university,course_code,course_id,department,level,category,resource_type,academic_year,semester,download_count,file_size_bytes,original_filename,storage_path,created_at)').eq('user_id',currentUserId).order('created_at',{ascending:false}).range(studyState.page*studyState.pageSize,(studyState.page+1)*studyState.pageSize-1);
         if(error)throw error; studyState.resources=(data||[]).filter(x=>x.resource).map(x=>x.resource);studyState.hasMore=(data||[]).length===studyState.pageSize;return;
     }
     if(mode==='recent'){const start=studyState.page*studyState.pageSize;studyState.resources=studyState.recent.slice(start,start+studyState.pageSize);studyState.hasMore=studyState.recent.length>start+studyState.pageSize;return;}
+    if(mode==='uploads'){const {data,error,count}=await studyBuildResourceQuery(mode);if(error)throw error;studyState.resources=data||[];studyState.hasMore=(count??0)>(studyState.page+1)*studyState.pageSize;return;}
     const {data,error,count}=await studyBuildResourceQuery(mode);if(error)throw error;studyState.resources=data||[];studyState.hasMore=(count??0)>(studyState.page+1)*studyState.pageSize;
 }
 
@@ -2822,6 +3105,66 @@ async function studyOpenViewer(r,url){
 }
 function studyCloseViewer(){document.getElementById('studyResourceModal')?.classList.add('hidden');}
 
+function studyOpenUpload(){
+    const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
+    document.getElementById('studyModalTitle').textContent='Upload Study Material';
+    const courses=studyState.courses.map(c=>`<option value="${studyEsc(c.id)}">${studyEsc(c.course_code)} — ${studyEsc(c.course_title)}</option>`).join('');
+    body.innerHTML=`<form id="studyUploadForm" class="space-y-3">
+        <p class="study-meta">Share useful academic material with students at your university. Upload only material you have the right to share.</p>
+        <input id="studyUploadTitle" class="study-filter w-full" maxlength="160" required placeholder="Material title">
+        <textarea id="studyUploadDescription" class="study-filter w-full" rows="3" maxlength="1000" placeholder="Short description (optional)"></textarea>
+        <select id="studyUploadCourse" class="study-filter w-full"><option value="">Campus-wide / no specific course</option>${courses}</select>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <select id="studyUploadType" class="study-filter w-full"><option value="material">Course Material</option><option value="past_question">Past Question</option><option value="other">Other Study Resource</option></select>
+            <select id="studyUploadSemester" class="study-filter w-full"><option value="">Semester (optional)</option><option value="first">First</option><option value="second">Second</option><option value="summer">Summer</option></select>
+        </div>
+        <input id="studyUploadYear" class="study-filter w-full" type="number" min="2000" max="2100" placeholder="Academic year (optional)">
+        <input id="studyUploadFile" class="study-filter w-full" type="file" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain" required>
+        <p class="study-note">Maximum 50 MB. PDF, Word, PowerPoint and text files are supported.</p>
+        <div id="studyUploadStatus" class="study-note" role="status" aria-live="polite"></div>
+        <div class="study-actions"><button type="submit" class="study-btn primary" id="studyUploadSubmit"><i class="fas fa-cloud-arrow-up"></i> Upload</button><button type="button" class="study-btn" onclick="studyCloseViewer()">Cancel</button></div>
+    </form>`;
+    document.getElementById('studyUploadForm').addEventListener('submit',studySubmitUpload);
+    modal.classList.remove('hidden');
+}
+
+async function studySubmitUpload(e){
+    e.preventDefault();
+    const file=document.getElementById('studyUploadFile')?.files?.[0],btn=document.getElementById('studyUploadSubmit'),status=document.getElementById('studyUploadStatus');
+    if(!file)return;
+    const allowed=['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/vnd.ms-powerpoint','application/vnd.openxmlformats-officedocument.presentationml.presentation','text/plain'];
+    if(!allowed.includes(file.type)){status.textContent='That file type is not supported.';return;}
+    if(file.size>50*1024*1024){status.textContent='File is larger than the 50 MB limit.';return;}
+    const title=document.getElementById('studyUploadTitle').value.trim();if(!title){status.textContent='Add a title for the material.';return;}
+    const courseId=document.getElementById('studyUploadCourse').value||null,course=courseId?studyState.courses.find(c=>String(c.id)===String(courseId)):null;
+    const resourceType=document.getElementById('studyUploadType').value,semester=document.getElementById('studyUploadSemester').value||null;
+    const yearValue=document.getElementById('studyUploadYear').value.trim(),academicYear=yearValue?Number(yearValue):null;
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-180);const path=`${userUniversity}/${currentUserId}/${crypto.randomUUID()}_${safeName}`;
+    btn.disabled=true;status.textContent='Uploading securely…';let uploaded=false;
+    try{
+        const up=await _supabase.storage.from('study-resources').upload(path,file,{contentType:file.type||'application/octet-stream',upsert:false});
+        if(up.error)throw up.error;uploaded=true;status.textContent='Saving material details…';
+        const payload={title,description:document.getElementById('studyUploadDescription').value.trim()||null,file_url:path,file_type:file.name.split('.').pop()?.toUpperCase()||null,mime_type:file.type||null,university:userUniversity,course_code:course?.course_code||null,course_id:course?.id||null,department:course?.department||null,level:course?.level||null,category:resourceType==='past_question'?'Past Questions':'Course Material',resource_type:resourceType,academic_year:academicYear,semester,uploader_id:currentUserId,storage_path:path,file_size_bytes:file.size,original_filename:file.name};
+        const ins=await _supabase.from('study_resources').insert(payload).select('id').single();
+        if(ins.error)throw ins.error;
+        status.textContent='Upload complete.';
+        await studyLoadOverview();studyState.view='uploads';studyState.page=0;await studyLoadResources('uploads');studyRender();window.setTimeout(studyCloseViewer,500);
+    }catch(err){
+        console.error('Study upload failed',err);status.textContent=err?.message?.includes('row-level')?'You are not permitted to upload to this campus.':'Upload failed. Please try again.';
+        if(uploaded){try{await _supabase.storage.from('study-resources').remove([path]);}catch(cleanup){console.warn('Study upload cleanup failed',cleanup)}}
+    }finally{btn.disabled=false;}
+}
+
+async function studyDeleteResource(r){
+    if(!r?.id||String(r.uploader_id)!==String(currentUserId))return;
+    if(!confirm('Delete this uploaded study material? This cannot be undone.'))return;
+    try{
+        const {error}=await _supabase.from('study_resources').delete().eq('id',r.id).eq('uploader_id',currentUserId);if(error)throw error;
+        if(r.storage_path){const {error:storageError}=await _supabase.storage.from('study-resources').remove([r.storage_path]);if(storageError)console.warn('Study storage cleanup failed',storageError)}
+        await studyLoadOverview();await studyLoadResources('uploads');studyRender();
+    }catch(e){console.error('Study resource deletion failed',e);studyShowError('Couldn\'t delete that upload. Try again.');}
+}
+
 async function studyReportResource(r){
     const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
     document.getElementById('studyModalTitle').textContent='Report resource';
@@ -2832,7 +3175,9 @@ async function studyReportResource(r){
 
 function studyResourceCard(r){
     const saved=studyState.savedIds.has(String(r.id));
-    return `<article class="study-card study-resource"><div class="study-resource-top"><div class="study-file-icon"><i class="fas ${studyFileIcon(r.mime_type||r.file_type)}"></i></div><div class="min-w-0 flex-1"><div class="study-resource-title text-white">${studyEsc(r.title||'Untitled resource')}</div><div class="study-meta mt-1">${studyEsc(r.course_code||'Course not specified')} ${r.file_type?'• '+studyEsc(r.file_type):''}</div></div><button type="button" class="study-btn ${saved?'saved':''}" onclick="studySave(studyFindResource('${String(r.id)}'))" aria-label="${saved?'Unsave':'Save'}"><i class="${saved?'fas':'far'} fa-bookmark"></i></button></div>${r.description?`<p class="study-meta">${studyEsc(r.description)}</p>`:''}<div class="flex flex-wrap gap-1"><span class="study-badge">${studyEsc(r.resource_type==='past_question'?'Past Question':r.category||'Material')}</span>${r.academic_year?`<span class="study-badge">${studyEsc(r.academic_year)}</span>`:''}${r.semester?`<span class="study-badge">${studyEsc(r.semester)}</span>`:''}${r.file_size_bytes?`<span class="study-badge">${studyEsc(studyFormatBytes(r.file_size_bytes))}</span>`:''}</div><div class="study-actions mt-auto"><button type="button" class="study-btn primary" onclick="studyOpenUrl(studyFindResource('${String(r.id)}'))"><i class="fas fa-eye"></i> Open</button><button type="button" class="study-btn" onclick="studyOpenUrl(studyFindResource('${String(r.id)}'),true)"><i class="fas fa-download"></i> Download</button><button type="button" class="study-btn" onclick="studyReportResource(studyFindResource('${String(r.id)}'))" aria-label="Report resource"><i class="fas fa-flag"></i></button></div></article>`;
+    const own=String(r.uploader_id||'')===String(currentUserId);
+    const deleteButton=(studyState.view==='uploads'&&own)?`<button type="button" class="study-btn" onclick="studyDeleteResource(studyFindResource('${String(r.id)}'))" aria-label="Delete upload"><i class="fas fa-trash"></i></button>`:'';
+    return `<article class="study-card study-resource"><div class="study-resource-top"><div class="study-file-icon"><i class="fas ${studyFileIcon(r.mime_type||r.file_type)}"></i></div><div class="min-w-0 flex-1"><div class="study-resource-title text-white">${studyEsc(r.title||'Untitled resource')}</div><div class="study-meta mt-1">${studyEsc(r.course_code||'Campus resource')} ${r.file_type?'• '+studyEsc(r.file_type):''}</div></div><button type="button" class="study-btn ${saved?'saved':''}" onclick="studySave(studyFindResource('${String(r.id)}'))" aria-label="${saved?'Unsave':'Save'}"><i class="${saved?'fas':'far'} fa-bookmark"></i></button></div>${r.description?`<p class="study-meta">${studyEsc(r.description)}</p>`:''}<div class="flex flex-wrap gap-1"><span class="study-badge">${studyEsc(r.resource_type==='past_question'?'Past Question':r.category||'Material')}</span>${r.academic_year?`<span class="study-badge">${studyEsc(r.academic_year)}</span>`:''}${r.semester?`<span class="study-badge">${studyEsc(r.semester)}</span>`:''}${r.file_size_bytes?`<span class="study-badge">${studyEsc(studyFormatBytes(r.file_size_bytes))}</span>`:''}${own?`<span class="study-badge">Your upload</span>`:''}</div><div class="study-actions mt-auto"><button type="button" class="study-btn primary" onclick="studyOpenUrl(studyFindResource('${String(r.id)}'))"><i class="fas fa-eye"></i> Open</button><button type="button" class="study-btn" onclick="studyOpenUrl(studyFindResource('${String(r.id)}'),true)"><i class="fas fa-download"></i> Download</button><button type="button" class="study-btn" onclick="studyReportResource(studyFindResource('${String(r.id)}'))" aria-label="Report resource"><i class="fas fa-flag"></i></button>${deleteButton}</div></article>`;
 }
 
 function studyRenderCourses(){
@@ -2847,7 +3192,7 @@ function studyRenderCourses(){
 function studyFilterValues(){return {course:document.getElementById('studyCourseFilter')?.value||studyState.course,year:document.getElementById('studyYearFilter')?.value||studyState.year,semester:document.getElementById('studySemesterFilter')?.value||studyState.semester};}
 function studyRenderResources(mode='resources'){
     if(studyState.loading)return studyEmpty('Loading Study Hub','Fetching your real academic data securely.','fa-spinner fa-spin');
-    if(!studyState.resources.length)return studyEmpty(mode==='past'?'No past questions yet.':mode==='pdf'?'No PDF resources yet.':mode==='saved'?'Nothing saved yet.':mode==='recent'?'Nothing recently viewed yet.':'No course materials found.','Only real Study Hub data is shown here.','fa-folder-open');
+    if(!studyState.resources.length)return studyEmpty(mode==='past'?'No past questions yet.':mode==='pdf'?'No PDF resources yet.':mode==='saved'?'Nothing saved yet.':mode==='recent'?'Nothing recently viewed yet.':mode==='uploads'?'You have not uploaded any study materials yet.':'No course materials found.','Only real Study Hub data is shown here.','fa-folder-open');
     return `<div class="study-resource-grid">${studyState.resources.map(studyResourceCard).join('')}</div><div class="study-actions justify-between mt-4"><button class="study-btn" ${studyState.page===0?'disabled':''} onclick="studyPrevPage()"><i class="fas fa-chevron-left"></i> Previous</button><span class="study-note">Page ${studyState.page+1}</span><button class="study-btn" ${studyState.hasMore?'':'disabled'} onclick="studyNextPage()">Next <i class="fas fa-chevron-right"></i></button></div>`;
 }
 
@@ -2866,11 +3211,11 @@ function studyRender(){
     const last=studyState.recent[0];document.getElementById('studyToday').innerHTML=last?`<div class="study-today-item done"><div class="study-today-dot"></div><span>Continue <strong>${studyEsc(last.title||'your recent resource')}</strong></span></div><div class="study-today-item ${studyState.savedIds.size?'done':''}"><div class="study-today-dot"></div><span>${studyState.savedIds.size?'Review a saved resource':'Save a resource for later'}</span></div>`:`<div class="study-today-item"><div class="study-today-dot"></div><span>Your study journey starts here.</span></div>`;
     if(studyState.view==='courses')panel.innerHTML=studyRenderCourses();
     else if(studyState.view==='resources'||studyState.view==='pdf'||studyState.view==='past')panel.innerHTML=studyRenderFilters()+studyRenderResources(studyState.view);
-    else if(studyState.view==='saved'||studyState.view==='recent')panel.innerHTML=studyRenderResources(studyState.view);
+    else if(studyState.view==='saved'||studyState.view==='recent'||studyState.view==='uploads')panel.innerHTML=studyRenderResources(studyState.view);
     else panel.innerHTML=studyRenderResources(studyState.view);
     studyBindFilters();
     document.getElementById('studyTribesState').textContent=studyState.tribes.length?`${studyState.tribes.length} real campus ${studyState.tribes.length===1?'tribe':'tribes'} available.`:'No Study Tribes are available for your campus yet.';
-    document.getElementById('studyTutorState').textContent='Not configured — safe entry point only';
+    document.getElementById('studyTutorState').textContent='Ready — ask your AI Tutor';
 }
 
 function studyBindFilters(){
@@ -2882,7 +3227,74 @@ function studyBindFilters(){
 async function studySetView(view){studyState.view=view;studyState.page=0;await studyLoadResources(view);studyRender();document.querySelector('#studyViewPanel')?.scrollIntoView({behavior:'smooth',block:'start'});}
 async function studySetCourseFilter(code){studyState.course=code;studyState.view='resources';studyState.page=0;await studyLoadResources('resources');studyRender();document.querySelector('#studyViewPanel')?.scrollIntoView({behavior:'smooth',block:'start'});}
 function studySearch(){clearTimeout(studyState.timer);studyState.timer=setTimeout(async()=>{studyState.query=document.getElementById('studySearchInput')?.value.trim()||'';studyState.page=0;if(studyState.view==='courses'){studyRender();return;}try{await studyLoadResources(studyState.view);studyRender();}catch(e){console.error(e);studyShowError('Couldn\'t search your study materials. Try again.');}},320);}
-function studyOpenTutor(){const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');document.getElementById('studyModalTitle').textContent='AI Tutor';body.innerHTML=studyEmpty('AI Tutor is not configured','UniVerse has the existing AI Tutor data model, but no deployed response engine is available yet. This entry point remains safely disabled rather than showing fake answers.','fa-robot');modal.classList.remove('hidden');}
+let studyTutorConversation=[];
+function studyTutorEscape(v){const d=document.createElement('div');d.textContent=v==null?'':String(v);return d.innerHTML;}
+function studyTutorInline(text){
+    let out=studyTutorEscape(text);
+    out=out.replace(/`([^`]+)`/g,'<code>$1</code>');
+    out=out.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    out=out.replace(/__([^_]+)__/g,'<strong>$1</strong>');
+    out=out.replace(/(^|[^*])\*([^*]+)\*(?!\*)/g,'$1<em>$2</em>');
+    out=out.replace(/(^|[^_])_([^_]+)_(?!_)/g,'$1<em>$2</em>');
+    out=out.replace(/\$\$([^$]+)\$\$/g,'<span class="study-tutor-math">$1</span>');
+    out=out.replace(/\$([^$\n]+)\$/g,'<span class="study-tutor-math">$1</span>');
+    return out;
+}
+function studyTutorRender(text){
+    const raw=String(text||'').replace(/\r\n/g,'\n').trim();
+    if(!raw)return '';
+    const lines=raw.split('\n'), html=[];let inCode=false,code=[];let listType=null;
+    const closeList=()=>{if(listType){html.push(`</${listType}>`);listType=null;}};
+    for(const line of lines){
+        if(/^```/.test(line.trim())){if(inCode){html.push(`<pre><code>${studyTutorEscape(code.join('\n'))}</code></pre>`);code=[];inCode=false;}else{closeList();inCode=true;}continue;}
+        if(inCode){code.push(line);continue;}
+        if(!line.trim()){closeList();continue;}
+        let m=line.match(/^###\s+(.+)/);if(m){closeList();html.push(`<h5>${studyTutorInline(m[1])}</h5>`);continue;}
+        m=line.match(/^##\s+(.+)/);if(m){closeList();html.push(`<h4>${studyTutorInline(m[1])}</h4>`);continue;}
+        m=line.match(/^#\s+(.+)/);if(m){closeList();html.push(`<h3>${studyTutorInline(m[1])}</h3>`);continue;}
+        m=line.match(/^[-*]\s+(.+)/);if(m){if(listType!=='ul'){closeList();html.push('<ul>');listType='ul';}html.push(`<li>${studyTutorInline(m[1])}</li>`);continue;}
+        m=line.match(/^\d+[.)]\s+(.+)/);if(m){if(listType!=='ol'){closeList();html.push('<ol>');listType='ol';}html.push(`<li>${studyTutorInline(m[1])}</li>`);continue;}
+        closeList();html.push(`<p>${studyTutorInline(line)}</p>`);
+    }
+    if(inCode)html.push(`<pre><code>${studyTutorEscape(code.join('\n'))}</code></pre>`);closeList();
+    return html.join('');
+}
+function studyTutorCourseContext(){
+    const c=studyState.courses.find(x=>String(x.course_code||'')===String(studyState.course||''));
+    return {course_code:c?.course_code||studyState.course||'',course_title:c?.course_title||'',level:c?.level||''};
+}
+function studyTutorView(){return `<div class="study-tutor-shell">
+    <div id="studyTutorMessages" class="study-tutor-messages" aria-live="polite"></div>
+    <div id="studyTutorStatus" class="study-tutor-status hidden"></div>
+    <form id="studyTutorForm" class="study-tutor-form">
+        <textarea id="studyTutorInput" rows="3" maxlength="6000" placeholder="Ask anything about your course…" aria-label="Ask your AI Tutor"></textarea>
+        <div class="study-tutor-form-row"><span class="study-note">AI Tutor • Explain, revise, practise</span><button class="study-btn primary" id="studyTutorSend" type="submit"><i class="fas fa-paper-plane"></i> Ask Tutor</button></div>
+    </form></div>`;}
+function studyTutorAppend(role,text){const box=document.getElementById('studyTutorMessages');if(!box)return;const item=document.createElement('div');item.className=`study-tutor-message ${role==='user'?'user':'assistant'}`;item.innerHTML=`<div class="study-tutor-label">${role==='user'?'You':'UniVerse AI Tutor'}</div><div class="study-tutor-content">${role==='user'?studyTutorEscape(text).replace(/\n/g,'<br>'):studyTutorRender(text)}</div>`;box.appendChild(item);box.scrollTop=box.scrollHeight;}
+async function studyTutorAsk(question){
+    const input=document.getElementById('studyTutorInput'),send=document.getElementById('studyTutorSend'),status=document.getElementById('studyTutorStatus');
+    if(!question)return;
+    studyTutorAppend('user',question);studyTutorConversation.push({role:'user',content:question});input.value='';send.disabled=true;status.classList.remove('hidden');status.textContent='Thinking…';
+    try{
+        const {data:{session}}=await _supabase.auth.getSession();
+        if(!session?.access_token)throw new Error('Your session has expired. Please sign in again.');
+        const c=studyTutorCourseContext();
+        const res=await fetch(`${supabaseUrl}/functions/v1/study-ai-tutor`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`,'apikey':supabaseKey},body:JSON.stringify({question,course_code:c.course_code,course_title:c.course_title,level:c.level,conversation:studyTutorConversation.slice(-8)})});
+        let data={};try{data=await res.json();}catch(_){data={};}
+        if(!res.ok)throw new Error(data.error||`AI Tutor returned ${res.status}. Please try again.`);
+        const answer=String(data.answer||'').trim();if(!answer)throw new Error('The AI Tutor returned an empty response. Please try again.');
+        studyTutorConversation.push({role:'assistant',content:answer});studyTutorAppend('assistant',answer);status.classList.add('hidden');
+    }catch(err){console.error('Study AI Tutor error:',err);status.textContent=err?.message||'Could not reach the AI Tutor. Please try again.';status.classList.remove('hidden');}
+    finally{send.disabled=false;input.focus();}
+}
+function studyOpenTutor(){
+    const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');
+    document.getElementById('studyModalTitle').textContent='AI Tutor';studyTutorConversation=[];body.innerHTML=studyTutorView();modal.classList.remove('hidden');
+    const form=document.getElementById('studyTutorForm'),input=document.getElementById('studyTutorInput');
+    studyTutorAppend('assistant','Welcome to your study session. Ask me a question and I’ll explain it clearly, step by step.');
+    form?.addEventListener('submit',e=>{e.preventDefault();studyTutorAsk(input.value.trim());});
+    input?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form?.requestSubmit();}});setTimeout(()=>input?.focus(),50);
+}
 function studyExploreTribes(){const modal=document.getElementById('studyResourceModal'),body=document.getElementById('studyModalBody');document.getElementById('studyModalTitle').textContent='Study Tribes';if(!studyState.tribes.length){body.innerHTML=studyEmpty('No Study Tribes yet','No real campus tribes are available for your university yet.','fa-users');}else{body.innerHTML=`<div class="space-y-2">${studyState.tribes.map(t=>`<div class="study-card"><div class="study-course-code">${studyEsc(t.course_code||'CAMPUS TRIBE')}</div><h4 class="text-sm font-bold text-white mt-1">${studyEsc(t.name)}</h4><p class="study-meta mt-1">${studyEsc(t.description||'No description provided.')}</p></div>`).join('')}</div>`;}modal.classList.remove('hidden');}
 
 (function initStudyHub(){
@@ -2914,7 +3326,7 @@ function studyExploreTribes(){const modal=document.getElementById('studyResource
                     <span id="whisperText" class="text-[7px] md:text-[8px] font-bold uppercase text-slate-400 md:whitespace-nowrap">Whisper</span>
                 </div>
 
-                <div onclick="showPage('profile')" class="flex flex-col items-center gap-0.5 cursor-pointer p-1 flex-1 md:flex-none">
+                <div onclick="openProfilePage()" class="flex flex-col items-center gap-0.5 cursor-pointer p-1 flex-1 md:flex-none">
                     <i id="profileNavIcon" class="fas fa-user text-slate-400 text-base md:text-lg"></i>
                     <span id="profileNavText" class="text-[7px] md:text-[8px] font-bold uppercase text-slate-400 md:whitespace-nowrap">Profile</span>
                 </div>

@@ -983,6 +983,13 @@
             </button>
             <input type="hidden" id="signupUniversity">
 
+            <input type="text" id="signupMatric" placeholder="Matric / Registration Number" autocomplete="off" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            <button type="button" id="verifyStudentBtn" onclick="verifyStudentIdentity()" class="w-full uv-btn-ghost py-3.5 rounded-2xl font-bold transition">
+                <span id="verifyStudentBtnText">Verify Student</span>
+            </button>
+            <div id="studentVerificationStatus" class="hidden rounded-2xl border p-4 text-sm" aria-live="polite"></div>
+            <div id="verifiedAcademicDetails" class="hidden grid grid-cols-2 gap-2 text-xs"></div>
+
             <input type="password" id="signupPassword" placeholder="Create Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
 
             <div class="flex items-start gap-3 pt-1">
@@ -1467,11 +1474,17 @@
         }
 
         function selectUni(name) {
+            const previousSchool = document.getElementById('signupUniversity').value;
             document.getElementById('signupUniversity').value = name;
             document.getElementById('selectedUniLabel').innerText = name;
             document.getElementById('selectedUniLabel').className = "text-white font-medium";
+            if (previousSchool !== name && typeof clearVerification === 'function') clearVerification();
             toggleUniModal();
         }
+
+        document.addEventListener('input', (event) => {
+            if (verifiedStudent && (event.target?.id === 'signupName' || event.target?.id === 'signupMatric')) clearVerification();
+        });
 
         function selectUniFromElement(el) {
             try {
@@ -1483,44 +1496,66 @@
             }
         }
 
-       async function handleSignup() {
-    const name = document.getElementById('signupName').value;
-    const email = document.getElementById('signupEmail').value;
-    const password = document.getElementById('signupPassword').value;
-    const school = document.getElementById('signupUniversity').value;
+        let verifiedStudent = null;
+        let verificationInFlight = false;
 
-    if(!email || !password || !school || !name) {
-        alert("All fields are required to join the Verse.");
-        return;
-    }
-
-    // Mandatory Privacy Policy / Community Standards agreement
-    if (!signupAgreed) {
-        const err = document.getElementById('signupAgreeError');
-        if (err) err.classList.remove('hidden');
-        const box = document.getElementById('signupAgreeCheck');
-        if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-    }
-
-    // 1. Sign up the user
-    const { data, error } = await _supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-            data: { full_name: name, university: school }
+        function setVerificationStatus(type, message) {
+            const el = document.getElementById('studentVerificationStatus');
+            if (!el) return;
+            el.classList.remove('hidden');
+            el.className = 'rounded-2xl border p-4 text-sm';
+            if (type === 'success') { el.style.color='var(--uv-green)'; el.style.borderColor='rgba(88,230,0,0.28)'; el.style.background='rgba(88,230,0,0.07)'; }
+            else if (type === 'error') { el.style.color='#ff9d9d'; el.style.borderColor='rgba(255,80,80,0.22)'; el.style.background='rgba(255,80,80,0.07)'; }
+            else { el.style.color='var(--uv-text-dim)'; el.style.borderColor='rgba(255,255,255,0.09)'; el.style.background='rgba(255,255,255,0.03)'; }
+            el.textContent = message;
         }
-    });
 
-    if (error) {
-        alert("Signup Error: " + error.message);
-    } else {
-        // 2. Show the OTP Portal instead of redirecting
-        document.getElementById('otpPortal').classList.remove('hidden');
-        // Save the email temporarily to use in the next step
-        window.tempEmail = email; 
-    }
-}
+        function clearVerification() {
+            verifiedStudent=null;
+            const details=document.getElementById('verifiedAcademicDetails'); if(details){details.classList.add('hidden');details.innerHTML='';}
+            const status=document.getElementById('studentVerificationStatus'); if(status) status.classList.add('hidden');
+            const btn=document.getElementById('verifyStudentBtn'); const text=document.getElementById('verifyStudentBtnText');
+            if(btn) btn.disabled=false; if(text) text.textContent='Verify Student';
+        }
+
+        async function verifyStudentIdentity() {
+            if(verificationInFlight) return;
+            const name=document.getElementById('signupName').value.trim();
+            const school=document.getElementById('signupUniversity').value.trim();
+            const matric=document.getElementById('signupMatric').value.trim();
+            if(!name||!school||!matric){setVerificationStatus('error','Enter your full name, select your school and enter your matric number first.');return;}
+            verificationInFlight=true;
+            const btn=document.getElementById('verifyStudentBtn'); const text=document.getElementById('verifyStudentBtnText');
+            if(btn) btn.disabled=true; if(text) text.textContent='Checking registry…';
+            setVerificationStatus('info','Securely checking your student record…');
+            try {
+                const response=await fetch(`${supabaseUrl}/functions/v1/verify-student-public`,{method:'POST',headers:{'Content-Type':'application/json','apikey':supabaseKey},body:JSON.stringify({school_name:school,full_name:name,matric_number:matric})});
+                const result=await response.json().catch(()=>({}));
+                if(!response.ok){setVerificationStatus('error',response.status===429?'Too many attempts. Please wait a few minutes before trying again.':(result.error||'Verification is temporarily unavailable. Please try again.'));return;}
+                if(result.status==='unavailable'){setVerificationStatus('error','This school is not currently available for student verification.');return;}
+                const schoolRecord={id:result.school_id};
+                if(!response.ok){setVerificationStatus('error',response.status===429?'Too many attempts. Please wait a few minutes before trying again.':(result.error||'Verification is temporarily unavailable. Please try again.'));return;}
+                if(!result.verified){verifiedStudent=null;const details=document.getElementById('verifiedAcademicDetails');if(details){details.classList.add('hidden');details.innerHTML='';}setVerificationStatus('error','We could not verify this name and matric number against the selected school registry. Check your details and try again.');return;}
+                verifiedStudent={school_id:schoolRecord.id,school,matric_number:matric,full_name:name,faculty:result.student?.faculty||'',department:result.student?.department||'',level:result.student?.level||'',programme:result.student?.programme||''};
+                const details=document.getElementById('verifiedAcademicDetails');
+                if(details){const vals=[verifiedStudent.faculty,verifiedStudent.department,verifiedStudent.level,verifiedStudent.programme];details.innerHTML=['Faculty','Department','Level','Programme'].map(label=>`<div class="rounded-xl bg-white/5 border border-white/5 p-3"><div class="text-[10px] uppercase tracking-wider" style="color:var(--uv-text-dim)">${label}</div><div class="font-semibold text-white mt-1"></div></div>`).join('');details.querySelectorAll('.font-semibold').forEach((el,i)=>el.textContent=vals[i]);details.classList.remove('hidden');}
+                if(text) text.textContent='Student Verified ✓'; setVerificationStatus('success','Student verified. Your academic information has been confirmed by the UniVerse registry.');
+            } catch(error){console.error('Student verification failed:',error);setVerificationStatus('error','We could not complete verification right now. Please try again.');}
+            finally{verificationInFlight=false;if(btn&&!verifiedStudent)btn.disabled=false;}
+        }
+
+        async function handleSignup() {
+            const name=document.getElementById('signupName').value.trim();
+            const email=document.getElementById('signupEmail').value.trim();
+            const password=document.getElementById('signupPassword').value;
+            const school=document.getElementById('signupUniversity').value;
+            const matric=document.getElementById('signupMatric').value.trim();
+            if(!email||!password||!school||!name||!matric){alert('Full name, university, matric number, email and password are required to join UniVerse.');return;}
+            if(!verifiedStudent||verifiedStudent.matric_number!==matric||verifiedStudent.school!==school){setVerificationStatus('error','Please verify your student identity before creating your account.');return;}
+            if(!signupAgreed){const err=document.getElementById('signupAgreeError');if(err)err.classList.remove('hidden');const box=document.getElementById('signupAgreeCheck');if(box)box.scrollIntoView({behavior:'smooth',block:'center'});return;}
+            const {data,error}=await _supabase.auth.signUp({email,password,options:{data:{full_name:name,university:school,matric_number:verifiedStudent.matric_number,student_verified:true,student_registry_id:verifiedStudent.school_id,faculty:verifiedStudent.faculty,department:verifiedStudent.department,level:verifiedStudent.level,programme:verifiedStudent.programme}}});
+            if(error){alert('Signup Error: '+error.message);}else{document.getElementById('otpPortal').classList.remove('hidden');window.tempEmail=email;}
+        }
 
 async function verifyMyCode() {
     const token = document.getElementById('otpCode').value;

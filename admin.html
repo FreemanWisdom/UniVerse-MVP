@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>UniVerse ICOS — Command Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#060a10;--panel:rgba(255,255,255,.035);--line:rgba(255,255,255,.085);--muted:#64748b;--text:#e5edf6;--green:#22c55e}
+    *{box-sizing:border-box}body{margin:0;font-family:"Space Grotesk",sans-serif;background:
+      radial-gradient(circle at 85% 0%,rgba(34,197,94,.09),transparent 28rem),
+      radial-gradient(circle at 10% 35%,rgba(16,185,129,.045),transparent 24rem),var(--bg);color:var(--text)}
+    .glass{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+    .sidebar{background:rgba(5,9,15,.82);border-right:1px solid var(--line)}
+    .navbtn{display:flex;align-items:center;gap:.75rem;width:100%;padding:.72rem .8rem;border-radius:13px;color:#94a3b8;font-size:.72rem;font-weight:700;text-align:left;transition:.18s}
+    .navbtn:hover{background:rgba(255,255,255,.045);color:#fff}.navbtn.active{background:rgba(34,197,94,.09);color:#86efac;border:1px solid rgba(34,197,94,.14)}
+    .navbtn i{width:18px;text-align:center}.metric{min-height:125px}.metric strong{font-size:1.7rem;letter-spacing:-.05em}.metric small{color:#64748b;font-size:.58rem;text-transform:uppercase;letter-spacing:.13em;font-weight:800}
+    .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block}.ok{background:#22c55e;box-shadow:0 0 12px rgba(34,197,94,.7)}.warn{background:#f59e0b}.bad{background:#ef4444}
+    .table-wrap{overflow:auto}.admin-table{width:100%;border-collapse:collapse;min-width:760px}.admin-table th{padding:.75rem .8rem;color:#64748b;font-size:.57rem;text-transform:uppercase;letter-spacing:.12em;text-align:left;border-bottom:1px solid var(--line)}
+    .admin-table td{padding:.8rem;color:#cbd5e1;font-size:.68rem;border-bottom:1px solid rgba(255,255,255,.045)}.admin-table tr:hover td{background:rgba(255,255,255,.018)}
+    .badge{display:inline-flex;align-items:center;gap:.3rem;border-radius:999px;padding:.28rem .5rem;font-size:.52rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em;border:1px solid var(--line)}
+    .badge.green{color:#86efac;background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.17)}.badge.red{color:#fca5a5;background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.16)}.badge.amber{color:#fcd34d;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.16)}
+    button,input,select,textarea{font-family:inherit}input,select,textarea{background:rgba(255,255,255,.035);border:1px solid var(--line);color:#e5edf6;outline:none;border-radius:12px;padding:.7rem .8rem;font-size:.7rem}input:focus,select:focus,textarea:focus{border-color:rgba(34,197,94,.45);box-shadow:0 0 0 3px rgba(34,197,94,.08)}
+    .action{border:1px solid var(--line);background:rgba(255,255,255,.035);color:#cbd5e1;border-radius:11px;padding:.55rem .7rem;font-size:.62rem;font-weight:800;transition:.18s}.action:hover{background:rgba(255,255,255,.07);color:#fff}.action.primary{background:#22c55e;color:#052e16;border-color:#22c55e}.action.danger{color:#fca5a5;border-color:rgba(239,68,68,.18);background:rgba(239,68,68,.05)}
+    .view{display:none}.view.active{display:block}.toast{position:fixed;right:18px;bottom:18px;z-index:200;padding:.8rem 1rem;border:1px solid var(--line);border-radius:13px;background:#0d1420;color:#e2e8f0;font-size:.68rem;font-weight:700;box-shadow:0 20px 60px rgba(0,0,0,.35);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:none}
+    .overlay{position:fixed;inset:0;z-index:150;background:rgba(2,6,23,.78);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:1rem}.overlay.show{display:flex}.modal{width:min(100%,620px);max-height:90vh;overflow:auto;border-radius:24px;padding:1.1rem;background:#0c131e;border:1px solid var(--line);box-shadow:0 30px 100px rgba(0,0,0,.55)}
+    .skeleton{height:16px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.08),rgba(255,255,255,.03));background-size:200%;animation:shimmer 1.2s infinite}@keyframes shimmer{to{background-position:-200%}}
+    @media(max-width:900px){.sidebar{width:76px!important}.brand-text,.nav-label,.sidebar-note{display:none}.navbtn{justify-content:center}.navbtn i{width:auto}.main{margin-left:76px!important}.grid4{grid-template-columns:repeat(2,1fr)!important}}
+    @media(max-width:640px){.sidebar{display:none}.main{margin-left:0!important}.grid4{grid-template-columns:1fr!important}.topbar{padding:.8rem!important}.content{padding:.8rem!important}}
+  </style>
+</head>
+<body>
+  <!--
+    UniVerse ICOS ADMIN COMMAND CENTER
+    IMPORTANT:
+    This file is intentionally separate from dashboard.html.
+    The browser must NEVER receive a Supabase service_role key.
+    Replace SUPABASE_ANON_KEY with the public anon/publishable key only.
+    All privileged reads/writes should be implemented as SECURITY DEFINER
+    RPCs with explicit admin authorization on the database.
+  -->
+
+  <aside class="sidebar fixed left-0 top-0 bottom-0 w-64 z-50 p-4 flex flex-col">
+    <div class="px-2 pt-2 pb-5">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-green-500/10 border border-green-500/20 text-green-400"><i class="fas fa-atom"></i></div>
+        <div class="brand-text"><div class="font-bold tracking-tight">Uni<span class="text-green-500">VERSE</span></div><div class="text-[8px] text-slate-500 uppercase tracking-[.22em] font-black">ICOS COMMAND</div></div>
+      </div>
+    </div>
+    <nav class="space-y-1 flex-1">
+      <button class="navbtn active" data-view="overview"><i class="fas fa-chart-line"></i><span class="nav-label">Overview</span></button>
+      <button class="navbtn" data-view="users"><i class="fas fa-users"></i><span class="nav-label">Users</span></button>
+      <button class="navbtn" data-view="moderation"><i class="fas fa-shield-halved"></i><span class="nav-label">Moderation</span></button>
+      <button class="navbtn" data-view="content"><i class="fas fa-layer-group"></i><span class="nav-label">Content</span></button>
+      <button class="navbtn" data-view="academics"><i class="fas fa-graduation-cap"></i><span class="nav-label">Academics</span></button>
+      <button class="navbtn" data-view="campuses"><i class="fas fa-building-columns"></i><span class="nav-label">Campuses</span></button>
+      <button class="navbtn" data-view="system"><i class="fas fa-server"></i><span class="nav-label">System</span></button>
+      <button class="navbtn" data-view="audit"><i class="fas fa-clock-rotate-left"></i><span class="nav-label">Audit Log</span></button>
+      <button class="navbtn" data-view="settings"><i class="fas fa-sliders"></i><span class="nav-label">Controls</span></button>
+    </nav>
+    <div class="sidebar-note glass rounded-2xl p-3 text-[9px] text-slate-500 leading-5">
+      <div class="text-green-400 font-black uppercase tracking-widest mb-1">Restricted</div>
+      Every privileged action should be server-authorized and written to the audit log.
+    </div>
+  </aside>
+
+  <main class="main ml-64 min-h-screen">
+    <header class="topbar sticky top-0 z-40 px-6 py-4 border-b border-white/5 bg-[#060a10]/80 backdrop-blur-xl flex items-center justify-between">
+      <div><div class="text-[9px] uppercase tracking-[.22em] text-green-400 font-black">Executive Oversight</div><h1 id="pageTitle" class="text-xl font-bold tracking-tight mt-1">Command Center</h1></div>
+      <div class="flex items-center gap-2">
+        <span id="lockdownBadge" class="badge green"><span class="status-dot ok"></span> Normal operations</span>
+        <span class="badge green"><span class="status-dot ok"></span> Secure session</span>
+        <button id="refreshBtn" class="action" title="Refresh"><i class="fas fa-rotate"></i></button>
+        <button id="logoutBtn" class="action danger" title="Logout"><i class="fas fa-right-from-bracket"></i></button>
+      </div>
+    </header>
+
+    <section class="content p-6 max-w-[1500px] mx-auto">
+      <div id="accessState" class="glass rounded-3xl p-8 mb-5">
+        <div class="flex items-center gap-3"><i class="fas fa-circle-notch fa-spin text-green-400"></i><div><div class="font-bold">Verifying administrator access…</div><div class="text-[10px] text-slate-500 mt-1">No control surface is enabled until the authenticated session is verified.</div></div></div>
+      </div>
+
+      <!-- OVERVIEW -->
+      <section id="view-overview" class="view active">
+        <div class="grid4 grid grid-cols-4 gap-3 mb-4">
+          <div class="glass metric rounded-2xl p-4"><small>Total users</small><strong id="mUsers">—</strong><div class="text-[10px] text-slate-500 mt-2" id="mUsersSub">Awaiting telemetry</div></div>
+          <div class="glass metric rounded-2xl p-4"><small>Active today</small><strong id="mActive">—</strong><div class="text-[10px] text-slate-500 mt-2">Authenticated activity</div></div>
+          <div class="glass metric rounded-2xl p-4"><small>Reports</small><strong id="mReports">—</strong><div class="text-[10px] text-slate-500 mt-2">Pending moderation</div></div>
+          <div class="glass metric rounded-2xl p-4"><small>Campuses</small><strong id="mSchools">—</strong><div class="text-[10px] text-slate-500 mt-2">Configured schools</div></div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="glass rounded-3xl p-5 lg:col-span-2">
+            <div class="flex items-end justify-between mb-4"><div><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Live telemetry</div><h2 class="font-bold mt-1">Platform pulse</h2></div><button class="action" onclick="loadOverview()">Refresh</button></div>
+            <div id="pulse" class="grid grid-cols-2 md:grid-cols-4 gap-2"></div>
+          </div>
+          <div class="glass rounded-3xl p-5"><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Attention</div><h2 class="font-bold mt-1">Requires action</h2><div id="attention" class="mt-4 space-y-2"><div class="skeleton"></div><div class="skeleton"></div></div></div>
+        </div>
+      </section>
+
+      <!-- USERS -->
+      <section id="view-users" class="view">
+        <div class="glass rounded-3xl p-4 mb-4 flex flex-wrap gap-2 items-center justify-between">
+          <div><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Identity control</div><h2 class="font-bold mt-1">Students & administrators</h2></div>
+          <div class="flex gap-2"><input id="userSearch" placeholder="Search name, email, school…" class="w-64"><button class="action" onclick="loadUsers()"><i class="fas fa-search"></i></button></div>
+        </div>
+        <div class="glass rounded-3xl table-wrap"><table class="admin-table"><thead><tr><th>User</th><th>Campus</th><th>Academic</th><th>Verification</th><th>Status</th><th>Actions</th></tr></thead><tbody id="usersBody"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+      </section>
+
+      <!-- MODERATION -->
+      <section id="view-moderation" class="view">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="glass rounded-3xl p-5"><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Trust & safety</div><h2 class="font-bold mt-1">Reports queue</h2><div id="reportsList" class="mt-4 space-y-2">Loading…</div></div>
+          <div class="glass rounded-3xl p-5"><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Campus Whisper</div><h2 class="font-bold mt-1">Anonymous moderation</h2><div id="whisperList" class="mt-4 space-y-2">Loading…</div></div>
+        </div>
+      </section>
+
+      <!-- CONTENT -->
+      <section id="view-content" class="view">
+        <div class="glass rounded-3xl p-4 mb-4 flex items-center justify-between"><div><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Content operations</div><h2 class="font-bold mt-1">Orbit · Chat · Study · Marketplace</h2></div><button class="action" onclick="loadContent()">Refresh</button></div>
+        <div id="contentCards" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+      </section>
+
+      <!-- ACADEMICS -->
+      <section id="view-academics" class="view">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="glass rounded-3xl p-5"><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Study Hub</div><h2 class="font-bold mt-1">Academic controls</h2><div class="mt-4 space-y-2">
+            <button class="action w-full text-left" onclick="adminAction('approve_pending_resources')"><i class="fas fa-check mr-2"></i>Review pending materials</button>
+            <button class="action w-full text-left" onclick="adminAction('manage_courses')"><i class="fas fa-book mr-2"></i>Manage courses</button>
+            <button class="action w-full text-left" onclick="adminAction('manage_tribes')"><i class="fas fa-people-group mr-2"></i>Manage Study Tribes</button>
+          </div></div>
+          <div class="glass rounded-3xl p-5 lg:col-span-2"><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Academic telemetry</div><div id="academicStats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4"></div></div>
+        </div>
+      </section>
+
+      <!-- CAMPUSES -->
+      <section id="view-campuses" class="view">
+        <div class="glass rounded-3xl p-4 mb-4 flex items-center justify-between"><div><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Campus network</div><h2 class="font-bold mt-1">Schools & verification</h2></div><div class="flex gap-2"><button class="action" onclick="openCampusAdminModal()">Campus admins</button><button class="action primary" onclick="openSchoolModal()">+ Add campus</button></div></div>
+        <div class="glass rounded-3xl table-wrap"><table class="admin-table"><thead><tr><th>Campus</th><th>Tag / ID</th><th>Students</th><th>Verification</th><th>Status</th><th>Actions</th></tr></thead><tbody id="schoolsBody"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+      </section>
+
+      <!-- SYSTEM -->
+      <section id="view-system" class="view">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3" id="systemCards"></div>
+        <div class="glass rounded-3xl p-5 mt-4"><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Operational controls</div><div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+          <button class="action" onclick="adminAction('run_health_check')">Health check</button><button class="action" onclick="adminAction('refresh_metrics')">Refresh metrics</button><button class="action" onclick="adminAction('inspect_edge_functions')">Edge Functions</button><button id="lockdownBtn" class="action danger" onclick="toggleEmergency()">Emergency lockdown</button>
+        </div></div>
+      </section>
+
+      <!-- AUDIT -->
+      <section id="view-audit" class="view">
+        <div class="glass rounded-3xl p-4 mb-4 flex items-center justify-between"><div><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Accountability</div><h2 class="font-bold mt-1">Immutable administrative activity</h2></div><button class="action" onclick="loadAudit()">Refresh</button></div>
+        <div class="glass rounded-3xl table-wrap"><table class="admin-table"><thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Target</th><th>Result</th><th>IP / Context</th></tr></thead><tbody id="auditBody"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+      </section>
+
+      <!-- CONTROLS -->
+      <section id="view-settings" class="view">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="glass rounded-3xl p-5"><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Feature control</div><h2 class="font-bold mt-1">Global switches</h2><div id="flags" class="mt-4 space-y-2"></div></div>
+          <div class="glass rounded-3xl p-5"><div class="text-[9px] text-green-400 uppercase tracking-widest font-black">Broadcast</div><h2 class="font-bold mt-1">Campus-wide announcement</h2><div class="space-y-2 mt-4"><select id="announceScope"><option value="global">All campuses</option></select><input id="announceTitle" placeholder="Announcement title" class="w-full"><textarea id="announceBody" rows="5" placeholder="Message…" class="w-full"></textarea><button class="action primary w-full" onclick="sendAnnouncement()">Publish announcement</button></div></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <div id="modalOverlay" class="overlay"><div class="modal"><div class="flex items-center justify-between mb-4"><div><div id="modalKicker" class="text-[9px] text-green-400 uppercase tracking-widest font-black">Control</div><h3 id="modalTitle" class="font-bold mt-1">Action</h3></div><button class="action" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div>
+
+<script>
+  // ---- CONFIG ----
+  const SUPABASE_URL = 'https://loppfyncbehifnspupwa.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_AuLEDV9wjFEwl5okjZa1mw_vFcp73Gi';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'universe-supabase-auth'
+    }
+  });
+
+  /*
+    PRIVILEGED BACKEND CONTRACT
+    These RPCs must be implemented in Supabase before production:
+      admin_bootstrap
+      admin_get_overview
+      admin_list_users
+      admin_get_user
+      admin_update_user
+      admin_set_user_restrictions
+      admin_list_reports
+      admin_moderate_report
+      admin_list_content
+      admin_get_content
+      admin_moderate_content
+      admin_list_schools
+      admin_upsert_school
+      admin_get_system_health
+      admin_get_audit_log
+      admin_get_feature_flags
+      admin_set_feature_flag
+      admin_publish_announcement
+      admin_set_campus_admin
+      admin_emergency_lockdown
+      admin_get_emergency_state
+      admin_action
+    Each RPC must independently verify the authenticated user against a
+    dedicated admin_roles/admin_users table. Never trust a JS boolean such as
+    isAdmin. Never expose service_role in this file.
+  */
+
+  let isAdmin = false;
+  let adminRecord = null;
+  let activeView = 'overview';
+
+  const $ = id => document.getElementById(id);
+  const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove('show'),3200)}
+  function fmtDate(v){if(!v)return '—';try{return new Date(v).toLocaleString()}catch{return String(v)}}
+  function badge(text,type='green'){return `<span class="badge ${type}">${esc(text)}</span>`}
+
+  async function rpc(name,args={}){
+    const {data,error}=await sb.rpc(name,args);
+    if(error) throw error;
+    return data;
+  }
+
+  let authReady = false;
+  let authBootstrapPromise = null;
+
+  async function waitForAuthReady(){
+    if(authReady) return true;
+    if(authBootstrapPromise) return authBootstrapPromise;
+
+    authBootstrapPromise = new Promise(async resolve=>{
+      let settled = false;
+
+      const finish = value => {
+        if(settled) return;
+        settled = true;
+        authReady = true;
+        resolve(value);
+      };
+
+      const {data:{subscription}} = sb.auth.onAuthStateChange((event, session)=>{
+        if(event === 'INITIAL_SESSION') finish(!!session);
+      });
+
+      try{
+        const {data:{session}, error} = await sb.auth.getSession();
+        if(error) return finish(false);
+
+        // getSession() can resolve before INITIAL_SESSION on some loads.
+        // If it already contains a session, it is safe to continue.
+        if(session) return finish(true);
+
+        // Give the auth client a short window to complete its persisted
+        // session restoration before deciding the user is logged out.
+        setTimeout(()=>finish(false), 1500);
+      }catch(e){
+        finish(false);
+      }finally{
+        setTimeout(()=>subscription?.unsubscribe?.(), 2000);
+      }
+    });
+
+    return authBootstrapPromise;
+  }
+
+  async function verifyAdmin(){
+    $('accessState').innerHTML='<div class="flex items-center gap-3"><i class="fas fa-circle-notch fa-spin text-green-400"></i><div><div class="font-bold">Verifying administrator access…</div><div class="text-[10px] text-slate-500 mt-1">Restoring secure session and checking server-side authorization.</div></div></div>';
+
+    try{
+      const hasSession = await waitForAuthReady();
+      if(!hasSession){
+        location.replace('index.html');
+        return;
+      }
+
+      // Confirm the authenticated identity with Supabase Auth before
+      // invoking the privileged server-side authorization RPC.
+      const {data:{user}, error:userError} = await sb.auth.getUser();
+      if(userError || !user){
+        location.replace('index.html');
+        return;
+      }
+
+      const data=await rpc('admin_bootstrap');
+      if(!data?.authorized) throw new Error('Administrator access denied.');
+
+      isAdmin=true;
+      adminRecord=data.admin||null;
+      $('accessState').innerHTML=`<div class="flex items-center justify-between gap-4"><div><div class="font-bold text-green-300">Command access granted</div><div class="text-[10px] text-slate-500 mt-1">${esc(adminRecord?.role||'Administrator')} · Server-authorized session</div></div>${badge('PRIVILEGED','green')}</div>`;
+      await loadOverview();
+      await loadEmergency();
+    }catch(e){
+      isAdmin=false;
+      $('accessState').innerHTML=`<div class="flex items-center gap-3"><i class="fas fa-lock text-red-400"></i><div><div class="font-bold text-red-300">Access denied</div><div class="text-[10px] text-slate-500 mt-1">${esc(e.message||'This account is not authorized for the command center.')}</div></div></div>`;
+      document.querySelectorAll('.navbtn').forEach(b=>b.disabled=true);
+    }
+  }
+
+  async function loadOverview(){
+    if(!isAdmin)return;
+    try{
+      const d=await rpc('admin_get_overview');
+      $('mUsers').textContent=d?.total_users ?? '—'; $('mActive').textContent=d?.active_today ?? '—'; $('mReports').textContent=d?.pending_reports ?? '—'; $('mSchools').textContent=d?.campuses ?? '—';
+      $('mUsersSub').textContent=d?.verified_users!=null?`${d.verified_users} verified`:'Telemetry online';
+      const pulse=d?.pulse||{};
+      $('pulse').innerHTML=Object.entries(pulse).length?Object.entries(pulse).map(([k,v])=>`<div class="glass rounded-2xl p-3"><div class="text-[9px] text-slate-500 uppercase">${esc(k)}</div><div class="text-lg font-bold mt-1">${esc(v)}</div></div>`).join(''):'<div class="text-[10px] text-slate-500">No telemetry returned.</div>';
+      const attention=d?.attention||[];
+      $('attention').innerHTML=attention.length?attention.map(x=>`<button class="glass rounded-xl p-3 w-full text-left" onclick="routeAttention('${esc(x.action||'moderation')}')"><div class="text-[10px] font-bold">${esc(x.title||'Action required')}</div><div class="text-[9px] text-slate-500 mt-1">${esc(x.detail||'')}</div></button>`).join(''):'<div class="text-[10px] text-slate-500">Nothing urgent right now.</div>';
+    }catch(e){toast('Overview failed: '+(e.message||e))}
+  }
+
+  async function loadUsers(){
+    if(!isAdmin)return;
+    const q=$('userSearch').value.trim();
+    $('usersBody').innerHTML='<tr><td colspan="6">Loading…</td></tr>';
+    try{
+      const rows=await rpc('admin_list_users',{p_search:q||null,p_limit:100});
+      $('usersBody').innerHTML=(rows||[]).map(u=>`<tr>
+        <td><div class="font-bold text-slate-200">${esc(u.full_name||'Unnamed')}</div><div class="text-[9px] text-slate-500">${esc(u.email||u.id||'')}</div></td>
+        <td>${esc(u.university||u.school_tag||'—')}</td>
+        <td>${esc([u.department,u.level].filter(Boolean).join(' · ')||'—')}</td>
+        <td>${u.is_verified?badge('Verified','green'):badge('Unverified','amber')}</td>
+        <td>${u.account_status==='banned'?badge('Banned','red'):u.account_status==='suspended'?badge('Suspended','red'):u.account_status==='restricted'?badge('Restricted','amber'):badge('Active','green')}</td>
+        <td><button class="action" onclick="openUser('${esc(u.id)}')">Inspect</button></td>
+      </tr>`).join('')||'<tr><td colspan="6">No users found.</td></tr>';
+    }catch(e){$('usersBody').innerHTML=`<tr><td colspan="6" class="text-red-400">${esc(e.message||'User query failed')}</td></tr>`}
+  }
+
+  async function openUser(id){
+    try{
+      const u=await rpc('admin_get_user',{p_user_id:id});
+      $('modalKicker').textContent='Identity control';$('modalTitle').textContent=u?.full_name||'User';
+      $('modalBody').innerHTML=`<div class="space-y-3">
+        <div class="grid grid-cols-2 gap-2">${[
+          ['User ID',u?.id],['Email',u?.email],['Campus',u?.university||u?.school_tag],['Department',u?.department],['Level',u?.level],['Verified',u?.is_verified?'Yes':'No'],['Status',u?.account_status||'Active'],['Joined',fmtDate(u?.created_at)]
+        ].map(([k,v])=>`<div class="glass rounded-xl p-3"><div class="text-[8px] uppercase text-slate-500">${k}</div><div class="text-[10px] mt-1 break-words">${esc(v||'—')}</div></div>`).join('')}</div>
+        <div class="glass rounded-2xl p-4">
+          <div class="text-[9px] uppercase tracking-widest text-green-400 font-black">Account actions</div>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <button class="action primary" onclick="userAction('${esc(id)}','verify')">Verify</button>
+            <button class="action" onclick="userAction('${esc(id)}','unverify')">Revoke verification</button>
+            <button class="action danger" onclick="userAction('${esc(id)}','suspend')">Suspend</button>
+            <button class="action" onclick="userAction('${esc(id)}','unsuspend')">Unsuspend</button>
+            <button class="action danger" onclick="userAction('${esc(id)}','ban')">Ban</button>
+            <button class="action" onclick="userAction('${esc(id)}','restrict')">Restrict</button>
+            <button class="action" onclick="userAction('${esc(id)}','unrestrict')">Clear restriction</button>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-4">
+          <div class="text-[9px] uppercase tracking-widest text-green-400 font-black">Feature restrictions</div>
+          <div class="grid grid-cols-2 gap-2 mt-3 text-[10px]">
+            ${[['post','Posting'],['message','Messaging'],['upload','Uploads'],['whisper','Campus Whisper'],['marketplace','Marketplace']].map(([k,label])=>`<label class="glass rounded-xl p-3 flex items-center justify-between"><span>${label}</span><input id="restrict_${k}" type="checkbox" checked></label>`).join('')}
+          </div>
+          <input id="restrictionReason" class="w-full mt-2" placeholder="Restriction reason (optional)">
+          <input id="restrictionExpiry" type="datetime-local" class="w-full mt-2">
+          <button class="action primary w-full mt-2" onclick="saveUserRestrictions('${esc(id)}')">Save restrictions</button>
+        </div>
+      </div>`;
+      $('modalOverlay').classList.add('show');
+    }catch(e){toast('Could not inspect user: '+e.message)}
+  }
+  async function userAction(id,action){
+    const destructive=['suspend','ban','restrict'];
+    if(destructive.includes(action) && !confirm(`Confirm user action: ${action}?`))return;
+    try{
+      await rpc('admin_update_user',{p_user_id:id,p_action:action,p_note:null});
+      toast('User action completed.');closeModal();loadUsers();loadOverview();
+    }catch(e){toast('Action failed: '+e.message)}
+  }
+
+  async function saveUserRestrictions(id){
+    try{
+      const expires=$('restrictionExpiry').value ? new Date($('restrictionExpiry').value).toISOString() : null;
+      await rpc('admin_set_user_restrictions',{
+        p_user_id:id,
+        p_can_post:$('restrict_post').checked,
+        p_can_message:$('restrict_message').checked,
+        p_can_upload:$('restrict_upload').checked,
+        p_can_use_whisper:$('restrict_whisper').checked,
+        p_can_marketplace:$('restrict_marketplace').checked,
+        p_reason:$('restrictionReason').value.trim()||null,
+        p_expires_at:expires
+      });
+      toast('User restrictions saved.');
+    }catch(e){toast('Restriction update failed: '+e.message)}
+  }
+  async function loadModeration(){
+    if(!isAdmin)return;
+    try{
+      const reports=await rpc('admin_list_reports',{p_limit:60});
+      $('reportsList').innerHTML=(reports||[]).map(r=>`<div class="glass rounded-2xl p-3"><div class="flex justify-between gap-2"><div class="text-[10px] font-bold">${esc(r.reason||'Report')}</div>${badge(r.status||'pending',r.status==='resolved'?'green':'amber')}</div><div class="text-[10px] text-slate-300 mt-2 break-words">${esc(r.content_preview||r.description||'')}</div><div class="text-[8px] text-slate-500 mt-2">${fmtDate(r.created_at)}</div><div class="flex gap-2 mt-3"><button class="action" onclick="moderate('${esc(r.id)}','dismiss')">Dismiss</button><button class="action danger" onclick="moderate('${esc(r.id)}','remove')">Remove</button></div></div>`).join('')||'<div class="text-[10px] text-slate-500">No pending reports.</div>';
+      const whispers=await rpc('admin_action',{p_action:'list_whisper_reports'});
+      $('whisperList').innerHTML=(whispers||[]).map(r=>`<div class="glass rounded-2xl p-3"><div class="text-[10px] font-bold">${esc(r.reason||'Whisper report')}</div><div class="text-[10px] text-slate-300 mt-2">${esc(r.post_content||'')}</div><div class="flex gap-2 mt-3"><button class="action" onclick="moderate('${esc(r.report_id||r.id)}','dismiss_whisper')">Dismiss</button><button class="action danger" onclick="moderate('${esc(r.report_id||r.id)}','remove_whisper')">Remove</button></div></div>`).join('')||'<div class="text-[10px] text-slate-500">No Whisper reports.</div>';
+    }catch(e){toast('Moderation load failed: '+e.message)}
+  }
+
+  async function moderate(id,action){
+    if(!confirm(`Confirm moderation action: ${action}?`))return;
+    try{await rpc('admin_moderate_report',{p_report_id:id,p_action:action});toast('Moderation action completed.');loadModeration();loadOverview()}catch(e){toast('Moderation failed: '+e.message)}
+  }
+
+  async function loadContent(){
+    const sections=[
+      ['Orbit','orbit_posts','orbit','Social posts'],
+      ['Campus Chat','chat_messages','chat','Messages'],
+      ['Study resources','study_resources','study','PDFs, notes and academic files'],
+      ['Study Tribes','tribes','tribe','Communities'],
+      ['Lodges','lodges','lodge','Accommodation listings'],
+      ['Errands','errands','errand','Peer errands'],
+      ['Marketplace','marketplace','market','Marketplace listings'],
+      ['Skill Place','hustles','hustle','Services and skills'],
+      ['Campus Whisper','whisper_posts','whisper','Anonymous posts']
+    ];
+    try{
+      const d=await rpc('admin_list_content',{p_limit:30});
+      $('contentCards').innerHTML=sections.map(([label,key,res,desc])=>`<div class="glass rounded-3xl p-5">
+        <div class="text-[9px] uppercase tracking-widest text-slate-500">${label}</div>
+        <div class="text-2xl font-bold mt-2">${esc(d?.[key]??'—')}</div>
+        <div class="text-[9px] text-slate-500 mt-1">${desc}</div>
+        <button class="action mt-4" onclick="inspectContent('${res}','${label}')">Open control queue</button>
+      </div>`).join('');
+    }catch(e){toast('Content telemetry failed: '+e.message)}
+  }
+
+  async function inspectContent(resource,label){
+    try{
+      const rows=await rpc('admin_get_content',{p_resource:resource,p_search:null,p_limit:100});
+      $('modalKicker').textContent='Content operations';$('modalTitle').textContent=label;
+      const arr=Array.isArray(rows)?rows:[];
+      $('modalBody').innerHTML=`<div class="space-y-2">${arr.map(x=>{
+        const id=x.id, status=x.moderation_status||'active';
+        const preview=x.content||x.title||x.name||x.original_filename||'Untitled';
+        return `<div class="glass rounded-2xl p-3">
+          <div class="flex justify-between gap-2"><div class="text-[10px] font-bold">${esc(preview).slice(0,220)}</div>${badge(status,status==='removed'||status==='rejected'?'red':status==='hidden'||status==='pending'?'amber':'green')}</div>
+          <div class="text-[8px] text-slate-500 mt-1">${fmtDate(x.created_at)} · ${esc(x.school_tag||x.university||'')}</div>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <button class="action" onclick="moderateContent('${resource}','${esc(id)}','hide')">Hide</button>
+            <button class="action danger" onclick="moderateContent('${resource}','${esc(id)}','remove')">Remove</button>
+            <button class="action primary" onclick="moderateContent('${resource}','${esc(id)}','restore')">Restore</button>
+            ${resource==='study'?`<button class="action primary" onclick="moderateContent('${resource}','${esc(id)}','approve')">Approve</button><button class="action danger" onclick="moderateContent('${resource}','${esc(id)}','reject')">Reject</button>`:''}
+          </div>
+        </div>`;
+      }).join('')||'<div class="text-[10px] text-slate-500">No records found.</div>'}</div>`;
+      $('modalOverlay').classList.add('show');
+    }catch(e){toast('Content query failed: '+e.message)}
+  }
+
+  async function moderateContent(resource,id,action){
+    if(['remove','reject'].includes(action) && !confirm(`Confirm ${action} on this ${resource}?`))return;
+    try{
+      await rpc('admin_moderate_content',{p_resource:resource,p_id:id,p_action:action,p_reason:null});
+      toast('Content action completed.');inspectContent(resource,resource);
+      loadOverview();
+    }catch(e){toast('Content action failed: '+e.message)}
+  }
+  async function loadAcademics(){
+    try{
+      const d=await rpc('admin_action',{p_action:'academic_overview'});
+      $('academicStats').innerHTML=Object.entries(d||{}).map(([k,v])=>`<div class="glass rounded-2xl p-3"><div class="text-[8px] uppercase text-slate-500">${esc(k)}</div><div class="text-lg font-bold mt-1">${esc(v)}</div></div>`).join('')||'<div class="text-[10px] text-slate-500">No academic telemetry.</div>';
+    }catch(e){toast('Academic load failed: '+e.message)}
+  }
+
+  async function loadCampuses(){
+    try{
+      const rows=await rpc('admin_list_schools');
+      $('schoolsBody').innerHTML=(rows||[]).map(s=>`<tr><td><div class="font-bold">${esc(s.name||s.university||'—')}</div></td><td>${esc(s.tag||s.school_tag||s.id||'—')}</td><td>${esc(s.student_count??'—')}</td><td>${s.verification_enabled!==false?badge('Enabled','green'):badge('Disabled','amber')}</td><td>${s.is_active===false?badge('Offline','red'):badge('Active','green')}</td><td><button class="action" onclick="editSchool('${esc(s.id)}')">Manage</button></td></tr>`).join('')||'<tr><td colspan="6">No campuses configured.</td></tr>';
+      const sel=$('announceScope');sel.innerHTML='<option value="global">All campuses</option>'+(rows||[]).map(s=>`<option value="${esc(s.tag||s.school_tag||s.id)}">${esc(s.name||s.university||s.tag)}</option>`).join('');
+    }catch(e){toast('Campus load failed: '+e.message)}
+  }
+
+  function openSchoolModal(){
+    $('modalKicker').textContent='Campus network';$('modalTitle').textContent='Add / configure campus';
+    $('modalBody').innerHTML=`<div class="space-y-3"><input id="schoolName" class="w-full" placeholder="University name"><input id="schoolTag" class="w-full" placeholder="Unique school tag / ID"><textarea id="schoolRules" class="w-full" rows="4" placeholder="Verification / admission rules"></textarea><button class="action primary w-full" onclick="saveSchool()">Save campus</button></div>`;
+    $('modalOverlay').classList.add('show');
+  }
+  async function saveSchool(){
+    try{await rpc('admin_upsert_school',{p_school_id:null,p_name:$('schoolName').value.trim(),p_tag:$('schoolTag').value.trim(),p_rules:$('schoolRules').value.trim()||null});toast('Campus saved.');closeModal();loadCampuses();loadOverview()}catch(e){toast('Campus save failed: '+e.message)}
+  }
+  async function editSchool(id){toast('Opening campus controls…');try{const s=await rpc('admin_action',{p_action:'get_school',p_payload:{id}});$('modalKicker').textContent='Campus control';$('modalTitle').textContent=s?.name||'Campus';$('modalBody').innerHTML=`<div class="space-y-3"><div class="glass rounded-xl p-3 text-[10px]">Tag: ${esc(s?.tag||s?.school_tag)}</div><button class="action primary w-full" onclick="adminAction('toggle_school',{id:'${esc(id)}'})">Toggle campus availability</button><button class="action w-full" onclick="adminAction('manage_verification',{id:'${esc(id)}'})">Verification rules</button></div>`;$('modalOverlay').classList.add('show')}catch(e){toast(e.message)}}
+
+
+  async function openCampusAdminModal(){
+    $('modalKicker').textContent='Governance';$('modalTitle').textContent='Assign campus administrator';
+    $('modalBody').innerHTML=`<div class="space-y-3">
+      <input id="campusAdminUser" class="w-full" placeholder="User UUID">
+      <input id="campusAdminSchool" class="w-full" placeholder="School UUID">
+      <div class="flex gap-2"><button class="action primary flex-1" onclick="setCampusAdmin(true)">Grant school admin</button><button class="action danger flex-1" onclick="setCampusAdmin(false)">Revoke</button></div>
+      <div class="text-[9px] text-slate-500">Only a super admin can change campus administrators. Use the exact UUIDs from the user/campus records.</div>
+    </div>`;
+    $('modalOverlay').classList.add('show');
+  }
+
+  async function setCampusAdmin(enabled){
+    const user=$('campusAdminUser').value.trim(), school=$('campusAdminSchool').value.trim();
+    if(!user||!school)return toast('Both UUIDs are required.');
+    try{await rpc('admin_set_campus_admin',{p_user_id:user,p_school_id:school,p_enabled:enabled});toast(enabled?'Campus admin granted.':'Campus admin revoked.');closeModal();loadCampuses()}catch(e){toast('Campus admin action failed: '+e.message)}
+  }
+
+  async function loadEmergency(){
+    try{
+      const d=await rpc('admin_get_emergency_state');
+      const on=!!d?.lockdown;
+      $('lockdownBadge').className='badge '+(on?'red':'green');
+      $('lockdownBadge').innerHTML=`<span class="status-dot ${on?'bad':'ok'}"></span> ${on?'LOCKDOWN ACTIVE':'Normal operations'}`;
+      $('lockdownBtn').textContent=on?'Disable lockdown':'Emergency lockdown';
+      $('lockdownBtn').className='action '+(on?'primary':'danger');
+    }catch(e){}
+  }
+
+  async function toggleEmergency(){
+    try{
+      const d=await rpc('admin_get_emergency_state');
+      const enabling=!d?.lockdown;
+      const reason=enabling?prompt('Reason for emergency lockdown:'):'Recovery / operations restored';
+      if(enabling && !reason)return;
+      if(!confirm(enabling?'This will disable major user-facing modules. Continue?':'Restore normal platform operations?'))return;
+      await rpc('admin_emergency_lockdown',{p_enabled:enabling,p_reason:reason});
+      toast(enabling?'Emergency lockdown enabled.':'Normal operations restored.');
+      loadEmergency();loadFlags();loadOverview();
+    }catch(e){toast('Emergency control failed: '+e.message)}
+  }
+
+  async function loadSystem(){
+    await loadEmergency();
+    try{
+      const d=await rpc('admin_get_system_health');
+      $('systemCards').innerHTML=Object.entries(d||{}).map(([k,v])=>`<div class="glass rounded-3xl p-5"><div class="flex items-center justify-between"><div class="text-[9px] uppercase tracking-widest text-slate-500">${esc(k)}</div><span class="status-dot ${String(v).toLowerCase().includes('down')?'bad':'ok'}"></span></div><div class="text-sm font-bold mt-3 break-words">${esc(typeof v==='object'?JSON.stringify(v):v)}</div></div>`).join('')||'<div class="text-[10px] text-slate-500">No health telemetry.</div>';
+    }catch(e){toast('System health failed: '+e.message)}
+  }
+
+  async function loadAudit(){
+    try{
+      const rows=await rpc('admin_get_audit_log',{p_limit:150});
+      $('auditBody').innerHTML=(rows||[]).map(r=>`<tr><td>${fmtDate(r.created_at||r.timestamp)}</td><td>${esc(r.admin_name||r.admin_id)}</td><td>${esc(r.action)}</td><td>${esc(r.target_type||'')} ${esc(r.target_id||'')}</td><td>${badge(r.result||'completed',r.result==='failed'?'red':'green')}</td><td>${esc(r.context||r.ip_address||'—')}</td></tr>`).join('')||'<tr><td colspan="6">No audit events.</td></tr>';
+    }catch(e){toast('Audit load failed: '+e.message)}
+  }
+
+  async function loadFlags(){
+    try{
+      const rows=await rpc('admin_get_feature_flags');
+      $('flags').innerHTML=(rows||[]).map(f=>`<div class="glass rounded-2xl p-3 flex items-center justify-between gap-3"><div><div class="text-[10px] font-bold">${esc(f.name||f.key)}</div><div class="text-[8px] text-slate-500">${esc(f.description||'')}</div></div><button class="action ${f.enabled?'primary':''}" onclick="toggleFlag('${esc(f.key)}',${!!f.enabled})">${f.enabled?'ON':'OFF'}</button></div>`).join('')||'<div class="text-[10px] text-slate-500">No feature flags returned.</div>';
+    }catch(e){toast('Controls load failed: '+e.message)}
+  }
+  async function toggleFlag(key,current){try{await rpc('admin_set_feature_flag',{p_key:key,p_enabled:!current});toast('Feature flag updated.');loadFlags()}catch(e){toast(e.message)}}
+  async function sendAnnouncement(){const title=$('announceTitle').value.trim(),body=$('announceBody').value.trim(),scope=$('announceScope').value;if(!title||!body)return toast('Title and message are required.');if(!confirm('Publish this announcement?'))return;try{await rpc('admin_publish_announcement',{p_scope:scope,p_title:title,p_body:body});toast('Announcement published.');$('announceTitle').value='';$('announceBody').value=''}catch(e){toast('Announcement failed: '+e.message)}}
+
+  async function adminAction(action,payload=null){
+    try{const data=await rpc('admin_action',{p_action:action,p_payload:payload});toast(`${action.replaceAll('_',' ')} completed.`);return data}catch(e){toast(`${action.replaceAll('_',' ')} failed: ${e.message}`)}}
+  function confirmCritical(action){if(confirm('This is a critical platform action. Continue?'))adminAction(action)}
+  function routeAttention(action){const btn=document.querySelector(`.navbtn[data-view="${action}"]`);btn?.click()}
+  function closeModal(){$('modalOverlay').classList.remove('show')}
+  function openModal(){ $('modalOverlay').classList.add('show') }
+
+  async function switchView(view){
+    activeView=view;
+    document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    $('view-'+view).classList.add('active');
+    const titles={overview:'Command Center',users:'User Control',moderation:'Trust & Safety',content:'Content Operations',academics:'Academic Operations',campuses:'Campus Network',system:'System Health',audit:'Audit Log',settings:'Global Controls'};
+    $('pageTitle').textContent=titles[view]||'Command Center';
+    const loaders={overview:loadOverview,users:loadUsers,moderation:loadModeration,content:loadContent,academics:loadAcademics,campuses:loadCampuses,system:loadSystem,audit:loadAudit,settings:loadFlags};
+    if(loaders[view])await loaders[view]();
+  }
+
+  document.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
+  $('refreshBtn').addEventListener('click',()=>switchView(activeView));
+  $('logoutBtn').addEventListener('click',async()=>{await sb.auth.signOut();location.href='index.html'});
+  $('modalOverlay').addEventListener('click',e=>{if(e.target.id==='modalOverlay')closeModal()});
+  $('userSearch').addEventListener('keydown',e=>{if(e.key==='Enter')loadUsers()});
+  sb.auth.onAuthStateChange((event,session)=>{
+    if(event === 'INITIAL_SESSION') return;
+    if(!session){
+      if(authReady) location.replace('index.html');
+      return;
+    }
+    if(isAdmin && (event==='SIGNED_IN' || event==='TOKEN_REFRESHED')){
+      loadEmergency();
+    }
+  });
+  verifyAdmin();
+</script>
+</body>
+</html>

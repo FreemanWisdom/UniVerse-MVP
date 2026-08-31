@@ -1,0 +1,19 @@
+{
+  "name": "UniVERSE | Campus Operating System",
+  "short_name": "UniVERSE",
+  "description": "The campus operating system for students.",
+  "start_url": "./dashboard.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0f1a",
+  "theme_color": "#22c55e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

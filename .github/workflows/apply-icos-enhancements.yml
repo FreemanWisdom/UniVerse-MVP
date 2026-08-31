@@ -1,0 +1,62 @@
+name: Apply ICOS enhancements
+on:
+  push:
+    paths:
+      - 'icos-enhancements.js'
+      - '.github/workflows/apply-icos-enhancements.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor == 'FreemanWisdom'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Wire enhancement script into HTML pages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          files=['index.html','dashboard.html','admin.html']
+          tag='<script src="icos-enhancements.js"></script>'
+          for name in files:
+              p=Path(name)
+              if not p.exists(): continue
+              s=p.read_text()
+              if tag not in s:
+                  s=s.replace('</body>', f'    {tag}\n</body>', 1)
+                  p.write_text(s)
+          PY
+      - name: Add PWA manifest and register it
+        run: |
+          cat > manifest.json <<'EOF'
+          {
+            "name":"UniVerse ICOS",
+            "short_name":"UniVerse",
+            "description":"The campus operating system for students.",
+            "start_url":"dashboard.html",
+            "display":"standalone",
+            "background_color":"#05070c",
+            "theme_color":"#22c55e",
+            "icons":[]
+          }
+          EOF
+          python - <<'PY'
+          from pathlib import Path
+          tag='<link rel="manifest" href="manifest.json">'
+          for name in ['index.html','dashboard.html']:
+              p=Path(name)
+              if not p.exists(): continue
+              s=p.read_text()
+              if tag not in s:
+                  s=s.replace('</head>', f'    {tag}\n</head>', 1)
+                  p.write_text(s)
+          PY
+      - name: Commit wired changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html dashboard.html admin.html manifest.json .github/workflows/apply-icos-enhancements.yml icos-enhancements.js
+          git diff --cached --quiet || git commit -m 'feat: wire UniVerse ICOS experience enhancements'
+          git push

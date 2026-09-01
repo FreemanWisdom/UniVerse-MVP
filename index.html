@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniVerse | The Campus Operating System</title>
+    <title>UniVerse ICOS | The Campus Operating System</title>
 
     <!-- Preconnects: start the network handshake for third-party origins immediately -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -98,27 +98,40 @@
         .uv-orbit-wrap { position: relative; width: 100%; aspect-ratio: 1 / 1; max-width: 460px; margin: 0 auto; }
         .uv-orbit-ring { position: absolute; inset: 0; border: 1px dashed rgba(255,255,255,0.12); border-radius: 50%; }
         .uv-orbit-ring.ring-2 { inset: 13%; border-color: rgba(52,224,138,0.14); }
+        .uv-orbit-label {
+            position: absolute; z-index: 2; padding: 0.3rem 0.52rem; border-radius: 999px;
+            border: 1px solid rgba(88,230,0,0.18); background: rgba(8,12,10,0.26);
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.52rem; font-weight: 700;
+            letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.82);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            transform: translate(-50%, -50%);
+        }
+        .uv-orbit-label.top { left: 50%; top: 12%; }
+        .uv-orbit-label.right { left: 82%; top: 50%; }
+        .uv-orbit-label.bottom { left: 50%; top: 88%; }
+        .uv-orbit-label.left { left: 18%; top: 50%; }
         .uv-orbit-core {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
             width: 116px; height: 116px; border-radius: 50%;
-            background: radial-gradient(circle at 35% 30%, rgba(52,224,138,0.9), rgba(31,143,86,0.65) 60%, rgba(31,143,86,0.15) 100%);
-            box-shadow: 0 0 60px 10px rgba(52,224,138,0.35), inset 0 0 30px rgba(255,255,255,0.15);
+            background: radial-gradient(circle at 35% 30%, rgba(52,224,138,0.24), rgba(31,143,86,0.12) 55%, rgba(31,143,86,0.02) 100%);
+            border: 1px solid rgba(52,224,138,0.22);
+            box-shadow: 0 0 36px 8px rgba(52,224,138,0.18), inset 0 0 18px rgba(255,255,255,0.07);
             display: flex; align-items: center; justify-content: center;
             animation: uv-pulse 4.5s ease-in-out infinite;
         }
-        .uv-orbit-core span { font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: 0.08em; font-size: 0.85rem; color: #04150b; }
-        @keyframes uv-pulse { 0%,100% { box-shadow: 0 0 50px 8px rgba(52,224,138,0.3), inset 0 0 30px rgba(255,255,255,0.15);} 50% { box-shadow: 0 0 76px 16px rgba(52,224,138,0.45), inset 0 0 34px rgba(255,255,255,0.2);} }
+        .uv-orbit-core span { font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: 0.08em; font-size: 0.85rem; color: rgba(255,255,255,0.9); }
+        @keyframes uv-pulse { 0%,100% { box-shadow: 0 0 28px 6px rgba(52,224,138,0.14), inset 0 0 18px rgba(255,255,255,0.06);} 50% { box-shadow: 0 0 44px 10px rgba(52,224,138,0.22), inset 0 0 22px rgba(255,255,255,0.1);} }
         .uv-orbit-spin { position: absolute; inset: 0; animation: uv-spin 48s linear infinite; will-change: transform; }
         .uv-orbit-node {
             position: absolute; display: flex; flex-direction: column; align-items: center; gap: 6px;
             animation: uv-spin-rev 48s linear infinite; will-change: transform;
         }
         .uv-orbit-node .uv-node-dot {
-            width: 54px; height: 54px; border-radius: 50%; background: rgba(10,14,24,0.9); border: 1px solid rgba(52,224,138,0.35);
-            display: flex; align-items: center; justify-content: center; color: var(--uv-green);
-            box-shadow: 0 0 22px -4px rgba(52,224,138,0.5);
+            width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.015); border: 1px solid rgba(52,224,138,0.2);
+            display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8);
+            box-shadow: none;
         }
-        .uv-orbit-node .uv-node-label { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; letter-spacing: 0.12em; color: var(--uv-text-dim); text-transform: uppercase; white-space: nowrap; }
+        .uv-orbit-node .uv-node-label { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; letter-spacing: 0.12em; color: rgba(255,255,255,0.7); text-transform: uppercase; white-space: nowrap; }
         @keyframes uv-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes uv-spin-rev { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
         .uv-particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(52,224,138,0.6); animation: uv-float 7s ease-in-out infinite; }
@@ -288,13 +301,15 @@
             color: var(--uv-text) !important;
         }
 
-        .uv-nav-link.uv-active::after,
-        .uv-eyebrow,
-        .uv-kicker[style*="--uv-green"] {
+        .uv-nav-link.uv-active::after {
             background-color: var(--uv-green);
         }
 
-        .uv-eyebrow,
+        .uv-eyebrow {
+            background-color: var(--uv-green);
+            color: #071000 !important;
+        }
+
         [style*="color:var(--uv-green)"],
         [style*="color: var(--uv-green)"] {
             color: var(--uv-green) !important;
@@ -517,7 +532,7 @@
             </div>
             <div class="hidden md:flex items-center gap-3">
                 <button onclick="openAuthModal('login')" class="uv-nav-link text-sm font-semibold px-4 py-2">Log In</button>
-                <button onclick="openAuthModal('signup')" class="uv-btn-primary text-sm font-bold px-5 py-2.5 rounded-full">Join UniVerse</button>
+                <button onclick="openAuthModal('signup')" class="uv-btn-primary text-sm font-bold px-5 py-2.5 rounded-full">Join UniVerse ICOS</button>
             </div>
             <button id="mobileNavToggle" onclick="toggleMobileNav()" title="Menu" class="md:hidden w-10 h-10 rounded-full uv-btn-ghost flex items-center justify-center">
                 <i class="fas fa-bars text-white text-sm"></i>
@@ -564,7 +579,7 @@
                     You're looking at the first version. <strong class="text-white font-medium">V1.0 is our MVP</strong> — a focused first layer built around connection, learning, communication and collaboration.
                 </p>
                 <div class="mt-10 flex flex-wrap gap-4">
-                    <button onclick="openAuthModal('login')" class="uv-btn-primary font-bold px-7 py-3.5 rounded-full text-sm">Enter UniVerse</button>
+                    <button onclick="openAuthModal('login')" class="uv-btn-primary font-bold px-7 py-3.5 rounded-full text-sm">Enter UniVerse ICOS</button>
                     <button onclick="openAuthModal('signup')" class="uv-btn-ghost font-bold px-7 py-3.5 rounded-full text-sm">Join the V1.0</button>
                 </div>
             </div>
@@ -573,10 +588,10 @@
             <div class="uv-reveal uv-visible relative">
                 <div class="uv-orbit-wrap">
                     <!-- conceptual layer labels -->
-                    <div class="absolute -top-2 left-1/2 -translate-x-1/2 uv-kicker" style="color:var(--uv-green)">Social</div>
-                    <div class="absolute top-1/2 -right-1 -translate-y-1/2 rotate-0 uv-kicker" style="color:var(--uv-green)">Academic</div>
-                    <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 uv-kicker" style="color:var(--uv-green)">Communication</div>
-                    <div class="absolute top-1/2 -left-1 -translate-y-1/2 uv-kicker" style="color:var(--uv-green)">Collaboration</div>
+                    <div class="uv-orbit-label top" style="color:var(--uv-green)">Social</div>
+                    <div class="uv-orbit-label right" style="color:var(--uv-green)">Academic</div>
+                    <div class="uv-orbit-label bottom" style="color:var(--uv-green)">Communication</div>
+                    <div class="uv-orbit-label left" style="color:var(--uv-green)">Collaboration</div>
 
                     <div class="uv-orbit-ring"></div>
                     <div class="uv-orbit-ring ring-2"></div>
@@ -926,7 +941,7 @@
             </div>
             <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
                 <div class="uv-kicker">UniVerse ICOS v1.0 · MVP</div>
-                <div class="uv-kicker">&copy; 2026 UniVerse</div>
+                    <div class="uv-kicker">&copy; 2026 UniVerse ICOS</div>
             </div>
         </div>
     </footer>
@@ -1539,7 +1554,7 @@
                 verifiedStudent={school_id:schoolRecord.id,school,matric_number:matric,full_name:name,faculty:result.student?.faculty||'',department:result.student?.department||'',level:result.student?.level||'',programme:result.student?.programme||''};
                 const details=document.getElementById('verifiedAcademicDetails');
                 if(details){const vals=[verifiedStudent.faculty,verifiedStudent.department,verifiedStudent.level,verifiedStudent.programme];details.innerHTML=['Faculty','Department','Level','Programme'].map(label=>`<div class="rounded-xl bg-white/5 border border-white/5 p-3"><div class="text-[10px] uppercase tracking-wider" style="color:var(--uv-text-dim)">${label}</div><div class="font-semibold text-white mt-1"></div></div>`).join('');details.querySelectorAll('.font-semibold').forEach((el,i)=>el.textContent=vals[i]);details.classList.remove('hidden');}
-                if(text) text.textContent='Student Verified ✓'; setVerificationStatus('success','Student verified. Your academic information has been confirmed by the UniVerse registry.');
+                if(text) text.textContent='Student Verified ✓'; setVerificationStatus('success','Student verified. Your academic information has been confirmed by the UniVerse ICOS registry.');
             } catch(error){console.error('Student verification failed:',error);setVerificationStatus('error','We could not complete verification right now. Please try again.');}
             finally{verificationInFlight=false;if(btn&&!verifiedStudent)btn.disabled=false;}
         }
@@ -1550,7 +1565,7 @@
             const password=document.getElementById('signupPassword').value;
             const school=document.getElementById('signupUniversity').value;
             const matric=document.getElementById('signupMatric').value.trim();
-            if(!email||!password||!school||!name||!matric){alert('Full name, university, matric number, email and password are required to join UniVerse.');return;}
+            if(!email||!password||!school||!name||!matric){alert('Full name, university, matric number, email and password are required to join UniVerse ICOS.');return;}
             if(!verifiedStudent||verifiedStudent.matric_number!==matric||verifiedStudent.school!==school){setVerificationStatus('error','Please verify your student identity before creating your account.');return;}
             if(!signupAgreed){const err=document.getElementById('signupAgreeError');if(err)err.classList.remove('hidden');const box=document.getElementById('signupAgreeCheck');if(box)box.scrollIntoView({behavior:'smooth',block:'center'});return;}
             const {data,error}=await _supabase.auth.signUp({email,password,options:{data:{full_name:name,university:school,matric_number:verifiedStudent.matric_number,student_verified:true,student_registry_id:verifiedStudent.school_id,faculty:verifiedStudent.faculty,department:verifiedStudent.department,level:verifiedStudent.level,programme:verifiedStudent.programme}}});
@@ -1571,7 +1586,7 @@ async function verifyMyCode() {
     if (error) {
         alert("Invalid or Expired Code: " + error.message);
     } else {
-        alert("Identity Verified! Welcome to UniVERSE.");
+        alert("Identity Verified! Welcome to UniVerse ICOS.");
         window.location.href = 'dashboard.html'; // Direct access to dashboard
     }
 }

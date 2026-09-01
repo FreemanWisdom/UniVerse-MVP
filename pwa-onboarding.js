@@ -19,8 +19,8 @@
     if (!('serviceWorker' in navigator)) return;
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js', { scope: './' })
-        .then(reg => console.info('[UniVERSE] service worker ready', reg.scope))
-        .catch(err => console.warn('[UniVERSE] service worker registration failed', err));
+        .then(reg => console.info('[UniVerse ICOS] service worker ready', reg.scope))
+        .catch(err => console.warn('[UniVerse ICOS] service worker registration failed', err));
     });
   }
 
@@ -49,12 +49,12 @@
     const wrapper = document.createElement('div');
     wrapper.id = 'uvInstallPrompt';
     wrapper.innerHTML = `
-      <div class="uv-install-card" role="dialog" aria-label="Install UniVERSE">
+      <div class="uv-install-card" role="dialog" aria-label="Install UniVerse ICOS">
         <div class="uv-install-row">
           <div class="uv-install-icon">U</div>
           <div class="uv-install-copy">
-            <div class="uv-install-title">Take UniVERSE with you</div>
-            <div class="uv-install-text">Install UniVERSE on your phone for a faster, app-like campus experience.</div>
+            <div class="uv-install-title">Take UniVerse ICOS with you</div>
+            <div class="uv-install-text">Install UniVerse ICOS on your phone for a faster, app-like campus experience.</div>
           </div>
         </div>
         <div class="uv-install-actions">
@@ -108,7 +108,7 @@
     {
       selector: '#chatIcon',
       title: 'Campus Chat',
-      text: 'Message people you connect with, manage requests and keep conversations inside UniVERSE.'
+      text: 'Message people you connect with, manage requests and keep conversations inside UniVerse ICOS.'
     },
     {
       selector: '#studyIcon',
@@ -127,6 +127,9 @@
     }
   ];
 
+  const isTourComplete = () => localStorage.getItem(STORAGE.tourSeen) === '1';
+  const removeTourLauncher = () => document.getElementById('uvTourLauncher')?.remove();
+
   let currentStep = 0;
   let overlay = null;
   let card = null;
@@ -139,19 +142,20 @@
     style.textContent = `
       #uvTourOverlay{position:fixed;inset:0;z-index:10000;pointer-events:auto;background:rgba(2,5,10,.72);transition:opacity .18s ease}
       #uvTourSpotlight{position:fixed;z-index:10001;border-radius:14px;box-shadow:0 0 0 9999px rgba(2,5,10,.72),0 0 0 2px rgba(52,224,138,.92),0 0 34px rgba(52,224,138,.26);pointer-events:none;transition:top .22s ease,left .22s ease,width .22s ease,height .22s ease}
-      #uvTourCard{position:fixed;z-index:10002;width:min(360px,calc(100vw - 28px));padding:18px;border:1px solid rgba(52,224,138,.22);border-radius:22px;background:rgba(10,14,24,.97);color:#e8ecf3;box-shadow:0 24px 80px rgba(0,0,0,.48);font-family:Inter,sans-serif}
+      #uvTourCard{position:fixed;z-index:10002;width:min(360px,calc(100vw - 24px));max-width:calc(100vw - 24px);padding:18px;border:1px solid rgba(52,224,138,.22);border-radius:22px;background:rgba(10,14,24,.97);color:#e8ecf3;box-shadow:0 24px 80px rgba(0,0,0,.48);font-family:Inter,sans-serif}
       #uvTourCard .uv-tour-kicker{font:700 9px/1 Space Grotesk,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#34e08a}
       #uvTourCard h3{margin:8px 0 6px;font:700 18px/1.2 Space Grotesk,sans-serif}
       #uvTourCard p{margin:0;color:#94a3b8;font-size:12px;line-height:1.6}
       #uvTourCard .uv-tour-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
       #uvTourCard .uv-tour-progress{color:#64748b;font-size:10px;font-weight:700}
-      #uvTourCard .uv-tour-actions{display:flex;gap:7px}
+      #uvTourCard .uv-tour-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
       #uvTourCard button{border:0;border-radius:11px;padding:9px 12px;font:700 10px Inter,sans-serif;cursor:pointer}
       #uvTourCard .uv-tour-skip{background:transparent;color:#64748b}
       #uvTourCard .uv-tour-prev{background:rgba(255,255,255,.06);color:#cbd5e1}
       #uvTourCard .uv-tour-next{background:#22c55e;color:#04150b}
       #uvTourLauncher{position:fixed;right:18px;bottom:92px;z-index:9000;border:1px solid rgba(52,224,138,.18);background:rgba(10,14,24,.9);color:#34e08a;border-radius:999px;padding:8px 12px;font:700 10px Inter,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:pointer}
-      @media(max-width:640px){#uvTourCard{padding:16px;border-radius:19px}#uvTourCard h3{font-size:16px}}
+      @media(max-width:640px){#uvTourCard{padding:16px;border-radius:19px}#uvTourCard h3{font-size:16px}#uvTourCard .uv-tour-actions{width:100%;justify-content:space-between}#uvTourCard .uv-tour-actions button{flex:1 1 auto}#uvTourLauncher{right:12px;bottom:80px;padding:7px 10px}}
+      @media(max-width:360px){#uvTourCard .uv-tour-kicker{letter-spacing:.12em}#uvTourCard p{font-size:11px;line-height:1.5}#uvTourCard .uv-tour-actions button{padding:8px 10px;font-size:9px}}
     `;
     document.head.appendChild(style);
   }
@@ -182,7 +186,7 @@
     card.setAttribute('role', 'dialog');
     card.setAttribute('aria-modal', 'true');
     card.innerHTML = `
-      <div class="uv-tour-kicker">UniVERSE guided tour</div>
+      <div class="uv-tour-kicker">UniVerse ICOS guided tour</div>
       <h3 id="uvTourTitle"></h3>
       <p id="uvTourText"></p>
       <div class="uv-tour-footer">
@@ -196,9 +200,16 @@
     `;
 
     document.body.append(overlay, spotlight, card);
-    document.getElementById('uvTourSkip').onclick = finishTour;
+    document.getElementById('uvTourSkip').onclick = () => finishTour(false);
     document.getElementById('uvTourPrev').onclick = () => moveTour(-1);
-    document.getElementById('uvTourNext').onclick = () => moveTour(1);
+    document.getElementById('uvTourNext').onclick = () => {
+      const available = getAvailableSteps();
+      if (currentStep >= available.length - 1) {
+        completeTour();
+        return;
+      }
+      moveTour(1);
+    };
   }
 
   function getAvailableSteps() {
@@ -215,13 +226,13 @@
     spotlight.style.width = `${Math.min(window.innerWidth - 12, rect.width + pad * 2)}px`;
     spotlight.style.height = `${Math.min(window.innerHeight - 12, rect.height + pad * 2)}px`;
 
-    const cardWidth = Math.min(360, window.innerWidth - 28);
+    const cardWidth = Math.min(360, window.innerWidth - 24);
     const cardHeight = card.offsetHeight || 190;
     let top = rect.bottom + 16;
     if (top + cardHeight > window.innerHeight - 12) top = rect.top - cardHeight - 16;
     if (top < 12) top = Math.min(window.innerHeight - cardHeight - 12, Math.max(12, rect.top));
     let left = rect.left + rect.width / 2 - cardWidth / 2;
-    left = Math.max(14, Math.min(window.innerWidth - cardWidth - 14, left));
+    left = Math.max(12, Math.min(window.innerWidth - cardWidth - 12, left));
     card.style.top = `${top}px`;
     card.style.left = `${left}px`;
   }
@@ -253,17 +264,24 @@
     const available = getAvailableSteps();
     currentStep += delta;
     if (currentStep < 0) currentStep = 0;
-    if (currentStep >= available.length) return finishTour();
+    if (currentStep >= available.length) return completeTour();
     renderStep();
   }
 
-  function finishTour(markSeen = true) {
-    if (markSeen) localStorage.setItem(STORAGE.tourSeen, '1');
+  function finishTour(markSeen = false) {
+    if (markSeen) {
+      localStorage.setItem(STORAGE.tourSeen, '1');
+      removeTourLauncher();
+    }
     removeTour();
   }
 
+  function completeTour() {
+    finishTour(true);
+  }
+
   function startTour(force = false) {
-    if (!force && localStorage.getItem(STORAGE.tourSeen)) return;
+    if (!force && isTourComplete()) return;
     const available = getAvailableSteps();
     if (!available.length) return;
     currentStep = 0;
@@ -272,12 +290,16 @@
   }
 
   function addTourLauncher() {
+    if (isTourComplete()) {
+      removeTourLauncher();
+      return;
+    }
     if (document.getElementById('uvTourLauncher') || !document.querySelector('#profileNavIcon')) return;
     const button = document.createElement('button');
     button.id = 'uvTourLauncher';
     button.type = 'button';
     button.textContent = 'Tour';
-    button.title = 'Replay the UniVERSE guided tour';
+    button.title = 'Replay the UniVerse ICOS guided tour';
     button.addEventListener('click', () => startTour(true));
     document.body.appendChild(button);
   }

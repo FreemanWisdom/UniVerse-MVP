@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniVERSE | The Orbit</title>
+    <title>UniVerse ICOS | The Orbit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -15,13 +15,317 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         .nav-glass { background: rgba(11, 15, 26, 0.8); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.05); }
+        .glass-card, .study-card, .study-search, .study-stat, .study-resource, .orbit-composer-card, .orbit-post, .chat-panel, .chat-workspace, .profile-setting-row, .chat-conversation-item, .chat-search-result, .chat-request-card {
+            transition: transform .22s cubic-bezier(.22, 1, .36, 1), border-color .22s ease, box-shadow .22s ease, background .22s ease, opacity .22s ease;
+        }
+        @media (hover:hover) {
+            .glass-card:hover, .study-card:hover, .study-resource:hover, .orbit-post:hover, .profile-setting-row:hover, .chat-conversation-item:hover, .chat-search-result:hover, .chat-request-card:hover { transform: translateY(-1px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+        }
+
+        /* Orbit is the source of truth: keep the same rail and let the shared main gutter do the spacing. */
+        #profilePage, #studyPage, #whisperPage {
+            width: 100%;
+            max-width: 42rem;
+            margin: 0 auto;
+        }
+        .profile-page-shell, .study-shell, .whisper-shell { display: flex; flex-direction: column; gap: 1rem; }
+
+        .profile-hero-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 2rem;
+            background: linear-gradient(180deg, rgba(14, 20, 33, 0.96), rgba(10, 15, 24, 0.9));
+            border: 1px solid rgba(148, 163, 184, 0.11);
+            box-shadow: 0 24px 50px rgba(2, 6, 23, 0.18);
+        }
+        .profile-cover {
+            position: relative;
+            height: 112px;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.18), rgba(15, 23, 42, 0.1));
+            border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+        }
+        .profile-cover-orbit {
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at top left, rgba(52, 211, 153, 0.25), transparent 40%),
+                        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.18), transparent 32%);
+        }
+        .profile-content-shell {
+            position: relative;
+            padding: 1rem 1rem 1.25rem;
+        }
+        .profile-hero-main {
+            display: flex; gap: 1rem; align-items: flex-end; justify-content: space-between;
+            position: relative; margin-top: -3.15rem;
+        }
+        .profile-identity-block {
+            display: flex; align-items: flex-end; gap: 1rem; min-width: 0; flex: 1;
+        }
+        .profile-photo-frame {
+            width: 5.8rem; height: 5.8rem; border-radius: 1.7rem; 
+            border: 4px solid rgba(11, 15, 26, 0.85); box-shadow: 0 18px 40px rgba(16, 185, 129, 0.16);
+        }
+        .profile-camera-btn {
+            width: 2.4rem; height: 2.4rem; bottom: .35rem; right: .25rem;
+            background: linear-gradient(135deg, #34d399, #22c55e); border-color: rgba(11, 15, 26, 0.8); box-shadow: 0 12px 22px rgba(34, 197, 94, 0.28);
+        }
+        .profile-hero-copy {
+            min-width: 0; flex: 1;
+        }
+        .profile-kicker {
+            margin: 0 0 .28rem; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(134, 239, 172, 0.9); font-weight: 900;
+        }
+        .profile-hero-title {
+            display: flex; align-items: center; flex-wrap: wrap; gap: .6rem;
+            margin-bottom: .2rem;
+        }
+        .profile-hero-title h2 {
+            font-size: clamp(1.65rem, 3vw, 2.5rem); letter-spacing: -0.05em; line-height: 1.05; margin: 0;
+        }
+        .profile-verified-badge {
+            display: inline-flex; align-items: center; gap: .35rem; padding: .42rem .7rem; border-radius: 999px; border: 1px solid rgba(52, 211, 153, 0.28); background: rgba(34, 197, 94, 0.08); color: #86efac; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+        }
+        .profile-hero-subtitle {
+            font-size: .82rem; color: rgba(148, 163, 184, 0.92); margin: 0; font-weight: 600;
+        }
+        .profile-hero-meta {
+            display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .95rem;
+        }
+        .profile-meta-chip {
+            display: inline-flex; align-items: center; gap: .45rem; min-height: 2.1rem; padding: .5rem .75rem; border-radius: 999px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(148, 163, 184, 0.12); color: rgba(203, 213, 225, 0.98); font-size: 11px; font-weight: 700; }
+        .profile-meta-chip-empty { opacity: .72; }
+        .profile-meta-chip i { color: #4ade80; font-size: .72rem; }
+        .profile-hero-bio {
+            display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+            margin-top: 1rem; padding-top: .95rem; border-top: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        .profile-hero-bio-copy {
+            min-width: 0;
+            flex: 1;
+        }
+        .profile-hero-bio-copy p {
+            margin: 0; line-height: 1.6; color: rgba(203, 213, 225, 0.92); font-size: .9rem;
+        }
+        .profile-stars-wrap {
+            display: inline-flex; align-items: center; gap: 0.3rem; padding: .5rem .7rem; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.12); background: rgba(15, 23, 42, 0.4); }
+        .profile-side-btn {
+            min-width: 9rem; justify-content: center; min-height: 2.85rem; border-radius: 1rem; font-size: .74rem; letter-spacing: .04em; }
+
+        .profile-panel {
+            border-radius: 1.5rem; background: rgba(14, 20, 33, 0.76); border: 1px solid rgba(148, 163, 184, 0.1); padding: 1.1rem 1.2rem; box-shadow: 0 18px 34px rgba(2,6,23,.12);
+        }
+        .profile-panel-head {
+            display: flex; align-items: flex-end; justify-content: space-between; gap: .8rem; margin-bottom: .8rem;
+        }
+        .profile-panel-label {
+            font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(148, 163, 184, 0.78); font-weight: 900; margin: 0 0 .25rem;
+        }
+        .profile-panel-title {
+            font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; margin: 0;
+        }
+        .profile-panel-sub {
+            font-size: .68rem; color: rgba(148, 163, 184, 0.8); margin: .25rem 0 0;
+        }
+        .profile-completion-value {
+            font-weight: 900; font-size: .92rem; color: #86efac; letter-spacing: .04em;
+        }
+        .profile-progress-bar { position: relative; height: .52rem; border-radius: 999px; overflow: hidden; background: rgba(148, 163, 184, 0.12); border: 1px solid rgba(148,163,184,.08); }
+        .profile-progress-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #4ade80, #22c55e 45%, #16a34a); box-shadow: 0 0 30px rgba(34, 197, 94, 0.22); }
+
+        .profile-stat-grid {
+            display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 0;
+        }
+        .profile-stat-card {
+            display: flex; flex-direction: column; gap: .32rem; justify-content: center; min-height: 5.5rem; padding: 1rem .8rem; border-radius: 1.1rem; background: rgba(15, 23, 42, 0.44); border: 1px solid rgba(148, 163, 184, 0.12); text-align: center;
+        }
+        .profile-stat-card .label { font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(148, 163, 184, 0.8); font-weight: 800; }
+        .profile-stat-card strong { font-size: clamp(1.15rem, 2vw, 1.6rem); letter-spacing: -0.06em; color: #f8fafc; }
+        .profile-stat-card strong span { color: #4ade80; }
+
+        .profile-identity-grid {
+            display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem;
+        }
+        .profile-detail-card {
+            background: rgba(15, 23, 42, 0.36); border: 1px solid rgba(148, 163, 184, 0.08); border-radius: 1.15rem; padding: .9rem 1rem; min-width: 0;
+        }
+        .profile-detail-label {
+            margin: 0 0 .5rem; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(148, 163, 184, 0.82); font-weight: 900;
+        }
+        .profile-detail-value {
+            margin: 0; font-size: .96rem; line-height: 1.5; color: rgba(226, 232, 240, 0.98); word-break: break-word;
+        }
+        .profile-interest-chip, .profile-badge-chip {
+            display: inline-flex; align-items: center; gap: .4rem; padding: .42rem .7rem; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.12); background: rgba(15, 23, 42, 0.4); color: rgba(226,232,240,.92); font-size: .68rem; font-weight: 700;
+        }
+        .profile-badge-chip i { color: #4ade80; }
+        .profile-empty-chip { display: inline-flex; align-items: center; padding: .5rem .75rem; border-radius: 999px; border: 1px dashed rgba(148,163,184,.2); color: rgba(148,163,184,.8); background: rgba(15, 23, 42, 0.18); font-size: .7rem; }
+
+        .profile-settings-panel {
+            padding-top: 1rem;
+        }
+        .profile-setting-row {
+            display: flex; align-items: center; justify-content: space-between; gap: .75rem; width: 100%; min-height: 3.15rem; padding: .8rem .9rem; border-radius: 1rem; background: rgba(15,23,42,.38); border: 1px solid rgba(148,163,184,.08); color: rgba(226,232,240,.96); text-align: left; transition: all .2s ease; }
+        .profile-setting-row > span:first-child { display: inline-flex; align-items: center; gap: .7rem; font-size: .8rem; font-weight: 700; }
+        .profile-setting-row-danger {
+            background: rgba(127, 29, 29, 0.12); border-color: rgba(248, 113, 113, 0.18); color: #fecaca;
+        }
+        .profile-setting-row:hover { background: rgba(15,23,42,.5); border-color: rgba(74, 222, 128, .16); transform: translateY(-1px); }
+        .profile-setting-row-disabled { opacity: .7; cursor: not-allowed; }
+
+        .profile-edit-shell {
+            background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(148,163,184,.12); border-radius: 1.5rem; padding: 1rem 1rem 1.1rem;
+        }
+        .profile-edit-header { display: flex; justify-content: space-between; align-items: center; gap: .8rem; margin-bottom: .9rem; }
+        .profile-edit-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .9rem; }
+        .profile-edit-input, .profile-edit-textarea {
+            width: 100%; border-radius: 1rem; border: 1px solid rgba(148,163,184,.12); background: rgba(15,23,42,.42); color: #f8fafc; padding: .9rem 1rem; font-size: .82rem; outline: none; transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+        }
+        .profile-edit-input:focus, .profile-edit-textarea:focus { border-color: rgba(74,222,128,.54); box-shadow: 0 0 0 3px rgba(34,197,94,.08); }
+        .profile-edit-textarea { min-height: 6.5rem; resize: vertical; }
+        .profile-icon-btn { width: 2.4rem; height: 2.4rem; display: inline-flex; align-items: center; justify-content: center; border-radius: .9rem; background: rgba(255,255,255,.04); color: rgba(203,213,225,.9); border: 1px solid rgba(148,163,184,.1); }
+        .profile-edit-actions { display: flex; flex-direction: row; gap: .7rem; margin-top: 1rem; }
+        .profile-edit-actions button { flex: 1; min-height: 3rem; border-radius: 1rem; }
+
+        .study-shell { gap: 1rem; }
+        .study-hero-card {
+            border-radius: 1.5rem; background: linear-gradient(180deg, rgba(14, 20, 33, 0.9), rgba(12, 17, 29, 0.86)); border: 1px solid rgba(148,163,184,.1); padding: 1rem 1rem 1.1rem; box-shadow: 0 20px 42px rgba(2,6,23,.12);
+        }
+        .study-hero-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; margin-bottom: .8rem; }
+        .study-kicker { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: #86efac; font-weight: 900; }
+        .study-hero-row { display: flex; align-items: center; gap: .75rem; }
+        .study-search {
+            display: flex; align-items: center; gap: .7rem; flex: 1; min-width: 0; padding: .72rem .9rem; border-radius: 1rem; border: 1px solid rgba(148,163,184,.12); background: rgba(15,23,42,.34); }
+        .study-search input { width: 100%; background: transparent; border: 0; outline: none; color: #f8fafc; font-size: .8rem; }
+        .study-btn.primary { background: linear-gradient(135deg, #34d399, #22c55e 45%, #16a34a); color: #031b10; border: 0; box-shadow: 0 12px 24px rgba(34,197,94,.2); }
+        .study-card { border-radius: 1.3rem; background: rgba(15, 23, 42, 0.42); border: 1px solid rgba(148,163,184,.08); padding: .9rem; }
+        .study-feature-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+        .study-feature-card {
+            display: flex; flex-direction: column; justify-content: space-between; min-height: 8.5rem; padding: 1rem; border-radius: 1.25rem; background: linear-gradient(180deg, rgba(15,23,42,.5), rgba(15,23,42,.3)); border: 1px solid rgba(148,163,184,.1); transition: transform .18s ease, border-color .18s ease; }
+        .study-feature-card:hover { transform: translateY(-2px); border-color: rgba(74,222,128,.18); }
+        .study-feature-icon { width: 2.5rem; height: 2.5rem; display: inline-flex; align-items: center; justify-content: center; border-radius: .9rem; background: rgba(34,197,94,.08); color: #4ade80; }
+        .study-feature-card h3 { font-size: .8rem; margin: .7rem 0 0; }
+        .study-feature-card p { font-size: .64rem; color: rgba(148,163,184,.8); margin: .35rem 0 0; }
+
+        .study-panel { padding: 1rem; border-radius: 1.25rem; background: rgba(15, 23, 42, 0.42); border: 1px solid rgba(148,163,184,.08); }
+        .study-panel .study-section-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .7rem; }
+        .study-panel .study-section-head h3 { margin: 0; font-size: .82rem; }
+        .study-panel .study-section-head p { margin: .18rem 0 0; font-size: .63rem; color: rgba(148,163,184,.8); }
+        .study-today-list { display: flex; flex-direction: column; gap: .55rem; }
+        .study-today-item { display: flex; align-items: center; gap: .7rem; padding: .55rem .2rem; border-bottom: 1px solid rgba(148,163,184,.06); }
+        .study-today-item:last-child { border-bottom: 0; }
+        .study-today-dot { width: .7rem; height: .7rem; border-radius: 50%; background: rgba(148,163,184,.3); border: 1px solid rgba(148,163,184,.18); }
+        .study-today-item.done .study-today-dot { background: #22c55e; border-color: rgba(34,197,94,.8); }
+        .study-today-item span { font-size: .72rem; color: rgba(226,232,240,.9); }
+        .study-progress-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .7rem; }
+        .study-stat { border-radius: 1rem; background: rgba(15,23,42,.4); border: 1px solid rgba(148,163,184,.08); padding: .9rem .8rem; }
+        .study-stat strong { font-size: 1.3rem; letter-spacing: -0.06em; }
+        .study-stat span { display: block; margin-top: .35rem; font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(148,163,184,.8); }
+        .study-library-panel { padding: 0; overflow: hidden; }
+        .study-tabs { display: flex; gap: .25rem; overflow-x: auto; scrollbar-width: none; padding: .5rem .7rem 0; border-bottom: 1px solid rgba(148,163,184,.08); }
+        .study-tabs button { flex: 0 0 auto; padding: .7rem .75rem; color: rgba(148,163,184,.84); font-size: .64rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+        .study-tabs button.active { color: #f8fafc; border-bottom: 2px solid #22c55e; }
+        .study-view-panel { padding: .8rem .8rem 1rem; }
+        .study-resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .75rem; }
+        .study-resource { border-radius: 1rem; background: rgba(15,23,42,.38); border: 1px solid rgba(148,163,184,.08); padding: .8rem; }
+        .study-resource-top { display: flex; align-items: flex-start; gap: .7rem; }
+        .study-file-icon { width: 2.35rem; height: 2.35rem; border-radius: .8rem; background: rgba(34,197,94,.08); color: #4ade80; }
+        .study-resource-title { font-size: .8rem; font-weight: 800; color: #f8fafc; }
+        .study-meta { font-size: .62rem; color: rgba(148,163,184,.8); }
+        .study-badge { font-size: .5rem; letter-spacing: .08em; text-transform: uppercase; }
+        .study-btn { min-height: 2.4rem; border-radius: .9rem; padding: .6rem .8rem; font-size: .62rem; font-weight: 800; color: rgba(226,232,240,.96); background: rgba(255,255,255,.03); border: 1px solid rgba(148,163,184,.08); }
+        .study-btn.saved { color: #facc15; }
+        .study-actions { display: flex; flex-wrap: wrap; gap: .45rem; }
+
+        .whisper-shell { gap: 1rem; }
+        .whisper-hero { display: flex; flex-direction: column; gap: .8rem; }
+        .whisper-hero-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+        .whisper-compose-card {
+            border-radius: 1.5rem; background: linear-gradient(180deg, rgba(15,23,42,.82), rgba(8,12,18,.84)); border: 1px solid rgba(148,163,184,.1); padding: 1rem; box-shadow: 0 22px 42px rgba(2,6,23,.12);
+        }
+        .whisper-notice {
+            display: flex; gap: .7rem; align-items: flex-start; padding: .6rem .7rem; border-radius: 1rem; border: 1px solid rgba(74,222,128,.15); background: rgba(34,197,94,.05); color: rgba(226,232,240,.9); font-size: .72rem; line-height: 1.5;
+        }
+        .whisper-textarea {
+            width: 100%; min-height: 6.5rem; border: 1px solid rgba(148,163,184,.12); background: rgba(15,23,42,.38); color: #f8fafc; border-radius: 1rem; padding: .9rem 1rem; margin-top: .9rem; resize: vertical; font-size: .8rem; line-height: 1.5; outline: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+        }
+        .whisper-textarea:focus { border-color: rgba(74,222,128,.45); box-shadow: 0 0 0 3px rgba(34,197,94,.08); }
+        .whisper-composer-footer {
+            display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: .8rem; }
+        .whisper-counter { font-size: .66rem; color: rgba(148,163,184,.8); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .whisper-submit {
+            min-height: 2.7rem; padding: 0 .9rem; border-radius: .95rem; font-size: .72rem; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; color: #031b10; background: linear-gradient(135deg,#34d399,#22c55e); border: 0; box-shadow: 0 14px 26px rgba(34,197,94,.2);
+        }
+        .whisper-controls {
+            display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .2rem 0; }
+        .whisper-tabs { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+        .whisper-tab {
+            padding: .5rem .75rem; border-radius: 999px; color: rgba(148,163,184,.76); font-size: .68rem; font-weight: 800; border: 1px solid rgba(148,163,184,.08); background: rgba(15,23,42,.32);
+        }
+        .whisper-tab.active { color: #f8fafc; border-color: rgba(74,222,128,.24); background: rgba(34,197,94,.08); }
+        .whisper-action {
+            display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-height: 2.25rem; padding: .55rem .8rem; border-radius: .9rem; border: 1px solid rgba(148,163,184,.08); background: rgba(15,23,42,.32); color: rgba(226,232,240,.92); font-size: .7rem; font-weight: 800;
+        }
+        .whisper-feed { display: flex; flex-direction: column; gap: .8rem; }
+        .whisper-card {
+            border-radius: 1.3rem; background: rgba(15, 23, 42, 0.42); border: 1px solid rgba(148,163,184,.09); padding: .95rem .9rem; box-shadow: 0 16px 30px rgba(2,6,23,.08);
+        }
+        .whisper-card-head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; }
+        .whisper-author-wrap { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+        .whisper-avatar { width: 2.1rem; height: 2.1rem; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; background: rgba(34,197,94,.08); border: 1px solid rgba(74,222,128,.18); color: #86efac; font-size: .8rem; }
+        .whisper-author { font-size: .8rem; font-weight: 800; color: #f8fafc; }
+        .whisper-time { font-size: .58rem; color: rgba(148,163,184,.76); }
+        .whisper-content { padding-top: .7rem; color: rgba(226,232,240,.93); font-size: .9rem; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+        .whisper-actions { display: flex; align-items: center; gap: .7rem; padding-top: .8rem; border-top: 1px solid rgba(148,163,184,.08); margin-top: .8rem; }
+        .whisper-action.inline { min-height: 2rem; padding: .45rem .6rem; font-size: .6rem; }
+        .whisper-action.liked { color: #fda4af; border-color: rgba(251,113,133,.2); background: rgba(251,113,133,.06); }
+        .whisper-menu { position: relative; }
+        .whisper-menu-btn { width: 2rem; height: 2rem; border-radius: .8rem; border: 1px solid rgba(148,163,184,.08); background: rgba(15,23,42,.3); color: rgba(203,213,225,.8); }
+        .whisper-state {
+            border-radius: 1.25rem; padding: 1.1rem; border: 1px solid rgba(148,163,184,.08); background: rgba(15,23,42,.36); text-align: center;
+        }
+        .whisper-state h3 { margin: .5rem 0 .2rem; font-size: .95rem; }
+        .whisper-state p { margin: 0; font-size: .72rem; color: rgba(148,163,184,.8); }
+        .whisper-dialog {
+            width: min(100%, 26rem); background: linear-gradient(180deg, rgba(15,23,42,.96), rgba(8,12,18,.96)); border: 1px solid rgba(148,163,184,.1); border-radius: 1.5rem; padding: 1rem; box-shadow: 0 18px 42px rgba(2,6,23,.3);
+        }
+        .whisper-report-options { display: grid; gap: .55rem; margin-top: 1rem; }
+        .whisper-report-option {
+            display: flex; align-items: center; gap: .7rem; padding: .7rem .8rem; border-radius: .9rem; background: rgba(15,23,42,.38); border: 1px solid rgba(148,163,184,.08); font-size: .75rem; color: rgba(226,232,240,.9);
+        }
+        .whisper-report-option input { accent-color: #22c55e; }
+
+        @media (max-width: 720px) {
+            .profile-hero-main, .profile-hero-bio { flex-direction: column; align-items: flex-start; }
+            .profile-hero-copy { width: 100%; }
+            .profile-side-btn { width: 100%; }
+            .profile-identity-grid { grid-template-columns: 1fr; }
+            .profile-stat-grid { grid-template-columns: 1fr; }
+            .study-feature-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+            .study-resource-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 520px) {
+            .profile-hero-card, .profile-panel, .study-hero-card, .study-panel, .whisper-compose-card, .whisper-card { border-radius: 1.2rem; }
+            .profile-content-shell { padding: .8rem .8rem 1rem; }
+            .profile-photo-frame { width: 4.8rem; height: 4.8rem; }
+            .profile-hero-main { margin-top: -2.6rem; }
+            .profile-hero-title h2 { font-size: 1.7rem; }
+            .profile-edit-grid { grid-template-columns: 1fr; }
+            .study-feature-grid { grid-template-columns: 1fr; }
+            .whisper-composer-footer, .whisper-controls, .study-hero-row, .study-hero-head, .whisper-hero-head { flex-direction: column; align-items: stretch; }
+            .study-tabs { padding-left: .5rem; padding-right: .5rem; }
+            .study-btn, .whisper-submit, .whisper-action { width: 100%; }
+            .whisper-action.inline { width: auto; }
+        }
         /* Responsive text wrapping helpers */
         .break-words { overflow-wrap: break-word; word-break: break-word; }
         .wrap-on-mobile { white-space: normal !important; }
         
         /* Light Mode Styles - Professional neutral theme */
         body.light-mode {
-            background: linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
+            background: radial-gradient(760px 420px at 50% -10%, rgba(16,185,129,0.08), transparent 60%), linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
             color: #111827;
         }
         body.light-mode .glass-card {
@@ -38,6 +342,13 @@
         body.light-mode nav {
             background: linear-gradient(90deg, rgba(255,255,255,0.98) 0%, rgba(250,250,250,0.98) 100%) !important;
             border-bottom: 1px solid rgba(15,23,42,0.04);
+        }
+        body.light-mode .icos-brand .uni,
+        body.light-mode .icos-brand .icos {
+            color: #0f172a !important;
+        }
+        body.light-mode .icos-brand .verse {
+            color: #059669 !important;
         }
         body.light-mode #userUniDisplay {
             color: #6b7280 !important;
@@ -61,6 +372,20 @@
         }
         body.light-mode .border-white\/10 {
             border-color: rgba(15,23,42,0.06) !important;
+        }
+        body.light-mode .profile-setting-row {
+            background: #f8fafc;
+            border-color: rgba(15, 23, 42, 0.06);
+            color: #0f172a;
+        }
+        body.light-mode .profile-setting-row:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        body.light-mode .profile-setting-row-danger {
+            background: rgba(239, 68, 68, 0.06);
+            border-color: rgba(239, 68, 68, 0.12);
+            color: #991b1b;
         }
         body.light-mode .border-white\/5 {
             border-color: rgba(15,23,42,0.03) !important;
@@ -225,56 +550,58 @@ body.light-mode .orbit-search,body.light-mode .orbit-composer-card,body.light-mo
 .study-tutor-content code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.7rem;background:rgba(0,0,0,.25);padding:.1rem .3rem;border-radius:5px}.study-tutor-content pre{overflow:auto;padding:.7rem;border-radius:10px;background:rgba(0,0,0,.3);margin:.55rem 0}.study-tutor-content pre code{background:none;padding:0}.study-tutor-math{font-family:Georgia,serif;font-style:italic;display:inline-block;margin:0 .12rem;color:#f8fafc}
 .study-tutor-form{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);border-radius:16px;padding:.7rem}.study-tutor-form textarea{width:100%;resize:vertical;min-height:72px;background:transparent;border:0;outline:0;color:inherit;font-size:.75rem;line-height:1.5}.study-tutor-form-row{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.45rem}.study-tutor-status{padding:.55rem .7rem;border-radius:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);color:#fca5a5;font-size:.65rem}
 @media(max-width:640px){.study-tutor-message{max-width:100%}.study-tutor-messages{max-height:48vh}.study-tutor-form-row{align-items:flex-end}.study-tutor-form-row .study-note{max-width:55%}}
-/* Study Hub — isolated production UI */
-.study-hub{min-width:0}
+/* Study Hub — match Orbit’s centered content rail without extra page-side padding. */
+.study-hub{min-width:0;max-width:42rem;margin:0 auto;width:100%}
 .study-kicker{font-size:9px;font-weight:900;letter-spacing:.2em;color:#22c55e;text-transform:uppercase}
-.study-hero{display:flex;flex-direction:column;gap:1rem}
-.study-search{display:flex;align-items:center;gap:.65rem;padding:.8rem 1rem;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.025)}
-.study-search input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:inherit;font-size:.76rem}
-.study-search i{color:#64748b}
-.study-card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);border-radius:22px;padding:1rem}
+.study-hero{display:flex;flex-direction:column;gap:1rem;padding-top:.1rem}
+.study-search{display:flex;align-items:center;gap:.65rem;padding:.8rem 1rem;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.025);min-width:0;max-width:100%}
+.study-search input{flex:1;min-width:0;max-width:100%;background:transparent;border:0;outline:0;color:inherit;font-size:.76rem;overflow-wrap:anywhere}
+.study-search i{color:#64748b;flex:0 0 auto}
+.study-card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);border-radius:22px;padding:1rem;min-width:0;max-width:100%;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.study-card:hover{transform:translateY(-1px);border-color:rgba(74,222,128,.18);box-shadow:0 18px 50px rgba(15,23,42,.14)}
 .study-card h3{font-weight:800}
-.study-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
-.study-stat{padding:.9rem;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:rgba(255,255,255,.018)}
-.study-stat strong{display:block;font-size:1.05rem}
+.study-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;min-width:0}
+.study-stat{padding:.9rem;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:rgba(255,255,255,.018);min-width:0}
+.study-stat strong{display:block;font-size:1.05rem;overflow-wrap:anywhere}
 .study-stat span{display:block;margin-top:.2rem;font-size:.58rem;color:#64748b;text-transform:uppercase;letter-spacing:.12em;font-weight:800}
-.study-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem}
-.study-section-head p{font-size:.62rem;color:#64748b;margin-top:.2rem}
+.study-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;min-width:0}
+.study-section-head p{font-size:.62rem;color:#64748b;margin-top:.2rem;overflow-wrap:anywhere}
 .study-link-btn{font-size:.62rem;font-weight:800;color:#4ade80}
-.study-course-grid,.study-resource-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
-.study-course{min-width:0}
-.study-course-code{font-size:.58rem;color:#4ade80;font-weight:900;letter-spacing:.12em}
-.study-course-title{font-size:.8rem;font-weight:800;margin-top:.2rem;overflow-wrap:anywhere}
-.study-meta{font-size:.58rem;color:#64748b;line-height:1.45}
-.study-actions{display:flex;gap:.4rem;flex-wrap:wrap}
-.study-btn{min-height:38px;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border-radius:12px;padding:.55rem .7rem;font-size:.6rem;font-weight:800;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:#cbd5e1}
-.study-btn:hover{background:rgba(255,255,255,.07)}
+.study-course-grid,.study-resource-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;min-width:0}
+.study-course,.study-resource{min-width:0;max-width:100%}
+.study-course-code{font-size:.58rem;color:#4ade80;font-weight:900;letter-spacing:.12em;overflow-wrap:anywhere}
+.study-course-title{font-size:.8rem;font-weight:800;margin-top:.2rem;overflow-wrap:anywhere;word-break:break-word}
+.study-meta{font-size:.58rem;color:#64748b;line-height:1.45;overflow-wrap:anywhere;word-break:break-word}
+.study-actions{display:flex;gap:.4rem;flex-wrap:wrap;min-width:0}
+.study-btn{min-height:38px;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border-radius:12px;padding:.55rem .7rem;font-size:.6rem;font-weight:800;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:#cbd5e1;max-width:100%;white-space:nowrap;transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.study-btn:hover{background:rgba(255,255,255,.07);transform:translateY(-1px)}
 .study-btn.primary{background:#22c55e;color:#052e16;border-color:#22c55e}
 .study-btn.saved{color:#facc15}
-.study-filter-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem}
-.study-filter{width:100%;padding:.65rem .7rem;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025);color:inherit;font-size:.62rem;outline:0}
-.study-resource{display:flex;flex-direction:column;gap:.65rem;min-width:0}
-.study-resource-top{display:flex;align-items:flex-start;gap:.7rem}
+.study-filter-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem;min-width:0}
+.study-filter{width:100%;padding:.65rem .7rem;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025);color:inherit;font-size:.62rem;outline:0;min-width:0;max-width:100%}
+.study-resource{display:flex;flex-direction:column;gap:.65rem;min-width:0;max-width:100%}
+.study-resource-top{display:flex;align-items:flex-start;gap:.7rem;min-width:0}
 .study-file-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,.08);color:#4ade80;flex:0 0 auto}
-.study-resource-title{font-size:.72rem;font-weight:800;overflow-wrap:anywhere}
-.study-badge{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:.25rem .45rem;font-size:.48rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8}
-.study-empty{text-align:center;padding:2rem 1rem;color:#64748b;border:1px dashed rgba(255,255,255,.1);border-radius:22px}
+.study-resource-title{font-size:.72rem;font-weight:800;overflow-wrap:anywhere;word-break:break-word;line-height:1.45}
+.study-badge{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:.25rem .45rem;font-size:.48rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;max-width:100%;overflow-wrap:anywhere}
+.study-empty{text-align:center;padding:2rem 1rem;color:#64748b;border:1px dashed rgba(255,255,255,.1);border-radius:22px;min-width:0}
 .study-empty-icon{width:52px;height:52px;border-radius:50%;margin:0 auto .9rem;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,.06);color:#22c55e}
 .study-empty h4{font-size:.85rem;font-weight:800;color:inherit}
-.study-empty p{font-size:.63rem;max-width:340px;margin:.35rem auto 0;line-height:1.5}
-.study-tabs{display:flex;gap:.2rem;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.07)}
-.study-tabs button{white-space:nowrap;padding:.65rem .75rem;color:#64748b;font-size:.62rem;font-weight:800}
+.study-empty p{font-size:.63rem;max-width:340px;margin:.35rem auto 0;line-height:1.5;overflow-wrap:anywhere;word-break:break-word}
+.study-tabs{display:flex;gap:.2rem;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.07);scrollbar-width:none}
+.study-tabs::-webkit-scrollbar{display:none}
+.study-tabs button{white-space:nowrap;padding:.65rem .75rem;color:#64748b;font-size:.62rem;font-weight:800;flex:0 0 auto}
 .study-tabs button.active{color:#fff;border-bottom:2px solid #22c55e}
 .study-modal-backdrop{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-end;justify-content:center;padding:.75rem;background:rgba(2,6,23,.78);backdrop-filter:blur(8px)}
 .study-modal{width:min(100%,760px);max-height:92dvh;overflow:auto;background:#0e1421;border:1px solid rgba(255,255,255,.1);border-radius:1.6rem 1.6rem .5rem .5rem;box-shadow:0 30px 90px rgba(0,0,0,.5);padding:1rem}
 .study-viewer{width:100%;height:min(72dvh,720px);border:0;border-radius:14px;background:#fff}
-.study-today-item{display:flex;align-items:center;gap:.65rem;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.study-today-item{display:flex;align-items:center;gap:.65rem;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.05);min-width:0}
 .study-today-item:last-child{border-bottom:0}
 .study-today-dot{width:10px;height:10px;border-radius:50%;border:1px solid #475569;flex:0 0 auto}
 .study-today-item.done .study-today-dot{background:#22c55e;border-color:#22c55e}
-.study-today-item span{font-size:.65rem;color:#cbd5e1}
-.study-note{font-size:.58rem;line-height:1.5;color:#64748b}
-.study-error{padding:.7rem .8rem;border:1px solid rgba(248,113,113,.2);background:rgba(248,113,113,.06);border-radius:12px;color:#fca5a5;font-size:.6rem}
+.study-today-item span{font-size:.65rem;color:#cbd5e1;overflow-wrap:anywhere;word-break:break-word}
+.study-note{font-size:.58rem;line-height:1.5;color:#64748b;overflow-wrap:anywhere;word-break:break-word}
+.study-error{padding:.7rem .8rem;border:1px solid rgba(248,113,113,.2);background:rgba(248,113,113,.06);border-radius:12px;color:#fca5a5;font-size:.6rem;overflow-wrap:anywhere}
 body.light-mode .study-search,body.light-mode .study-card,body.light-mode .study-stat,body.light-mode .study-resource{background:#fff;border-color:rgba(15,23,42,.07)}
 body.light-mode .study-filter{background:#f8fafc;border-color:rgba(15,23,42,.07);color:#0f172a}
 body.light-mode .study-modal{background:#fff;border-color:rgba(15,23,42,.08)}
@@ -283,113 +610,49 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
  .study-grid,.study-course-grid,.study-resource-grid{grid-template-columns:1fr}
  .study-filter-row{grid-template-columns:1fr 1fr}
  .study-section-head{align-items:flex-start;flex-direction:column}
- .study-actions .study-btn{flex:1}
+ .study-actions .study-btn{flex:1 1 0}
+ .study-btn{flex:1 1 auto}
+ .study-tabs{display:flex;flex-wrap:nowrap}
+ .study-tabs button{padding:.58rem .62rem;font-size:.58rem}
  .study-modal{border-radius:1.5rem 1.5rem .5rem .5rem}
+ .study-search{padding:.7rem .75rem}
+ .study-search input{font-size:.7rem}
+ .study-hero .study-btn{width:100%}
 }
-
-
-/* ============================================================
-   CAMPUS WHISPER — scoped production UI
-   ============================================================ */
-.whisper-shell{max-width:900px;margin:0 auto;padding-bottom:5.5rem}
-.whisper-composer,.whisper-card,.whisper-state{background:rgba(15,23,42,.58);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.light-mode .whisper-composer,.light-mode .whisper-card,.light-mode .whisper-state{background:rgba(255,255,255,.78);border-color:rgba(15,23,42,.08)}
-.whisper-composer{border-radius:28px;padding:18px}
-.whisper-textarea{width:100%;min-height:130px;resize:vertical;border:0;outline:0;background:transparent;color:#f8fafc;font-size:15px;line-height:1.65}
-.light-mode .whisper-textarea{color:#0f172a}
-.whisper-textarea::placeholder{color:#64748b}
-.whisper-composer-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
-.whisper-counter{font-size:11px;color:#64748b;font-weight:700}
-.whisper-submit{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:14px;border:1px solid rgba(34,197,94,.28);background:rgba(34,197,94,.14);color:#86efac;font-weight:800;font-size:12px;transition:.18s ease}
-.whisper-submit:hover{background:rgba(34,197,94,.2);transform:translateY(-1px)}
-.whisper-submit:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.whisper-notice{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:15px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.12);color:#94a3b8;font-size:11px;line-height:1.5}
-.whisper-tabs{display:flex;gap:8px;overflow:auto;padding:2px 0;scrollbar-width:none}.whisper-tabs::-webkit-scrollbar{display:none}
-.whisper-tab{flex:0 0 auto;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#64748b;border-radius:999px;padding:9px 13px;font-size:11px;font-weight:800}
-.whisper-tab.active{color:#bbf7d0;border-color:rgba(34,197,94,.28);background:rgba(34,197,94,.1)}
-.whisper-feed{display:grid;gap:12px}
-.whisper-card{border-radius:24px;padding:17px}
-.whisper-card-head{display:flex;align-items:center;gap:10px}.whisper-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.16);color:#86efac;flex:0 0 auto}.whisper-author{font-size:12px;font-weight:800;color:#e2e8f0}.light-mode .whisper-author{color:#0f172a}.whisper-time{font-size:10px;color:#64748b;margin-top:2px}.whisper-menu{margin-left:auto;position:relative}.whisper-menu-btn{width:34px;height:34px;border-radius:10px;border:0;background:transparent;color:#64748b}.whisper-menu-btn:hover{background:rgba(255,255,255,.05);color:#cbd5e1}.whisper-content{margin:14px 0 16px;color:#e2e8f0;font-size:14px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}.light-mode .whisper-content{color:#1e293b}.whisper-actions{display:flex;align-items:center;gap:8px}.whisper-action{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 11px;border-radius:11px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);color:#94a3b8;font-size:11px;font-weight:800}.whisper-action:hover{background:rgba(255,255,255,.06);color:#e2e8f0}.whisper-action.liked{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.08)}
-.whisper-load-more{width:100%;min-height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#94a3b8;font-weight:800;font-size:11px}.whisper-load-more:hover{background:rgba(255,255,255,.06);color:#e2e8f0}.whisper-load-more:disabled{opacity:.5}
-.whisper-state{border-radius:24px;padding:34px 20px;text-align:center;color:#64748b}.whisper-state h3{color:#e2e8f0;font-size:14px;font-weight:800;margin:8px 0 5px}.light-mode .whisper-state h3{color:#0f172a}.whisper-state p{font-size:11px;line-height:1.6;max-width:420px;margin:0 auto}.whisper-retry{margin-top:14px;min-height:40px;padding:0 14px;border-radius:12px;border:1px solid rgba(34,197,94,.2);background:rgba(34,197,94,.08);color:#86efac;font-weight:800;font-size:11px}
-.whisper-modal{position:fixed;inset:0;z-index:160;display:grid;place-items:center;padding:18px;background:rgba(2,6,23,.76);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}.whisper-modal.hidden{display:none}.whisper-dialog{width:min(100%,430px);border-radius:24px;background:#0f172a;border:1px solid rgba(255,255,255,.09);padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.4)}.light-mode .whisper-dialog{background:#fff;border-color:rgba(15,23,42,.1)}
-.whisper-report-options{display:grid;gap:8px;margin:14px 0}.whisper-report-option{display:flex;align-items:center;gap:10px;padding:12px;border-radius:13px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);color:#cbd5e1;font-size:12px;text-align:left}.light-mode .whisper-report-option{color:#334155;border-color:rgba(15,23,42,.08);background:rgba(15,23,42,.025)}.whisper-report-option input{accent-color:#22c55e}
-.whisper-toast{position:fixed;left:50%;bottom:94px;transform:translate(-50%,10px);z-index:170;max-width:min(92vw,430px);padding:11px 14px;border-radius:13px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:700;opacity:0;pointer-events:none;transition:.2s ease;box-shadow:0 14px 35px rgba(0,0,0,.3)}.whisper-toast.show{opacity:1;transform:translate(-50%,0)}
-        /* Profile section — scoped styles only */
-        .profile-toast{position:fixed;left:50%;bottom:94px;transform:translate(-50%,10px);z-index:170;max-width:min(92vw,380px);padding:11px 16px;border-radius:13px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(255,255,255,.1);font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:.2s ease;box-shadow:0 14px 35px rgba(0,0,0,.3)}
-        .profile-toast.show{opacity:1;transform:translate(-50%,0)}
-        .profile-toast.profile-toast-error{border-color:rgba(239,68,68,.35);background:#1c1013}
-        .profile-skel{background:linear-gradient(90deg,rgba(255,255,255,.035),rgba(255,255,255,.08),rgba(255,255,255,.035));background-size:200% 100%;animation:profileShimmer 1.3s infinite;border-radius:10px}
-        @keyframes profileShimmer{to{background-position:-200% 0}}
-        .profile-cover{height:116px;background:radial-gradient(circle at 12% 15%,rgba(34,197,94,.2),transparent 35%),radial-gradient(circle at 88% 25%,rgba(34,197,94,.12),transparent 32%),linear-gradient(135deg,#0e1726 0%,#0b0f1a 55%,#0a1320 100%);position:relative;overflow:hidden}
-        .profile-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 15%,rgba(11,15,26,.1) 50%,rgba(11,15,26,.72) 100%)}
-        .profile-cover-orbit{position:absolute;width:280px;height:120px;right:-80px;top:-70px;border:1px solid rgba(34,197,94,.18);border-radius:50%;transform:rotate(-18deg);box-shadow:0 0 70px rgba(34,197,94,.08)}
-        .profile-photo-frame{transition:box-shadow .2s ease,transform .2s ease}
-        .profile-photo-frame:hover{box-shadow:0 18px 40px rgba(0,0,0,.35)}
-        .profile-camera-btn{transition:transform .15s ease,background .15s ease}
-        .profile-camera-btn:active{transform:scale(.92)}
-        .profile-camera-btn:focus-visible,.profile-edit-input:focus-visible,.profile-edit-textarea:focus-visible,#editProfileBtn:focus-visible,#saveProfileBtn:focus-visible,#cancelProfileEditBtn:focus-visible{outline:2px solid #22c55e;outline-offset:2px}
-        .profile-field-value{overflow-wrap:anywhere;word-break:break-word}
-        .profile-edit-input:focus,.profile-edit-textarea:focus{box-shadow:0 0 0 3px rgba(34,197,94,.2)}
-        .profile-meta-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .6rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:#cbd5e1;font-size:.6rem;font-weight:800;line-height:1}
-        .profile-meta-chip i{color:#4ade80}
-        .profile-meta-chip-empty{color:#64748b}
-        .profile-meta-chip-empty i{color:#64748b}
-        .profile-verified-badge{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .55rem;border-radius:999px;background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.18);color:#86efac;font-size:.55rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
-        .profile-detail-card{border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.018);border-radius:18px;padding:14px}
-        .profile-detail-label{font-size:9px;text-transform:uppercase;letter-spacing:.14em;font-weight:900;color:#64748b;margin-bottom:5px}
-        .profile-detail-value{font-size:.82rem;color:#dbe4ef;line-height:1.6}
-        .profile-interest-chip,.profile-badge-chip,.profile-empty-chip{display:inline-flex;align-items:center;gap:.35rem;border-radius:999px;padding:.42rem .62rem;font-size:.58rem;font-weight:800}
-        .profile-interest-chip{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.14);color:#a7f3d0}
-        .profile-badge-chip{background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.14);color:#fde68a}
-        .profile-empty-chip{background:rgba(255,255,255,.025);border:1px dashed rgba(255,255,255,.09);color:#64748b}
-        .profile-icon-btn{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#94a3b8}
-        .profile-icon-btn:hover{background:rgba(255,255,255,.08);color:#fff}
-        .profile-setting-row{width:100%;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;border-radius:15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.04);color:#cbd5e1;font-size:.78rem;font-weight:700;text-align:left;transition:.18s ease}
-        .profile-setting-row:hover{background:rgba(255,255,255,.06);color:#fff}
-        .profile-setting-row > span{display:flex;align-items:center;gap:.65rem;min-width:0}
-        .profile-setting-row > span > span{overflow-wrap:anywhere}
-        .profile-setting-row-disabled{opacity:.55;cursor:default}
-        .profile-setting-row-disabled:hover{background:rgba(255,255,255,.035);color:#cbd5e1}
-        .profile-setting-row-danger{color:#fca5a5;background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.12)}
-        .profile-setting-row-danger:hover{background:rgba(239,68,68,.1);color:#fecaca}
-        body.light-mode .profile-cover{background:radial-gradient(circle at 12% 15%,rgba(16,185,129,.12),transparent 35%),linear-gradient(135deg,#edf6f1 0%,#ffffff 60%,#f6faf8 100%)}
-        body.light-mode .profile-cover::after{background:linear-gradient(180deg,transparent 15%,rgba(255,255,255,.05) 50%,rgba(255,255,255,.82) 100%)}
-        body.light-mode .profile-detail-card{background:#f8fafc;border-color:rgba(15,23,42,.06)}
-        body.light-mode .profile-meta-chip{background:#f8fafc;border-color:rgba(15,23,42,.07);color:#475569}
-        body.light-mode .profile-verified-badge{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.15);color:#047857}
-        body.light-mode .profile-interest-chip{background:rgba(16,185,129,.07);color:#047857}
-        body.light-mode .profile-badge-chip{background:rgba(250,204,21,.08);color:#a16207}
-        body.light-mode .profile-empty-chip{background:#f8fafc;border-color:rgba(15,23,42,.08);color:#64748b}
-        @media (max-width: 640px){
-            .profile-cover{height:96px}
-            .profile-hero-actions{width:100%}
-            .profile-setting-row{padding:.8rem .85rem}
-        }
-
-@media (max-width:640px){.whisper-shell{padding-bottom:6rem}.whisper-composer{padding:14px;border-radius:22px}.whisper-textarea{min-height:115px;font-size:14px}.whisper-composer-footer{align-items:flex-end}.whisper-submit{min-height:42px;padding:0 14px}.whisper-card{padding:15px;border-radius:20px}.whisper-content{font-size:14px}.whisper-action{flex:1;justify-content:center;min-width:0}.whisper-action span{display:none}.whisper-modal{padding:12px}.whisper-dialog{border-radius:20px}}
-
-</style>
+@media(max-width:420px){
+ .study-card{padding:.8rem}
+ .study-grid{gap:.6rem}
+ .study-stat strong{font-size:.95rem}
+ .study-stat span{letter-spacing:.09em}
+ .study-course-code{letter-spacing:.09em}
+ .study-tabs{overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+ .study-tabs button{flex:0 0 auto}
+ .study-resource-top{gap:.55rem}
+ .study-file-icon{width:34px;height:34px}
+}
+@media(max-width:360px){
+ .study-search{gap:.45rem}
+ .study-search input{font-size:.66rem}
+ .study-btn{font-size:.56rem;padding:.52rem .6rem}
+ .study-hero .study-btn{white-space:normal;line-height:1.3}
+ .study-card h3{font-size:.76rem}
+ .study-note{font-size:.56rem}
+ .study-meta{font-size:.56rem}
+}
+@media (prefers-reduced-motion: reduce){.study-card,.study-btn,.study-tab,.whisper-card,.whisper-action,.whisper-submit,.whisper-tab{transition:none !important;animation:none !important}}</style>
 </head>
 <body class="min-h-screen pb-32">
 
     <nav class="p-6 flex justify-between items-center sticky top-0 bg-[#0b0f1a]/90 backdrop-blur-md z-50 md:p-6 sm:p-4">
         <div class="min-w-0">
-            <h1 class="text-xl md:text-2xl font-bold tracking-tighter truncate">Uni<span class="text-green-500">VERSE</span></h1>
+            <h1 class="text-xl md:text-2xl font-bold tracking-tighter truncate"><span class="icos-brand"><span class="uni">Uni</span><span class="verse">Verse</span><span class="icos">ICOS</span></span></h1>
             <div class="flex items-center gap-1.5 min-w-0">
                 <div class="w-1.5 h-1.5 flex-shrink-0 rounded-full bg-green-500 animate-pulse"></div>
                 <p id="userUniDisplay" class="text-[8px] md:text-[9px] text-slate-500 uppercase font-black tracking-widest italic truncate">Verifying...</p>
             </div>
         </div>
         <div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
-            <button onclick="toggleTheme()" class="text-slate-400 hover:text-slate-600 transition p-1 md:px-2" title="Toggle Dark/Light Mode">
-                <i id="themeIcon" class="fas fa-moon text-base md:text-lg"></i>
-            </button>
-            <button onclick="toggleLogoutModal(true)" class="text-slate-400 hover:text-red-500 transition p-1 md:px-2" title="Logout">
-                <i class="fas fa-sign-out-alt text-base md:text-lg"></i>
-            </button>
-            <button type="button" title="Messages" class="text-slate-400 hover:text-white transition p-1 md:px-2"><i class="far fa-comment-dots text-base md:text-lg"></i></button>
-            <button onclick="openProfilePage()" id="userInitial" class="w-8 h-8 md:w-10 md:h-10 rounded-full scholar-gradient flex items-center justify-center font-bold border border-white/10 shadow-lg cursor-pointer flex-shrink-0 hover:shadow-green-500/30 transition title='Profile'"><i class="fas fa-user text-white text-sm md:text-lg"></i></button>
+            <button onclick="openProfilePage()" id="userInitial" aria-label="Open profile" class="w-8 h-8 md:w-10 md:h-10 rounded-full scholar-gradient flex items-center justify-center font-bold border border-white/10 shadow-lg cursor-pointer flex-shrink-0 hover:shadow-green-500/30 transition"><i class="fas fa-user text-white text-sm md:text-lg"></i></button>
         </div>
     </nav>
 
@@ -410,7 +673,7 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
 <div id="lodgePage" class="hidden space-y-4 md:space-y-6 animate-fadeIn">
     <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-3 md:gap-4">
         <div class="min-w-0">
-            <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">UniVERSE Real Estate</p>
+            <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">UniVerse ICOS Real Estate</p>
             <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Lodge Finder</h2>
         </div>
         <button id="scoutButton" onclick="checkReputationForPosting()" class="w-full md:w-auto scholar-gradient px-4 md:px-6 py-2 md:py-3 rounded-2xl text-[8px] md:text-[10px] font-black uppercase tracking-widest shadow-lg shadow-green-500/20 active:scale-95 transition flex-shrink-0">
@@ -729,6 +992,10 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
                     <span><i class="fas fa-flask text-green-500"></i><span>Future ICOS Experiences</span></span>
                     <i class="fas fa-chevron-right text-slate-500"></i>
                 </button>
+                <button type="button" onclick="toggleTheme()" class="profile-setting-row">
+                    <span><i id="themeControlIcon" class="fas fa-moon text-green-500"></i><span id="themeControlLabel">Dark mode</span></span>
+                    <span id="themeControlState" class="text-[8px] font-black uppercase tracking-widest text-green-500">Dark</span>
+                </button>
                 <div class="profile-setting-row profile-setting-row-disabled">
                     <span><i class="fas fa-lock"></i><span>Privacy Settings</span></span>
                     <span class="text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
@@ -803,7 +1070,7 @@ body.light-mode .study-empty{border-color:rgba(15,23,42,.1)}
             <div class="chat-shell space-y-4 md:space-y-5">
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div class="min-w-0">
-                        <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">UniVERSE Communication</p>
+                        <p class="text-[8px] md:text-[10px] text-green-500 font-black uppercase tracking-[0.2em] mb-1">UniVerse ICOS Communication</p>
                         <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Campus Chat</h2>
                         <p class="text-xs md:text-sm text-slate-500 mt-1">Connect with students on your campus.</p>
                     </div>
@@ -1172,10 +1439,27 @@ let appState = {
 
         function updateThemeIcon(theme) {
             const icon = document.getElementById('themeIcon');
-            if (theme === 'light') {
-                icon.className = 'fas fa-sun text-lg';
-            } else {
-                icon.className = 'fas fa-moon text-lg';
+            const profileIcon = document.getElementById('themeControlIcon');
+            const profileLabel = document.getElementById('themeControlLabel');
+            const profileState = document.getElementById('themeControlState');
+            const isLight = theme === 'light';
+
+            if (icon) {
+                icon.className = isLight ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
+            }
+
+            if (profileIcon) {
+                profileIcon.className = isLight ? 'fas fa-sun text-green-500' : 'fas fa-moon text-green-500';
+            }
+
+            if (profileLabel) {
+                profileLabel.textContent = isLight ? 'Light mode' : 'Dark mode';
+            }
+
+            if (profileState) {
+                profileState.textContent = isLight ? 'Light' : 'Dark';
+                profileState.classList.toggle('text-green-500', true);
+                profileState.classList.toggle('text-slate-500', !isLight);
             }
         }
 
@@ -2175,7 +2459,7 @@ function whisperHumanError(error, fallback='Something went wrong. Please try aga
     if (msg.includes('content not reportable')) return 'That Whisper is no longer available to report.';
     if (msg.includes('invalid report reason')) return 'Please choose a valid report reason.';
     if (msg.includes('permission') || msg.includes('row-level security') || msg.includes('rls')) return fallback;
-    if (msg.includes('network') || msg.includes('fetch')) return 'We couldn’t reach UniVerse. Check your connection and try again.';
+    if (msg.includes('network') || msg.includes('fetch')) return 'We couldn’t reach UniVerse ICOS. Check your connection and try again.';
     return fallback;
 }
 
@@ -2877,10 +3161,10 @@ function orbitAvatar(name,url){url=ou(url);return url?`<div class="orbit-avatar"
 function orbitScore(p){const l=Number(p.likeCount)||0,c=Number(p.commentCount)||0,h=Math.max(1,(Date.now()-new Date(p.created_at))/36e5);return(l*3+c*5)/Math.pow(h,.65)}
 function orbitList(){let a=[...orbitState.posts.values()];if(orbitState.search){const q=orbitState.search.toLowerCase().replace(/^[@#]/,'');a=a.filter(p=>`${p.poster_name||''} ${p.content||''}`.toLowerCase().includes(q))}if(orbitState.mode==='trending')a.sort((x,y)=>orbitScore(y)-orbitScore(x));else if(orbitState.mode==='latest')a.sort((x,y)=>{const t=new Date(y.created_at)-new Date(x.created_at);return t||String(y.id).localeCompare(String(x.id));});else a.sort((x,y)=>orbitScore(y)*.2+new Date(y.created_at)/1e11-(orbitScore(x)*.2+new Date(x.created_at)/1e11));return a}
 function orbitMedia(p){const a=(p.images||[]).map(ou).filter(Boolean);if(!a.length)return'';const shown=a.slice(0,4),cls=shown.length===1?'one':shown.length===2?'two':shown.length===3?'three':'four',more=a.length-4;return`<div class="orbit-media ${cls}">${shown.map((u,i)=>`<button type="button" class="${more&&i===3?'orbit-more':''}" ${more&&i===3?`data-more="+${more}"`:''} onclick="openOrbitMediaViewer('${oe(p.id)}',${i})"><img src="${oe(u)}" alt="Photo shared by ${oe(p.poster_name||'student')}" loading="lazy" decoding="async"></button>`).join('')}</div>`}
-function orbitCommentRows(id){const rows=orbitState.comments.get(id)||[];if(!rows.length)return'<div class="text-[10px] text-slate-500">No comments yet. Start the conversation.</div>';const p=orbitState.posts.get(id);return rows.map(c=>{const prof=orbitState.profiles.get(c.user_id)||{};const name=prof.full_name||c.user_id===currentUserId?userFullName:'Student';return`<div class="orbit-comment" data-comment-id="${oe(c.id)}">${orbitAvatar(name,prof.profile_photo_url)}<div class="orbit-comment-body"><div><span class="orbit-comment-name">${oe(name||'Student')}</span><span class="orbit-comment-time">${oe(timeAgo(c.created_at))}</span></div><div class="orbit-comment-text">${orbitText(c.content||'')}</div></div><div class="flex gap-2">${p?`<button onclick="setOrbitReply('${oe(id)}','${oe(c.id)}')" class="text-[9px] text-slate-500">Reply</button>`:''}${c.user_id===currentUserId?`<button onclick="deleteComment('${oe(id)}','${oe(c.id)}')" class="text-slate-500" aria-label="Delete comment"><i class="fas fa-times"></i></button>`:''}</div></div>`}).join('')}
-function renderPost(p){const liked=!!p.likedByCurrentUser,saved=!!p.savedByCurrentUser,own=p.poster_id===currentUserId,prof=orbitState.profiles.get(p.poster_id)||{};return`<article id="post-${oe(p.id)}" class="glass-card orbit-post space-y-3"><header class="orbit-post-head"><button class="orbit-author" onclick="openOrbitAuthor('${oe(p.poster_id||'')}')">${orbitAvatar(p.poster_name,prof.profile_photo_url)}<span class="orbit-author-meta"><strong class="orbit-author-name">${oe(p.poster_name||'Student')}</strong><span class="orbit-author-info">${oe(p.school_tag||userUniversity)} • ${oe(timeAgo(p.created_at))}${p.edited_at?' • edited':''}</span></span></button><div class="orbit-menu-wrap"><button class="orbit-menu" onclick="toggleOrbitMenu('${oe(p.id)}')" aria-label="Post options"><i class="fas fa-ellipsis-h"></i></button><div id="orbitMenu-${oe(p.id)}" class="orbit-menu-panel hidden">${own?`<button onclick="editPost('${oe(p.id)}')"><i class="fas fa-pen"></i> Edit post</button><button class="danger" onclick="deletePost('${oe(p.id)}')"><i class="fas fa-trash"></i> Delete post</button>`:`<button onclick="shareOrbitPost('${oe(p.id)}')"><i class="fas fa-share"></i> Share</button><button onclick="reportOrbitPost('${oe(p.id)}')"><i class="far fa-flag"></i> Report</button>`}<button onclick="toggleSavePost('${oe(p.id)}')"><i class="${saved?'fas':'far'} fa-bookmark"></i> ${saved?'Unsave':'Save'}</button></div></div></header>${p.content?`<div class="orbit-content">${orbitText(p.content)}</div>`:''}${orbitMedia(p)}<div class="orbit-actions"><button id="like-${oe(p.id)}" class="orbit-action ${liked?'liked':''}" onclick="toggleLike('${oe(p.id)}')"><i class="${liked?'fas':'far'} fa-heart"></i><span>${Number(p.likeCount)||0}</span></button><button class="orbit-action" onclick="toggleComments('${oe(p.id)}')"><i class="far fa-comment"></i><span id="comment-count-${oe(p.id)}">${Number(p.commentCount)||0}</span></button><button class="orbit-action" onclick="shareOrbitPost('${oe(p.id)}')"><i class="fas fa-share"></i> Share</button><button id="save-${oe(p.id)}" class="orbit-action ${saved?'saved':''}" onclick="toggleSavePost('${oe(p.id)}')"><i class="${saved?'fas':'far'} fa-bookmark"></i></button></div><section id="commentSection-${oe(p.id)}" class="orbit-comments hidden"><div id="commentList-${oe(p.id)}" class="orbit-comment-list"></div><button id="commentMore-${oe(p.id)}" type="button" class="hidden text-[10px] text-green-500 font-bold" onclick="loadComments('${oe(p.id)}',true)">Load more comments</button><form class="orbit-comment-input" onsubmit="event.preventDefault();addComment('${oe(p.id)}')"><input id="commentInput-${oe(p.id)}" maxlength="1000" placeholder="Add a comment..." autocomplete="off"><button type="submit" aria-label="Send"><i class="fas fa-paper-plane"></i></button></form></section></article>`}
+function orbitCommentRows(id){const rows=orbitState.comments.get(id)||[];if(!rows.length)return'<div class="text-[10px] text-slate-500">No comments yet. Start the conversation.</div>';const p=orbitState.posts.get(id);return rows.map(c=>{const prof=orbitState.profiles.get(c.user_id)||{};const name=prof.full_name || (c.user_id===currentUserId ? userFullName : 'Student');return`<div class="orbit-comment" data-comment-id="${oe(c.id)}">${orbitAvatar(name,prof.avatar_url)}<div class="orbit-comment-body"><div><span class="orbit-comment-name">${oe(name||'Student')}</span><span class="orbit-comment-time">${oe(timeAgo(c.created_at))}</span></div><div class="orbit-comment-text">${orbitText(c.content||'')}</div></div><div class="flex gap-2">${p?`<button onclick="setOrbitReply('${oe(id)}','${oe(c.id)}')" class="text-[9px] text-slate-500">Reply</button>`:''}${c.user_id===currentUserId?`<button onclick="deleteComment('${oe(id)}','${oe(c.id)}')" class="text-slate-500" aria-label="Delete comment"><i class="fas fa-times"></i></button>`:''}</div></div>`}).join('')}
+function renderPost(p){const liked=!!p.likedByCurrentUser,saved=!!p.savedByCurrentUser,own=p.poster_id===currentUserId,prof=orbitState.profiles.get(p.poster_id)||{};return`<article id="post-${oe(p.id)}" class="glass-card orbit-post space-y-3"><header class="orbit-post-head"><button class="orbit-author" onclick="openOrbitAuthor('${oe(p.poster_id||'')}')">${orbitAvatar(p.poster_name,prof.avatar_url)}<span class="orbit-author-meta"><strong class="orbit-author-name">${oe(p.poster_name||'Student')}</strong><span class="orbit-author-info">${oe(p.school_tag||userUniversity)} • ${oe(timeAgo(p.created_at))}${p.edited_at?' • edited':''}</span></span></button><div class="orbit-menu-wrap"><button class="orbit-menu" onclick="toggleOrbitMenu('${oe(p.id)}')" aria-label="Post options"><i class="fas fa-ellipsis-h"></i></button><div id="orbitMenu-${oe(p.id)}" class="orbit-menu-panel hidden">${own?`<button onclick="editPost('${oe(p.id)}')"><i class="fas fa-pen"></i> Edit post</button><button class="danger" onclick="deletePost('${oe(p.id)}')"><i class="fas fa-trash"></i> Delete post</button>`:`<button onclick="shareOrbitPost('${oe(p.id)}')"><i class="fas fa-share"></i> Share</button><button onclick="reportOrbitPost('${oe(p.id)}')"><i class="far fa-flag"></i> Report</button>`}<button onclick="toggleSavePost('${oe(p.id)}')"><i class="${saved?'fas':'far'} fa-bookmark"></i> ${saved?'Unsave':'Save'}</button></div></div></header>${p.content?`<div class="orbit-content">${orbitText(p.content)}</div>`:''}${orbitMedia(p)}<div class="orbit-actions"><button id="like-${oe(p.id)}" class="orbit-action ${liked?'liked':''}" onclick="toggleLike('${oe(p.id)}')"><i class="${liked?'fas':'far'} fa-heart"></i><span>${Number(p.likeCount)||0}</span></button><button class="orbit-action" onclick="toggleComments('${oe(p.id)}')"><i class="far fa-comment"></i><span id="comment-count-${oe(p.id)}">${Number(p.commentCount)||0}</span></button><button class="orbit-action" onclick="shareOrbitPost('${oe(p.id)}')"><i class="fas fa-share"></i> Share</button><button id="save-${oe(p.id)}" class="orbit-action ${saved?'saved':''}" onclick="toggleSavePost('${oe(p.id)}')"><i class="${saved?'fas':'far'} fa-bookmark"></i></button></div><section id="commentSection-${oe(p.id)}" class="orbit-comments hidden"><div id="commentList-${oe(p.id)}" class="orbit-comment-list"></div><button id="commentMore-${oe(p.id)}" type="button" class="hidden text-[10px] text-green-500 font-bold" onclick="loadComments('${oe(p.id)}',true)">Load more comments</button><form class="orbit-comment-input" onsubmit="event.preventDefault();addComment('${oe(p.id)}')"><input id="commentInput-${oe(p.id)}" maxlength="1000" placeholder="Add a comment..." autocomplete="off"><button type="submit" aria-label="Send"><i class="fas fa-paper-plane"></i></button></form></section></article>`}
 function orbitRender(){const f=document.getElementById('orbitFeed'),a=orbitList();document.getElementById('orbitSearchState')?.classList.toggle('hidden',!orbitState.search);if(document.getElementById('orbitSearchState')&&!document.getElementById('orbitSearchState').classList.contains('hidden'))document.getElementById('orbitSearchState').textContent=`${a.length} result${a.length===1?'':'s'} for “${oe(orbitState.search)}”`;if(!a.length){f.innerHTML=`<div class="orbit-empty"><div><i class="fas ${orbitState.search?'fa-search':'fa-satellite'}"></i></div><h4>${orbitState.search?'No results found':'Your Orbit is quiet.'}</h4><p>${orbitState.search?'Try another keyword or hashtag.':'Be the first to start the conversation.'}</p></div>`;return}f.innerHTML=a.map(renderPost).join('')+(orbitFeedLoadedAll||orbitState.search?'':`<button onclick="loadFeed()" class="w-full py-3 text-center text-xs text-green-500 font-bold">Load more</button>`)}
-async function orbitProfiles(posts){const ids=[...new Set(posts.map(p=>p.poster_id).filter(Boolean))].filter(id=>!orbitState.profiles.has(id));if(!ids.length)return;try{const{data,error}=await _supabase.from('profiles').select('id,full_name,profile_photo_url').in('id',ids);if(error)throw error;(data||[]).forEach(x=>orbitState.profiles.set(x.id,x))}catch(e){console.warn('Orbit profile hydration failed',e)}}
+async function orbitProfiles(posts){const ids=[...new Set(posts.map(p=>p.poster_id).filter(Boolean))].filter(id=>!orbitState.profiles.has(id));if(!ids.length)return;try{const{data,error}=await _supabase.from('profiles').select('id,full_name,avatar_url').in('id',ids);if(error)throw error;(data||[]).forEach(x=>orbitState.profiles.set(x.id,x))}catch(e){console.warn('Orbit profile hydration failed',e)}}
 async function hydrateOrbitSocial(posts){const ids=posts.map(p=>p.id).filter(Boolean);if(!ids.length)return;const [likes,comments,saves]=await Promise.all([_supabase.from('orbit_post_likes').select('post_id,user_id').in('post_id',ids),_supabase.from('orbit_comments').select('post_id').in('post_id',ids).is('deleted_at',null),_supabase.from('orbit_post_saves').select('post_id').in('post_id',ids).eq('user_id',currentUserId)]);if(likes.error)throw likes.error;if(comments.error)throw comments.error;if(saves.error)throw saves.error;const likeCounts=new Map(),liked=new Set(),commentCounts=new Map(),saved=new Set();(likes.data||[]).forEach(x=>{likeCounts.set(x.post_id,(likeCounts.get(x.post_id)||0)+1);if(x.user_id===currentUserId)liked.add(x.post_id)});(comments.data||[]).forEach(x=>commentCounts.set(x.post_id,(commentCounts.get(x.post_id)||0)+1));(saves.data||[]).forEach(x=>saved.add(x.post_id));posts.forEach(p=>{p.likeCount=likeCounts.get(p.id)||0;p.likedByCurrentUser=liked.has(p.id);p.commentCount=commentCounts.get(p.id)||0;p.savedByCurrentUser=saved.has(p.id);if(p.savedByCurrentUser)orbitState.saved.add(p.id);else orbitState.saved.delete(p.id)})}
 async function loadFeed(reset=false){if(isFeedLoading)return;if(!currentUserId)return;if(!userUniversity){const f=document.getElementById('orbitFeed');if(f)f.innerHTML='<div class="orbit-empty"><div><i class="fas fa-building"></i></div><h4>Campus unavailable</h4><p>Your university could not be resolved for this session.</p></div>';return;}isFeedLoading=true;const f=document.getElementById('orbitFeed');try{if(reset){orbitFeedCursor=null;orbitFeedLoadedAll=false;orbitState.posts.clear();orbitState.comments.clear();orbitState.commentCursors.clear();f.innerHTML='<div class="orbit-skeleton"></div><div class="orbit-skeleton"></div>'}if(orbitFeedLoadedAll&&!reset)return;let q=_supabase.from('orbit_feed').select(ORBIT_POST_COLUMNS).eq('school_tag',userUniversity).eq('status','active').eq('visibility','campus').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(FEED_PAGE_SIZE);if(orbitFeedCursor){q=q.or(`created_at.lt.${orbitFeedCursor.created_at},and(created_at.eq.${orbitFeedCursor.created_at},id.lt.${orbitFeedCursor.id})`)}const{data,error}=await q;if(error)throw error;if(!data?.length){orbitFeedLoadedAll=true;orbitRender();return}await orbitProfiles(data);await hydrateOrbitSocial(data);data.forEach(p=>orbitState.posts.set(p.id,p));const last=data[data.length-1];orbitFeedCursor={created_at:last.created_at,id:last.id};if(data.length<FEED_PAGE_SIZE)orbitFeedLoadedAll=true;orbitRender()}catch(e){console.error('Orbit feed load failed',e);if(!orbitState.posts.size)f.innerHTML='<div class="orbit-empty"><div><i class="fas fa-wifi"></i></div><h4>Could not load your Orbit</h4><p>Check your connection and try again.</p><button onclick="loadFeed(true)" class="orbit-submit" style="max-width:180px;margin:1rem auto">Retry</button></div>'}finally{isFeedLoading=false}}
 function updateLikeUI(p){const b=document.getElementById('like-'+p.id);if(!b)return;b.classList.toggle('liked',!!p.likedByCurrentUser);const i=b.querySelector('i');if(i)i.className=`${p.likedByCurrentUser?'fas':'far'} fa-heart`;const s=b.querySelector('span');if(s)s.textContent=String(Number(p.likeCount)||0)}
@@ -2893,7 +3177,7 @@ async function toggleSavePost(id){const p=orbitState.posts.get(id);if(!p||orbitS
 async function editPost(id){const p=orbitState.posts.get(id);if(!p||p.poster_id!==currentUserId)return;const v=prompt('Edit your post',p.content||'');if(v===null)return;const content=v.trim();if(!content&&!(p.images||[]).length)return;const prev={...p};p.content=content;p.edited_at=new Date().toISOString();orbitRender();try{const{data,error}=await _supabase.from('orbit_feed').update({content}).eq('id',id).eq('poster_id',currentUserId).select(ORBIT_POST_COLUMNS).single();if(error)throw error;orbitState.posts.set(id,{...p,...data}) ;orbitRender()}catch(e){orbitState.posts.set(id,prev);orbitRender();alert('Unable to edit this post.')}}
 async function deletePost(id){const p=orbitState.posts.get(id);if(!p||p.poster_id!==currentUserId||!confirm('Delete this post? This cannot be undone.'))return;const backup=p;orbitState.posts.delete(id);orbitRender();try{const{error}=await _supabase.from('orbit_feed').delete().eq('id',id).eq('poster_id',currentUserId);if(error)throw error}catch(e){orbitState.posts.set(id,backup);orbitRender();alert('Unable to delete this post.')}}
 async function reportOrbitPost(id){const reasons=['Spam','Harassment','Inappropriate content','Misinformation','Other'];const reason=prompt(`Report reason:\n${reasons.join(', ')}`);if(!reason||!reasons.includes(reason))return;try{const{error}=await _supabase.rpc('orbit_create_report',{p_content_type:'post',p_content_id:id,p_reason:reason});if(error)throw error;alert('Report submitted. Thank you for helping keep Orbit safe.')}catch(e){console.error('Orbit report failed',e);alert('Unable to submit report right now.')}}
-function shareOrbitPost(id){const p=orbitState.posts.get(id),u=new URL(location.href);u.hash='orbit-post-'+id;try{if(navigator.share)navigator.share({title:`${p?.poster_name||'Student'} on UniVERSE Orbit`,text:p?.content||'Campus post',url:u.href});else navigator.clipboard.writeText(u.href).then(()=>alert('Post link copied.')).catch(()=>alert(u.href))}catch(e){console.error(e)}}
+  function shareOrbitPost(id){const p=orbitState.posts.get(id),u=new URL(location.href);u.hash='orbit-post-'+id;try{if(navigator.share)navigator.share({title:`${p?.poster_name||'Student'} on UniVerse ICOS Orbit`,text:p?.content||'Campus post',url:u.href});else navigator.clipboard.writeText(u.href).then(()=>alert('Post link copied.')).catch(()=>alert(u.href))}catch(e){console.error(e)}}
 async function openOrbitAuthor(id){
     if(!id)return;
     if(id===currentUserId&&typeof openProfilePage==='function'){openProfilePage();return;}
@@ -2914,7 +3198,7 @@ async function openOrbitAuthor(id){
     modal.addEventListener('click',e=>{if(e.target===modal)orbitClosePublicProfile()});
     try{
         const {data:profile,error}=await _supabase.from('profiles')
-            .select('id,full_name,university,bio,profile_photo_url,reputation_stars')
+            .select('id,full_name,university,bio,avatar_url,reputation_stars')
             .eq('id',id).maybeSingle();
         if(error)throw error;
         if(!profile){modal.querySelector('[data-orbit-profile-body]').innerHTML='<div class="orbit-empty"><div><i class="fas fa-user"></i></div><h4>Profile unavailable</h4><p>This student profile could not be loaded.</p></div>';return;}
@@ -2923,7 +3207,7 @@ async function openOrbitAuthor(id){
         body.innerHTML='';
         const head=document.createElement('div');
         head.className='flex items-start gap-3';
-        head.innerHTML=orbitAvatar(profile.full_name,profile.profile_photo_url);
+        head.innerHTML=orbitAvatar(profile.full_name,profile.avatar_url);
         const info=document.createElement('div');info.className='min-w-0 flex-1';
         const name=document.createElement('h4');name.className='text-base font-bold';name.textContent=profile.full_name||'Student';
         const uni=document.createElement('p');uni.className='text-[10px] text-slate-500 mt-1';uni.textContent=profile.university||'University not provided';
@@ -3270,7 +3554,7 @@ function studyTutorView(){return `<div class="study-tutor-shell">
         <textarea id="studyTutorInput" rows="3" maxlength="6000" placeholder="Ask anything about your course…" aria-label="Ask your AI Tutor"></textarea>
         <div class="study-tutor-form-row"><span class="study-note">AI Tutor • Explain, revise, practise</span><button class="study-btn primary" id="studyTutorSend" type="submit"><i class="fas fa-paper-plane"></i> Ask Tutor</button></div>
     </form></div>`;}
-function studyTutorAppend(role,text){const box=document.getElementById('studyTutorMessages');if(!box)return;const item=document.createElement('div');item.className=`study-tutor-message ${role==='user'?'user':'assistant'}`;item.innerHTML=`<div class="study-tutor-label">${role==='user'?'You':'UniVerse AI Tutor'}</div><div class="study-tutor-content">${role==='user'?studyTutorEscape(text).replace(/\n/g,'<br>'):studyTutorRender(text)}</div>`;box.appendChild(item);box.scrollTop=box.scrollHeight;}
+function studyTutorAppend(role,text){const box=document.getElementById('studyTutorMessages');if(!box)return;const item=document.createElement('div');item.className=`study-tutor-message ${role==='user'?'user':'assistant'}`;item.innerHTML=`<div class="study-tutor-label">${role==='user'?'You':'UniVerse ICOS AI Tutor'}</div><div class="study-tutor-content">${role==='user'?studyTutorEscape(text).replace(/\n/g,'<br>'):studyTutorRender(text)}</div>`;box.appendChild(item);box.scrollTop=box.scrollHeight;}
 async function studyTutorAsk(question){
     const input=document.getElementById('studyTutorInput'),send=document.getElementById('studyTutorSend'),status=document.getElementById('studyTutorStatus');
     if(!question)return;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniVerse | The Campus Operating System</title>
+    <title>UniVerse ICOS | The Campus Operating System</title>
 
     <!-- Preconnects: start the network handshake for third-party origins immediately -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,6 +18,7 @@
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'; this.onload=null;">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2400&q=82" fetchpriority="high">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -59,6 +60,15 @@
                 linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
             background-size: 64px 64px;
             mask-image: radial-gradient(ellipse 70% 55% at 50% 20%, black 10%, transparent 75%);
+        }
+
+        .uv-campus-photo {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image:
+                linear-gradient(180deg, rgba(5,5,5,0.70) 0%, rgba(5,5,5,0.84) 48%, rgba(5,5,5,0.94) 100%),
+                url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2400&q=82");
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            opacity: 0.34; filter: saturate(0.72) contrast(1.05); transform: translateZ(0);
         }
 
         .uv-relative { position: relative; z-index: 1; }
@@ -129,6 +139,9 @@
             html { scroll-behavior: auto; }
             .uv-reveal { opacity: 1; transform: none; transition: none; }
         }
+
+        /* Keep off-screen sections cheap to render while preserving their layout footprint. */
+        body > section { content-visibility: auto; contain-intrinsic-size: 1px 760px; }
 
         /* ============ MOBILE PERFORMANCE MODE ============
            Same visual language, lower rendering cost: shallower blur radii (backdrop-filter is one of the
@@ -288,9 +301,7 @@
             color: var(--uv-text) !important;
         }
 
-        .uv-nav-link.uv-active::after,
-        .uv-eyebrow,
-        .uv-kicker[style*="--uv-green"] {
+        .uv-nav-link.uv-active::after {
             background-color: var(--uv-green);
         }
 
@@ -500,13 +511,15 @@
 <body class="min-h-screen">
     <div class="uv-bg-field"></div>
     <div class="uv-grid"></div>
+    <div class="uv-campus-photo" aria-hidden="true"></div>
 
     <!-- ============ TOP NAVIGATION ============ -->
     <nav class="uv-nav fixed top-0 left-0 right-0 z-40">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="#top" class="font-display text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                Uni<span class="text-green-400" style="color:var(--uv-green)">Verse</span>
-                <span class="uv-kicker hidden lg:inline-block ml-1 pl-2 border-l border-white/10">ICOS · V1.0</span>
+            <a href="#top" class="font-display text-xl font-bold tracking-tight text-white flex items-center gap-2 whitespace-nowrap">
+                <span>UniVerse</span>
+                <span class="text-green-400" style="color:var(--uv-green)">ICOS</span>
+                <span class="uv-kicker hidden lg:inline-block ml-1 pl-2 border-l border-white/10">V1.0</span>
             </a>
             <div class="hidden md:flex items-center gap-7 text-sm font-medium" id="navLinks">
                 <a href="#overview" data-section="overview" class="uv-nav-link">Overview</a>
@@ -517,7 +530,7 @@
             </div>
             <div class="hidden md:flex items-center gap-3">
                 <button onclick="openAuthModal('login')" class="uv-nav-link text-sm font-semibold px-4 py-2">Log In</button>
-                <button onclick="openAuthModal('signup')" class="uv-btn-primary text-sm font-bold px-5 py-2.5 rounded-full">Join UniVerse</button>
+                <button onclick="openAuthModal('signup')" class="uv-btn-primary text-sm font-bold px-5 py-2.5 rounded-full">Join UniVerse ICOS</button>
             </div>
             <button id="mobileNavToggle" onclick="toggleMobileNav()" title="Menu" class="md:hidden w-10 h-10 rounded-full uv-btn-ghost flex items-center justify-center">
                 <i class="fas fa-bars text-white text-sm"></i>
@@ -558,13 +571,13 @@
                     <span style="color:var(--uv-green)">One universe.</span>
                 </h1>
                 <p class="mt-6 text-lg leading-relaxed max-w-lg" style="color:var(--uv-text-dim)">
-                    UniVerse is building an <strong class="text-white font-semibold">Integrated Campus Operating System</strong> — bringing the digital student experience into one connected ecosystem.
+                    UniVerse ICOS is building an <strong class="text-white font-semibold">Integrated Campus Operating System</strong> — bringing the digital student experience into one connected ecosystem.
                 </p>
                 <p class="mt-4 text-sm leading-relaxed max-w-lg pl-4 border-l-2" style="color:var(--uv-text-dim); border-color:rgba(52,224,138,0.4)">
                     You're looking at the first version. <strong class="text-white font-medium">V1.0 is our MVP</strong> — a focused first layer built around connection, learning, communication and collaboration.
                 </p>
                 <div class="mt-10 flex flex-wrap gap-4">
-                    <button onclick="openAuthModal('login')" class="uv-btn-primary font-bold px-7 py-3.5 rounded-full text-sm">Enter UniVerse</button>
+                    <button onclick="openAuthModal('login')" class="uv-btn-primary font-bold px-7 py-3.5 rounded-full text-sm">Enter UniVerse ICOS</button>
                     <button onclick="openAuthModal('signup')" class="uv-btn-ghost font-bold px-7 py-3.5 rounded-full text-sm">Join the V1.0</button>
                 </div>
             </div>
@@ -655,7 +668,7 @@
             <div class="uv-eyebrow mb-4">01 · Overview</div>
             <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">The campus experience is fragmented.</h2>
             <p class="mt-5 text-base leading-relaxed" style="color:var(--uv-text-dim)">
-                Students currently move between separate platforms for conversations, academic resources, communities and campus interactions. UniVerse is designed to bring these experiences into one connected environment.
+                Students currently move between separate platforms for conversations, academic resources, communities and campus interactions. UniVerse ICOS is designed to bring these experiences into one connected environment.
             </p>
         </div>
 
@@ -663,7 +676,7 @@
             <div class="glass-card rounded-3xl p-8">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(255,255,255,0.06); color:var(--uv-text-dim)"><i class="fas fa-shapes"></i></div>
                 <h3 class="font-display text-lg font-bold text-white mb-2">ICOS — Integrated Campus Operating System</h3>
-                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">ICOS is the broader architecture behind UniVerse: a connected digital environment designed around the different ecosystems of campus life — social, academic, communication and collaboration.</p>
+                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">ICOS is the broader architecture behind UniVerse ICOS: a connected digital environment designed around the different ecosystems of campus life — social, academic, communication and collaboration.</p>
             </div>
             <div class="uv-card rounded-3xl p-8" style="border-color:rgba(52,224,138,0.3); background:rgba(52,224,138,0.04)">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(52,224,138,0.14); color:var(--uv-green)"><i class="fas fa-flag"></i></div>
@@ -690,7 +703,7 @@
                     <div class="text-[0.62rem] font-bold uppercase tracking-widest mb-2" style="color:var(--uv-green)">Social Layer</div>
                     <h3 class="font-display text-xl font-bold text-white mb-2">Orbit</h3>
                     <p class="text-xs font-semibold mb-3" style="color:var(--uv-text-dim)">Your campus, in motion.</p>
-                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">The social layer of UniVerse — discover conversations, people and activity happening around your campus.</p>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">The social layer of UniVerse ICOS — discover conversations, people and activity happening around your campus.</p>
                     <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 uv-kicker"><span class="uv-status-dot"></span>System 01 / Active</div>
                 </div>
                 <div id="study" class="uv-card uv-reveal rounded-3xl p-7 relative overflow-hidden group">
@@ -845,7 +858,7 @@
     <section id="how-it-works" class="uv-relative px-6 py-24 border-t border-white/5">
         <div class="max-w-3xl mx-auto text-center uv-reveal mb-16">
             <div class="uv-eyebrow mb-3">05 · How It Works</div>
-            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">How UniVerse works.</h2>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">How UniVerse ICOS works.</h2>
         </div>
         <div class="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-5 uv-reveal">
             <div class="uv-card rounded-3xl p-7">
@@ -855,13 +868,13 @@
             </div>
             <div class="uv-card rounded-3xl p-7">
                 <div class="uv-mono text-2xl font-bold mb-4" style="color:var(--uv-green)">02</div>
-                <h3 class="font-display text-base font-bold text-white mb-2">Create your UniVerse identity</h3>
+                <h3 class="font-display text-base font-bold text-white mb-2">Create your UniVerse ICOS identity</h3>
                 <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Verify your university email and set up your profile.</p>
             </div>
             <div class="uv-card rounded-3xl p-7">
                 <div class="uv-mono text-2xl font-bold mb-4" style="color:var(--uv-green)">03</div>
                 <h3 class="font-display text-base font-bold text-white mb-2">Enter your campus ecosystem</h3>
-                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Step into the UniVerse built around your university.</p>
+                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">Step into the UniVerse ICOS experience built around your university.</p>
             </div>
             <div class="uv-card rounded-3xl p-7">
                 <div class="uv-mono text-2xl font-bold mb-4" style="color:var(--uv-green)">04</div>
@@ -878,7 +891,7 @@
                 <div>
                     <div class="uv-eyebrow mb-3">06 · Community</div>
                     <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mb-4">Built for a better campus community.</h2>
-                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">UniVerse is designed to provide students with a connected environment where people can communicate, collaborate and participate responsibly.</p>
+                    <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">UniVerse ICOS is designed to provide students with a connected environment where people can communicate, collaborate and participate responsibly.</p>
                 </div>
                 <div class="grid sm:grid-cols-2 gap-4">
                     <button onclick="openDoc('privacy')" class="uv-card rounded-2xl p-6 text-left w-full">
@@ -926,7 +939,7 @@
             </div>
             <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
                 <div class="uv-kicker">UniVerse ICOS v1.0 · MVP</div>
-                <div class="uv-kicker">&copy; 2026 UniVerse</div>
+                <div class="uv-kicker">&copy; 2026 UniVerse ICOS</div>
             </div>
         </div>
     </footer>
@@ -949,7 +962,7 @@
     </div>
 
     <!-- ============ AUTH MODAL (wraps existing login/signup functionality) ============ -->
-    <div id="authModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 uv-auth-backdrop" onclick="if(event.target===this) closeAuthModal()">
+    <div id="authModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 uv-auth-backdrop" onclick="if(event.target===this) closeAuthModal()" role="dialog" aria-modal="true" aria-labelledby="authTitle">
     <div class="max-w-md w-full glass-card p-8 rounded-[2.5rem] shadow-2xl relative">
         <button onclick="closeAuthModal()" title="Close" class="absolute top-6 right-6 w-9 h-9 rounded-full uv-btn-ghost flex items-center justify-center text-white/70 hover:text-white">
             <i class="fas fa-times text-sm"></i>
@@ -959,59 +972,54 @@
                 Student verified
             </div>
             <h1 id="authTitle" class="font-display text-3xl font-bold text-white tracking-tight">Welcome back.</h1>
-            <p id="authSubtitle" class="text-slate-400 mt-2">Continue your journey through UniVerse.</p>
+            <p id="authSubtitle" class="text-slate-400 mt-2">Continue your journey through UniVerse ICOS.</p>
         </div>
+        <div id="authMessage" class="hidden text-sm mb-5 px-4 py-3 rounded-2xl text-center" role="alert" aria-live="polite"></div>
 
         <div class="flex bg-white/5 p-1 rounded-2xl mb-8 border border-white/5">
             <button onclick="switchTab('login')" id="loginTab" class="w-1/2 py-3 text-sm font-bold rounded-xl transition-all bg-green-500 text-white shadow-lg shadow-green-500/20">Login</button>
             <button onclick="switchTab('signup')" id="signupTab" class="w-1/2 py-3 text-sm font-bold rounded-xl transition-all text-slate-400">Join</button>
         </div>
 
-        <form id="loginForm" class="space-y-4">
-            <input type="email" id="loginEmail" placeholder="University Email" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
-            <input type="password" id="loginPassword" placeholder="Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
-            <button type="button" onclick="handleLogin()" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Enter UniVerse</button>
+        <form id="loginForm" class="space-y-4" onsubmit="event.preventDefault(); handleLogin();">
+            <input type="email" id="loginEmail" name="email" autocomplete="email" required placeholder="Student Email" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            <input type="password" id="loginPassword" name="password" autocomplete="current-password" required placeholder="Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            <button type="submit" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Enter UniVerse ICOS</button>
         </form>
 
-        <form id="signupForm" class="space-y-4 hidden">
-            <input type="text" id="signupName" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
-            <input type="email" id="signupEmail" placeholder="University Email" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+        <form id="signupForm" class="space-y-4 hidden" onsubmit="event.preventDefault(); handleSignup();">
+            <input type="text" id="signupName" name="name" autocomplete="name" required placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            <input type="email" id="signupEmail" name="email" autocomplete="email" required placeholder="University Email" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
             
             <button type="button" onclick="toggleUniModal()" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-left flex justify-between items-center group">
                 <span id="selectedUniLabel" class="text-slate-500">Select your Uni</span>
                 <i class="fas fa-university text-green-500"></i>
             </button>
             <input type="hidden" id="signupUniversity">
+            <input type="hidden" id="signupSchoolId">
 
-            <input type="text" id="signupMatric" placeholder="Matric / Registration Number" autocomplete="off" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
-            <button type="button" id="verifyStudentBtn" onclick="verifyStudentIdentity()" class="w-full uv-btn-ghost py-3.5 rounded-2xl font-bold transition">
-                <span id="verifyStudentBtnText">Verify Student</span>
-            </button>
-            <div id="studentVerificationStatus" class="hidden rounded-2xl border p-4 text-sm" aria-live="polite"></div>
-            <div id="verifiedAcademicDetails" class="hidden grid grid-cols-2 gap-2 text-xs"></div>
-
-            <input type="password" id="signupPassword" placeholder="Create Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
+            <input type="password" id="signupPassword" name="password" autocomplete="new-password" minlength="8" required placeholder="Create Password" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition">
 
             <div class="flex items-start gap-3 pt-1">
-                <div id="signupAgreeCheck" class="uv-check mt-0.5" role="checkbox" aria-checked="false" tabindex="0" aria-label="I agree to the UniVerse Privacy Policy and Community Standards" onclick="toggleAgree()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAgree();}">
+                <div id="signupAgreeCheck" class="uv-check mt-0.5" role="checkbox" aria-checked="false" tabindex="0" aria-label="I agree to the UniVerse ICOS Privacy Policy and Community Standards" onclick="toggleAgree()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAgree();}">
                     <i class="fas fa-check"></i>
                 </div>
                 <label for="signupAgreeCheck" class="text-xs leading-relaxed cursor-pointer" style="color:var(--uv-text-dim)" onclick="toggleAgree()">
-                    I agree to the UniVerse <button type="button" onclick="event.stopPropagation(); openDoc('privacy')" class="underline hover:text-white" style="color:var(--uv-green)">Privacy Policy</button> and <button type="button" onclick="event.stopPropagation(); openDoc('community')" class="underline hover:text-white" style="color:var(--uv-green)">Community Standards</button>.
+                    I agree to the UniVerse ICOS <button type="button" onclick="event.stopPropagation(); openDoc('privacy')" class="underline hover:text-white" style="color:var(--uv-green)">Privacy Policy</button> and <button type="button" onclick="event.stopPropagation(); openDoc('community')" class="underline hover:text-white" style="color:var(--uv-green)">Community Standards</button>.
                 </label>
             </div>
             <p id="signupAgreeError" class="hidden text-xs font-medium px-4 py-2.5 rounded-xl" style="color:#ff9d9d; background:rgba(255,80,80,0.08); border:1px solid rgba(255,80,80,0.2)">Please review and accept the Privacy Policy and Community Standards to continue.</p>
 
-            <button type="button" onclick="handleSignup()" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Join UniVerse</button>
+            <button type="submit" class="w-full scholar-gradient text-white py-4 rounded-2xl font-bold hover:opacity-90 transition transform active:scale-[0.98]">Join UniVerse ICOS</button>
         </form>
     </div>
     </div>
 
-    <div id="uniModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div id="uniModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="uniModalTitle" onclick="if(event.target===this) toggleUniModal()">
         <div class="uv-uni-modal-panel bg-slate-900 w-full max-w-lg rounded-t-[2rem] sm:rounded-[2rem] border-t border-white/10 flex flex-col overflow-hidden">
             <div class="p-6 border-b border-white/5 bg-slate-800/50">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-white font-bold text-xl">Select Institution</h3>
+                    <h3 id="uniModalTitle" class="text-white font-bold text-xl">Select Institution</h3>
                     <button type="button" title="Close" onclick="toggleUniModal()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="relative">
@@ -1019,27 +1027,31 @@
                     <input type="text" id="uniSearch" placeholder="Search universities..." class="w-full p-3 pl-10 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:border-green-500 outline-none transition" oninput="filterUniversities()">
                 </div>
             </div>
-            <div id="uniList" class="p-4 overflow-y-auto custom-scrollbar grid grid-cols-1 gap-2">
+            <div id="uniList" class="p-4 overflow-y-auto custom-scrollbar grid grid-cols-1 gap-2" role="listbox" aria-label="Universities">
                 </div>
         </div>
     </div>
 
-    <div id="otpPortal" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6">
+    <div id="otpPortal" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6" role="dialog" aria-modal="true" aria-labelledby="otpTitle" onclick="if(event.target===this) closeOtpPortal()">
     <div class="w-full max-w-md bg-white/5 border border-white/10 p-8 rounded-[2.5rem] text-center space-y-6">
         <div class="bg-green-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto">
             <i class="fas fa-envelope-open-text text-green-500 text-2xl"></i>
         </div>
         <div>
-            <h2 class="text-2xl font-black text-white">Check your mail</h2>
-            <p class="text-slate-400 text-sm mt-2">We sent a 6-digit code to your university email.</p>
+            <h2 id="otpTitle" class="text-2xl font-black text-white">Check your mail</h2>
+            <p class="text-slate-400 text-sm mt-2">We sent a verification code to your university email.</p>
         </div>
         
-        <input type="text" id="otpCode" placeholder="0 0 0 0 0 0" 
+        <input type="text" id="otpCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="0 0 0 0 0 0 0 0" 
                class="w-full bg-white/5 border-2 border-dashed border-white/20 p-5 rounded-2xl text-center text-3xl font-black tracking-[1rem] text-green-500 outline-none focus:border-green-500 transition-all">
         
-        <button onclick="verifyMyCode()" class="w-full scholar-gradient py-4 rounded-2xl text-black font-black shadow-lg shadow-green-500/20">
+        <p id="otpMessage" class="hidden text-xs px-4 py-3 rounded-2xl" role="status" aria-live="polite"></p>
+
+        <button id="otpVerifyButton" onclick="verifyMyCode()" class="w-full scholar-gradient py-4 rounded-2xl text-black font-black shadow-lg shadow-green-500/20">
             VERIFY & ORBIT
         </button>
+        
+        <button id="otpResendButton" onclick="resendSignupCode()" class="text-green-400 text-xs font-bold uppercase tracking-widest">Resend code</button>
         
         <button onclick="closeOtpPortal()" class="text-slate-500 text-xs font-bold uppercase tracking-widest">
             Back to Signup
@@ -1053,150 +1065,48 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvcHBmeW5jYmVoaWZuc3B1cHdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MDk2MDcsImV4cCI6MjA4NDA4NTYwN30.BuR0SNe1KQmZMl7u8s25hAI-QY_cDZRB2ijUU0JIu_c';
         const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        const nigerianUnis = [
-    "Abia State University (ABSU)",
-    "Abubakar Tafawa Balewa University (ATBU)",
-    "Achievers University, Owo",
-    "Adamawa State University (ADSU)",
-    "Adekunle Ajasin University (AAUA)",
-    "Adeleke University (AUE)",
-    "Admiralty University of Nigeria (ADUN)",
-    "Afe Babalola University (ABUAD)",
-    "African University of Science and Technology (AUST)",
-    "Ahmadu Bello University (ABU)",
-    "Ajayi Crowther University (ACU)",
-    "Akwa Ibom State University (AKSU)",
-    "Al-Hikmah University",
-    "Al-Qalam University",
-    "Alex Ekwueme Federal University (AE-FUNAI)",
-    "Ambrose Alli University (AAU)",
-    "American University of Nigeria (AUN)",
-    "Anchor University",
-    "Arthur Jarvis University",
-    "Atiba University",
-    "Augustine University",
-    "Babcock University (BU)",
-    "Bauchi State University (BASUG)",
-    "Bayero University Kano (BUK)",
-    "Baze University",
-    "Bells University of Technology (BUT)",
-    "Benson Idahosa University (BIU)",
-    "Benue State University (BSUM)",
-    "Bingham University",
-    "Borno State University (BOSU)",
-    "Bowen University",
-    "Caleb University",
-    "Caritas University",
-    "Chrisland University",
-    "Christopher University",
-    "Chukwuemeka Odumegwu Ojukwu University (COOU)",
-    "Clifford University",
-    "Coal City University",
-    "Covenant University (CU)",
-    "Crawford University",
-    "Crescent University",
-    "Cross River University of Technology (CRUTECH)",
-    "Crown Hill University",
-    "Delta State University (DELSU)",
-    "Dominican University",
-    "Ebonyi State University (EBSU)",
-    "Edo State University Uzairue",
-    "Edwin Clark University",
-    "Ekiti State University (EKSU)",
-    "Eko University of Medicine and Health Sciences",
-    "Elizade University",
-    "Enugu State University of Science and Technology (ESUT)",
-    "Evangel University",
-    "Federal University Gashua (FUGA)",
-    "Federal University Gusau (FUGUS)",
-    "Federal University Kashere (FUK)",
-    "Federal University Lafia (FULAFIA)",
-    "Federal University Lokoja (FULOKOJA)",
-    "Federal University Otuoke (FUOTUOKE)",
-    "Federal University Oye-Ekiti (FUOYE)",
-    "Federal University of Agriculture, Abeokuta (FUNAAB)",
-    "Federal University of Agriculture, Makurdi (FUAM)",
-    "Federal University of Petroleum Resources (FUPRE)",
-    "Federal University of Technology, Akure (FUTA)",
-    "Federal University of Technology, Minna (FUTMINNA)",
-    "Federal University of Technology, Owerri (FUTO)",
-    "Fountain University",
-    "Godfrey Okoye University (GOU)",
-    "Gombe State University (GSU)",
-    "Gregory University",
-    "Hallmark University",
-    "Hezekiah University",
-    "Igbinedion University",
-    "Ignatius Ajuru University of Education (IAUE)",
-    "Ilorin University (UNILORIN)",
-    "Imo State University (IMSU)",
-    "Joseph Ayo Babalola University (JABU)",
-    "Kaduna State University (KASU)",
-    "Kano University of Science and Technology (KUST)",
-    "Kebbi State University of Science and Technology (KSUSTA)",
-    "Kings University",
-    "Kogi State University (KSU)",
-    "Kwara State University (KWASU)",
-    "Kwararafa University",
-    "Lagos State University (LASU)",
-    "Landmark University",
-    "Lead City University",
-    "Legacy University",
-    "Lidwin University",
-    "Ladoke Akintola University of Technology (LAUTECH)",
-    "Madonna University",
-    "Mcpherson University",
-    "Micheal Okpara University of Agriculture (MOUAU)",
-    "Modibbo Adama University of Technology (MAUTECH)",
-    "Mountain Top University",
-    "Nasarawa State University (NSUK)",
-    "Niger Delta University (NDU)",
-    "Nile University of Nigeria",
-    "Nnamdi Azikiwe University (UNIZIK)",
-    "Novena University",
-    "Obafemi Awolowo University (OAU)",
-    "Obong University",
-    "Oduduwa University",
-    "Olabisi Onabanjo University (OOU)",
-    "Ondo State University of Science and Technology (OSUSTECH)",
-    "Osadebe University",
-    "Osuman Danfodiyo University (UDUS)",
-    "Pan-Atlantic University (PAU)",
-    "Paul University",
-    "Plateau State University (PLASU)",
-    "Precious Cornerstone University (PCU)",
-    "Redeemer's University (RUN)",
-    "Renaissance University",
-    "Rhema University",
-    "Ritman University",
-    "Rivers State University (RSU)",
-    "Salem University",
-    "Samuel Adegboyega University (SAU)",
-    "Skyline University Nigeria (SUN)",
-    "Southwestern University",
-    "Summit University",
-    "Tai Solarin University of Education (TASUED)",
-    "Tansian University",
-    "Taraba State University (TASU)",
-    "University of Abuja (UNIABUJA)",
-    "University of Agriculture and Environmental Sciences, Umagwo (UAES)",
-    "University of Benin (UNIBEN)",
-    "University of Calabar (UNICAL)",
-    "University of Ibadan (UI)",
-    "University of Ilorin (UNILORIN)",
-    "University of Jos (UNIJOS)",
-    "University of Lagos (UNILAG)",
-    "University of Maiduguri (UNIMAID)",
-    "University of Mkar",
-    "University of Nigeria, Nsukka (UNN)",
-    "University of Port Harcourt (UNIPORT)",
-    "University of Uyo (UNIUYO)",
-    "Usmanu Danfodiyo University (UDUSOK)",
-    "Veritas University",
-    "Wellspring University",
-    "Wesley University",
-    "Western Delta University"
-].sort();
+        // University data is loaded from Supabase so the signup picker and backend
+        // always use the same canonical school records.
+        let verificationSchools = [];
+        let verificationSchoolsLoaded = false;
+        let verificationSchoolsLoading = false;
+        let verificationSchoolsAbortController = null;
+
+        function normalizeSchoolName(value) {
+            return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+
+        async function loadVerificationSchools() {
+            if (verificationSchoolsLoaded || verificationSchoolsLoading) return;
+            verificationSchoolsLoading = true;
+            const list = document.getElementById('uniList');
+            if (list) list.innerHTML = '<div class="p-8 text-center text-slate-400">Loading universities…</div>';
+            try {
+                verificationSchoolsAbortController = new AbortController();
+                const timeoutId = setTimeout(() => verificationSchoolsAbortController.abort(), 8000);
+                const response = await fetch(`${supabaseUrl}/functions/v1/verify-student-public`, {
+                    method: 'GET',
+                    headers: { 'apikey': supabaseKey, 'Accept': 'application/json' },
+                    signal: verificationSchoolsAbortController.signal
+                });
+                clearTimeout(timeoutId);
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !Array.isArray(result.schools)) {
+                    throw new Error(result.error || 'Unable to load universities');
+                }
+                verificationSchools = result.schools
+                    .filter(s => s && s.id && s.name)
+                    .map(s => ({ id: String(s.id), name: String(s.name), slug: s.slug || '' }));
+                verificationSchoolsLoaded = true;
+                populateUniList(verificationSchools);
+            } catch (error) {
+                console.error('Failed to load universities:', error);
+                if (list) list.innerHTML = '<div class="p-8 text-center text-slate-400">Universities are temporarily unavailable. Please try again.</div>';
+            } finally {
+                verificationSchoolsLoading = false;
+                verificationSchoolsAbortController = null;
+            }
+        }
 
         function switchTab(type) {
             const isLogin = type === 'login';
@@ -1219,9 +1129,9 @@
             if (authTitle && authSubtitle) {
                 if (isLogin) {
                     authTitle.textContent = "Welcome back.";
-                    authSubtitle.textContent = "Continue your journey through UniVerse.";
+                    authSubtitle.textContent = "Continue your journey through UniVerse ICOS.";
                 } else {
-                    authTitle.textContent = "Create your UniVerse identity.";
+                    authTitle.textContent = "Create your UniVerse ICOS identity.";
                     authSubtitle.textContent = "Join UniVerse ICOS v1.0 — the first campus layer.";
                 }
             }
@@ -1233,6 +1143,11 @@
             switchTab(type === 'signup' ? 'signup' : 'login');
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            setAuthMessage('', true);
+            requestAnimationFrame(() => {
+                const firstField = type === 'signup' ? document.getElementById('signupName') : document.getElementById('loginEmail');
+                firstField?.focus();
+            });
         }
 
         function closeAuthModal() {
@@ -1259,8 +1174,12 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
+                const otpPortal = document.getElementById('otpPortal');
+                if (otpPortal && !otpPortal.classList.contains('hidden')) { closeOtpPortal(); return; }
+                const uniModal = document.getElementById('uniModal');
+                if (uniModal && !uniModal.classList.contains('hidden')) { toggleUniModal(); return; }
                 const authModal = document.getElementById('authModal');
-                if (authModal && !authModal.classList.contains('hidden')) closeAuthModal();
+                if (authModal && !authModal.classList.contains('hidden')) { closeAuthModal(); return; }
                 const docModal = document.getElementById('docModal');
                 if (docModal && !docModal.classList.contains('hidden')) closeDoc();
             }
@@ -1320,18 +1239,18 @@
         const uvDocs = {
             privacy: {
                 title: 'Privacy Policy',
-                subtitle: 'How UniVerse collects, uses and protects your information.',
+                subtitle: 'How UniVerse ICOS collects, uses and protects your information.',
                 html: `
                     <h3>Introduction</h3>
-                    <p>This Privacy Policy explains how <strong>UniVerse</strong> ("UniVerse," "we," "us" or "our") collects, uses and protects information in connection with UniVerse ICOS v1.0. This document is product policy and is not intended as legal advice.</p>
+                    <p>This Privacy Policy explains how <strong>UniVerse ICOS</strong> ("UniVerse ICOS," "we," "us" or "our") collects, uses and protects information in connection with UniVerse ICOS v1.0. This document is product policy and is not intended as legal advice.</p>
 
                     <h3>Information we collect</h3>
-                    <p>To operate UniVerse, we collect information including:</p>
+                    <p>To operate UniVerse ICOS, we collect information including:</p>
                     <ul>
                         <li>Account information, such as your name and university</li>
                         <li>Your email address, used for authentication and communication</li>
                         <li>Authentication information necessary to secure your account</li>
-                        <li>Content you voluntarily submit while using UniVerse, such as messages, posts or community content</li>
+                        <li>Content you voluntarily submit while using UniVerse ICOS, such as messages, posts or community content</li>
                         <li>Basic technical information necessary to operate the service, such as device and usage data</li>
                     </ul>
 
@@ -1340,36 +1259,36 @@
                     <ul>
                         <li>Create and manage your account</li>
                         <li>Authenticate you and keep your account secure</li>
-                        <li>Operate UniVerse and provide its campus features</li>
+                        <li>Operate UniVerse ICOS and provide its campus features</li>
                         <li>Improve and maintain the platform</li>
                         <li>Prevent fraud, abuse and security incidents</li>
                         <li>Send communications related to the service, such as verification codes</li>
                     </ul>
 
                     <h3>User-generated content</h3>
-                    <p>Depending on the features available in your version of UniVerse, you may create content such as messages, posts, study or community content, or other information. This content is associated with your account and may be visible to other users within your campus ecosystem, depending on the feature.</p>
-                    <p>Some features, such as Campus Whisper, let you post without your name being shown to other users. Posts made through these features are not fully anonymous to UniVerse itself — we may retain information that allows us to connect a post to an account internally, which we may use for safety, security and enforcement of our Community Standards.</p>
+                    <p>Depending on the features available in your version of UniVerse ICOS, you may create content such as messages, posts, study or community content, or other information. This content is associated with your account and may be visible to other users within your campus ecosystem, depending on the feature.</p>
+                    <p>Some features, such as Campus Whisper, let you post without your name being shown to other users. Posts made through these features are not fully anonymous to UniVerse ICOS itself — we may retain information that allows us to connect a post to an account internally, which we may use for safety, security and enforcement of our Community Standards.</p>
 
                     <h3>AI Tutor</h3>
                     <p>AI Tutor lets you ask questions and receive AI-generated academic assistance. Conversations you have with AI Tutor may be processed, including by third-party AI service providers, in order to generate responses and to improve the feature's reliability and safety.</p>
 
                     <h3>Information sharing</h3>
-                    <p>UniVerse does not sell your personal information. Information may be processed by service providers that help us operate the platform, such as infrastructure, authentication and communications providers, under obligations to protect your data.</p>
+                    <p>UniVerse ICOS does not sell your personal information. Information may be processed by service providers that help us operate the platform, such as infrastructure, authentication and communications providers, under obligations to protect your data.</p>
 
                     <h3>Security</h3>
                     <p>We use reasonable technical and organizational safeguards designed to protect your information. No method of transmission or storage is completely secure, and we cannot guarantee absolute security.</p>
 
                     <h3>Data retention</h3>
-                    <p>We retain information for as long as reasonably necessary to provide UniVerse, comply with legal obligations, resolve disputes and maintain the security and integrity of the platform.</p>
+                    <p>We retain information for as long as reasonably necessary to provide UniVerse ICOS, comply with legal obligations, resolve disputes and maintain the security and integrity of the platform.</p>
 
                     <h3>Your rights</h3>
                     <p>Depending on your location and applicable law, you may have rights regarding your personal information, such as requesting access to, correction of, or deletion of certain data. Where such rights apply, we will work to honor requests in accordance with applicable law and our operational capabilities.</p>
 
                     <h3>Children's privacy</h3>
-                    <p>UniVerse is intended for university students and is not designed specifically for children. We do not knowingly direct UniVerse toward children.</p>
+                    <p>UniVerse ICOS is intended for university students and is not designed specifically for children. We do not knowingly direct UniVerse ICOS toward children.</p>
 
                     <h3>Changes to this policy</h3>
-                    <p>This policy may change as UniVerse evolves, including as new features are introduced. We will update this page to reflect material changes.</p>
+                    <p>This policy may change as UniVerse ICOS evolves, including as new features are introduced. We will update this page to reflect material changes.</p>
 
                     <h3>Contact</h3>
                     <p>Questions about this Privacy Policy can be directed to <strong>[support email to be added]</strong>.</p>
@@ -1380,7 +1299,7 @@
                 subtitle: 'Build the campus you want to belong to.',
                 html: `
                     <h3>Build the campus you want to belong to.</h3>
-                    <p>UniVerse exists to connect campus life. These standards apply to everyone using UniVerse and are designed to keep the community respectful, safe and trustworthy.</p>
+                    <p>UniVerse ICOS exists to connect campus life. These standards apply to everyone using UniVerse ICOS and are designed to keep the community respectful, safe and trustworthy.</p>
 
                     <h3>Respect</h3>
                     <p>Treat other members of your campus community with respect. Harassment, intimidation or targeted abuse of any kind is not allowed.</p>
@@ -1392,13 +1311,13 @@
                     <p>Threats of violence, or content that encourages violence against any person or group, are strictly prohibited.</p>
 
                     <h3>Sexual exploitation and inappropriate content</h3>
-                    <p>UniVerse prohibits sexual exploitation and content that is sexually inappropriate for the platform, with zero tolerance for anything involving minors.</p>
+                    <p>UniVerse ICOS prohibits sexual exploitation and content that is sexually inappropriate for the platform, with zero tolerance for anything involving minors.</p>
 
                     <h3>Privacy</h3>
                     <p>Do not publish another person's private information — such as contact details, location or personal records — without their permission.</p>
 
                     <h3>Anonymous posting</h3>
-                    <p>Some parts of UniVerse, such as Campus Whisper, allow anonymous posts. Anonymity does not remove your responsibility to follow these standards. All other rules in this document — including those on harassment, hate speech, threats, privacy and illegal activity — apply fully to anonymous content.</p>
+                    <p>Some parts of UniVerse ICOS, such as Campus Whisper, allow anonymous posts. Anonymity does not remove your responsibility to follow these standards. All other rules in this document — including those on harassment, hate speech, threats, privacy and illegal activity — apply fully to anonymous content.</p>
 
                     <h3>Impersonation and deception</h3>
                     <p>Do not impersonate another student, staff member or organization in a way intended to deceive others.</p>
@@ -1407,19 +1326,19 @@
                     <p>Spam, scams, malicious links and coordinated manipulation of the platform are not allowed.</p>
 
                     <h3>Academic integrity</h3>
-                    <p>Do not use UniVerse to facilitate cheating, impersonation in academic contexts, or other academic misconduct. This includes using AI Tutor to complete graded work in ways that violate your institution's academic integrity policies — AI Tutor is intended to help you understand material, not to substitute for your own work where that would breach your school's rules.</p>
+                    <p>Do not use UniVerse ICOS to facilitate cheating, impersonation in academic contexts, or other academic misconduct. This includes using AI Tutor to complete graded work in ways that violate your institution's academic integrity policies — AI Tutor is intended to help you understand material, not to substitute for your own work where that would breach your school's rules.</p>
 
                     <h3>Illegal activity</h3>
-                    <p>UniVerse may not be used to facilitate unlawful activity.</p>
+                    <p>UniVerse ICOS may not be used to facilitate unlawful activity.</p>
 
                     <h3>Platform abuse</h3>
-                    <p>Attempts to exploit, disrupt or compromise UniVerse or its infrastructure are prohibited.</p>
+                    <p>Attempts to exploit, disrupt or compromise UniVerse ICOS or its infrastructure are prohibited.</p>
 
                     <h3>Reporting</h3>
                     <p>If you encounter content or behavior that violates these standards, please report it so it can be reviewed.</p>
 
                     <h3>Enforcement</h3>
-                    <p>UniVerse may review reports and take appropriate action, which can include content removal, feature restrictions or account suspension, depending on the severity and context of the violation.</p>
+                    <p>UniVerse ICOS may review reports and take appropriate action, which can include content removal, feature restrictions or account suspension, depending on the severity and context of the violation.</p>
                 `
             }
         };
@@ -1444,150 +1363,292 @@
         function toggleUniModal() {
             const modal = document.getElementById('uniModal');
             modal.classList.toggle('hidden');
-            if (document.getElementById('uniList').innerHTML.trim() === "" || !modal.classList.contains('hidden')) {
+            if (!modal.classList.contains('hidden')) {
                 document.getElementById('uniSearch').value = '';
-                populateUniList(nigerianUnis);
+                if (!verificationSchoolsLoaded) {
+                    loadVerificationSchools();
+                } else {
+                    populateUniList(verificationSchools);
+                }
             }
         }
 
-        function populateUniList(unis) {
-            // Use data attributes + encoder to avoid breaking the inline onclick when
-            // university names contain quotes. selectUniFromElement will decode.
-            document.getElementById('uniList').innerHTML = unis.map(uni => `
-                <div data-uni="${encodeURIComponent(uni)}" onclick="selectUniFromElement(this)" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-slate-300 hover:bg-green-500/10 hover:border-green-500/30 cursor-pointer transition flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-green-500/20 text-green-500 flex items-center justify-center font-bold text-xs">${uni[0]}</div>
-                    ${uni}
-                </div>
-            `).join('');
-            
-            if (unis.length === 0) {
-                document.getElementById('uniList').innerHTML = '<div class="p-8 text-center text-slate-400">No universities found</div>';
-            }
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        function populateUniList(universities) {
+            const list = document.getElementById('uniList');
+            if (!list) return;
+            list.innerHTML = universities.map(school => {
+                const name = school.name || school;
+                const id = school.id || '';
+                return `<div data-school-id="${encodeURIComponent(id)}" data-school-name="${encodeURIComponent(name)}" onclick="selectUniFromElement(this)" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-slate-300 hover:bg-green-500/10 hover:border-green-500/30 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-green-500/20 text-green-500 flex items-center justify-center font-bold text-xs">${escapeHtml(name[0] || 'U')}</div>
+                    <div class="flex-1">${escapeHtml(name)}</div>
+                </div>`;
+            }).join('');
+            if (!universities.length) list.innerHTML = '<div class="p-8 text-center text-slate-400">No universities found</div>';
         }
 
         function filterUniversities() {
-            const searchTerm = document.getElementById('uniSearch').value.toLowerCase();
-            const filtered = nigerianUnis.filter(uni => 
-                uni.toLowerCase().includes(searchTerm)
-            );
-            populateUniList(filtered);
+            const searchTerm = (document.getElementById('uniSearch')?.value || '').toLowerCase().trim();
+            populateUniList(verificationSchools.filter(s => s.name.toLowerCase().includes(searchTerm)));
         }
 
-        function selectUni(name) {
+        function selectUniFromElement(element) {
+            const name = decodeURIComponent(element.getAttribute('data-school-name') || '');
+            const schoolId = decodeURIComponent(element.getAttribute('data-school-id') || '');
+            if (!name || !schoolId) return;
+            selectUni(name, schoolId);
+        }
+
+        function selectUni(name, schoolId) {
             const previousSchool = document.getElementById('signupUniversity').value;
+            const previousSchoolId = document.getElementById('signupSchoolId').value;
             document.getElementById('signupUniversity').value = name;
+            document.getElementById('signupSchoolId').value = schoolId || '';
             document.getElementById('selectedUniLabel').innerText = name;
             document.getElementById('selectedUniLabel').className = "text-white font-medium";
-            if (previousSchool !== name && typeof clearVerification === 'function') clearVerification();
             toggleUniModal();
         }
 
-        document.addEventListener('input', (event) => {
-            if (verifiedStudent && (event.target?.id === 'signupName' || event.target?.id === 'signupMatric')) clearVerification();
-        });
+        let tempEmail = '';
+        let signupBusy = false;
+        let loginBusy = false;
+        let verifyBusy = false;
+        let resendBusy = false;
 
-        function selectUniFromElement(el) {
-            try {
-                const encoded = el.dataset.uni || '';
-                const name = decodeURIComponent(encoded);
-                selectUni(name);
-            } catch (e) {
-                console.error('Failed to select uni from element', e);
+        // Campus routing is presentation-only: the existing Supabase/RLS rules
+        // remain the source of authorization. We use the existing `student_school_id`
+        // metadata when available, then the existing `profiles.university` field as
+        // a safe fallback. No school records are created, deleted, or modified here.
+        const MVP_SCHOOL_SLUGS = new Set([
+            'university-of-agriculture-and-environmental-sciences-umagwo',
+            'alex-ekwueme-federal-university-ndufu-alike',
+            'federal-university-of-technology-owerri',
+            'michael-okpara-university-of-agriculture-umudike',
+            'university-of-nigeria-nsukka'
+        ]);
+        const MVP_SCHOOL_NAMES = new Set([
+            'university of agriculture and environmental sciences, umagwo',
+            'alex-ekwueme federal university ndufu-alike',
+            'federal university of technology owerri',
+            'michael okpara university of agriculture, umudike',
+            'university of nigeria, nsukka'
+        ]);
+        const MVP_ROUTE = 'dashboard.html';
+        const NON_MVP_ROUTE = 'non-mvp-campus.html';
+
+        async function resolveAuthenticatedSchool() {
+            const { data: userData, error: userError } = await _supabase.auth.getUser();
+            if (userError) throw userError;
+            const user = userData?.user;
+            if (!user) return { user: null, profile: null, school: null, schoolName: '' };
+
+            const { data: profile, error: profileError } = await _supabase
+                .from('profiles')
+                .select('full_name, university')
+                .eq('id', user.id)
+                .maybeSingle();
+            if (profileError) throw profileError;
+
+            if (!verificationSchoolsLoaded) {
+                try { await loadVerificationSchools(); } catch (_) { /* profile fallback below */ }
             }
+
+            const metadata = user.user_metadata || {};
+            const metadataSchoolId = String(metadata.student_school_id || '').trim();
+            const metadataSchoolName = String(metadata.university || '').trim();
+            const profileSchoolName = String(profile?.university || '').trim();
+
+            let school = metadataSchoolId
+                ? verificationSchools.find(s => String(s.id) === metadataSchoolId)
+                : null;
+            if (!school && profileSchoolName) {
+                school = verificationSchools.find(s => normalizeSchoolName(s.name) === normalizeSchoolName(profileSchoolName));
+            }
+            if (!school && metadataSchoolName) {
+                school = verificationSchools.find(s => normalizeSchoolName(s.name) === normalizeSchoolName(metadataSchoolName));
+            }
+
+            const schoolName = school?.name || profileSchoolName || metadataSchoolName;
+            return { user, profile, school, schoolName };
         }
 
-        let verifiedStudent = null;
-        let verificationInFlight = false;
+        async function routeAuthenticatedUser() {
+            const resolved = await resolveAuthenticatedSchool();
+            if (!resolved.user) {
+                window.location.href = NON_MVP_ROUTE;
+                return;
+            }
 
-        function setVerificationStatus(type, message) {
-            const el = document.getElementById('studentVerificationStatus');
+            const schoolSlug = String(resolved.school?.slug || '').trim().toLowerCase();
+            const schoolName = normalizeSchoolName(resolved.schoolName);
+            const isMvp = MVP_SCHOOL_SLUGS.has(schoolSlug) || MVP_SCHOOL_NAMES.has(schoolName);
+            window.location.href = isMvp ? MVP_ROUTE : NON_MVP_ROUTE;
+        }
+
+        function setAuthMessage(message, isError = true) {
+            const el = document.getElementById('authMessage');
             if (!el) return;
-            el.classList.remove('hidden');
-            el.className = 'rounded-2xl border p-4 text-sm';
-            if (type === 'success') { el.style.color='var(--uv-green)'; el.style.borderColor='rgba(88,230,0,0.28)'; el.style.background='rgba(88,230,0,0.07)'; }
-            else if (type === 'error') { el.style.color='#ff9d9d'; el.style.borderColor='rgba(255,80,80,0.22)'; el.style.background='rgba(255,80,80,0.07)'; }
-            else { el.style.color='var(--uv-text-dim)'; el.style.borderColor='rgba(255,255,255,0.09)'; el.style.background='rgba(255,255,255,0.03)'; }
-            el.textContent = message;
-        }
-
-        function clearVerification() {
-            verifiedStudent=null;
-            const details=document.getElementById('verifiedAcademicDetails'); if(details){details.classList.add('hidden');details.innerHTML='';}
-            const status=document.getElementById('studentVerificationStatus'); if(status) status.classList.add('hidden');
-            const btn=document.getElementById('verifyStudentBtn'); const text=document.getElementById('verifyStudentBtnText');
-            if(btn) btn.disabled=false; if(text) text.textContent='Verify Student';
-        }
-
-        async function verifyStudentIdentity() {
-            if(verificationInFlight) return;
-            const name=document.getElementById('signupName').value.trim();
-            const school=document.getElementById('signupUniversity').value.trim();
-            const matric=document.getElementById('signupMatric').value.trim();
-            if(!name||!school||!matric){setVerificationStatus('error','Enter your full name, select your school and enter your matric number first.');return;}
-            verificationInFlight=true;
-            const btn=document.getElementById('verifyStudentBtn'); const text=document.getElementById('verifyStudentBtnText');
-            if(btn) btn.disabled=true; if(text) text.textContent='Checking registry…';
-            setVerificationStatus('info','Securely checking your student record…');
-            try {
-                const response=await fetch(`${supabaseUrl}/functions/v1/verify-student-public`,{method:'POST',headers:{'Content-Type':'application/json','apikey':supabaseKey},body:JSON.stringify({school_name:school,full_name:name,matric_number:matric})});
-                const result=await response.json().catch(()=>({}));
-                if(!response.ok){setVerificationStatus('error',response.status===429?'Too many attempts. Please wait a few minutes before trying again.':(result.error||'Verification is temporarily unavailable. Please try again.'));return;}
-                if(result.status==='unavailable'){setVerificationStatus('error','This school is not currently available for student verification.');return;}
-                const schoolRecord={id:result.school_id};
-                if(!response.ok){setVerificationStatus('error',response.status===429?'Too many attempts. Please wait a few minutes before trying again.':(result.error||'Verification is temporarily unavailable. Please try again.'));return;}
-                if(!result.verified){verifiedStudent=null;const details=document.getElementById('verifiedAcademicDetails');if(details){details.classList.add('hidden');details.innerHTML='';}setVerificationStatus('error','We could not verify this name and matric number against the selected school registry. Check your details and try again.');return;}
-                verifiedStudent={school_id:schoolRecord.id,school,matric_number:matric,full_name:name,faculty:result.student?.faculty||'',department:result.student?.department||'',level:result.student?.level||'',programme:result.student?.programme||''};
-                const details=document.getElementById('verifiedAcademicDetails');
-                if(details){const vals=[verifiedStudent.faculty,verifiedStudent.department,verifiedStudent.level,verifiedStudent.programme];details.innerHTML=['Faculty','Department','Level','Programme'].map(label=>`<div class="rounded-xl bg-white/5 border border-white/5 p-3"><div class="text-[10px] uppercase tracking-wider" style="color:var(--uv-text-dim)">${label}</div><div class="font-semibold text-white mt-1"></div></div>`).join('');details.querySelectorAll('.font-semibold').forEach((el,i)=>el.textContent=vals[i]);details.classList.remove('hidden');}
-                if(text) text.textContent='Student Verified ✓'; setVerificationStatus('success','Student verified. Your academic information has been confirmed by the UniVerse registry.');
-            } catch(error){console.error('Student verification failed:',error);setVerificationStatus('error','We could not complete verification right now. Please try again.');}
-            finally{verificationInFlight=false;if(btn&&!verifiedStudent)btn.disabled=false;}
+            el.textContent = message || '';
+            el.classList.toggle('hidden', !message);
+            el.classList.toggle('text-red-300', isError);
+            el.classList.toggle('text-green-300', !isError);
+            el.classList.toggle('bg-red-500/10', isError && !!message);
+            el.classList.toggle('bg-green-500/10', !isError && !!message);
+            el.classList.toggle('border', !!message);
+            el.classList.toggle('border-red-500/20', isError && !!message);
+            el.classList.toggle('border-green-500/20', !isError && !!message);
         }
 
         async function handleSignup() {
-            const name=document.getElementById('signupName').value.trim();
-            const email=document.getElementById('signupEmail').value.trim();
-            const password=document.getElementById('signupPassword').value;
-            const school=document.getElementById('signupUniversity').value;
-            const matric=document.getElementById('signupMatric').value.trim();
-            if(!email||!password||!school||!name||!matric){alert('Full name, university, matric number, email and password are required to join UniVerse.');return;}
-            if(!verifiedStudent||verifiedStudent.matric_number!==matric||verifiedStudent.school!==school){setVerificationStatus('error','Please verify your student identity before creating your account.');return;}
-            if(!signupAgreed){const err=document.getElementById('signupAgreeError');if(err)err.classList.remove('hidden');const box=document.getElementById('signupAgreeCheck');if(box)box.scrollIntoView({behavior:'smooth',block:'center'});return;}
-            const {data,error}=await _supabase.auth.signUp({email,password,options:{data:{full_name:name,university:school,matric_number:verifiedStudent.matric_number,student_verified:true,student_registry_id:verifiedStudent.school_id,faculty:verifiedStudent.faculty,department:verifiedStudent.department,level:verifiedStudent.level,programme:verifiedStudent.programme}}});
-            if(error){alert('Signup Error: '+error.message);}else{document.getElementById('otpPortal').classList.remove('hidden');window.tempEmail=email;}
+            if (signupBusy) return;
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+            const password = document.getElementById('signupPassword').value;
+            const school = document.getElementById('signupUniversity').value.trim();
+            const schoolId = document.getElementById('signupSchoolId').value.trim();
+            if (!name || !email || !password || !school || !schoolId) {
+                setAuthMessage('Please choose a supported university and complete all required fields.');
+                return;
+            }
+            if (password.length < 8) {
+                setAuthMessage('Your password must be at least 8 characters.');
+                return;
+            }
+            if (!signupAgreed) {
+                const err = document.getElementById('signupAgreeError');
+                if (err) err.classList.remove('hidden');
+                return;
+            }
+            const canonical = verificationSchools.find(s => String(s.id) === schoolId);
+            if (!canonical || normalizeSchoolName(canonical.name) !== normalizeSchoolName(school)) {
+                setAuthMessage('Please select your university again.');
+                return;
+            }
+            signupBusy = true;
+            setAuthMessage('Creating your account…', false);
+            try {
+                const { error } = await _supabase.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { full_name: name, university: canonical.name, student_school_id: canonical.id } }
+                });
+                if (error) throw error;
+                tempEmail = email;
+                window.tempEmail = email;
+                document.getElementById('otpPortal').classList.remove('hidden');
+                setAuthMessage('', true);
+                requestAnimationFrame(() => document.getElementById('otpCode')?.focus());
+            } catch (error) {
+                console.error('Signup failed:', error);
+                setAuthMessage(error?.message || 'We could not create your account. Please try again.');
+            } finally {
+                signupBusy = false;
+            }
         }
 
-async function verifyMyCode() {
-    const token = document.getElementById('otpCode').value;
-    const email = window.tempEmail;
+        function setOtpMessage(message, isError = true) {
+            const el = document.getElementById('otpMessage');
+            if (!el) return;
+            el.textContent = message || '';
+            el.classList.toggle('hidden', !message);
+            el.classList.toggle('text-red-300', isError);
+            el.classList.toggle('text-green-300', !isError);
+            el.classList.toggle('bg-red-500/10', isError && !!message);
+            el.classList.toggle('bg-green-500/10', !isError && !!message);
+            el.classList.toggle('border', !!message);
+            el.classList.toggle('border-red-500/20', isError && !!message);
+            el.classList.toggle('border-green-500/20', !isError && !!message);
+        }
 
-    // 3. Verify the 6-digit code with Supabase
-    const { data, error } = await _supabase.auth.verifyOtp({
-        email: email,
-        token: token,
-        type: 'signup'
-    });
+        async function resendSignupCode() {
+            if (resendBusy) return;
+            const email = tempEmail || window.tempEmail;
+            if (!email) return;
+            resendBusy = true;
+            const button = document.getElementById('otpResendButton');
+            if (button) button.disabled = true;
+            setOtpMessage('Sending a fresh verification code…', false);
+            try {
+                const { error } = await _supabase.auth.resend({ type: 'signup', email });
+                if (error) throw error;
+                setOtpMessage('A new verification code has been sent.', false);
+            } catch (error) {
+                setOtpMessage(error?.message || 'Unable to resend the code right now.');
+            } finally {
+                resendBusy = false;
+                if (button) button.disabled = false;
+            }
+        }
 
-    if (error) {
-        alert("Invalid or Expired Code: " + error.message);
-    } else {
-        alert("Identity Verified! Welcome to UniVERSE.");
-        window.location.href = 'dashboard.html'; // Direct access to dashboard
-    }
-}
-
-function closeOtpPortal() {
-    document.getElementById('otpPortal').classList.add('hidden');
-    document.getElementById('otpCode').value = '';
-}
+        async function verifyMyCode() {
+            if (verifyBusy) return;
+            const token = document.getElementById('otpCode').value.trim();
+            const email = tempEmail || window.tempEmail;
+            const normalizedToken = token.replace(/[\s-]/g, '');
+            if (!email || !/^\d{6,10}$/.test(normalizedToken)) {
+                setOtpMessage('Enter the verification code exactly as shown in your email (6–10 digits).');
+                return;
+            }
+            verifyBusy = true;
+            const button = document.getElementById('otpVerifyButton');
+            if (button) button.disabled = true;
+            setOtpMessage('Verifying your code…', false);
+            try {
+                const { data, error } = await _supabase.auth.verifyOtp({ email, token: normalizedToken, type: 'signup' });
+                if (error) throw error;
+                if (!data?.session) {
+                    setOtpMessage('Your email was verified. Please sign in to continue.', false);
+                    closeOtpPortal();
+                    switchTab('login');
+                    return;
+                }
+                try {
+                    await routeAuthenticatedUser();
+                } catch (routingError) {
+                    console.error('Campus routing failed:', routingError);
+                    window.location.href = NON_MVP_ROUTE;
+                }
+            } catch (error) {
+                console.error('OTP verification failed:', error);
+                setOtpMessage(error?.message || 'That verification code is invalid or expired.');
+            } finally {
+                verifyBusy = false;
+                if (button) button.disabled = false;
+            }
+        }
+        function closeOtpPortal() {
+            document.getElementById('otpPortal').classList.add('hidden');
+            document.getElementById('otpCode').value = '';
+            setOtpMessage('', true);
+        }
 
         async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
+            if (loginBusy) return;
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const password = document.getElementById('loginPassword').value;
-            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-            if (error) alert(error.message);
-            else window.location.href = 'dashboard.html';
+            if (!email || !password) { setAuthMessage('Email and password are required.'); return; }
+            loginBusy = true;
+            try {
+                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                if (!data?.session) throw new Error('Your session could not be established. Please try again.');
+                try {
+                    await routeAuthenticatedUser();
+                } catch (routingError) {
+                    console.error('Campus routing failed:', routingError);
+                    window.location.href = NON_MVP_ROUTE;
+                }
+            } catch (error) {
+                setAuthMessage(error?.message || 'Unable to sign in. Please try again.');
+            } finally {
+                loginBusy = false;
+            }
         }
+
     </script>
 </body>
 </html>

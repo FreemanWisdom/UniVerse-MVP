@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniVerse | Your Campus Is Next</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --uv-bg: #050505;
+      --uv-surface: rgba(255,255,255,.045);
+      --uv-surface-strong: rgba(255,255,255,.07);
+      --uv-border: rgba(255,255,255,.085);
+      --uv-green: #58e600;
+      --uv-green-dim: #35a800;
+      --uv-text: #f4f6f2;
+      --uv-text-dim: #8d958b;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--uv-text);
+      background: var(--uv-bg);
+      font-family: 'Inter', sans-serif;
+    }
+    .font-display { font-family: 'Space Grotesk', sans-serif; }
+    .uv-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 65% 50% at 14% 4%, rgba(88,230,0,.09), transparent 62%),
+        radial-gradient(ellipse 48% 42% at 88% 16%, rgba(88,230,0,.045), transparent 64%),
+        linear-gradient(180deg, #050505 0%, #080808 46%, #050505 100%);
+    }
+    .uv-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: .25;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 75% 60% at 50% 12%, black 8%, transparent 78%);
+    }
+    .uv-relative { position: relative; z-index: 1; }
+    .glass {
+      background: var(--uv-surface);
+      border: 1px solid var(--uv-border);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #63f20b 0%, #42bd00 100%);
+      color: #071000;
+      box-shadow: 0 0 0 1px rgba(88,230,0,.22), 0 12px 32px -12px rgba(88,230,0,.45);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .btn-secondary {
+      color: var(--uv-text);
+      border: 1px solid var(--uv-border);
+      background: rgba(255,255,255,.018);
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
+    }
+    @media (hover:hover) and (pointer:fine) {
+      .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(88,230,0,.36), 0 16px 36px -10px rgba(88,230,0,.52); }
+      .btn-secondary:hover { transform: translateY(-1px); border-color: rgba(88,230,0,.34); background: rgba(88,230,0,.05); }
+      .feature-card:hover { transform: translateY(-4px); border-color: rgba(88,230,0,.3); background: var(--uv-surface-strong); }
+    }
+    .feature-card { transition: transform .25s ease, border-color .25s ease, background .25s ease; }
+    .eyebrow { color: var(--uv-green); font-family: 'Space Grotesk', sans-serif; font-size: .67rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+    .muted { color: var(--uv-text-dim); }
+    .reveal { opacity: 0; transform: translateY(18px); animation: rise .7s ease forwards; }
+    .delay-1 { animation-delay: .08s; }
+    .delay-2 { animation-delay: .16s; }
+    .delay-3 { animation-delay: .24s; }
+    .delay-4 { animation-delay: .32s; }
+    @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; animation: none; }
+    }
+    .orb {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      border: 1px solid rgba(88,230,0,.12);
+      box-shadow: 0 0 80px rgba(88,230,0,.08);
+      animation: float 8s ease-in-out infinite;
+    }
+    .orb::after {
+      content: '';
+      position: absolute;
+      inset: 25px;
+      border-radius: inherit;
+      border: 1px dashed rgba(255,255,255,.1);
+    }
+    @keyframes float { 0%,100% { transform: translate3d(0,0,0) rotate(0deg); } 50% { transform: translate3d(0,-10px,0) rotate(4deg); } }
+    .status-dot { width: 7px; height: 7px; border-radius: 999px; background: var(--uv-green); box-shadow: 0 0 0 4px rgba(88,230,0,.12); }
+  </style>
+</head>
+<body>
+  <div class="uv-bg"></div>
+  <div class="uv-grid"></div>
+
+  <nav class="uv-relative fixed top-0 inset-x-0 z-40 border-b border-white/5 bg-black/70 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-5 sm:px-6 py-4 flex items-center justify-between">
+      <a href="#top" class="font-display text-xl font-bold tracking-tight">Uni<span style="color:var(--uv-green)">Verse</span> <span class="text-[.62rem] tracking-[.18em] muted font-semibold ml-1">ICOS</span></a>
+      <div class="hidden md:flex items-center gap-7 text-sm">
+        <a href="#top" class="muted hover:text-white transition">Home</a>
+        <a href="#about" class="muted hover:text-white transition">About UniVerse</a>
+        <a href="#mvp" class="muted hover:text-white transition">MVP</a>
+        <a href="#waitlist" class="muted hover:text-white transition">Waitlist</a>
+        <a href="#contact" class="muted hover:text-white transition">Contact</a>
+        <button id="logoutBtn" class="btn-secondary rounded-full px-4 py-2 font-semibold">Logout</button>
+      </div>
+      <button id="mobileLogoutBtn" class="md:hidden btn-secondary rounded-full px-4 py-2 text-sm font-semibold">Logout</button>
+    </div>
+  </nav>
+
+  <main id="top" class="uv-relative pt-32 pb-20">
+    <section class="px-5 sm:px-6">
+      <div class="max-w-7xl mx-auto relative overflow-hidden rounded-[2rem] border border-white/7 p-7 sm:p-10 lg:p-14 glass">
+        <div class="orb -right-16 -top-10 hidden sm:block"></div>
+        <div class="orb right-24 top-32 opacity-40 hidden lg:block" style="width:100px;height:100px;animation-delay:1.5s"></div>
+        <div class="max-w-3xl relative">
+          <div class="reveal inline-flex items-center gap-2 rounded-full border border-green-500/20 px-3.5 py-1.5 eyebrow mb-6">
+            <span class="status-dot"></span> Campus expansion
+          </div>
+          <p class="reveal delay-1 eyebrow mb-4">YOUR CAMPUS IS NEXT</p>
+          <h1 class="reveal delay-1 font-display text-4xl sm:text-5xl lg:text-7xl font-bold leading-[.98] tracking-tight">
+            UniVerse ICOS is coming to your campus.
+          </h1>
+          <p class="reveal delay-2 mt-6 text-base sm:text-lg leading-relaxed max-w-2xl muted">
+            Your university isn't part of our first MVP launch, but you're already part of the UniVerse community. We're expanding campus by campus to bring students one powerful platform for social connection, academics, communication, and everyday campus life.
+          </p>
+          <div class="reveal delay-3 mt-8 flex flex-col sm:flex-row gap-3">
+            <button id="heroWaitlist" class="btn-primary rounded-full px-6 py-3.5 font-bold text-sm">JOIN THE WAITLIST <span aria-hidden="true">→</span></button>
+            <button id="heroWhatsapp" class="btn-secondary rounded-full px-6 py-3.5 font-bold text-sm">CHAT WITH US ON WHATSAPP</button>
+          </div>
+          <div id="personalSchool" class="reveal delay-4 mt-7 rounded-2xl border border-white/7 bg-white/[.02] px-5 py-4 max-w-2xl">
+            <div class="eyebrow mb-1">Built for students everywhere</div>
+            <div id="schoolPrompt" class="font-display text-lg sm:text-xl font-semibold">Coming soon to <span id="schoolName" style="color:var(--uv-green)">your campus</span></div>
+            <div id="missingSchoolPrompt" class="hidden mt-2 text-sm muted">We need your university information before we can determine your campus experience. Your account is still secure and authenticated.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="px-5 sm:px-6 py-20">
+      <div class="max-w-6xl mx-auto">
+        <div class="max-w-3xl reveal">
+          <div class="eyebrow mb-3">ONE PLATFORM. YOUR ENTIRE CAMPUS.</div>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold">The digital layer for university life.</h2>
+          <p class="mt-5 text-base leading-relaxed muted">
+            UniVerse ICOS (Integrated Campus Operating System) is being built to bring students, academics, conversations, communities, and campus services together in one ecosystem.
+          </p>
+        </div>
+        <div class="mt-10 grid md:grid-cols-2 gap-5">
+          <div class="glass rounded-3xl p-7 reveal delay-1">
+            <div class="eyebrow mb-3">You're early</div>
+            <h3 class="font-display text-xl font-bold">Your campus is part of the expansion.</h3>
+            <p class="mt-3 text-sm leading-relaxed muted">The first UniVerse ICOS launch is focused on five MVP campuses. More universities remain in the UniVerse system as we expand.</p>
+          </div>
+          <div class="glass rounded-3xl p-7 reveal delay-2">
+            <div class="eyebrow mb-3">Stay close</div>
+            <h3 class="font-display text-xl font-bold">Be first when UniVerse arrives.</h3>
+            <p class="mt-3 text-sm leading-relaxed muted">Join the waitlist, tell us about your campus, and help shape the next phase without changing your existing UniVerse account.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mvp" class="px-5 sm:px-6 py-20 border-t border-white/5">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-3xl reveal">
+          <div class="eyebrow mb-3">V1.0 MVP IS LIVE</div>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold">Six experiences. One focused first release.</h2>
+          <p class="mt-4 text-sm leading-relaxed muted">UniVerse ICOS V1.0 is launching first across five universities as we build, test, and improve the experience alongside real students.</p>
+        </div>
+
+        <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="feature-card glass rounded-3xl p-6 reveal delay-1"><div class="text-sm mb-4" style="color:var(--uv-green)"><i class="fas fa-satellite"></i></div><h3 class="font-display text-lg font-bold">ORBIT</h3><p class="text-sm muted mt-1 font-semibold">Your campus social space</p><p class="text-sm muted mt-3 leading-relaxed">Connect, share, discover people, and stay involved with what's happening around your campus.</p></div>
+          <div class="feature-card glass rounded-3xl p-6 reveal delay-2"><div class="text-sm mb-4" style="color:var(--uv-green)"><i class="fas fa-comments"></i></div><h3 class="font-display text-lg font-bold">CAMPUS CHAT</h3><p class="text-sm muted mt-1 font-semibold">Talk to your campus</p><p class="text-sm muted mt-3 leading-relaxed">Connect and communicate with other students within your university community.</p></div>
+          <div class="feature-card glass rounded-3xl p-6 reveal delay-3"><div class="text-sm mb-4" style="color:var(--uv-green)"><i class="fas fa-users"></i></div><h3 class="font-display text-lg font-bold">STUDY TRIBES</h3><p class="text-sm muted mt-1 font-semibold">Study together. Grow together.</p><p class="text-sm muted mt-3 leading-relaxed">Join academic communities and collaborate with students who share your courses, interests, and goals.</p></div>
+          <div class="feature-card glass rounded-3xl p-6 reveal delay-1"><div class="text-sm mb-4" style="color:var(--uv-green)"><i class="fas fa-robot"></i></div><h3 class="font-display text-lg font-bold">AI TUTOR</h3><p class="text-sm muted mt-1 font-semibold">Your intelligent study companion</p><p class="text-sm muted mt-3 leading-relaxed">Get help understanding difficult academic concepts and make studying smarter.</p></div>
+          <div class="feature-card glass rounded-3xl p-6 reveal delay-2"><div class="text-sm mb-4" style="color:var(--uv-green)"><i class="fas fa-mask"></i></div><h3 class="font-display text-lg font-bold">CAMPUS WHISPER</h3><p class="text-sm muted mt-1 font-semibold">A space to speak freely</p><p class="text-sm muted mt-3 leading-relaxed">A campus-focused anonymous conversation layer designed for sharing thoughts and experiences.</p></div>
+          <div class="feature-card glass rounded-3xl p-6 reveal delay-3"><div class="text-sm mb-4" style="color:var(--uv-green)"><i class="fas fa-book"></i></div><h3 class="font-display text-lg font-bold">STUDY HUB</h3><p class="text-sm muted mt-1 font-semibold">Your academic resource center</p><p class="text-sm muted mt-3 leading-relaxed">Discover and access useful academic materials, resources, and study content.</p></div>
+        </div>
+
+        <div class="mt-12 glass rounded-3xl p-7 reveal delay-2">
+          <div class="eyebrow mb-3">MVP CAMPUSES</div>
+          <div class="flex flex-wrap gap-3 font-display font-semibold text-sm">
+            <span class="rounded-full border border-white/8 px-4 py-2">UAES</span>
+            <span class="rounded-full border border-white/8 px-4 py-2">FUNAI</span>
+            <span class="rounded-full border border-white/8 px-4 py-2">FUTO</span>
+            <span class="rounded-full border border-white/8 px-4 py-2">MOUAU</span>
+            <span class="rounded-full border border-white/8 px-4 py-2">UNN</span>
+          </div>
+          <p class="mt-4 text-sm muted">More campuses are coming.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="waitlist" class="px-5 sm:px-6 py-20 border-t border-white/5">
+      <div class="max-w-5xl mx-auto glass rounded-[2rem] p-8 sm:p-10 lg:p-14 text-center reveal">
+        <div class="eyebrow mb-3">THE NEXT CAMPUS LAYER</div>
+        <h2 class="font-display text-3xl sm:text-4xl font-bold">BE FIRST WHEN UNIVERSE ARRIVES.</h2>
+        <p class="mt-4 max-w-2xl mx-auto text-base leading-relaxed muted">Want UniVerse ICOS on your campus? Join the waitlist and be among the first students to know when your university is ready.</p>
+        <button id="waitlistBtn" class="btn-primary mt-7 rounded-full px-7 py-3.5 font-bold text-sm">JOIN THE WAITLIST <span aria-hidden="true">→</span></button>
+      </div>
+    </section>
+
+    <section id="contact" class="px-5 sm:px-6 py-20 border-t border-white/5">
+      <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6">
+        <div class="glass rounded-[2rem] p-8 sm:p-10 reveal">
+          <div class="eyebrow mb-3">CAMPUS EXPANSION</div>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold">WANT TO BRING UNIVERSE TO YOUR CAMPUS?</h2>
+          <p class="mt-4 text-sm sm:text-base leading-relaxed muted">Tell us about your campus. Whether you're a student leader, campus community builder, organization, or simply want UniVerse in your university, we'd love to hear from you.</p>
+          <button id="whatsappBtn" class="btn-primary mt-7 rounded-full px-6 py-3.5 font-bold text-sm">CHAT WITH US ON WHATSAPP</button>
+          <div class="mt-4 text-sm muted">0707 925 7806</div>
+        </div>
+        <div class="glass rounded-[2rem] p-8 sm:p-10 reveal delay-2 flex flex-col justify-between">
+          <div>
+            <div class="eyebrow mb-3">EARLY ACCESS</div>
+            <h2 class="font-display text-2xl font-bold">HELP BRING UNIVERSE TO YOUR CAMPUS</h2>
+            <p class="mt-4 text-sm leading-relaxed muted">Be one of the students who helps shape the future of UniVerse at your university.</p>
+          </div>
+          <div class="mt-8">
+            <button id="ambassadorWaitlistBtn" class="btn-secondary rounded-full px-6 py-3.5 font-bold text-sm">JOIN THE WAITLIST</button>
+            <p class="mt-4 text-xs leading-relaxed muted">Early campus communities may have opportunities to participate in UniVerse's campus expansion program.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-5 sm:px-6 py-8">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/5 pt-6 text-xs muted">
+        <div>UniVerse ICOS · Campus expansion</div>
+        <div>You're already part of UniVerse.</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const supabaseUrl = 'https://loppfyncbehifnspupwa.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvcHBmeW5jYmVoaWZuc3B1cHdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MDk2MDcsImV4cCI6MjA4NDA4NTYwN30.BuR0SNe1KQmZMl7u8s25hAI-QY_cDZRB2ijUU0JIu_c';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    const MVP_SCHOOL_SLUGS = new Set([
+      'university-of-agriculture-and-environmental-sciences-umagwo',
+      'alex-ekwueme-federal-university-ndufu-alike',
+      'federal-university-of-technology-owerri',
+      'michael-okpara-university-of-agriculture-umudike',
+      'university-of-nigeria-nsukka'
+    ]);
+    const MVP_SCHOOL_NAMES = new Set([
+      'university of agriculture and environmental sciences, umagwo',
+      'alex-ekwueme federal university ndufu-alike',
+      'federal university of technology owerri',
+      'michael okpara university of agriculture, umudike',
+      'university of nigeria, nsukka'
+    ]);
+    const MVP_ROUTE = 'dashboard.html';
+    const NON_MVP_ROUTE = 'non-mvp-campus.html';
+    const WAITLIST_URL = 'https://waitlist.universeicos.app';
+    const WHATSAPP_URL = 'https://wa.me/2347079257806';
+
+    const normalizeSchoolName = value => String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+
+    function openExternal(url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    async function loadSchoolDirectory() {
+      const response = await fetch(`${supabaseUrl}/functions/v1/verify-student-public`, {
+        method: 'GET',
+        headers: { apikey: supabaseKey, Accept: 'application/json' }
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !Array.isArray(result.schools)) throw new Error(result.error || 'Unable to load schools');
+      return result.schools.filter(s => s && s.id && s.name).map(s => ({
+        id: String(s.id),
+        name: String(s.name),
+        slug: String(s.slug || '')
+      }));
+    }
+
+    async function resolveCurrentUser() {
+      const { data, error } = await _supabase.auth.getUser();
+      if (error) throw error;
+      const user = data?.user;
+      if (!user) return null;
+
+      const { data: profile, error: profileError } = await _supabase
+        .from('profiles')
+        .select('full_name, university')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (profileError) throw profileError;
+
+      let directory = [];
+      try { directory = await loadSchoolDirectory(); } catch (_) {}
+
+      const metadata = user.user_metadata || {};
+      const schoolId = String(metadata.student_school_id || '').trim();
+      const schoolNameFromProfile = String(profile?.university || '').trim();
+      const schoolNameFromMetadata = String(metadata.university || '').trim();
+
+      let school = schoolId ? directory.find(s => s.id === schoolId) : null;
+      if (!school && schoolNameFromProfile) school = directory.find(s => normalizeSchoolName(s.name) === normalizeSchoolName(schoolNameFromProfile));
+      if (!school && schoolNameFromMetadata) school = directory.find(s => normalizeSchoolName(s.name) === normalizeSchoolName(schoolNameFromMetadata));
+
+      return {
+        user,
+        profile,
+        school,
+        schoolName: school?.name || schoolNameFromProfile || schoolNameFromMetadata
+      };
+    }
+
+    async function boot() {
+      try {
+        const resolved = await resolveCurrentUser();
+        if (!resolved) {
+          window.location.replace('universe.html');
+          return;
+        }
+
+        const schoolSlug = String(resolved.school?.slug || '').trim().toLowerCase();
+        const schoolNameNormalized = normalizeSchoolName(resolved.schoolName);
+        const isMvp = MVP_SCHOOL_SLUGS.has(schoolSlug) || MVP_SCHOOL_NAMES.has(schoolNameNormalized);
+        if (isMvp) {
+          window.location.replace(MVP_ROUTE);
+          return;
+        }
+
+        const schoolEl = document.getElementById('schoolName');
+        const schoolPrompt = document.getElementById('schoolPrompt');
+        const missingSchoolPrompt = document.getElementById('missingSchoolPrompt');
+        if (schoolEl) schoolEl.textContent = resolved.schoolName || 'your campus';
+        if (!resolved.schoolName) {
+          if (schoolPrompt) schoolPrompt.classList.add('hidden');
+          if (missingSchoolPrompt) missingSchoolPrompt.classList.remove('hidden');
+        }
+
+        const firstName = String(resolved.profile?.full_name || resolved.user.user_metadata?.full_name || '').trim().split(/\s+/)[0];
+        const greeting = document.getElementById('welcomeGreeting');
+        if (firstName) {
+          if (greeting) {
+            greeting.textContent = `Welcome, ${firstName}.`;
+            greeting.style.color = 'var(--uv-green)';
+          }
+          document.title = `UniVerse | ${firstName}'s Campus Is Next`;
+        }
+      } catch (error) {
+        console.error('Non-MVP campus routing failed:', error);
+        const schoolEl = document.getElementById('schoolName');
+        const schoolPrompt = document.getElementById('schoolPrompt');
+        const missingSchoolPrompt = document.getElementById('missingSchoolPrompt');
+        if (schoolEl) schoolEl.textContent = 'your campus';
+        if (schoolPrompt) schoolPrompt.classList.add('hidden');
+        if (missingSchoolPrompt) missingSchoolPrompt.classList.remove('hidden');
+      }
+    }
+
+    async function logout() {
+      const signOutPromise = _supabase.auth.signOut();
+      window.location.replace('index.html');
+
+      try {
+        const { error } = await signOutPromise;
+        if (error) {
+          console.error('Logout failed:', error);
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    }
+
+    document.getElementById('heroWaitlist').addEventListener('click', () => openExternal(WAITLIST_URL));
+    document.getElementById('waitlistBtn').addEventListener('click', () => openExternal(WAITLIST_URL));
+    document.getElementById('ambassadorWaitlistBtn').addEventListener('click', () => openExternal(WAITLIST_URL));
+    document.getElementById('heroWhatsapp').addEventListener('click', () => openExternal(WHATSAPP_URL));
+    document.getElementById('whatsappBtn').addEventListener('click', () => openExternal(WHATSAPP_URL));
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('mobileLogoutBtn').addEventListener('click', logout);
+
+    boot();
+  </script>
+</body>
+</html>

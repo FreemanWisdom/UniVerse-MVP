@@ -3,7 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniVerse ICOS | The Campus Operating System</title>
+    <title>UniVerse ICOS — The Integrated Campus Operating System</title>
+    <meta name="description" content="UniVerse ICOS is building an Integrated Campus Operating System for campus life, connecting students across communication, learning, communities and campus experiences.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://universeicos.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="UniVerse ICOS">
+    <meta property="og:title" content="UniVerse ICOS — The Integrated Campus Operating System">
+    <meta property="og:description" content="UniVerse ICOS is building an Integrated Campus Operating System for campus life, connecting students across communication, learning, communities and campus experiences.">
+    <meta property="og:url" content="https://universeicos.app/">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&amp;fit=crop&amp;w=2400&amp;q=82">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="UniVerse ICOS — The Integrated Campus Operating System">
+    <meta name="twitter:description" content="UniVerse ICOS is building an Integrated Campus Operating System for campus life, connecting students across communication, learning, communities and campus experiences.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&amp;fit=crop&amp;w=2400&amp;q=82">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "UniVerse ICOS",
+      "alternateName": "UniVerse",
+      "url": "https://universeicos.app/",
+      "description": "UniVerse ICOS is a student-focused Integrated Campus Operating System designed to connect communication, learning, communities and campus experiences within one digital ecosystem.",
+      "founder": {
+        "@type": "Person",
+        "name": "Victory Munachimso"
+      },
+      "foundingDate": "2026"
+    }
+    </script>
 
     <!-- Preconnects: start the network handshake for third-party origins immediately -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -506,8 +535,46 @@
         body.light-mode #otpPortal .text-slate-500 {
             color: var(--uv-text-dim) !important;
         }
+        /* Public company presentation additions. Scoped to uv-company/uv-public only. */
+        .uv-company-section { position: relative; z-index: 1; }
+        .uv-company-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: rgba(255,255,255,0.07); }
+        .uv-company-fact { background: rgba(5,5,5,0.72); padding: 1.25rem; }
+        .uv-company-fact dt { font-family: 'Space Grotesk', sans-serif; font-size: .62rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--uv-text-dim); }
+        .uv-company-fact dd { margin-top: .45rem; font-family: 'Space Grotesk', sans-serif; font-size: .95rem; font-weight: 700; color: var(--uv-text); }
+        .uv-company-campus-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: .75rem; }
+        .uv-company-timeline { position: relative; }
+        .uv-company-timeline::before { content: ''; position: absolute; left: 1.15rem; top: .75rem; bottom: .75rem; width: 1px; background: linear-gradient(180deg, rgba(88,230,0,.45), rgba(255,255,255,.05)); }
+        .uv-company-timeline-item { position: relative; padding-left: 3rem; }
+        .uv-company-timeline-dot { position: absolute; left: .82rem; top: .35rem; width: .7rem; height: .7rem; border-radius: 999px; background: var(--uv-green); box-shadow: 0 0 0 4px rgba(88,230,0,.12); }
+        .uv-company-faq details { border: 1px solid var(--uv-border); background: var(--uv-surface); border-radius: 1.25rem; overflow: hidden; }
+        .uv-company-faq summary { cursor: pointer; list-style: none; padding: 1.15rem 1.25rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--uv-text); }
+        .uv-company-faq summary::-webkit-details-marker { display: none; }
+        .uv-company-faq p { padding: 0 1.25rem 1.2rem; color: var(--uv-text-dim); font-size: .9rem; line-height: 1.7; }
+
+        .uv-company-team-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+        .uv-company-member { min-width: 0; overflow: hidden; }
+        .uv-company-member-photo { position: relative; aspect-ratio: 2 / 3; overflow: hidden; background: rgba(255,255,255,0.028); }
+        .uv-company-member-photo img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center top; }
+        .uv-company-member-photo::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,0.02) 40%, rgba(0,0,0,0.18) 100%); }
+        .uv-company-member-body { padding: 1.25rem 1.25rem 1.35rem; }
+        .uv-company-member-role { margin-top: .35rem; font-family: 'Space Grotesk', sans-serif; font-size: .78rem; font-weight: 700; line-height: 1.45; color: var(--uv-green); }
+        .uv-company-member-note { margin-top: .75rem; color: var(--uv-text-dim); font-size: .82rem; line-height: 1.65; }
+        .uv-company-team-instruction { margin-top: .9rem; max-width: 54rem; color: var(--uv-text-faint); font-size: .78rem; line-height: 1.65; }
+        @media (max-width: 1023px) {
+            .uv-company-team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 639px) {
+            .uv-company-team-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
+            .uv-company-campus-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        }
+        @media (max-width: 640px) {
+            .uv-company-facts { grid-template-columns: 1fr; }
+            .uv-company-campus-grid { grid-template-columns: 1fr; }
+        }
     </style>
-</head>
+</head></head>
 <body class="min-h-screen">
     <div class="uv-bg-field"></div>
     <div class="uv-grid"></div>
@@ -527,6 +594,7 @@
                 <a href="#how-it-works" data-section="how-it-works" class="uv-nav-link">How It Works</a>
                 <a href="#v1" data-section="v1" class="uv-nav-link">V1.0 MVP</a>
                 <a href="#community" data-section="community" class="uv-nav-link">Community</a>
+                <a href="#uv-company-about" data-section="uv-company-about" class="uv-nav-link">Company</a>
             </div>
             <div class="hidden md:flex items-center gap-3">
                 <button onclick="openAuthModal('login')" class="uv-nav-link text-sm font-semibold px-4 py-2">Log In</button>
@@ -543,6 +611,7 @@
                 <a href="#how-it-works" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">How It Works</a>
                 <a href="#v1" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">V1.0 MVP</a>
                 <a href="#community" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Community</a>
+                <a href="#uv-company-about" onclick="toggleMobileNav()" class="uv-nav-link py-3 text-sm">Company</a>
                 <a href="#" onclick="toggleMobileNav(); openDoc('privacy'); return false;" class="uv-nav-link py-3 text-sm">Privacy Policy</a>
                 <a href="#" onclick="toggleMobileNav(); openDoc('community'); return false;" class="uv-nav-link py-3 text-sm">Community Standards</a>
                 <div class="flex gap-3 pt-3">
@@ -567,14 +636,14 @@
                     </div>
                 </div>
                 <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight text-white">
-                    Your campus.<br>
-                    <span style="color:var(--uv-green)">One universe.</span>
+                    The Integrated<br>
+                    <span style="color:var(--uv-green)">Campus Operating System.</span>
                 </h1>
                 <p class="mt-6 text-lg leading-relaxed max-w-lg" style="color:var(--uv-text-dim)">
-                    UniVerse ICOS is building an <strong class="text-white font-semibold">Integrated Campus Operating System</strong> — bringing the digital student experience into one connected ecosystem.
+                    UniVerse ICOS is building a student-centered digital infrastructure for campus life — connecting communication, learning, communities and campus experiences within one connected ecosystem.
                 </p>
                 <p class="mt-4 text-sm leading-relaxed max-w-lg pl-4 border-l-2" style="color:var(--uv-text-dim); border-color:rgba(52,224,138,0.4)">
-                    You're looking at the first version. <strong class="text-white font-medium">V1.0 is our MVP</strong> — a focused first layer built around connection, learning, communication and collaboration.
+                    <strong class="text-white font-medium">V1.0 MVP IS LIVE</strong> — starting with five pilot campuses in Nigeria.
                 </p>
                 <div class="mt-10 flex flex-wrap gap-4">
                     <button onclick="openAuthModal('login')" class="uv-btn-primary font-bold px-7 py-3.5 rounded-full text-sm">Enter UniVerse ICOS</button>
@@ -681,7 +750,32 @@
             <div class="uv-card rounded-3xl p-8" style="border-color:rgba(52,224,138,0.3); background:rgba(52,224,138,0.04)">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(52,224,138,0.14); color:var(--uv-green)"><i class="fas fa-flag"></i></div>
                 <h3 class="font-display text-lg font-bold text-white mb-2">UniVerse ICOS v1.0</h3>
-                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">UniVerse ICOS v1.0 is the first practical layer of that vision — a focused MVP built around four core systems, with the wider ICOS ecosystem expanding from here.</p>
+                <p class="text-sm leading-relaxed" style="color:var(--uv-text-dim)">UniVerse ICOS v1.0 is the first practical layer of that vision — a focused MVP built around six core systems, with the wider ICOS ecosystem expanding from here.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ WHAT IS UNIVERSE ICOS? ============ -->
+    <section id="uv-company-definition" class="uv-company-section uv-relative px-6 py-20 border-t border-white/5" aria-labelledby="uv-company-definition-title">
+        <div class="max-w-5xl mx-auto">
+            <div class="max-w-3xl uv-reveal">
+                <div class="uv-eyebrow mb-3">Company Definition</div>
+                <h2 id="uv-company-definition-title" class="font-display text-3xl sm:text-4xl font-bold text-white">What is UniVerse ICOS?</h2>
+                <p class="mt-5 text-base leading-relaxed" style="color:var(--uv-text-dim)">UniVerse ICOS is an Integrated Campus Operating System designed to bring the digital experiences of campus life into one connected ecosystem.</p>
+                <p class="mt-4 text-base leading-relaxed" style="color:var(--uv-text-dim)">It connects students across communication, learning, collaboration, communities and campus interaction, beginning with UniVerse ICOS V1.0 and expanding toward a broader campus infrastructure.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ WHY UNIVERSE EXISTS ============ -->
+    <section id="uv-company-why" class="uv-company-section uv-relative px-6 py-20 border-t border-white/5" aria-labelledby="uv-company-why-title">
+        <div class="max-w-5xl mx-auto">
+            <div class="glass-card rounded-[2rem] p-8 sm:p-12 uv-reveal">
+                <div class="uv-eyebrow mb-3">Why UniVerse Exists</div>
+                <h2 id="uv-company-why-title" class="font-display text-3xl sm:text-4xl font-bold text-white max-w-2xl">One campus. One connected digital environment.</h2>
+                <p class="mt-5 text-base leading-relaxed max-w-3xl" style="color:var(--uv-text-dim)">Campus life has become digitally fragmented.</p>
+                <p class="mt-3 text-base leading-relaxed max-w-3xl" style="color:var(--uv-text-dim)">Students communicate in one place, study somewhere else, find communities somewhere else, and solve everyday problems through disconnected networks.</p>
+                <p class="mt-3 text-base leading-relaxed max-w-3xl text-white">UniVerse ICOS is being built to change that.</p>
             </div>
         </div>
     </section>
@@ -909,6 +1003,183 @@
         </div>
     </section>
 
+    <!-- ============ CURRENT CAMPUS NETWORK ============ -->
+    <section id="uv-company-network" class="uv-company-section uv-relative px-6 py-24 border-t border-white/5" aria-labelledby="uv-company-network-title">
+        <div class="max-w-7xl mx-auto">
+            <div class="max-w-3xl uv-reveal mb-12">
+                <div class="uv-eyebrow mb-3">Current Campus Network</div>
+                <h2 id="uv-company-network-title" class="font-display text-3xl sm:text-4xl font-bold text-white">V1.0 Pilot Campuses</h2>
+                <p class="mt-4 text-base leading-relaxed" style="color:var(--uv-text-dim)">UniVerse ICOS V1.0 is currently launching across five pilot campuses in Nigeria.</p>
+            </div>
+            <div class="uv-company-campus-grid uv-reveal">
+                <div class="uv-card rounded-2xl p-5"><div class="uv-kicker mb-2" style="color:var(--uv-green)">01</div><h3 class="font-display text-sm sm:text-base font-bold text-white">University of Agriculture and Environmental Sciences (UAES)</h3></div>
+                <div class="uv-card rounded-2xl p-5"><div class="uv-kicker mb-2" style="color:var(--uv-green)">02</div><h3 class="font-display text-sm sm:text-base font-bold text-white">Alex Ekwueme Federal University Ndufu-Alike (FUNAI)</h3></div>
+                <div class="uv-card rounded-2xl p-5"><div class="uv-kicker mb-2" style="color:var(--uv-green)">03</div><h3 class="font-display text-sm sm:text-base font-bold text-white">Federal University of Technology, Owerri (FUTO)</h3></div>
+                <div class="uv-card rounded-2xl p-5"><div class="uv-kicker mb-2" style="color:var(--uv-green)">04</div><h3 class="font-display text-sm sm:text-base font-bold text-white">Michael Okpara University of Agriculture, Umudike (MOUAU)</h3></div>
+                <div class="uv-card rounded-2xl p-5"><div class="uv-kicker mb-2" style="color:var(--uv-green)">05</div><h3 class="font-display text-sm sm:text-base font-bold text-white">University of Nigeria, Nsukka (UNN)</h3></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ BUILT IN NIGERIA ============ -->
+    <section id="uv-company-africa" class="uv-company-section uv-relative px-6 py-20 border-t border-white/5" aria-labelledby="uv-company-africa-title">
+        <div class="max-w-5xl mx-auto text-center uv-reveal">
+            <div class="uv-eyebrow mb-3">Geographic Vision</div>
+            <h2 id="uv-company-africa-title" class="font-display text-3xl sm:text-4xl font-bold text-white">Built in Nigeria. Designed for Africa.</h2>
+            <p class="mt-5 text-base leading-relaxed max-w-3xl mx-auto" style="color:var(--uv-text-dim)">UniVerse ICOS begins with Nigerian universities, where students navigate fragmented systems for communication, learning, communities and everyday campus life.</p>
+            <p class="mt-4 text-base leading-relaxed max-w-3xl mx-auto" style="color:var(--uv-text-dim)">The long-term vision is to build infrastructure that can connect campus communities across Africa.</p>
+        </div>
+    </section>
+
+    <!-- ============ ABOUT UNIVERSE ICOS ============ -->
+    <section id="uv-company-about" class="uv-company-section uv-relative px-6 py-24 border-t border-white/5" aria-labelledby="uv-company-about-title">
+        <div class="max-w-7xl mx-auto">
+            <div class="max-w-3xl uv-reveal mb-12">
+                <div class="uv-eyebrow mb-3">Company</div>
+                <h2 id="uv-company-about-title" class="font-display text-3xl sm:text-4xl font-bold text-white">About UniVerse ICOS</h2>
+                <p class="mt-5 text-base leading-relaxed" style="color:var(--uv-text-dim)">UniVerse ICOS is a student-focused technology company building an Integrated Campus Operating System for the next generation of campus life.</p>
+                <p class="mt-4 text-sm leading-relaxed" style="color:var(--uv-text-dim)">Founded in 2026, UniVerse ICOS began with a simple premise: students should not have to navigate disconnected platforms for every part of their campus experience.</p>
+                <p class="mt-4 text-sm leading-relaxed" style="color:var(--uv-text-dim)">The company is starting with a focused V1.0 MVP across its first pilot campuses in Nigeria, with a long-term vision of developing a broader campus ecosystem.</p>
+            </div>
+            <dl class="uv-company-facts rounded-3xl overflow-hidden uv-reveal">
+                <div class="uv-company-fact"><dt>Company</dt><dd>UniVerse ICOS</dd></div>
+                <div class="uv-company-fact"><dt>Meaning</dt><dd>Integrated Campus Operating System</dd></div>
+                <div class="uv-company-fact"><dt>Founded</dt><dd>2026</dd></div>
+                <div class="uv-company-fact"><dt>Founder &amp; CEO</dt><dd>Victory Munachimso</dd></div>
+                <div class="uv-company-fact"><dt>Co Founder &amp; COO</dt><dd>Freeman Wisdom Chinazaekpere</dd></div>
+                <div class="uv-company-fact"><dt>Current Product</dt><dd>UniVerse ICOS V1.0</dd></div>
+                <div class="uv-company-fact"><dt>Current Market</dt><dd>Nigerian Universities</dd></div>
+                <div class="uv-company-fact"><dt>Long-Term Vision</dt><dd>Africa</dd></div>
+                <div class="uv-company-fact"><dt>MVP Campuses</dt><dd>5</dd></div>
+                <div class="uv-company-fact"><dt>MVP Experiences</dt><dd>6</dd></div>
+            </dl>
+        </div>
+    </section>
+
+    <!-- ============ TEAM ============ -->
+    <section id="uv-company-team" class="uv-company-section uv-relative px-6 py-20 border-t border-white/5" aria-labelledby="uv-company-team-title">
+        <div class="max-w-7xl mx-auto">
+            <div class="max-w-3xl uv-reveal mb-12">
+                <div class="uv-eyebrow mb-3">Built by</div>
+                <h2 id="uv-company-team-title" class="font-display text-3xl sm:text-4xl font-bold text-white">The Team Behind UniVerse ICOS</h2>
+                <p class="mt-5 text-base leading-relaxed" style="color:var(--uv-text-dim)">Meet the people building and supporting the UniVerse ICOS ecosystem.</p>
+                <p class="uv-company-team-instruction">Every team card already has the same image treatment. To add a person's photo, replace only that card's <strong class="text-white">src</strong> value with the hosted image URL.</p>
+            </div>
+            <div class="uv-company-team-grid">
+                <article class="glass-card rounded-[1.75rem] uv-company-member uv-reveal" id="uv-team-victory" aria-label="Victory Munachimso, Founder & CEO">
+                    <div class="uv-company-member-photo">
+                        <!-- Replace the src value below with this team member's hosted image URL. The same sizing/cropping treatment is used on every card. -->
+                        <img src="IMAGES/munachimso.png">
+                    </div>
+                    <div class="uv-company-member-body">
+                        <div class="font-display text-xl sm:text-[1.35rem] font-bold text-white leading-tight">Victory Munachimso</div>
+                        <div class="uv-company-member-role">Founder &amp; CEO</div>
+                        <p class="uv-company-member-note">Victory Munachimso is the founder and CEO of UniVerse ICOS.</p>
+                    </div>
+                </article>
+                <article class="glass-card rounded-[1.75rem] uv-company-member uv-reveal" id="uv-team-freeman" aria-label="Freeman Wisdom Chinazaekpere, Co Founder & COO">
+                    <div class="uv-company-member-photo">
+                        <!-- Replace the src value below with this team member's hosted image URL. The same sizing/cropping treatment is used on every card. -->
+                        <img src="IMAGES/freeman.png">
+                    </div>
+                    <div class="uv-company-member-body">
+                        <div class="font-display text-xl sm:text-[1.35rem] font-bold text-white leading-tight">Freeman Wisdom Chinazaekpere</div>
+                        <div class="uv-company-member-role">Co Founder &amp; COO</div>
+                        
+                    </div>
+                </article>
+                <article class="glass-card rounded-[1.75rem] uv-company-member uv-reveal" id="uv-team-ndukwu" aria-label="Ndukwu Chinedu Charles, DMD">
+                    <div class="uv-company-member-photo">
+                        <!-- Replace the src value below with this team member's hosted image URL. The same sizing/cropping treatment is used on every card. -->
+                        <img src="IMAGES/chinedu.png">
+                    </div>
+                    <div class="uv-company-member-body">
+                        <div class="font-display text-xl sm:text-[1.35rem] font-bold text-white leading-tight">Ndukwu Chinedu Charles</div>
+                        <div class="uv-company-member-role">DMD</div>
+                        
+                    </div>
+                </article>
+                <article class="glass-card rounded-[1.75rem] uv-company-member uv-reveal" id="uv-team-onyeghala" aria-label="Onyeghala Chinemerem Stephanie, Director of Growth & Advertisement">
+                    <div class="uv-company-member-photo">
+                        <!-- Replace the src value below with this team member's hosted image URL. The same sizing/cropping treatment is used on every card. -->
+                        <img src="IMAGES/chinemerem.png">
+                    </div>
+                    <div class="uv-company-member-body">
+                        <div class="font-display text-xl sm:text-[1.35rem] font-bold text-white leading-tight">Onyeghala Chinemerem Stephanie</div>
+                        <div class="uv-company-member-role">Director of Growth &amp; Advertisement</div>
+                        
+                    </div>
+                </article>
+                <article class="glass-card rounded-[1.75rem] uv-company-member uv-reveal" id="uv-team-jonathan" aria-label="Jonathan Okorie, Project Manager">
+                    <div class="uv-company-member-photo">
+                        <!-- Replace the src value below with this team member's hosted image URL. The same sizing/cropping treatment is used on every card. -->
+                        <img src="IMAGES/joe.png">
+                    </div>
+                    <div class="uv-company-member-body">
+                        <div class="font-display text-xl sm:text-[1.35rem] font-bold text-white leading-tight">Jonathan Okorie</div>
+                        <div class="uv-company-member-role">Project Manager</div>
+                        
+                    </div>
+                </article>
+                <article class="glass-card rounded-[1.75rem] uv-company-member uv-reveal" id="uv-team-mong" aria-label="Mong Gospel Kalu, Secretary & Compliance Officer">
+                    <div class="uv-company-member-photo">
+                        <!-- Replace the src value below with this team member's hosted image URL. The same sizing/cropping treatment is used on every card. -->
+                        <img src="IMAGES/mong.png">
+                    </div>
+                    <div class="uv-company-member-body">
+                        <div class="font-display text-xl sm:text-[1.35rem] font-bold text-white leading-tight">Mong Gospel Kalu</div>
+                        <div class="uv-company-member-role">Secretary &amp; Compliance Officer</div>
+                        
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ TIMELINE ============ -->
+    <section id="uv-company-timeline" class="uv-company-section uv-relative px-6 py-24 border-t border-white/5" aria-labelledby="uv-company-timeline-title">
+        <div class="max-w-5xl mx-auto">
+            <div class="uv-eyebrow mb-3">Company Timeline</div>
+            <h2 id="uv-company-timeline-title" class="font-display text-3xl sm:text-4xl font-bold text-white mb-12">UniVerse ICOS Timeline</h2>
+            <div class="uv-company-timeline space-y-9">
+                <div class="uv-company-timeline-item uv-reveal"><span class="uv-company-timeline-dot" aria-hidden="true"></span><div class="uv-kicker" style="color:var(--uv-green)">2026</div><h3 class="font-display text-lg font-bold text-white mt-1">UniVerse ICOS founded.</h3></div>
+                <div class="uv-company-timeline-item uv-reveal"><span class="uv-company-timeline-dot" aria-hidden="true"></span><div class="uv-kicker" style="color:var(--uv-green)">2026</div><h3 class="font-display text-lg font-bold text-white mt-1">UniVerse ICOS V1.0 developed.</h3></div>
+                <div class="uv-company-timeline-item uv-reveal"><span class="uv-company-timeline-dot" aria-hidden="true"></span><div class="uv-kicker" style="color:var(--uv-green)">2026</div><h3 class="font-display text-lg font-bold text-white mt-1">V1.0 launched across five Nigerian pilot campuses.</h3></div>
+                <div class="uv-company-timeline-item uv-reveal"><span class="uv-company-timeline-dot" aria-hidden="true"></span><div class="uv-kicker" style="color:var(--uv-green)">2026 →</div><h3 class="font-display text-lg font-bold text-white mt-1">Campus network and ecosystem development.</h3></div>
+                <div class="uv-company-timeline-item uv-reveal"><span class="uv-company-timeline-dot" aria-hidden="true"></span><div class="uv-kicker">Future</div><h3 class="font-display text-lg font-bold text-white mt-1">Expansion of the broader ICOS ecosystem.</h3></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ BEYOND V1.0 ============ -->
+    <section id="uv-company-beyond" class="uv-company-section uv-relative px-6 py-24 border-t border-white/5" aria-labelledby="uv-company-beyond-title">
+        <div class="max-w-3xl mx-auto text-center uv-reveal">
+            <div class="uv-eyebrow mb-3">Beyond V1.0</div>
+            <h2 id="uv-company-beyond-title" class="font-display text-3xl sm:text-4xl font-bold text-white">V1.0 is only the first layer.</h2>
+            <p class="mt-5 text-base leading-relaxed" style="color:var(--uv-text-dim)">UniVerse ICOS is being designed as an operating system for campus life — an infrastructure where communication, learning, communities and future campus services can exist within one connected ecosystem.</p>
+            <p class="mt-4 text-base leading-relaxed" style="color:var(--uv-text-dim)">As the network grows, additional ICOS layers will be introduced around the needs of students and their campuses.</p>
+        </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section id="uv-company-faq" class="uv-company-section uv-company-faq uv-relative px-6 py-24 border-t border-white/5" aria-labelledby="uv-company-faq-title">
+        <div class="max-w-4xl mx-auto">
+            <div class="max-w-2xl uv-reveal mb-10">
+                <div class="uv-eyebrow mb-3">Knowledge Base</div>
+                <h2 id="uv-company-faq-title" class="font-display text-3xl sm:text-4xl font-bold text-white">Frequently asked questions</h2>
+            </div>
+            <div class="space-y-3">
+                <details class="uv-reveal"><summary>What does ICOS mean?</summary><p>ICOS means Integrated Campus Operating System.</p></details>
+                <details class="uv-reveal"><summary>What is UniVerse ICOS?</summary><p>UniVerse ICOS is a student-focused Integrated Campus Operating System designed to connect communication, learning, communities and campus experiences within one digital ecosystem.</p></details>
+                <details class="uv-reveal"><summary>Is UniVerse ICOS live?</summary><p>Yes. UniVerse ICOS V1.0 is live.</p></details>
+                <details class="uv-reveal"><summary>What is included in V1.0?</summary><p>V1.0 includes Orbit, Campus Chat, Study Tribes, AI Tutor, Campus Whisper and Study Hub.</p></details>
+                <details class="uv-reveal"><summary>Which universities are currently part of V1.0?</summary><p>V1.0 is currently launching across UAES, FUNAI, FUTO, MOUAU and UNN.</p></details>
+                <details class="uv-reveal"><summary>Where is UniVerse ICOS starting?</summary><p>UniVerse ICOS is starting with Nigerian universities, with a long-term vision for expansion across Africa.</p></details>
+                <details class="uv-reveal"><summary>Who founded UniVerse ICOS?</summary><p>UniVerse ICOS was founded by Victory Munachimso, who serves as Founder &amp; CEO.</p></details>
+            </div>
+        </div>
+    </section>
+
     <!-- ============ FINAL CTA ============ -->
     <section class="uv-relative px-6 py-20 border-t border-white/5">
         <div class="max-w-3xl mx-auto text-center uv-reveal">
@@ -921,24 +1192,46 @@
     </section>
 
     <!-- ============ FOOTER ============ -->
-    <footer class="uv-relative px-6 py-14 border-t border-white/5">
+    <footer class="uv-relative px-6 py-14 border-t border-white/5" aria-label="UniVerse ICOS footer">
         <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 pb-10">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-10">
                 <div>
                     <div class="font-display text-lg font-bold text-white">UniVerse ICOS</div>
-                    <div class="uv-kicker mt-1" style="color:var(--uv-green)">V1.0 / MVP</div>
-                    <p class="text-sm mt-3 max-w-xs" style="color:var(--uv-text-dim)">The first layer of the campus operating system.</p>
+                    <div class="uv-kicker mt-1" style="color:var(--uv-green)">The Integrated Campus Operating System</div>
+                    <p class="text-sm mt-3 max-w-xs" style="color:var(--uv-text-dim)">A student-focused digital infrastructure for campus life.</p>
                 </div>
-                <div class="flex flex-wrap gap-x-8 gap-y-3 text-sm">
-                    <a href="#overview" class="uv-nav-link">Overview</a>
-                    <a href="#ecosystem" class="uv-nav-link">Ecosystem</a>
-                    <a href="#v1" class="uv-nav-link">V1.0 MVP</a>
-                    <button onclick="openDoc('privacy')" class="uv-nav-link">Privacy Policy</button>
-                    <button onclick="openDoc('community')" class="uv-nav-link">Community Standards</button>
+                <div>
+                    <div class="uv-kicker mb-4" style="color:var(--uv-green)">Product</div>
+                    <div class="flex flex-col gap-2 text-sm">
+                        <a href="#connect" class="uv-nav-link">Orbit</a>
+                        <a href="#ecosystem" class="uv-nav-link">Campus Chat</a>
+                        <a href="#collaborate" class="uv-nav-link">Study Tribes</a>
+                        <a href="#v1" class="uv-nav-link">AI Tutor</a>
+                        <a href="#v1" class="uv-nav-link">Campus Whisper</a>
+                        <a href="#study" class="uv-nav-link">Study Hub</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="uv-kicker mb-4" style="color:var(--uv-green)">Company</div>
+                    <div class="flex flex-col gap-2 text-sm">
+                        <a href="#uv-company-about" class="uv-nav-link">About UniVerse ICOS</a>
+                        <a href="#uv-company-africa" class="uv-nav-link">Vision</a>
+                        <a href="#uv-company-team" class="uv-nav-link">Team</a>
+                        <a href="#uv-company-timeline" class="uv-nav-link">Timeline</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="uv-kicker mb-4" style="color:var(--uv-green)">Community &amp; Legal</div>
+                    <div class="flex flex-col gap-2 text-sm">
+                        <a href="#uv-company-faq" class="uv-nav-link">FAQ</a>
+                        <button onclick="openDoc('privacy')" class="uv-nav-link text-left">Privacy Policy</button>
+                        <button onclick="openDoc('community')" class="uv-nav-link text-left">Community Standards</button>
+                        <button onclick="openAuthModal('signup')" class="uv-nav-link text-left">Join UniVerse ICOS</button>
+                    </div>
                 </div>
             </div>
             <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-                <div class="uv-kicker">UniVerse ICOS v1.0 · MVP</div>
+                <div class="uv-kicker">UniVerse ICOS v1.0 · MVP · Nigerian Universities</div>
                 <div class="uv-kicker">&copy; 2026 UniVerse ICOS</div>
             </div>
         </div>

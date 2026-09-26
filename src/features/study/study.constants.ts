@@ -1,0 +1,4 @@
+export const STUDY_CONSTANTS = {
+  COURSE_PAGE_SIZE: 20,
+  RESOURCE_PAGE_SIZE: 20,
+} as const;

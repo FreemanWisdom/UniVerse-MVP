@@ -1,10 +1,5 @@
 export type StudyResourceType = "material" | "past_question" | "other";
 export type StudySemester = "first" | "second" | "summer";
-export type StudyResourceModerationStatus =
-  | "active"
-  | "pending"
-  | "rejected"
-  | "removed";
 
 export interface StudyCourse {
   id: string;
@@ -17,29 +12,30 @@ export interface StudyCourse {
   updated_at: string;
 }
 
+/**
+ * Client-facing projection of a study resource.
+ *
+ * Deliberately omits private/internal columns (file_url, storage_path,
+ * original_filename, tribe_id, uploader_id, moderation_status, university,
+ * course_id): they are never displayed and must not be fetched to the
+ * client. File access goes exclusively through the study-resource-access
+ * Edge Function, which performs its own server-side authorization.
+ */
 export interface StudyResource {
   id: string;
   title: string;
   description: string | null;
-  file_url: string;
   file_type: string | null;
   mime_type: string | null;
-  storage_path: string | null;
-  original_filename: string | null;
   file_size_bytes: number | null;
   resource_type: StudyResourceType;
   category: string | null;
-  university: string;
   course_code: string | null;
-  course_id: string | null;
   department: string | null;
   level: string | null;
   academic_year: number | null;
   semester: StudySemester | null;
-  tribe_id: string | null;
-  uploader_id: string;
   download_count: number;
-  moderation_status: StudyResourceModerationStatus;
   created_at: string;
 }
 

@@ -12,8 +12,11 @@ import { getSupabasePublicConfig } from "@/lib/supabase/config";
 
 const COURSE_COLUMNS =
   "id, university, course_code, course_title, department, level, created_at, updated_at";
+// Public-safe projection only. Never add file_url, storage_path,
+// original_filename, tribe_id, uploader_id, moderation_status,
+// university, or course_id here: those columns must not reach the client.
 const RESOURCE_COLUMNS =
-  "id, title, description, file_url, file_type, mime_type, storage_path, original_filename, file_size_bytes, resource_type, category, university, course_code, course_id, department, level, academic_year, semester, tribe_id, uploader_id, download_count, moderation_status, created_at";
+  "id, title, description, file_type, mime_type, file_size_bytes, resource_type, category, course_code, department, level, academic_year, semester, download_count, created_at";
 
 function escapeFilterValue(value: string): string {
   return value.replace(/[(),]/g, " ").trim();

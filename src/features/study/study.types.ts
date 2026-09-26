@@ -61,3 +61,17 @@ export interface ListResourcesParams {
   search?: string;
   cursor?: StudyCursor;
 }
+
+export interface StudyResourceAccessResponse {
+  url: string;
+  expires_in: number;
+  resource: {
+    id: string;
+    title: string;
+    file_type: string | null;
+    mime_type: string | null;
+  };
+}
+
+export type StudyFilterValue = "all" | StudyResourceType;
+export type StudyCourseFilterValue = "all" | string;

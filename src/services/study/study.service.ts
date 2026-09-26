@@ -6,7 +6,9 @@ import {
   StudyCourse,
   StudyCursor,
   StudyResource,
+  StudyResourceAccessResponse,
 } from "@/features/study/study.types";
+import { getSupabasePublicConfig } from "@/lib/supabase/config";
 
 const COURSE_COLUMNS =
   "id, university, course_code, course_title, department, level, created_at, updated_at";
@@ -105,4 +107,86 @@ export async function getCurrentUniversity(
   }
 
   return data || null;
+}
+
+export async function accessStudyResource(
+  supabase: SupabaseClient,
+  resourceId: string,
+  download = false
+): Promise<string> {
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError || !session?.access_token) {
+    throw new Error("session_expired");
+  }
+
+  const { supabaseUrl } = getSupabasePublicConfig();
+  const endpoint = `${supabaseUrl.replace(/\/$/, "")}/functions/v1/study-resource-access`;
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({
+      resource_id: resourceId,
+      ...(download ? { download: true } : {}),
+    }),
+  });
+
+  let payload: Partial<StudyResourceAccessResponse> & {
+    message?: string;
+    error?: { code?: string; message?: string };
+    code?: string;
+    details?: string;
+  } = {};
+
+  try {
+    payload = await response.json();
+  } catch {
+    payload = {};
+  }
+
+  if (!response.ok) {
+    const code = payload.code ?? payload.error?.code ?? "";
+    const message = payload.message ?? payload.error?.message ?? "";
+
+    if (response.status === 401 || code === "not_authenticated" || message.toLowerCase().includes("jwt")) {
+      throw new Error("session_expired");
+    }
+
+    if (
+      response.status === 403 ||
+      code === "resource_not_accessible" ||
+      message.toLowerCase().includes("resource_not_accessible")
+    ) {
+      throw new Error("not_available");
+    }
+
+    if (
+      response.status === 404 ||
+      code === "resource_not_found" ||
+      message.toLowerCase().includes("resource_not_found") ||
+      message.toLowerCase().includes("file_unavailable")
+    ) {
+      throw new Error("file_unavailable");
+    }
+
+    if (
+      response.status === 409 ||
+      code === "resource_file_not_migrated" ||
+      message.toLowerCase().includes("resource_file_not_migrated")
+    ) {
+      throw new Error("file_unavailable");
+    }
+
+    throw new Error("generic_failure");
+  }
+
+  if (!payload.url) {
+    throw new Error("file_unavailable");
+  }
+
+  return payload.url;
 }

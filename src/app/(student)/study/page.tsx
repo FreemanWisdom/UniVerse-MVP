@@ -7,9 +7,15 @@ import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import {
   accessStudyResource,
+  addStudyBookmark,
+  enrollInCourse,
   getCurrentUniversity,
+  leaveCourse,
+  listBookmarkedResourceIds,
   listCourses,
+  listEnrolledCourseIds,
   listResources,
+  removeStudyBookmark,
 } from "@/services/study/study.service";
 import {
   StudyCourse,
@@ -18,6 +24,7 @@ import {
   StudyCourseFilterValue,
 } from "@/features/study/study.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
+import { StudyResourceCard } from "@/features/study/components/study-resource-card";
 
 const RESOURCE_TYPE_OPTIONS: Array<{ value: StudyFilterValue; label: string }> = [
   { value: "all", label: "All types" },
@@ -25,6 +32,9 @@ const RESOURCE_TYPE_OPTIONS: Array<{ value: StudyFilterValue; label: string }> =
   { value: "past_question", label: "Past question" },
   { value: "other", label: "Other" },
 ];
+
+const COURSE_FILTER_ALL = "all";
+const COURSE_FILTER_ENROLLED = "enrolled";
 
 function StudyState({ children }: { children: React.ReactNode }) {
   return (
@@ -34,25 +44,12 @@ function StudyState({ children }: { children: React.ReactNode }) {
   );
 }
 
-function formatDate(value: string | null): string {
-  if (!value) return "Unknown date";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Unknown date";
-
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+function sortByKey<T>(items: T[]): T[] {
+  return [...items].sort((a, b) => {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
   });
-}
-
-function formatSize(bytes: number | null): string {
-  if (bytes === null || bytes === undefined) return "Size unavailable";
-
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export default function StudyPage() {
@@ -60,16 +57,23 @@ export default function StudyPage() {
   const [universityResolved, setUniversityResolved] = useState(false);
   const [courses, setCourses] = useState<StudyCourse[]>([]);
   const [resources, setResources] = useState<StudyResource[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<StudyCourseFilterValue>("all");
+  const [selectedCourse, setSelectedCourse] = useState<StudyCourseFilterValue>(COURSE_FILTER_ALL);
   const [resourceType, setResourceType] = useState<StudyFilterValue>("all");
+  const [savedOnly, setSavedOnly] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
+  const [enrolledCourseIds, setEnrolledCourseIds] = useState<string[]>([]);
+  const [toggleSaveIds, setToggleSaveIds] = useState<string[]>([]);
+  const [toggleEnrollIds, setToggleEnrollIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [resourcesLoading, setResourcesLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resourceError, setResourceError] = useState<Record<string, string>>({});
+  const [courseError, setCourseError] = useState<Record<string, string>>({});
+  const [saveError, setSaveError] = useState<Record<string, string>>({});
   const [accessingResourceId, setAccessingResourceId] = useState<string | null>(null);
 
   const resourceRequestId = useRef(0);
@@ -83,7 +87,7 @@ export default function StudyPage() {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  // Initial load: resolve the university and the course library, once.
+  // Initial load: university, course library, bookmarks, enrollments — once.
   useEffect(() => {
     let cancelled = false;
 
@@ -94,9 +98,11 @@ export default function StudyPage() {
         setLoading(true);
         setError(null);
 
-        const [currentUniversity, nextCourses] = await Promise.all([
+        const [currentUniversity, nextCourses, bookmarkIds, enrolledIds] = await Promise.all([
           getCurrentUniversity(supabase),
           listCourses(supabase),
+          listBookmarkedResourceIds(supabase).catch(() => [] as string[]),
+          listEnrolledCourseIds(supabase).catch(() => [] as string[]),
         ]);
 
         if (cancelled) return;
@@ -104,6 +110,8 @@ export default function StudyPage() {
         setUniversity(currentUniversity);
         setUniversityResolved(true);
         setCourses(nextCourses);
+        setBookmarkedIds(sortByKey(bookmarkIds));
+        setEnrolledCourseIds(sortByKey(enrolledIds));
       } catch (loadError) {
         if (!cancelled) {
           setError(loadError instanceof Error ? loadError.message : "Unable to load Study.");
@@ -122,6 +130,19 @@ export default function StudyPage() {
     };
   }, []);
 
+  // The saved/enrolled sets only retrigger the resource fetch when the
+  // corresponding filter is active; otherwise toggling a bookmark or an
+  // enrollment must not refetch the list.
+  const savedIdsKey = savedOnly ? bookmarkedIds.join(",") : "";
+  const enrolledCourseCodes = selectedCourse === COURSE_FILTER_ENROLLED
+    ? courses
+        .filter((course) => enrolledCourseIds.includes(course.id))
+        .map((course) => course.course_code)
+    : [];
+  const enrolledCodesKey = selectedCourse === COURSE_FILTER_ENROLLED
+    ? sortByKey(enrolledCourseCodes).join(",")
+    : "";
+
   // Resources: refetch page 1 whenever the filters change.
   useEffect(() => {
     if (!universityResolved || !university) return;
@@ -130,6 +151,15 @@ export default function StudyPage() {
     const requestId = resourceRequestId.current + 1;
     resourceRequestId.current = requestId;
 
+    // Re-snapshot the ids for this exact request so a toggle mid-flight
+    // cannot skew the query.
+    const resourceIds = savedOnly ? bookmarkedIds : undefined;
+    const courseCodes = selectedCourse === COURSE_FILTER_ENROLLED
+      ? courses
+          .filter((course) => enrolledCourseIds.includes(course.id))
+          .map((course) => course.course_code)
+      : undefined;
+
     const load = async () => {
       const supabase = createClient();
 
@@ -137,7 +167,13 @@ export default function StudyPage() {
 
       try {
         const nextResources = await listResources(supabase, {
-          courseCode: selectedCourse !== "all" ? selectedCourse : undefined,
+          courseCode: typeof selectedCourse === "string" &&
+            selectedCourse !== COURSE_FILTER_ALL &&
+            selectedCourse !== COURSE_FILTER_ENROLLED
+            ? selectedCourse
+            : undefined,
+          courseCodes,
+          resourceIds,
           resourceType: resourceType !== "all" ? resourceType : undefined,
           search: searchQuery.trim() || undefined,
         });
@@ -162,7 +198,17 @@ export default function StudyPage() {
     return () => {
       cancelled = true;
     };
-  }, [university, universityResolved, selectedCourse, resourceType, searchQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- savedIdsKey/enrolledCodesKey stand in for the live sets
+  }, [
+    university,
+    universityResolved,
+    selectedCourse,
+    resourceType,
+    searchQuery,
+    savedOnly,
+    savedIdsKey,
+    enrolledCodesKey,
+  ]);
 
   const loadMore = async () => {
     if (loadingMore || !hasMore) return;
@@ -175,7 +221,17 @@ export default function StudyPage() {
 
     try {
       const more = await listResources(supabase, {
-        courseCode: selectedCourse !== "all" ? selectedCourse : undefined,
+        courseCode: typeof selectedCourse === "string" &&
+          selectedCourse !== COURSE_FILTER_ALL &&
+          selectedCourse !== COURSE_FILTER_ENROLLED
+          ? selectedCourse
+          : undefined,
+        courseCodes: selectedCourse === COURSE_FILTER_ENROLLED
+          ? courses
+              .filter((course) => enrolledCourseIds.includes(course.id))
+              .map((course) => course.course_code)
+          : undefined,
+        resourceIds: savedOnly ? bookmarkedIds : undefined,
         resourceType: resourceType !== "all" ? resourceType : undefined,
         search: searchQuery.trim() || undefined,
         cursor: { created_at: last.created_at, id: last.id },
@@ -193,17 +249,99 @@ export default function StudyPage() {
     }
   };
 
-  const handleResourceAction = async (resourceId: string, resourceTitle: string, download = false) => {
+  const handleToggleSave = async (resource: StudyResource) => {
+    const isSaved = bookmarkedIds.includes(resource.id);
     const supabase = createClient();
-    setAccessingResourceId(resourceId);
-    setResourceError((current) => ({ ...current, [resourceId]: "" }));
+
+    setToggleSaveIds((current) => [...current, resource.id]);
+    setSaveError((current) => ({ ...current, [resource.id]: "" }));
+
+    // Optimistic update with rollback on failure.
+    setBookmarkedIds((current) =>
+      sortByKey(
+        isSaved
+          ? current.filter((id) => id !== resource.id)
+          : [...current, resource.id]
+      )
+    );
 
     try {
-      const url = await accessStudyResource(supabase, resourceId, download);
+      if (isSaved) {
+        await removeStudyBookmark(supabase, resource.id);
+      } else {
+        await addStudyBookmark(supabase, resource.id);
+      }
+    } catch (toggleError) {
+      setBookmarkedIds((current) =>
+        sortByKey(
+          isSaved
+            ? sortByKey([...current, resource.id])
+            : current.filter((id) => id !== resource.id)
+        )
+      );
+      setSaveError((current) => ({
+        ...current,
+        [resource.id]: toggleError instanceof Error && toggleError.message === "session_expired"
+          ? "Your session expired. Please sign in again."
+          : "We couldn't update your saved resources. Please try again.",
+      }));
+    } finally {
+      setToggleSaveIds((current) => current.filter((id) => id !== resource.id));
+    }
+  };
+
+  const handleToggleEnrollment = async (course: StudyCourse) => {
+    const isEnrolled = enrolledCourseIds.includes(course.id);
+    const supabase = createClient();
+
+    setToggleEnrollIds((current) => [...current, course.id]);
+    setCourseError((current) => ({ ...current, [course.id]: "" }));
+
+    // Optimistic update with rollback on failure.
+    setEnrolledCourseIds((current) =>
+      sortByKey(
+        isEnrolled
+          ? current.filter((id) => id !== course.id)
+          : [...current, course.id]
+      )
+    );
+
+    try {
+      if (isEnrolled) {
+        await leaveCourse(supabase, course.id);
+      } else {
+        await enrollInCourse(supabase, course.id);
+      }
+    } catch (toggleError) {
+      setEnrolledCourseIds((current) =>
+        sortByKey(
+          isEnrolled
+            ? sortByKey([...current, course.id])
+            : current.filter((id) => id !== course.id)
+        )
+      );
+      setCourseError((current) => ({
+        ...current,
+        [course.id]: toggleError instanceof Error && toggleError.message === "session_expired"
+          ? "Your session expired. Please sign in again."
+          : "We couldn't update your enrollment. Please try again.",
+      }));
+    } finally {
+      setToggleEnrollIds((current) => current.filter((id) => id !== course.id));
+    }
+  };
+
+  const handleResourceAction = async (resource: StudyResource, download: boolean) => {
+    const supabase = createClient();
+    setAccessingResourceId(resource.id);
+    setResourceError((current) => ({ ...current, [resource.id]: "" }));
+
+    try {
+      const url = await accessStudyResource(supabase, resource.id, download);
       if (download) {
         const anchor = document.createElement("a");
         anchor.href = url;
-        anchor.download = resourceTitle;
+        anchor.download = resource.title;
         anchor.rel = "noopener noreferrer";
         document.body.appendChild(anchor);
         anchor.click();
@@ -222,9 +360,9 @@ export default function StudyPage() {
               ? "This file is unavailable right now."
               : "We couldn't prepare this resource. Please try again.";
 
-      setResourceError((current) => ({ ...current, [resourceId]: friendlyError }));
+      setResourceError((current) => ({ ...current, [resource.id]: friendlyError }));
     } finally {
-      setAccessingResourceId((current) => (current === resourceId ? null : current));
+      setAccessingResourceId((current) => (current === resource.id ? null : current));
     }
   };
 
@@ -253,6 +391,12 @@ export default function StudyPage() {
     );
   }
 
+  const filtersActive =
+    selectedCourse !== COURSE_FILTER_ALL ||
+    resourceType !== "all" ||
+    savedOnly ||
+    searchQuery.trim().length > 0;
+
   return (
     <StudyState>
       {loading ? (
@@ -279,21 +423,48 @@ export default function StudyPage() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => setSelectedCourse("all")}
-                    className={`rounded-full border px-3 py-1.5 text-xs font-medium ${selectedCourse === "all" ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
+                    onClick={() => setSelectedCourse(COURSE_FILTER_ALL)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium ${selectedCourse === COURSE_FILTER_ALL ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
                   >
                     All courses
                   </button>
-                  {courses.map((course) => (
-                    <button
-                      key={course.id}
-                      type="button"
-                      onClick={() => setSelectedCourse(course.course_code)}
-                      className={`rounded-full border px-3 py-1.5 text-xs font-medium ${selectedCourse === course.course_code ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
-                    >
-                      {course.course_code}
-                    </button>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCourse(COURSE_FILTER_ENROLLED)}
+                    aria-pressed={selectedCourse === COURSE_FILTER_ENROLLED}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium ${selectedCourse === COURSE_FILTER_ENROLLED ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
+                  >
+                    My courses
+                  </button>
+                  {courses.map((course) => {
+                    const isEnrolled = enrolledCourseIds.includes(course.id);
+                    return (
+                      <div key={course.id} className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCourse(course.course_code)}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-medium ${selectedCourse === course.course_code ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
+                        >
+                          {course.course_code}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void handleToggleEnrollment(course)}
+                          disabled={toggleEnrollIds.includes(course.id)}
+                          aria-pressed={isEnrolled}
+                          aria-label={isEnrolled ? `Leave ${course.course_code}` : `Enroll in ${course.course_code}`}
+                          className={`rounded-full border px-2 py-1 text-[10px] font-medium ${isEnrolled ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-400"}`}
+                        >
+                          {toggleEnrollIds.includes(course.id) ? "…" : isEnrolled ? "Enrolled" : "Enroll"}
+                        </button>
+                        {courseError[course.id] ? (
+                          <span className="text-[10px] text-red-400" role="alert">
+                            {courseError[course.id]}
+                          </span>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
@@ -302,7 +473,7 @@ export default function StudyPage() {
           <Card>
             <CardHeader><CardTitle>Resources</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-wrap items-center gap-3">
                 <select
                   aria-label="Filter resource type"
                   value={resourceType}
@@ -313,68 +484,40 @@ export default function StudyPage() {
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
+                <button
+                  type="button"
+                  onClick={() => setSavedOnly((current) => !current)}
+                  aria-pressed={savedOnly}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium ${savedOnly ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
+                >
+                  Saved
+                </button>
               </div>
 
               {resourcesLoading && resources.length === 0 ? (
                 <p className="text-sm text-slate-400" aria-live="polite">Loading resources…</p>
               ) : resources.length === 0 ? (
-                <p className="text-sm text-slate-400">No study resources are available yet.</p>
+                <p className="text-sm text-slate-400">
+                  {filtersActive
+                    ? "No resources match these filters."
+                    : "No study resources are available yet."}
+                </p>
               ) : (
                 <>
                   <div className="space-y-3">
                     {resources.map((resource) => (
-                      <div key={resource.id} className="rounded-xl border border-surface-200 bg-surface-50 p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="space-y-1">
-                            <p className="text-lg font-semibold text-foreground">{resource.title}</p>
-                            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                              {resource.course_code ?? "General"} · {resource.resource_type}
-                            </p>
-                          </div>
-                          <span className="rounded-full border border-surface-300 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-300">
-                            {resource.file_type ?? resource.mime_type ?? "file"}
-                          </span>
-                        </div>
-
-                        {resource.description ? (
-                          <p className="mt-3 text-sm text-slate-300">{resource.description}</p>
-                        ) : null}
-
-                        <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-slate-400">
-                          {resource.category ? <span>{resource.category}</span> : null}
-                          {resource.academic_year ? <span>· {resource.academic_year}</span> : null}
-                          {resource.semester ? <span>· {resource.semester}</span> : null}
-                          {resource.department ? <span>· {resource.department}</span> : null}
-                          {resource.level ? <span>· {resource.level}</span> : null}
-                          <span>· {formatDate(resource.created_at)}</span>
-                          <span>· {formatSize(resource.file_size_bytes)}</span>
-                          <span>· {resource.download_count} downloads</span>
-                        </div>
-
-                        {resourceError[resource.id] ? (
-                          <p className="mt-3 text-sm text-red-400" role="alert">{resourceError[resource.id]}</p>
-                        ) : null}
-
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          <Button
-                            type="button"
-                            size="sm"
-                            onClick={() => void handleResourceAction(resource.id, resource.title, false)}
-                            disabled={accessingResourceId === resource.id}
-                          >
-                            {accessingResourceId === resource.id ? "Opening…" : "Open"}
-                          </Button>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            onClick={() => void handleResourceAction(resource.id, resource.title, true)}
-                            disabled={accessingResourceId === resource.id}
-                          >
-                            {accessingResourceId === resource.id ? "Preparing…" : "Download"}
-                          </Button>
-                        </div>
-                      </div>
+                      <StudyResourceCard
+                        key={resource.id}
+                        resource={resource}
+                        isSaved={bookmarkedIds.includes(resource.id)}
+                        isTogglingSave={toggleSaveIds.includes(resource.id)}
+                        saveError={saveError[resource.id] || null}
+                        accessBusy={accessingResourceId === resource.id}
+                        accessError={resourceError[resource.id] || null}
+                        onToggleSave={(target) => void handleToggleSave(target)}
+                        onOpen={(target) => void handleResourceAction(target, false)}
+                        onDownload={(target) => void handleResourceAction(target, true)}
+                      />
                     ))}
                   </div>
 

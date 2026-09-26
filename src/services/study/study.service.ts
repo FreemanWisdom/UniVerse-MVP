@@ -64,6 +64,8 @@ export async function listResources(
   supabase: SupabaseClient,
   {
     courseCode,
+    courseCodes,
+    resourceIds,
     resourceType,
     semester,
     academicYear,
@@ -71,6 +73,10 @@ export async function listResources(
     cursor,
   }: ListResourcesParams = {}
 ): Promise<StudyResource[]> {
+  // Empty id/code lists short-circuit: PostgREST cannot express `in ()`.
+  if (courseCodes !== undefined && courseCodes.length === 0) return [];
+  if (resourceIds !== undefined && resourceIds.length === 0) return [];
+
   let query = supabase
     .from("study_resources")
     .select(RESOURCE_COLUMNS)
@@ -78,6 +84,8 @@ export async function listResources(
     .order("id", { ascending: false });
 
   if (courseCode) query = query.eq("course_code", courseCode);
+  if (courseCodes) query = query.in("course_code", courseCodes);
+  if (resourceIds) query = query.in("id", resourceIds);
   if (resourceType) query = query.eq("resource_type", resourceType);
   if (semester) query = query.eq("semester", semester);
   if (academicYear !== undefined) query = query.eq("academic_year", academicYear);
@@ -98,6 +106,114 @@ export async function listResources(
   }
 
   return data as StudyResource[];
+}
+
+async function getCurrentUserId(supabase: SupabaseClient): Promise<string> {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    throw new Error("session_expired");
+  }
+
+  return user.id;
+}
+
+// --- Bookmarks -------------------------------------------------------------
+// No RPC exists for bookmarks; RLS (user_id = auth.uid()) is the boundary,
+// so direct writes through PostgREST are the intended access path.
+
+export async function listBookmarkedResourceIds(
+  supabase: SupabaseClient
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("study_bookmarks")
+    .select("resource_id");
+
+  if (error) {
+    throw new Error(`Unable to load your saved resources: ${error.message}`);
+  }
+
+  return (data ?? []).map((row) => row.resource_id as string);
+}
+
+export async function addStudyBookmark(
+  supabase: SupabaseClient,
+  resourceId: string
+): Promise<void> {
+  const userId = await getCurrentUserId(supabase);
+
+  const { error } = await supabase.from("study_bookmarks").upsert(
+    { user_id: userId, resource_id: resourceId },
+    { onConflict: "user_id,resource_id", ignoreDuplicates: true }
+  );
+
+  if (error) {
+    throw new Error(`Unable to save this resource: ${error.message}`);
+  }
+}
+
+export async function removeStudyBookmark(
+  supabase: SupabaseClient,
+  resourceId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from("study_bookmarks")
+    .delete()
+    .eq("resource_id", resourceId);
+
+  if (error) {
+    throw new Error(`Unable to remove this bookmark: ${error.message}`);
+  }
+}
+
+// --- Course enrollments ----------------------------------------------------
+// Same situation as bookmarks: user-scoped rows, RLS is the boundary.
+
+export async function listEnrolledCourseIds(
+  supabase: SupabaseClient
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("study_course_enrollments")
+    .select("course_id");
+
+  if (error) {
+    throw new Error(`Unable to load your course enrollments: ${error.message}`);
+  }
+
+  return (data ?? []).map((row) => row.course_id as string);
+}
+
+export async function enrollInCourse(
+  supabase: SupabaseClient,
+  courseId: string
+): Promise<void> {
+  const userId = await getCurrentUserId(supabase);
+
+  const { error } = await supabase.from("study_course_enrollments").upsert(
+    { user_id: userId, course_id: courseId },
+    { onConflict: "course_id,user_id", ignoreDuplicates: true }
+  );
+
+  if (error) {
+    throw new Error(`Unable to enroll in this course: ${error.message}`);
+  }
+}
+
+export async function leaveCourse(
+  supabase: SupabaseClient,
+  courseId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from("study_course_enrollments")
+    .delete()
+    .eq("course_id", courseId);
+
+  if (error) {
+    throw new Error(`Unable to leave this course: ${error.message}`);
+  }
 }
 
 export async function getCurrentUniversity(

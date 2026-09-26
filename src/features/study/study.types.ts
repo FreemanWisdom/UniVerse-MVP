@@ -51,6 +51,10 @@ export interface ListCoursesParams {
 
 export interface ListResourcesParams {
   courseCode?: string;
+  /** Filter to resources belonging to any of these course codes ("My courses"). */
+  courseCodes?: string[];
+  /** Filter to a specific set of resource ids ("Saved" view). */
+  resourceIds?: string[];
   resourceType?: StudyResourceType;
   semester?: StudySemester;
   academicYear?: number;

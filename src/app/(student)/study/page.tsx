@@ -25,6 +25,7 @@ import {
 } from "@/features/study/study.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
 import { StudyResourceCard } from "@/features/study/components/study-resource-card";
+import { StudyContributionPanel } from "@/features/study/components/study-contribution-panel";
 
 const RESOURCE_TYPE_OPTIONS: Array<{ value: StudyFilterValue; label: string }> = [
   { value: "all", label: "All types" },
@@ -469,6 +470,17 @@ export default function StudyPage() {
               )}
             </CardContent>
           </Card>
+
+          {university ? (
+          <StudyContributionPanel
+            university={university}
+            onUploaded={(resource) => setResources((current) => [resource, ...current])}
+            onDeleted={(resourceId) => {
+              setResources((current) => current.filter((resource) => resource.id !== resourceId));
+              setBookmarkedIds((current) => current.filter((id) => id !== resourceId));
+            }}
+          />
+          ) : null}
 
           <Card>
             <CardHeader><CardTitle>Resources</CardTitle></CardHeader>

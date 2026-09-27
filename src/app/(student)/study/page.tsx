@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -406,7 +407,17 @@ export default function StudyPage() {
         </Card>
       ) : (
         <>
-          <h2 className="text-sm font-medium text-slate-400">{university}</h2>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-sm font-medium text-slate-400">{university}</h2>
+            <div className="flex gap-2">
+              <Link href="/study/tribes">
+                <Button variant="outline" size="sm">Study Tribes</Button>
+              </Link>
+              <Link href="/study/tutor">
+                <Button variant="outline" size="sm">AI Tutor</Button>
+              </Link>
+            </div>
+          </div>
 
           <Card>
             <CardHeader><CardTitle>Course library</CardTitle></CardHeader>

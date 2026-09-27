@@ -60,7 +60,7 @@ export function AdminSidebar({ role }: { role?: string | null }) {
             U
           </span>
           <div className="leading-tight">
-            <p className="text-sm font-semibold tracking-tight text-slate-900">UniVerse</p>
+            <p className="text-sm font-semibold tracking-tight text-slate-900">UniVerse ICOS</p>
             <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400">Admin Console</p>
           </div>
         </div>
@@ -121,7 +121,7 @@ export function AdminSidebar({ role }: { role?: string | null }) {
               U
             </span>
             <p className="text-sm font-semibold tracking-tight text-slate-900">
-              UniVerse <span className="text-xs font-medium text-slate-400">Admin</span>
+              UniVerse ICOS <span className="text-xs font-medium text-slate-400">Admin</span>
             </p>
           </div>
           <Link href="/" className="text-xs font-medium text-slate-500 hover:text-slate-900">

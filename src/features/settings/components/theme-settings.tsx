@@ -52,7 +52,7 @@ export function ThemeSettings() {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Appearance</CardTitle>
-        <CardDescription>Choose how UniVerse looks on this device</CardDescription>
+        <CardDescription>Choose how UniVerse ICOS looks on this device</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between gap-4">
@@ -88,7 +88,7 @@ export function ThemeSettings() {
           </div>
         </div>
         <p className="text-xs text-slate-500">
-          Your choice is saved on this device and applies every time you open UniVerse.
+          Your choice is saved on this device and applies every time you open UniVerse ICOS.
         </p>
       </CardContent>
     </Card>

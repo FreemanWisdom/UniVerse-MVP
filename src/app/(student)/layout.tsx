@@ -21,7 +21,7 @@ export default async function StudentLayout({
           <Link href="/orbit" className="flex items-center space-x-2">
             <span className="h-3 w-3 rounded-full bg-campus-500 shadow-[0_0_10px_#22c55e]" />
             <span className="text-base font-bold tracking-tight text-foreground">
-              UniVerse <span className="text-campus-500 font-mono text-xs">STUDENT</span>
+              UniVerse <span className="text-campus-500 font-mono text-xs">ICOS</span> <span className="text-slate-400 font-mono text-xs">STUDENT</span>
             </span>
           </Link>
 

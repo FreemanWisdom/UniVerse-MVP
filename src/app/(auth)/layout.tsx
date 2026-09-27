@@ -31,7 +31,7 @@ export default async function AuthLayout({
 
         <div className="text-center text-xs text-slate-500">
           <Link href="/" className="hover:text-campus-400 transition-colors">
-            ← Return to UniVerse home
+            ← Return to UniVerse ICOS home
           </Link>
         </div>
       </div>

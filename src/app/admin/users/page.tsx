@@ -31,6 +31,8 @@ const STATUS_ACTIONS: Array<{ action: AdminUserAction; label: string; variant: "
   { action: "ban", label: "Ban", variant: "dangerSoft" },
   { action: "restrict", label: "Restrict", variant: "dangerSoft" },
   { action: "unrestrict", label: "Unrestrict", variant: "secondary" },
+  { action: "student_verify", label: "Student Verify", variant: "primary" },
+  { action: "student_unverify", label: "Student Unverify", variant: "secondary" },
 ];
 
 const CAPABILITIES = [
@@ -152,6 +154,7 @@ export default function AdminUsersPage() {
                           {user.full_name ?? "Unnamed"}
                         </p>
                         {user.is_verified ? <AdminPill tone="success">verified</AdminPill> : null}
+                        {user.student_verified ? <AdminPill tone="info">student verified</AdminPill> : null}
                         {user.is_suspended ? <AdminPill tone="warning">suspended</AdminPill> : null}
                       </div>
                       <p className="mt-0.5 truncate text-xs text-slate-500">

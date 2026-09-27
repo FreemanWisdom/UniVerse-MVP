@@ -750,6 +750,7 @@ export type Database = {
           level: string | null
           onboarding_completed: boolean | null
           reputation_stars: number | null
+          student_verified: boolean
           university: string | null
           wallet_balance: number | null
         }
@@ -767,6 +768,7 @@ export type Database = {
           level?: string | null
           onboarding_completed?: boolean | null
           reputation_stars?: number | null
+          student_verified?: boolean
           university?: string | null
           wallet_balance?: number | null
         }
@@ -784,6 +786,7 @@ export type Database = {
           level?: string | null
           onboarding_completed?: boolean | null
           reputation_stars?: number | null
+          student_verified?: boolean
           university?: string | null
           wallet_balance?: number | null
         }

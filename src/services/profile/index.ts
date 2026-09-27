@@ -8,7 +8,7 @@ import { StudentProfile, ProfileUpdatePayload } from "@/features/profile/profile
 export async function getProfile(supabase: SupabaseClient, userId: string): Promise<StudentProfile | null> {
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, avatar_url, university, department, level, bio, is_verified, interests")
+    .select("id, full_name, avatar_url, university, department, level, bio, is_verified, student_verified, interests")
     .eq("id", userId)
     .maybeSingle();
 
@@ -33,7 +33,7 @@ export async function updateProfile(
     .from("profiles")
     .update(payload)
     .eq("id", userId)
-    .select("id, full_name, avatar_url, university, department, level, bio, is_verified, interests")
+    .select("id, full_name, avatar_url, university, department, level, bio, is_verified, student_verified, interests")
     .single();
 
   if (error) {

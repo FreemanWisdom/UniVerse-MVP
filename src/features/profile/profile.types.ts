@@ -10,6 +10,7 @@ export interface StudentProfile {
   bio: string | null;
   interests?: string[] | null;
   is_verified?: boolean;
+  student_verified?: boolean;
   created_at?: string;
   updated_at?: string;
 }

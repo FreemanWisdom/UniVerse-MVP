@@ -82,6 +82,7 @@ export interface AdminListedUser {
   level: string | null;
   is_verified: boolean;
   is_suspended: boolean;
+  student_verified: boolean;
   created_at: string;
 }
 
@@ -92,7 +93,9 @@ export type AdminUserAction =
   | "unsuspend"
   | "ban"
   | "restrict"
-  | "unrestrict";
+  | "unrestrict"
+  | "student_verify"
+  | "student_unverify";
 
 export interface AdminContentCounts {
   orbit_posts: number;

@@ -49,6 +49,9 @@ export function ProfileView({ profile, onEdit, onAvatarUpdated }: ProfileViewPro
             {profile.is_verified && (
               <Badge variant="campus">Verified</Badge>
             )}
+            {profile.student_verified && (
+              <Badge variant="campus">Verified Student</Badge>
+            )}
             {profile.level && (
               <Badge variant="secondary">{profile.level} Level</Badge>
             )}

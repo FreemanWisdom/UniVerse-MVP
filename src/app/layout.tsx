@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
@@ -33,8 +34,13 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen bg-background text-foreground antialiased selection:bg-campus-500 selection:text-black`}>
         {/* Apply the saved theme before first paint to avoid a flash.
-            Dark is the default (no class); light adds the "light" class. */}
-        <script
+            Dark is the default (no class); light adds the "light" class.
+            next/script beforeInteractive injects this into the initial HTML
+            head; a raw <script> in the component tree is not executed on
+            client renders. */}
+        <Script
+          id="universe-theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(){try{if(localStorage.getItem('universe-theme')==='light'){document.documentElement.classList.add('light')}}catch(e){}})();`,
           }}

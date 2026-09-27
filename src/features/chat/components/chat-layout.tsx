@@ -10,7 +10,7 @@ import { useConversations } from "@/features/chat/hooks/use-conversations";
 import { CHAT_REQUEST_ACTIONS, ChatRequestAction } from "@/features/chat/chat.constants";
 
 export function ChatLayout() {
-  const [activeTab, setActiveTab] = useState<"conversations" | "requests">("conversations");
+  const [activeTab, setActiveTab] = useState<"conversations" | "requests" | "discover">("conversations");
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
 
   const {
@@ -88,9 +88,37 @@ export function ChatLayout() {
           >
             Requests {incomingRequests.length > 0 && <span className="ml-1 bg-amber-500 text-white text-[10px] px-1.5 py-0.5 rounded-full" aria-label={`${incomingRequests.length} pending`}>{incomingRequests.length}</span>}
           </button>
+          {/* Mobile-only Discover tab: on small screens the main panel (which
+              hosts DiscoveryView) is hidden unless a conversation is selected,
+              so discovery/search needs a reachable entry point. */}
+          <button
+            role="tab"
+            aria-selected={activeTab === "discover"}
+            aria-controls="panel-discover"
+            id="tab-discover"
+            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-campus-500 lg:hidden ${activeTab === "discover" ? "border-campus-600 text-campus-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+            onClick={() => setActiveTab("discover")}
+          >
+            Discover
+          </button>
         </div>
         
-        {activeTab === "conversations" ? (
+        {activeTab === "discover" ? (
+          <div
+            id="panel-discover"
+            role="tabpanel"
+            aria-labelledby="tab-discover"
+            className="flex flex-1 min-h-0 overflow-hidden"
+          >
+            <DiscoveryView
+              pendingRequestIds={pendingRequestIds}
+              onRequestSent={() => {
+                refreshRequests();
+                setActiveTab("requests");
+              }}
+            />
+          </div>
+        ) : activeTab === "conversations" ? (
           <div
             id="panel-conversations"
             role="tabpanel"

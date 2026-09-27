@@ -1,28 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { formatOrbitTime } from "@/features/orbit/orbit.utils";
-import {
-  AdminListedUser,
-  AdminUserAction,
-} from "@/features/admin/admin.types";
+import { AdminListedUser, AdminUserAction } from "@/features/admin/admin.types";
 import {
   adminUpdateUser,
   listAdminUsers,
   setAdminUserRestrictions,
 } from "@/services/admin/admin.service";
+import {
+  AdminAlert,
+  AdminButton,
+  AdminCard,
+  AdminEmptyState,
+  AdminInput,
+  AdminLoadingRows,
+  AdminPageHeader,
+  AdminPill,
+  AdminSearchBar,
+} from "@/components/admin/ui";
+import { IconChevronDown } from "@/components/admin/icons";
+import { cn } from "@/lib/utils/cn";
 
-const STATUS_ACTIONS: Array<{ action: AdminUserAction; label: string; tone: string }> = [
-  { action: "verify", label: "Verify", tone: "text-campus-400" },
-  { action: "unverify", label: "Unverify", tone: "text-slate-300" },
-  { action: "suspend", label: "Suspend", tone: "text-amber-400" },
-  { action: "unsuspend", label: "Unsuspend", tone: "text-slate-300" },
-  { action: "ban", label: "Ban", tone: "text-red-400" },
-  { action: "restrict", label: "Restrict", tone: "text-amber-400" },
-  { action: "unrestrict", label: "Unrestrict", tone: "text-slate-300" },
+const STATUS_ACTIONS: Array<{ action: AdminUserAction; label: string; variant: "primary" | "secondary" | "dangerSoft" | "ghost" }> = [
+  { action: "verify", label: "Verify", variant: "primary" },
+  { action: "unverify", label: "Unverify", variant: "secondary" },
+  { action: "suspend", label: "Suspend", variant: "dangerSoft" },
+  { action: "unsuspend", label: "Unsuspend", variant: "secondary" },
+  { action: "ban", label: "Ban", variant: "dangerSoft" },
+  { action: "restrict", label: "Restrict", variant: "dangerSoft" },
+  { action: "unrestrict", label: "Unrestrict", variant: "secondary" },
 ];
 
 const CAPABILITIES = [
@@ -73,7 +81,7 @@ export default function AdminUsersPage() {
     setMessage(null);
     try {
       await adminUpdateUser(createClient(), user.id, action);
-      setMessage(`${user.full_name ?? user.email}: ${action} applied.`);
+      setMessage(`${user.full_name ?? user.email} — action applied (${action}).`);
       await load(search);
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "The action failed.");
@@ -107,124 +115,112 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Users</h1>
-        <p className="text-sm text-slate-400">Search, verify, suspend, and restrict platform accounts.</p>
-      </div>
+      <AdminPageHeader title="Users" description="Search, verify, suspend, and restrict platform accounts." />
 
-      <form
-        className="flex gap-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void load(search);
-        }}
-      >
-        <Input
-          aria-label="Search users"
-          placeholder="Search by name, email, or university…"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
-        <button
-          type="submit"
-          className="shrink-0 rounded-lg border border-surface-300 bg-surface-100 px-4 py-2 text-xs font-semibold text-slate-200 hover:border-campus-500"
-        >
-          Search
-        </button>
-      </form>
+      <AdminSearchBar
+        label="Search users"
+        placeholder="Search by name, email, or university…"
+        value={search}
+        onChange={setSearch}
+        onSubmit={() => void load(search)}
+        busy={busy}
+      />
 
-      {error ? <p className="text-sm text-red-400" role="alert">{error}</p> : null}
-      {message ? <p className="text-sm text-campus-400" role="status">{message}</p> : null}
+      {error ? <AdminAlert tone="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert tone="success">{message}</AdminAlert> : null}
 
       {loading ? (
-        <p className="text-sm text-slate-400" aria-live="polite">Loading users…</p>
+        <AdminLoadingRows rows={4} />
       ) : users.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-slate-400">No users matched that search.</CardContent>
-        </Card>
+        <AdminCard>
+          <AdminEmptyState title="No users matched that search" description="Try a different name, email, or university." />
+        </AdminCard>
       ) : (
-        <div className="space-y-2">
-          {users.map((user) => (
-            <Card key={user.id}>
-              <CardContent className="space-y-3 p-4">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {user.full_name ?? "Unnamed"}{" "}
-                      {user.is_verified ? <span className="text-[11px] text-campus-400">· verified</span> : null}
-                      {user.is_suspended ? <span className="text-[11px] text-amber-400"> · suspended</span> : null}
-                    </p>
-                    <p className="truncate text-xs text-slate-400">
-                      {user.email} · {user.university ?? "no university"} · {user.level ?? "—"} · joined {formatOrbitTime(user.created_at)}
-                    </p>
+        <div className="space-y-3">
+          {users.map((user) => {
+            const isExpanded = expanded === user.id;
+            return (
+              <AdminCard key={user.id} className="overflow-hidden">
+                <div className="flex flex-wrap items-center justify-between gap-3 p-4">
+                  <div className="flex min-w-0 items-center gap-3.5">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-500">
+                      {(user.full_name ?? user.email ?? "?").charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <p className="truncate text-sm font-semibold text-slate-900">
+                          {user.full_name ?? "Unnamed"}
+                        </p>
+                        {user.is_verified ? <AdminPill tone="success">verified</AdminPill> : null}
+                        {user.is_suspended ? <AdminPill tone="warning">suspended</AdminPill> : null}
+                      </div>
+                      <p className="mt-0.5 truncate text-xs text-slate-500">
+                        {user.email} · {user.university ?? "no university"} · {user.level ?? "—"} · joined{" "}
+                        {formatOrbitTime(user.created_at)}
+                      </p>
+                    </div>
                   </div>
                   <button
                     type="button"
-                    onClick={() => setExpanded(expanded === user.id ? null : user.id)}
-                    className="shrink-0 rounded-lg border border-surface-300 px-3 py-1 text-xs text-slate-300 hover:border-campus-500"
+                    onClick={() => setExpanded(isExpanded ? null : user.id)}
+                    aria-expanded={isExpanded}
+                    className="inline-flex h-8 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50"
                   >
-                    {expanded === user.id ? "Close" : "Manage"}
+                    {isExpanded ? "Close" : "Manage"}
+                    <IconChevronDown size={13} className={cn("transition-transform", isExpanded && "rotate-180")} />
                   </button>
                 </div>
 
-                {expanded === user.id ? (
-                  <div className="space-y-3 border-t border-surface-200 pt-3">
+                {isExpanded ? (
+                  <div className="space-y-4 border-t border-slate-100 bg-slate-50/60 p-4">
                     <div className="flex flex-wrap gap-2">
-                      {STATUS_ACTIONS.map(({ action, label, tone }) => (
-                        <button
-                          key={action}
-                          type="button"
-                          disabled={busy}
-                          onClick={() => void runAction(user, action)}
-                          className={`rounded-lg border border-surface-300 bg-surface-100 px-3 py-1 text-xs font-semibold hover:border-campus-500 disabled:opacity-50 ${tone}`}
-                        >
+                      {STATUS_ACTIONS.map(({ action, label, variant }) => (
+                        <AdminButton key={action} variant={variant} size="sm" disabled={busy} onClick={() => void runAction(user, action)}>
                           {label}
-                        </button>
+                        </AdminButton>
                       ))}
                     </div>
 
-                    <div className="space-y-2 rounded-lg border border-surface-200 bg-surface-50 p-3">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                        Restrictions (capability limits)
+                    <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Capability restrictions
                       </p>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-x-5 gap-y-2">
                         {CAPABILITIES.map(({ key, label }) => (
-                          <label key={key} className="flex items-center gap-1 text-xs text-slate-300">
+                          <label key={key} className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
                             <input
                               type="checkbox"
                               checked={restrictions[key]}
                               onChange={(event) =>
                                 setRestrictions((current) => ({ ...current, [key]: event.target.checked }))
                               }
+                              className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                             />
                             {label}
                           </label>
                         ))}
                       </div>
-                      <Input
+                      <AdminInput
                         aria-label="Restriction reason"
-                        placeholder="Reason (optional)"
+                        placeholder="Reason (optional, shown in audit log)"
                         value={restrictionReason}
                         maxLength={300}
                         onChange={(event) => setRestrictionReason(event.target.value)}
                       />
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void applyRestrictions(user)}
-                        className="rounded-lg border border-surface-300 bg-surface-100 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-campus-500 disabled:opacity-50"
-                      >
-                        {busy ? "Saving…" : "Save restrictions"}
-                      </button>
-                      <p className="text-[11px] text-slate-500">
-                        Unchecked capabilities block the user server-side until restrictions are changed again.
-                      </p>
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-xs text-slate-400">
+                          Unchecked capabilities are blocked server-side until changed again.
+                        </p>
+                        <AdminButton variant="primary" size="sm" disabled={busy} onClick={() => void applyRestrictions(user)}>
+                          {busy ? "Saving…" : "Save restrictions"}
+                        </AdminButton>
+                      </div>
                     </div>
                   </div>
                 ) : null}
-              </CardContent>
-            </Card>
-          ))}
+              </AdminCard>
+            );
+          })}
         </div>
       )}
     </div>

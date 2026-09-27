@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import { AdminSchool, StudentImportResult } from "@/features/admin/admin.types";
 import { importStudentRows, listAdminSchools, prepareStudentImport } from "@/services/admin/admin.service";
-
-/**
- * Student registry import. LIVE-VERIFIED backend flow:
- * admin_prepare_student_import(school, file, rows) creates an import job,
- * import_student_rows(school, rows) upserts the student_registry
- * (requires matric_number + full_name; 10,000 row cap; per-row errors).
- * Only verification-enabled schools can be imported into.
- */
+import {
+  AdminAlert,
+  AdminButton,
+  AdminCard,
+  AdminCardHeader,
+  AdminLoadingRows,
+  AdminPageHeader,
+  AdminPill,
+  AdminSelect,
+  AdminTD,
+  AdminTH,
+  AdminTableWrap,
+} from "@/components/admin/ui";
+import { IconUpload } from "@/components/admin/icons";
 
 const HEADER_KEYS = ["matric_number", "full_name", "faculty", "department", "level", "programme"] as const;
 
@@ -98,97 +103,114 @@ export default function AdminVerificationPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Verification</h1>
-        <p className="text-sm text-slate-400">School registries that power student verification, and registry imports.</p>
-      </div>
+      <AdminPageHeader
+        title="Verification"
+        description="School registries that power student verification, and registry imports."
+      />
 
-      {error ? <p className="text-sm text-red-400" role="alert">{error}</p> : null}
+      {error ? <AdminAlert tone="error">{error}</AdminAlert> : null}
 
       {loading ? (
-        <p className="text-sm text-slate-400" aria-live="polite">Loading schools…</p>
+        <AdminLoadingRows rows={3} />
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-surface-200 text-xs text-slate-500">
-                    <th className="p-3">School</th>
-                    <th className="p-3">Registry students</th>
-                    <th className="p-3">Verification</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {schools.map((school) => (
-                    <tr key={school.id} className="border-b border-surface-200/60">
-                      <td className="p-3 text-slate-200">{school.name}</td>
-                      <td className="p-3 text-slate-300">{school.student_count}</td>
-                      <td className="p-3">
-                        <span className={school.verification_enabled ? "text-campus-400" : "text-slate-500"}>
-                          {school.verification_enabled ? "enabled" : "disabled"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+        <AdminTableWrap>
+          <thead>
+            <tr>
+              <AdminTH>School</AdminTH>
+              <AdminTH>Registry students</AdminTH>
+              <AdminTH>Verification</AdminTH>
+            </tr>
+          </thead>
+          <tbody>
+            {schools.map((school) => (
+              <tr key={school.id} className="transition-colors hover:bg-slate-50/60">
+                <AdminTD className="font-medium text-slate-900">{school.name}</AdminTD>
+                <AdminTD>{school.student_count}</AdminTD>
+                <AdminTD>
+                  <AdminPill tone={school.verification_enabled ? "success" : "neutral"}>
+                    {school.verification_enabled ? "enabled" : "disabled"}
+                  </AdminPill>
+                </AdminTD>
+              </tr>
+            ))}
+          </tbody>
+        </AdminTableWrap>
       )}
 
-      <Card>
-        <CardContent className="space-y-3 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Import student registry (CSV)</p>
-          <select
-            aria-label="School for import"
-            value={selectedSchool}
-            onChange={(event) => setSelectedSchool(event.target.value)}
-            className="w-full rounded-lg border border-surface-300 bg-surface-50 p-2 text-sm text-foreground"
+      <AdminCard>
+        <AdminCardHeader
+          title="Import student registry"
+          description="CSV upload — rows are matched by matric number, up to 10,000 per file."
+        />
+        <div className="space-y-4 p-5">
+          <div className="space-y-1.5">
+            <label htmlFor="import-school" className="text-xs font-medium text-slate-600">
+              School
+            </label>
+            <AdminSelect
+              id="import-school"
+              aria-label="School for import"
+              value={selectedSchool}
+              onChange={(event) => setSelectedSchool(event.target.value)}
+            >
+              <option value="">Select a verification-enabled school…</option>
+              {enabledSchools.map((school) => (
+                <option key={school.id} value={school.id}>
+                  {school.name}
+                </option>
+              ))}
+            </AdminSelect>
+          </div>
+
+          <label
+            className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-8 text-center transition-colors ${
+              selectedSchool && !busy
+                ? "border-slate-300 bg-slate-50/60 hover:border-blue-400 hover:bg-blue-50/30"
+                : "cursor-not-allowed border-slate-200 bg-slate-50 opacity-60"
+            }`}
           >
-            <option value="">Select a verification-enabled school…</option>
-            {enabledSchools.map((school) => (
-              <option key={school.id} value={school.id}>
-                {school.name}
-              </option>
-            ))}
-          </select>
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-400 shadow-sm">
+              <IconUpload size={17} />
+            </span>
+            <span className="text-sm font-medium text-slate-700">
+              {busy ? `Importing ${fileName ?? "file"}…` : "Click to choose a CSV file"}
+            </span>
+            <span className="text-xs text-slate-400">
+              Header row: matric_number, full_name, faculty, department, level, programme
+            </span>
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              aria-label="CSV file"
+              disabled={!selectedSchool || busy}
+              onChange={(event) => void onFile(event)}
+              className="hidden"
+            />
+          </label>
 
-          <input
-            type="file"
-            accept=".csv,text/csv"
-            aria-label="CSV file"
-            disabled={!selectedSchool || busy}
-            onChange={(event) => void onFile(event)}
-            className="w-full text-xs text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-surface-200 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-200 disabled:opacity-50"
-          />
-
-          <p className="text-[11px] text-slate-500">
-            Header row: matric_number, full_name, faculty, department, level, programme. Rows are upserted by
-            matric number (10,000 rows max). Simple CSV only — quoted commas are not parsed.
+          <p className="text-xs text-slate-400">
+            Rows are upserted by matric number. Simple CSV only — quoted commas are not parsed.
           </p>
 
-          {busy ? <p className="text-sm text-slate-400" aria-live="polite">Importing {fileName ?? "file"}…</p> : null}
-
           {result ? (
-            <div className="space-y-1 rounded-lg border border-surface-200 bg-surface-50 p-3 text-sm" aria-live="polite">
-              <p className="text-slate-200">
-                Processed {result.processed} · <span className="text-campus-400">{result.inserted_or_updated} upserted</span> ·{" "}
-                <span className={result.rejected > 0 ? "text-amber-400" : "text-slate-400"}>{result.rejected} rejected</span>
-              </p>
+            <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50/60 p-4 text-sm" aria-live="polite">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-medium text-slate-900">{result.processed} processed</span>
+                <AdminPill tone="success">{result.inserted_or_updated} upserted</AdminPill>
+                <AdminPill tone={result.rejected > 0 ? "warning" : "neutral"}>{result.rejected} rejected</AdminPill>
+              </div>
               {result.errors.slice(0, 10).map((rowError, index) => (
                 <p key={index} className="text-xs text-slate-500">
                   {rowError.matric_number ?? "unknown"}: {rowError.error}
                 </p>
               ))}
               {result.errors.length > 10 ? (
-                <p className="text-xs text-slate-500">…and {result.errors.length - 10} more.</p>
+                <p className="text-xs text-slate-400">…and {result.errors.length - 10} more.</p>
               ) : null}
             </div>
           ) : null}
-        </CardContent>
-      </Card>
+        </div>
+      </AdminCard>
     </div>
   );
 }

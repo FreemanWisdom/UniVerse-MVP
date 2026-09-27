@@ -1,11 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { AdminSchool } from "@/features/admin/admin.types";
 import { listAdminSchools, setCampusAdmin, upsertAdminSchool } from "@/services/admin/admin.service";
+import {
+  AdminAlert,
+  AdminButton,
+  AdminCard,
+  AdminCardHeader,
+  AdminInput,
+  AdminLoadingRows,
+  AdminPageHeader,
+  AdminPill,
+  AdminSelect,
+  AdminTD,
+  AdminTH,
+  AdminTableWrap,
+} from "@/components/admin/ui";
 
 export default function AdminSchoolsPage() {
   const [schools, setSchools] = useState<AdminSchool[]>([]);
@@ -86,97 +98,104 @@ export default function AdminSchoolsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Schools</h1>
-        <p className="text-sm text-slate-400">Campuses, their registries, and campus admins.</p>
-      </div>
+      <AdminPageHeader title="Schools" description="Campuses, their registries, and campus administrators." />
 
-      {error ? <p className="text-sm text-red-400" role="alert">{error}</p> : null}
-      {message ? <p className="text-sm text-campus-400" role="status">{message}</p> : null}
+      {error ? <AdminAlert tone="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert tone="success">{message}</AdminAlert> : null}
 
       {loading ? (
-        <p className="text-sm text-slate-400" aria-live="polite">Loading schools…</p>
+        <AdminLoadingRows rows={3} />
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-surface-200 text-xs text-slate-500">
-                    <th className="p-3">School</th>
-                    <th className="p-3">Tag</th>
-                    <th className="p-3">Registry students</th>
-                    <th className="p-3">Verification</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {schools.map((school) => (
-                    <tr key={school.id} className="border-b border-surface-200/60">
-                      <td className="p-3 text-slate-200">{school.name}</td>
-                      <td className="p-3 font-mono text-xs text-slate-400">{school.tag}</td>
-                      <td className="p-3 text-slate-300">{school.student_count}</td>
-                      <td className="p-3">
-                        <span className={school.verification_enabled ? "text-campus-400" : "text-slate-500"}>
-                          {school.verification_enabled ? "enabled" : "disabled"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+        <AdminTableWrap>
+          <thead>
+            <tr>
+              <AdminTH>School</AdminTH>
+              <AdminTH>Tag</AdminTH>
+              <AdminTH>Registry students</AdminTH>
+              <AdminTH>Verification</AdminTH>
+            </tr>
+          </thead>
+          <tbody>
+            {schools.map((school) => (
+              <tr key={school.id} className="transition-colors hover:bg-slate-50/60">
+                <AdminTD className="font-medium text-slate-900">{school.name}</AdminTD>
+                <AdminTD>
+                  <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">
+                    {school.tag}
+                  </span>
+                </AdminTD>
+                <AdminTD>{school.student_count}</AdminTD>
+                <AdminTD>
+                  <AdminPill tone={school.verification_enabled ? "success" : "neutral"}>
+                    {school.verification_enabled ? "enabled" : "disabled"}
+                  </AdminPill>
+                </AdminTD>
+              </tr>
+            ))}
+          </tbody>
+        </AdminTableWrap>
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardContent className="space-y-3 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Add school (super admin)</p>
-            <form className="space-y-3" onSubmit={saveSchool}>
-              <Input
+        <AdminCard>
+          <AdminCardHeader title="Add school" description="Super admin only." />
+          <form className="space-y-3 p-5" onSubmit={saveSchool}>
+            <div className="space-y-1.5">
+              <label htmlFor="school-name" className="text-xs font-medium text-slate-600">
+                School name
+              </label>
+              <AdminInput
+                id="school-name"
                 aria-label="School name"
-                placeholder="School name"
+                placeholder="e.g. University of Nigeria, Nsukka"
                 value={name}
                 maxLength={150}
                 onChange={(event) => setName(event.target.value)}
               />
-              <Input
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="school-tag" className="text-xs font-medium text-slate-600">
+                Tag
+              </label>
+              <AdminInput
+                id="school-tag"
                 aria-label="School tag"
-                placeholder="Slug / tag (e.g. unn)"
+                placeholder="Short identifier, e.g. unn"
                 value={tag}
                 maxLength={50}
                 onChange={(event) => setTag(event.target.value)}
               />
-              <button
-                type="submit"
-                disabled={busy}
-                className="w-full rounded-lg border border-surface-300 bg-surface-100 px-4 py-2 text-xs font-semibold text-slate-200 hover:border-campus-500 disabled:opacity-50"
-              >
-                {busy ? "Saving…" : "Create school"}
-              </button>
-              <p className="text-[11px] text-slate-500">
-                Editing an existing school&#39;s name or tag requires its UUID; ask if you need it wired up.
-              </p>
-            </form>
-          </CardContent>
-        </Card>
+            </div>
+            <AdminButton type="submit" variant="primary" className="w-full" disabled={busy}>
+              {busy ? "Saving…" : "Create school"}
+            </AdminButton>
+          </form>
+        </AdminCard>
 
-        <Card>
-          <CardContent className="space-y-3 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Campus admin assignment (super admin)</p>
-            <form className="space-y-3" onSubmit={assignAdmin}>
-              <Input
+        <AdminCard>
+          <AdminCardHeader title="Campus admin assignment" description="Grant or revoke admin rights for one campus. Super admin only." />
+          <form className="space-y-3 p-5" onSubmit={assignAdmin}>
+            <div className="space-y-1.5">
+              <label htmlFor="campus-admin-user" className="text-xs font-medium text-slate-600">
+                User ID
+              </label>
+              <AdminInput
+                id="campus-admin-user"
                 aria-label="User ID"
                 placeholder="User UUID"
                 value={adminUserId}
                 onChange={(event) => setAdminUserId(event.target.value)}
               />
-              <select
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="campus-admin-school" className="text-xs font-medium text-slate-600">
+                School
+              </label>
+              <AdminSelect
+                id="campus-admin-school"
                 aria-label="School"
                 value={adminSchoolId}
                 onChange={(event) => setAdminSchoolId(event.target.value)}
-                className="w-full rounded-lg border border-surface-300 bg-surface-50 p-2 text-sm text-foreground"
               >
                 <option value="">Select school…</option>
                 {schools.map((school) => (
@@ -184,25 +203,22 @@ export default function AdminSchoolsPage() {
                     {school.name}
                   </option>
                 ))}
-              </select>
-              <label className="flex items-center gap-2 text-xs text-slate-300">
-                <input
-                  type="checkbox"
-                  checked={adminEnabled}
-                  onChange={(event) => setAdminEnabled(event.target.checked)}
-                />
-                Grant campus admin (uncheck to revoke)
-              </label>
-              <button
-                type="submit"
-                disabled={busy}
-                className="w-full rounded-lg border border-surface-300 bg-surface-100 px-4 py-2 text-xs font-semibold text-slate-200 hover:border-campus-500 disabled:opacity-50"
-              >
-                {busy ? "Working…" : adminEnabled ? "Assign" : "Revoke"}
-              </button>
-            </form>
-          </CardContent>
-        </Card>
+              </AdminSelect>
+            </div>
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={adminEnabled}
+                onChange={(event) => setAdminEnabled(event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              Grant campus admin (uncheck to revoke)
+            </label>
+            <AdminButton type="submit" variant="primary" className="w-full" disabled={busy}>
+              {busy ? "Working…" : adminEnabled ? "Assign" : "Revoke"}
+            </AdminButton>
+          </form>
+        </AdminCard>
       </div>
     </div>
   );

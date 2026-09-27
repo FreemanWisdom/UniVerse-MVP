@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { formatOrbitTime } from "@/features/orbit/orbit.utils";
 import {
@@ -15,6 +13,17 @@ import {
   listAdminContentCounts,
   moderateAdminContent,
 } from "@/services/admin/admin.service";
+import {
+  AdminAlert,
+  AdminButton,
+  AdminCard,
+  AdminEmptyState,
+  AdminLoadingRows,
+  AdminPageHeader,
+  AdminPill,
+  AdminSearchBar,
+  AdminSegmented,
+} from "@/components/admin/ui";
 
 const RESOURCES: Array<{ key: AdminContentResource; label: string }> = [
   { key: "orbit", label: "Orbit posts" },
@@ -29,6 +38,21 @@ const ACTIONS: Record<string, Array<"hide" | "remove" | "restore" | "approve" | 
   study: ["approve", "reject", "remove", "restore"],
   tribe: ["hide", "remove", "restore"],
 };
+
+const ACTION_VARIANTS: Record<string, "secondary" | "dangerSoft" | "primary"> = {
+  hide: "secondary",
+  remove: "dangerSoft",
+  restore: "primary",
+  approve: "primary",
+  reject: "dangerSoft",
+};
+
+function moderationTone(status?: string): "success" | "warning" | "danger" | "neutral" {
+  if (status === "active") return "success";
+  if (status === "pending") return "warning";
+  if (status === "removed" || status === "rejected") return "danger";
+  return "neutral";
+}
 
 export default function AdminContentPage() {
   const [counts, setCounts] = useState<AdminContentCounts | null>(null);
@@ -73,7 +97,7 @@ export default function AdminContentPage() {
     setMessage(null);
     try {
       await moderateAdminContent(createClient(), resource, String(row.id), action);
-      setMessage(`${action} applied.`);
+      setMessage(`Action applied: ${action}.`);
       await loadRows(resource, search);
     } catch (moderateError) {
       setError(moderateError instanceof Error ? moderateError.message : "The moderation action failed.");
@@ -84,111 +108,98 @@ export default function AdminContentPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Content</h1>
-        <p className="text-sm text-slate-400">Browse and moderate content across every surface.</p>
-      </div>
+      <AdminPageHeader title="Content" description="Browse and moderate content across every surface." />
 
       {counts ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {Object.entries(counts).map(([key, count]) => (
-            <div key={key} className="rounded-lg border border-surface-200 bg-surface-50 p-3">
-              <p className="text-[11px] text-slate-500">{key.replace(/_/g, " ")}</p>
-              <p className="text-lg font-semibold text-foreground">{count}</p>
-            </div>
+            <AdminCard key={key} className="px-4 py-3">
+              <p className="text-xs capitalize text-slate-500">{key.replace(/_/g, " ")}</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">{count}</p>
+            </AdminCard>
           ))}
         </div>
       ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        {RESOURCES.map(({ key, label }) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => {
-              setResource(key);
-              setSearch("");
-            }}
-            className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${
-              resource === key
-                ? "border-campus-500 bg-campus-500/10 text-campus-400"
-                : "border-surface-300 bg-surface-100 text-slate-300 hover:border-campus-500"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      <form
-        className="flex gap-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void loadRows(resource, search);
-        }}
-      >
-        <Input
-          aria-label="Search content"
+      <div className="space-y-3">
+        <AdminSegmented
+          ariaLabel="Content type"
+          items={RESOURCES.map(({ key, label }) => ({
+            key,
+            label,
+            count: counts ? counts[key as keyof AdminContentCounts] : undefined,
+          }))}
+          active={resource}
+          onSelect={(key) => {
+            setResource(key as AdminContentResource);
+            setSearch("");
+          }}
+        />
+        <AdminSearchBar
+          label="Search content"
           placeholder="Search this content type…"
           value={search}
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={setSearch}
+          onSubmit={() => void loadRows(resource, search)}
+          busy={busy}
         />
-        <button
-          type="submit"
-          className="shrink-0 rounded-lg border border-surface-300 bg-surface-100 px-4 py-2 text-xs font-semibold text-slate-200 hover:border-campus-500"
-        >
-          Search
-        </button>
-      </form>
+      </div>
 
-      {error ? <p className="text-sm text-red-400" role="alert">{error}</p> : null}
-      {message ? <p className="text-sm text-campus-400" role="status">{message}</p> : null}
+      {error ? <AdminAlert tone="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert tone="success">{message}</AdminAlert> : null}
 
       {loading ? (
-        <p className="text-sm text-slate-400" aria-live="polite">Loading…</p>
+        <AdminLoadingRows rows={4} />
       ) : rows.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-slate-400">Nothing found.</CardContent>
-        </Card>
+        <AdminCard>
+          <AdminEmptyState title="Nothing found" description="No content matched this view or search." />
+        </AdminCard>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {rows.map((row) => (
-            <Card key={String(row.id)}>
-              <CardContent className="space-y-2 p-3">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm text-slate-200">
-                      {row.content ?? row.title ?? row.name ?? String(row.id).slice(0, 8)}
-                    </p>
-                    <p className="truncate text-[11px] text-slate-500">
-                      {resource === "orbit" ? (row.poster_name ?? "unknown") : null}
-                      {resource === "chat" ? `sender ${row.sender_id?.slice(0, 8) ?? "—"} · ${row.conversation_id?.slice(0, 8) ?? "—"}` : null}
-                      {resource === "study" ? `${row.title ?? ""} · ${row.course_code ?? ""} · ${row.resource_type ?? ""}` : null}
-                      {resource === "tribe" ? `${row.name ?? ""} · ${row.university ?? ""}` : null}
-                      {" · "}
-                      <span className={row.moderation_status === "active" ? "text-campus-400" : "text-amber-400"}>
-                        {row.moderation_status}
+            <AdminCard key={String(row.id)} className="p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-slate-900">
+                    {row.content ?? row.title ?? row.name ?? String(row.id).slice(0, 8)}
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+                    {resource === "orbit" ? <span>by {row.poster_name ?? "unknown"}</span> : null}
+                    {resource === "chat" ? (
+                      <span>
+                        sender {row.sender_id?.slice(0, 8) ?? "—"} · conversation {row.conversation_id?.slice(0, 8) ?? "—"}
                       </span>
-                      {" · "}
-                      {formatOrbitTime(row.created_at)}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 gap-1">
-                    {(ACTIONS[resource] ?? []).map((action) => (
-                      <button
-                        key={action}
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void moderate(row, action)}
-                        className="rounded-lg border border-surface-300 bg-surface-100 px-2.5 py-1 text-[11px] font-semibold text-slate-300 hover:border-campus-500 disabled:opacity-50"
-                      >
-                        {action}
-                      </button>
-                    ))}
+                    ) : null}
+                    {resource === "study" ? (
+                      <span>
+                        {row.title ?? ""} · {row.course_code ?? ""} · {row.resource_type ?? ""}
+                      </span>
+                    ) : null}
+                    {resource === "tribe" ? (
+                      <span>
+                        {row.name ?? ""} · {row.university ?? ""}
+                      </span>
+                    ) : null}
+                    <AdminPill tone={moderationTone(row.moderation_status)}>{row.moderation_status}</AdminPill>
+                    <span>{formatOrbitTime(row.created_at)}</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex shrink-0 flex-wrap gap-1.5">
+                  {(ACTIONS[resource] ?? []).map((action) => (
+                    <AdminButton
+                      key={action}
+                      variant={ACTION_VARIANTS[action] ?? "secondary"}
+                      size="sm"
+                      disabled={busy}
+                      onClick={() => void moderate(row, action)}
+                      className="capitalize"
+                    >
+                      {action}
+                    </AdminButton>
+                  ))}
+                </div>
+              </div>
+            </AdminCard>
           ))}
         </div>
       )}

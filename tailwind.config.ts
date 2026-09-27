@@ -11,8 +11,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#05070c",
-        foreground: "#f8fafc",
+        // RGB triplets defined in globals.css; flip between dark (default)
+        // and light via the "light" class on <html>.
+        background: "rgb(var(--background) / <alpha-value>)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
         campus: {
           50: "#f0fdf4",
           100: "#dcfce7",
@@ -27,10 +29,11 @@ const config: Config = {
           950: "#052e16",
         },
         surface: {
-          50: "#0b0f19",
-          100: "#111827",
-          200: "#1e293b",
-          300: "#334155",
+          50: "rgb(var(--surface-50) / <alpha-value>)",
+          100: "rgb(var(--surface-100) / <alpha-value>)",
+          200: "rgb(var(--surface-200) / <alpha-value>)",
+          300: "rgb(var(--surface-300) / <alpha-value>)",
+          400: "rgb(var(--surface-400) / <alpha-value>)",
         }
       },
     },

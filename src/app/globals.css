@@ -2,14 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Theme tokens (RGB triplets). Dark is the default (no class on <html>);
+ * light mode applies the "light" class, set pre-paint by the inline
+ * script in src/app/layout.tsx from the "universe-theme" localStorage key.
+ */
 :root {
-  --background: #05070c;
-  --foreground: #f8fafc;
+  --background: 5 7 12;
+  --foreground: 248 250 252;
+  --surface-50: 11 15 25;
+  --surface-100: 17 24 39;
+  --surface-200: 30 41 59;
+  --surface-300: 51 65 85;
+  --surface-400: 71 85 105;
+}
+
+html.light {
+  --background: 248 250 252;
+  --foreground: 15 23 42;
+  --surface-50: 255 255 255;
+  --surface-100: 241 245 249;
+  --surface-200: 226 232 240;
+  --surface-300: 203 213 225;
+  --surface-400: 148 163 184;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: rgb(var(--foreground));
+  background: rgb(var(--background));
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
 }
@@ -32,3 +52,36 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
+
+/* Light theme: scrollbar */
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/*
+ * Light theme remaps for the slate utilities used across the app.
+ * The codebase was written dark-first with fixed slate grays; these
+ * unlayered overrides keep every existing class readable on the light
+ * palette without touching each call site.
+ */
+html.light .text-slate-100 { color: rgb(15 23 42); }
+html.light .text-slate-200 { color: rgb(51 65 85); }
+html.light .text-slate-300 { color: rgb(71 85 105); }
+html.light .text-slate-400 { color: rgb(100 116 139); }
+html.light .text-slate-500 { color: rgb(148 163 184); }
+html.light .hover\:text-slate-300:hover { color: rgb(51 65 85); }
+
+html.light .bg-slate-800 { background-color: rgb(226 232 240); }
+html.light .hover\:bg-slate-700:hover { background-color: rgb(203 213 225); }
+html.light .bg-slate-900 { background-color: rgb(241 245 249); }
+html.light .bg-slate-900\/50 { background-color: rgb(241 245 249 / 0.5); }
+html.light .border-slate-800 { border-color: rgb(226 232 240); }
+html.light .border-slate-800\/50 { border-color: rgb(226 232 240 / 0.7); }

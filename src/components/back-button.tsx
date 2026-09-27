@@ -19,7 +19,7 @@ export function BackButton({ href, label, className }: BackButtonProps) {
       href={href}
       aria-label={label}
       className={cn(
-        "inline-flex h-8 w-fit items-center justify-center rounded-lg border border-surface-300 px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-surface-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500",
+        "inline-flex h-8 w-fit items-center justify-center rounded-lg border border-surface-300 bg-surface-50 px-3 text-xs font-medium text-foreground transition-colors hover:bg-surface-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500",
         className
       )}
     >

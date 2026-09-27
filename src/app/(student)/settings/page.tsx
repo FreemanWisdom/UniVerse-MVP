@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NotificationSettings } from "@/features/settings/components/notification-settings";
+import { ThemeSettings } from "@/features/settings/components/theme-settings";
 import { LogoutButton } from "@/components/auth/logout-button";
 
 export default async function SettingsPage() {
@@ -45,6 +46,9 @@ export default async function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Appearance Section */}
+        <ThemeSettings />
 
         {/* Notifications Section */}
         <NotificationSettings />

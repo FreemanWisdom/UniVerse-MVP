@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export default function AdminPage() {
@@ -9,9 +8,8 @@ export default function AdminPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Admin Portal</h1>
-          <p className="text-sm text-slate-400">Structural Shell (Authorization and features isolated).</p>
+          <p className="text-sm text-slate-400">Platform administration and moderation.</p>
         </div>
-        <Badge variant="outline">Route: /admin</Badge>
       </div>
 
       <Card>

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { siteConfig } from "@/config/site";
-import { Badge } from "@/components/ui/badge";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { NotificationsBell } from "@/features/notifications/components/notifications-bell";
 import { isAuthenticated } from "@/lib/auth/session";
@@ -27,7 +26,6 @@ export default async function StudentLayout({
           </Link>
 
           <div className="flex items-center space-x-3">
-            <Badge variant="campus">Student Shell</Badge>
             <NotificationsBell />
             <Link
               href="/profile"

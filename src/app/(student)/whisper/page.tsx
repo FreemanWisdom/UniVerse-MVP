@@ -11,7 +11,6 @@ export default function WhisperPage() {
         </div>
         <div className="flex gap-2">
           <Badge variant="outline">Privacy Protected</Badge>
-          <Badge variant="secondary" className="bg-slate-800">Route: /whisper</Badge>
         </div>
       </div>
 

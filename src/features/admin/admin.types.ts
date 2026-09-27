@@ -184,6 +184,13 @@ export interface AdminEmergencyState {
   enabled_at: string | null;
 }
 
+export interface StudentImportResult {
+  processed: number;
+  inserted_or_updated: number;
+  rejected: number;
+  errors: Array<{ matric_number: string | null; error: string }>;
+}
+
 export interface AdminSystemHealth {
   database: string;
   auth: string;

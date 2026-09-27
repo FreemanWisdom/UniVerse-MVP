@@ -229,6 +229,37 @@ export async function getAdminSystemHealth(
   return rpc<AdminSystemHealth>(supabase, "admin_get_system_health", {});
 }
 
+export async function prepareStudentImport(
+  supabase: SupabaseClient,
+  schoolId: string,
+  fileName: string,
+  totalRows: number
+): Promise<string> {
+  return rpc<string>(supabase, "admin_prepare_student_import", {
+    p_school_id: schoolId,
+    p_file_name: fileName,
+    p_total_rows: totalRows,
+  });
+}
+
+export interface StudentImportResult {
+  processed: number;
+  inserted_or_updated: number;
+  rejected: number;
+  errors: Array<{ matric_number: string | null; error: string }>;
+}
+
+export async function importStudentRows(
+  supabase: SupabaseClient,
+  schoolId: string,
+  rows: Array<Record<string, string>>
+): Promise<StudentImportResult> {
+  return rpc<StudentImportResult>(supabase, "import_student_rows", {
+    p_school_id: schoolId,
+    p_rows: rows,
+  });
+}
+
 export async function publishAdminAnnouncement(
   supabase: SupabaseClient,
   scope: string,

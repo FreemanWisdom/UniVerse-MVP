@@ -58,7 +58,13 @@ export async function getWhisperCommentCount(
     .eq("post_id", postId);
 
   if (error) {
-    console.error("Error fetching comment count:", error);
+    // Log the readable message: the raw error object serializes as {} in
+    // the console. A permission-denied here means the request left without
+    // a session (anon has no grant on whisper_comments_public) — benign,
+    // the count falls back to 0.
+    console.error("Error fetching comment count:", error.message ?? error, {
+      code: (error as { code?: string }).code,
+    });
     return 0; // Fallback safely to 0
   }
 

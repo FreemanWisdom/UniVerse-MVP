@@ -5,7 +5,7 @@ import { WhisperPostUI } from "@/features/whisper/whisper.types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@/lib/supabase/client";
 import { getWhisperCommentCount } from "@/services/whisper/feed.service";
 import { WhisperCommentSection } from "@/features/whisper/components/whisper-comment-section";
 
@@ -30,10 +30,7 @@ export function WhisperPostCard({
   const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
   const [commentCount, setCommentCount] = useState<number | null>(post.comment_count ?? null);
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createClient();
 
   useEffect(() => {
     // Only fetch if it's null (not fetched yet or not provided by parent)

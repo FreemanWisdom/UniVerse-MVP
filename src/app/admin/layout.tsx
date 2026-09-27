@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { Badge } from "@/components/ui/badge";
 import { isAuthenticated } from "@/lib/auth/session";
+import { createClient } from "@/lib/supabase/server";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default async function AdminLayout({
   children,
@@ -11,6 +13,27 @@ export default async function AdminLayout({
 }) {
   if (!(await isAuthenticated())) {
     redirect("/login");
+  }
+
+  // Admin gate (server-side): admin_bootstrap() returns the caller's admin
+  // membership or authorized=false. All admin RPCs re-check their own gates.
+  const supabase = await createClient();
+  const { data: bootstrap } = await supabase.rpc("admin_bootstrap");
+  if (!bootstrap?.authorized) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto max-w-2xl px-4 py-16">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <h1 className="text-xl font-bold text-foreground">Admin access required</h1>
+              <p className="mt-2 text-sm text-slate-400">
+                This account doesn&#39;t have an administrator role assigned to it.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { Badge } from "@/components/ui/badge";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { NotificationsBell } from "@/features/notifications/components/notifications-bell";
 import { isAuthenticated } from "@/lib/auth/session";
 
 export default async function StudentLayout({
@@ -27,6 +28,7 @@ export default async function StudentLayout({
 
           <div className="flex items-center space-x-3">
             <Badge variant="campus">Student Shell</Badge>
+            <NotificationsBell />
             <Link
               href="/profile"
               className="flex h-8 w-8 items-center justify-center rounded-full border border-surface-300 bg-surface-200 text-xs font-semibold text-foreground hover:border-campus-500 transition-colors"

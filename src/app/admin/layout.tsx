@@ -68,15 +68,23 @@ export default async function AdminLayout({
           <div className="pb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Administration
           </div>
-          {siteConfig.adminNavItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-surface-200 hover:text-foreground"
-            >
-              {item.title}
-            </Link>
-          ))}
+          {siteConfig.adminNavItems
+            .filter((item) => item.href !== "/admin/settings")
+            .map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-surface-200 hover:text-foreground"
+              >
+                {item.title}
+              </Link>
+            ))}
+          <Link
+            href="/admin/settings"
+            className="mt-auto flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:bg-surface-200 hover:text-foreground"
+          >
+            Settings
+          </Link>
         </aside>
 
         {/* Main Content Area */}

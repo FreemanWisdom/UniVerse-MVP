@@ -45,15 +45,17 @@ export default async function StudentLayout({
           <div className="pb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Campus Navigation
           </div>
-          {siteConfig.navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-surface-200 hover:text-foreground"
-            >
-              {item.title}
-            </Link>
-          ))}
+          {siteConfig.navItems
+            .filter((item) => item.href !== "/settings")
+            .map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-surface-200 hover:text-foreground"
+              >
+                {item.title}
+              </Link>
+            ))}
 
           <div className="pt-6 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Study Modules
@@ -69,6 +71,13 @@ export default async function StudentLayout({
             className="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:bg-surface-200 hover:text-foreground"
           >
             AI Tutor
+          </Link>
+
+          <Link
+            href="/settings"
+            className="mt-auto flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:bg-surface-200 hover:text-foreground"
+          >
+            Settings
           </Link>
         </aside>
 
@@ -108,11 +117,11 @@ export default async function StudentLayout({
             <span className="text-[10px]">Chat</span>
           </Link>
           <Link
-            href="/notifications"
+            href="/settings"
             className="flex flex-col items-center py-1 text-xs text-slate-400 hover:text-campus-400"
           >
-            <span className="text-base">🔔</span>
-            <span className="text-[10px]">Alerts</span>
+            <span className="text-base">⚙️</span>
+            <span className="text-[10px]">Settings</span>
           </Link>
         </div>
       </nav>

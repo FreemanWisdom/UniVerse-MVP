@@ -85,3 +85,19 @@ export async function deleteWhisper(
 
   return true;
 }
+
+export async function reportWhisper(
+  supabase: SupabaseClient,
+  postId: string,
+  reason: string
+): Promise<void> {
+  const { error } = await supabase.rpc("create_whisper_report", {
+    p_content_id: postId,
+    p_reason: reason,
+  });
+
+  if (error) {
+    console.error("Error reporting whisper:", error);
+    throw new Error(error.message || "Failed to submit report. Please try again.");
+  }
+}

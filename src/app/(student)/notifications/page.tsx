@@ -120,6 +120,7 @@ export default function NotificationsPage() {
       );
       try {
         await markNotificationRead(supabase, row.id);
+        window.dispatchEvent(new Event("universe:notifications-changed"));
       } catch {
         setRows((current) =>
           current.map((item) => (item.id === row.id ? { ...item, is_read: false } : item))
@@ -140,6 +141,7 @@ export default function NotificationsPage() {
     try {
       await markAllNotificationsRead(supabase);
       setRows((current) => current.map((row) => ({ ...row, is_read: true })));
+      window.dispatchEvent(new Event("universe:notifications-changed"));
     } catch {
       setError("We couldn't mark your notifications as read. Please try again.");
     } finally {

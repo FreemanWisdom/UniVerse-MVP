@@ -16,6 +16,7 @@ import {
 } from "@/services/study/tribes.service";
 import { Tribe } from "@/features/study/tribes.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
+import { BackButton } from "@/components/back-button";
 
 interface CreateTribeFormState {
   name: string;
@@ -247,6 +248,8 @@ export default function StudyTribesPage() {
 
   return (
     <div className="space-y-6">
+      <BackButton href="/study" label="Back to Study" />
+
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Study Tribes</h1>

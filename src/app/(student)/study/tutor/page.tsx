@@ -11,6 +11,7 @@ import {
   TUTOR_MAX_QUESTION_LENGTH,
 } from "@/services/study/tutor.service";
 import { TutorMessage } from "@/features/study/tutor.types";
+import { BackButton } from "@/components/back-button";
 
 interface CourseContextState {
   courseCode: string;
@@ -91,6 +92,8 @@ export default function StudyTutorPage() {
 
   return (
     <div className="space-y-6">
+      <BackButton href="/study" label="Back to Study" />
+
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">AI Tutor</h1>
         <p className="text-sm text-slate-400">Ask anything about your courses. It teaches, it doesn&#39;t just answer.</p>

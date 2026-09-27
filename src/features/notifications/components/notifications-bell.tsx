@@ -8,7 +8,9 @@ import { getUnreadNotificationCount } from "@/services/notifications/notificatio
 /**
  * Header bell with the unread count. notifications is NOT in the
  * supabase_realtime publication, so this polls (60s) and refreshes when
- * the tab becomes visible instead of using a realtime channel.
+ * the tab becomes visible instead of using a realtime channel. It also
+ * refreshes when the notifications page marks rows read, via the
+ * "universe:notifications-changed" window event.
  */
 export function NotificationsBell() {
   const [unread, setUnread] = useState<number | null>(null);
@@ -31,12 +33,15 @@ export function NotificationsBell() {
     const onVisibility = () => {
       if (document.visibilityState === "visible") void refresh();
     };
+    const onNotificationsChanged = () => void refresh();
     document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("universe:notifications-changed", onNotificationsChanged);
 
     return () => {
       cancelled = true;
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("universe:notifications-changed", onNotificationsChanged);
     };
   }, []);
 

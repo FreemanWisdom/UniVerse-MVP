@@ -29,6 +29,4 @@ export interface WhisperPostUI extends WhisperPostPublic {
   // Merged state from WhisperState
   liked?: boolean;
   is_mine?: boolean;
-  // Comment count (deferred for later stage, but reserving the field)
-  comment_count?: number;
 }

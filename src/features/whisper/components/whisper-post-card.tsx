@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { WhisperPostUI } from "@/features/whisper/whisper.types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
-import { getWhisperCommentCount } from "@/services/whisper/feed.service";
-import { WhisperCommentSection } from "@/features/whisper/components/whisper-comment-section";
+import { reportWhisper } from "@/services/whisper/interaction.service";
 
 interface WhisperPostCardProps {
   post: WhisperPostUI;
@@ -27,25 +26,35 @@ export function WhisperPostCard({
   // main thread and is not keyboard-accessible in all browsers).
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
-  const [commentCount, setCommentCount] = useState<number | null>(post.comment_count ?? null);
+  // Report state: inline panel instead of window.prompt (blocked in some
+  // browsers and not keyboard-accessible).
+  const [isReporting, setIsReporting] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [isReportSubmitting, setIsReportSubmitting] = useState(false);
+  const [isReported, setIsReported] = useState(false);
+  const [reportError, setReportError] = useState("");
 
   const supabase = createClient();
 
-  useEffect(() => {
-    // Only fetch if it's null (not fetched yet or not provided by parent)
-    let isMounted = true;
-    if (commentCount === null) {
-      getWhisperCommentCount(supabase, post.id).then((count) => {
-        if (isMounted) {
-          setCommentCount(count);
-        }
-      });
+  const handleReportSubmit = async () => {
+    const reason = reportReason.trim();
+    if (!reason || isReportSubmitting) return;
+    setIsReportSubmitting(true);
+    setReportError("");
+    try {
+      await reportWhisper(supabase, post.id, reason);
+      setIsReported(true);
+      setIsReporting(false);
+    } catch (err) {
+      setReportError(
+        err instanceof Error && err.message
+          ? err.message
+          : "We couldn't submit your report. Please try again."
+      );
+    } finally {
+      setIsReportSubmitting(false);
     }
-    return () => {
-      isMounted = false;
-    };
-  }, [post.id, commentCount, supabase]);
+  };
 
   const dateStr = post.created_at
     ? new Date(post.created_at).toLocaleDateString(undefined, {
@@ -81,17 +90,11 @@ export function WhisperPostCard({
     setIsConfirmingDelete(false);
   };
 
-  const toggleComments = () => {
-    setIsCommentsExpanded((prev) => !prev);
-  };
-
   const likedLabel = post.liked
     ? `Unlike this whisper (${post.like_count ?? 0} likes)`
     : `Like this whisper (${post.like_count ?? 0} likes)`;
 
-  const commentsLabel = isCommentsExpanded
-    ? `Collapse comments (${commentCount ?? 0} comments)`
-    : `Expand comments (${commentCount ?? 0} comments)`;
+
 
   return (
     <Card className="mb-4">
@@ -195,40 +198,82 @@ export function WhisperPostCard({
             )}
           </button>
 
-          {/* Comment button */}
-          <button
-            type="button"
-            onClick={toggleComments}
-            className={`flex items-center space-x-1.5 transition-colors cursor-pointer ${
-              isCommentsExpanded
-                ? "text-primary hover:text-primary/80"
-                : "text-slate-500 hover:text-slate-300"
-            }`}
-            aria-label={commentsLabel}
-            aria-expanded={isCommentsExpanded}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill={isCommentsExpanded ? "currentColor" : "none"}
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-4 h-4 shrink-0"
-              aria-hidden="true"
+          {/* Report button — the anonymous abuse path (legacy parity) */}
+          {!isReported && !isReporting && (
+            <button
+              type="button"
+              onClick={() => setIsReporting(true)}
+              className="flex items-center space-x-1.5 transition-colors cursor-pointer text-slate-500 hover:text-slate-300"
+              aria-label="Report this Whisper post"
             >
-              <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-            </svg>
-            <span className="text-xs" aria-hidden="true">
-              {commentCount === null ? "..." : commentCount}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-4 h-4 shrink-0"
+                aria-hidden="true"
+              >
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                <line x1="4" x2="4" y1="22" y2="15" />
+              </svg>
+              <span className="text-xs" aria-hidden="true">
+                Report
+              </span>
+            </button>
+          )}
+          {isReported && (
+            <span className="text-xs text-slate-500" role="status">
+              Reported
             </span>
-          </button>
+          )}
         </div>
 
-        <WhisperCommentSection postId={post.id} isExpanded={isCommentsExpanded} />
+        {isReporting && (
+          <div className="mt-4 space-y-2" role="group" aria-label="Report this Whisper">
+            <label htmlFor={`report-reason-${post.id}`} className="sr-only">
+              Reason for reporting
+            </label>
+            <textarea
+              id={`report-reason-${post.id}`}
+              value={reportReason}
+              onChange={(event) => setReportReason(event.target.value)}
+              placeholder="Why are you reporting this Whisper?"
+              maxLength={500}
+              rows={2}
+              className="w-full rounded-lg border border-surface-200 bg-surface-50 p-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-campus-500"
+            />
+            {reportError && (
+              <p className="text-xs text-red-400" role="alert">{reportError}</p>
+            )}
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReportSubmit}
+                disabled={isReportSubmitting || reportReason.trim().length === 0}
+              >
+                {isReportSubmitting ? "Submitting…" : "Submit report"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsReporting(false);
+                  setReportError("");
+                }}
+                aria-label="Cancel report"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

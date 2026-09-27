@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +18,7 @@ import {
 } from "@/services/study/tribes.service";
 import { Tribe, TribePost } from "@/features/study/tribes.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
+import { BackButton } from "@/components/back-button";
 
 function formatDateTime(value: string): string {
   const date = new Date(value);
@@ -259,9 +259,7 @@ export default function TribeDetailPage() {
   if (tribeMissing) {
     return (
       <div className="space-y-6">
-        <Link href="/study/tribes" className="text-sm text-slate-400 hover:text-foreground">
-          ← Study Tribes
-        </Link>
+        <BackButton href="/study/tribes" label="All tribes" />
         <Card>
           <CardContent className="p-6 text-sm text-slate-400">
             This tribe doesn&#39;t exist or isn&#39;t available at your campus.
@@ -274,9 +272,7 @@ export default function TribeDetailPage() {
   if (error && !tribe) {
     return (
       <div className="space-y-6">
-        <Link href="/study/tribes" className="text-sm text-slate-400 hover:text-foreground">
-          ← Study Tribes
-        </Link>
+        <BackButton href="/study/tribes" label="All tribes" />
         <Card>
           <CardContent className="p-6 text-sm text-red-400" role="alert">{error}</CardContent>
         </Card>
@@ -288,9 +284,7 @@ export default function TribeDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/study/tribes" className="text-sm text-slate-400 hover:text-foreground">
-        ← Study Tribes
-      </Link>
+      <BackButton href="/study/tribes" label="All tribes" />
 
       <Card>
         <CardContent className="space-y-2 p-6">

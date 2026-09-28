@@ -17,25 +17,52 @@ import {
 
 type NavItem = { title: string; href: string; icon: React.ReactNode };
 
+// Control Center information architecture. Every item maps to a real,
+// implemented page — no placeholder navigation.
 const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
   {
-    label: "Console",
+    label: "Control Center",
     items: [
       { title: "Overview", href: "/admin/overview", icon: <IconDashboard size={16} /> },
+    ],
+  },
+  {
+    label: "People",
+    items: [
       { title: "Users", href: "/admin/users", icon: <IconUsers size={16} /> },
+      { title: "Verification", href: "/admin/verification", icon: <IconShieldCheck size={16} /> },
+      { title: "Schools", href: "/admin/schools", icon: <IconSchool size={16} /> },
+    ],
+  },
+  {
+    label: "Community",
+    items: [
       { title: "Content", href: "/admin/content", icon: <IconContent size={16} /> },
       { title: "Reports", href: "/admin/reports", icon: <IconFlag size={16} /> },
     ],
   },
   {
-    label: "Campus",
+    label: "Communication",
     items: [
-      { title: "Schools", href: "/admin/schools", icon: <IconSchool size={16} /> },
-      { title: "Verification", href: "/admin/verification", icon: <IconShieldCheck size={16} /> },
+      { title: "Announcements", href: "/admin/announcements", icon: <IconContent size={16} /> },
     ],
   },
   {
-    label: "System",
+    label: "Operations",
+    items: [
+      { title: "System Health", href: "/admin/system-health", icon: <IconSettings size={16} /> },
+      { title: "Chat Health", href: "/admin/chat-health", icon: <IconContent size={16} /> },
+    ],
+  },
+  {
+    label: "Security",
+    items: [
+      { title: "Security Events", href: "/admin/security-events", icon: <IconFlag size={16} /> },
+      { title: "Audit Logs", href: "/admin/audit-logs", icon: <IconContent size={16} /> },
+    ],
+  },
+  {
+    label: "Settings",
     items: [
       { title: "Settings", href: "/admin/settings", icon: <IconSettings size={16} /> },
     ],

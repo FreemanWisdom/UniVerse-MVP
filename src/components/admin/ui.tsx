@@ -142,17 +142,27 @@ export function AdminPill({
 
 /* ---------- Alerts / feedback ---------- */
 
+function IconInfoCircle({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8h.01M11 12h1v4h1" />
+    </svg>
+  );
+}
+
 export function AdminAlert({
   tone,
   children,
 }: {
-  tone: "error" | "success" | "warning";
+  tone: "error" | "success" | "warning" | "neutral";
   children: React.ReactNode;
 }) {
   const map = {
     error: { wrap: "border-red-200 bg-red-50 text-red-700", icon: <IconAlertTriangle size={14} /> },
     success: { wrap: "border-emerald-200 bg-emerald-50 text-emerald-700", icon: <IconCheckCircle size={14} /> },
     warning: { wrap: "border-amber-200 bg-amber-50 text-amber-800", icon: <IconAlertTriangle size={14} /> },
+    neutral: { wrap: "border-slate-200 bg-slate-50 text-slate-600", icon: <IconInfoCircle size={14} /> },
   } as const;
   const style = map[tone];
   return (

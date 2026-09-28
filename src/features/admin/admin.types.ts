@@ -52,6 +52,11 @@ export interface AdminOverview {
   pending_reports: number;
   campuses: number;
   active_sessions: number;
+  student_verified: number;
+  suspended_users: number;
+  restricted_users: number;
+  active_tribes: number;
+  health: { database: string; auth: string };
   pulse: Record<string, number>;
   universities: Array<{
     university: string;
@@ -84,6 +89,7 @@ export interface AdminListedUser {
   is_suspended: boolean;
   student_verified: boolean;
   created_at: string;
+  account_status: string | null;
 }
 
 export type AdminUserAction =

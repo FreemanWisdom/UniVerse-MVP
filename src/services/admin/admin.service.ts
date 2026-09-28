@@ -45,14 +45,32 @@ export async function getAdminOverview(supabase: SupabaseClient): Promise<AdminO
   return rpc<AdminOverview>(supabase, "admin_get_overview", {});
 }
 
+export interface AdminUserQuery {
+  search?: string | null;
+  university?: string | null;
+  status?: "active" | "suspended" | "banned" | "restricted" | null;
+  verified?: boolean | null;
+  studentVerified?: boolean | null;
+  offset?: number;
+  limit?: number;
+}
+
+/**
+ * Server-side filtered + paginated user list (E1). All filters run inside the
+ * RPC; ordering is created_at desc, id desc for stable pagination.
+ */
 export async function listAdminUsers(
   supabase: SupabaseClient,
-  search: string | null,
-  limit = 100
+  query: AdminUserQuery = {}
 ): Promise<AdminListedUser[]> {
   const rows = await rpc<AdminListedUser[]>(supabase, "admin_list_users", {
-    p_search: search,
-    p_limit: limit,
+    p_search: query.search ?? null,
+    p_limit: query.limit ?? 25,
+    p_university: query.university ?? null,
+    p_status: query.status ?? null,
+    p_verified: query.verified ?? null,
+    p_student_verified: query.studentVerified ?? null,
+    p_offset: query.offset ?? 0,
   });
   return rows ?? [];
 }

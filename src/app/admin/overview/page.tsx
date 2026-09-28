@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatOrbitTime } from "@/features/orbit/orbit.utils";
 import { AdminOverview } from "@/features/admin/admin.types";
@@ -20,6 +21,7 @@ import {
 import {
   IconActivity,
   IconAlertTriangle,
+  IconShieldCheck,
   IconCheckCircle,
   IconDatabase,
   IconFlag,
@@ -76,23 +78,58 @@ export default function AdminOverviewPage() {
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
             <AdminStatCard label="Total users" value={overview.total_users} icon={<IconUsers size={16} />} />
             <AdminStatCard label="Verified" value={overview.verified_users} tone="positive" icon={<IconCheckCircle size={16} />} />
+            <AdminStatCard label="Student verified" value={overview.student_verified} tone="positive" icon={<IconShieldCheck size={16} />} />
             <AdminStatCard label="Active 24h" value={overview.active_today} icon={<IconActivity size={16} />} />
             <AdminStatCard label="Open reports" value={overview.pending_reports} tone={overview.pending_reports > 0 ? "warning" : "default"} icon={<IconFlag size={16} />} />
             <AdminStatCard label="Campuses" value={overview.campuses} icon={<IconSchool size={16} />} />
             <AdminStatCard label="Sessions" value={overview.active_sessions} icon={<IconDatabase size={16} />} />
+            <AdminStatCard label="Suspended" value={overview.suspended_users} tone={overview.suspended_users > 0 ? "warning" : "default"} icon={<IconAlertTriangle size={16} />} />
+            <AdminStatCard label="Restricted" value={overview.restricted_users} tone={overview.restricted_users > 0 ? "warning" : "default"} icon={<IconAlertTriangle size={16} />} />
+            <AdminStatCard label="Active tribes" value={overview.active_tribes} icon={<IconUsers size={16} />} />
+            <AdminStatCard label="Health" value={`${Object.values(overview.health ?? {}).filter((state) => state === "online").length}/${Object.keys(overview.health ?? { database: 1, auth: 1 }).length} online`} tone={Object.values(overview.health ?? {}).every((state) => state === "online") ? "positive" : "danger"} icon={<IconDatabase size={16} />} />
           </div>
 
-          {overview.attention && overview.attention.length > 0 ? (
-            <AdminAlert tone="warning">
-              <div className="space-y-1">
-                {overview.attention.map((item, index) => (
-                  <p key={index}>
-                    <span className="font-medium">{item.title}</span> — {item.detail}
-                  </p>
-                ))}
-              </div>
-            </AdminAlert>
-          ) : null}
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold text-slate-900">Attention required</h2>
+            {overview.attention && overview.attention.length > 0 ? (
+              <AdminCard className="divide-y divide-slate-100">
+                {overview.attention.map((item, index) => {
+                  const href =
+                    item.action === "moderation" ? "/admin/reports"
+                    : item.action === "settings" ? "/admin/settings"
+                    : item.action === "health" ? "/admin/system-health"
+                    : item.action === "users_suspended" ? "/admin/users?status=suspended"
+                    : item.action === "users_restricted" ? "/admin/users?status=restricted"
+                    : "/admin/overview";
+                  return (
+                    <Link
+                      key={index}
+                      href={href}
+                      className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 transition-colors hover:bg-slate-50"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                          <IconAlertTriangle size={15} />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-slate-900">{item.title}</p>
+                          <p className="text-xs text-slate-500">{item.detail}</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-medium text-blue-600">Open&nbsp;&rarr;</span>
+                    </Link>
+                  );
+                })}
+              </AdminCard>
+            ) : (
+              <AdminCard>
+                <AdminEmptyState
+                  title="Nothing needs attention"
+                  description="No pending reports, lockdowns, or account alerts right now."
+                />
+              </AdminCard>
+            )}
+          </section>
 
           <section className="space-y-3">
             <h2 className="text-sm font-semibold text-slate-900">Content</h2>

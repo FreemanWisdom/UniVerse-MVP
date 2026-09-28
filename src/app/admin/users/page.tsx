@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatOrbitTime } from "@/features/orbit/orbit.utils";
 import { AdminListedUser, AdminUserAction } from "@/features/admin/admin.types";
 import {
   adminUpdateUser,
   listAdminUsers,
+  listAdminSchools,
   setAdminUserRestrictions,
 } from "@/services/admin/admin.service";
+import { useSearchParams } from "next/navigation";
 import {
   AdminAlert,
   AdminButton,
@@ -43,9 +45,33 @@ const CAPABILITIES = [
   { key: "can_marketplace", label: "Marketplace" },
 ] as const;
 
-export default function AdminUsersPage() {
+const PAGE_SIZE = 25;
+
+const STATUS_OPTIONS = [
+  { value: "", label: "All statuses" },
+  { value: "active", label: "Active" },
+  { value: "suspended", label: "Suspended" },
+  { value: "banned", label: "Banned" },
+  { value: "restricted", label: "Restricted" },
+] as const;
+
+const TRISTATE_OPTIONS = [
+  { value: "", label: "Any" },
+  { value: "yes", label: "Yes" },
+  { value: "no", label: "No" },
+] as const;
+
+function AdminUsersPageInner() {
+  const params = useSearchParams();
   const [users, setUsers] = useState<AdminListedUser[]>([]);
   const [search, setSearch] = useState("");
+  const [universityFilter, setUniversityFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [verifiedFilter, setVerifiedFilter] = useState("");
+  const [studentVerifiedFilter, setStudentVerifiedFilter] = useState("");
+  const [schools, setSchools] = useState<Array<{ id: string; name: string }>>([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,12 +86,23 @@ export default function AdminUsersPage() {
   });
   const [restrictionReason, setRestrictionReason] = useState("");
 
-  const load = async (searchValue: string) => {
+  const load = async (offsetPage: number, overrides?: { status?: string }) => {
     setLoading(true);
     setError(null);
     try {
-      const trimmed = searchValue.trim();
-      setUsers(await listAdminUsers(createClient(), trimmed ? trimmed : null));
+      const status = overrides?.status ?? statusFilter;
+      const rows = await listAdminUsers(createClient(), {
+        search: search.trim() ? search.trim() : null,
+        university: universityFilter || null,
+        status: (status || null) as "active" | "suspended" | "banned" | "restricted" | null,
+        verified: verifiedFilter === "" ? null : verifiedFilter === "yes",
+        studentVerified: studentVerifiedFilter === "" ? null : studentVerifiedFilter === "yes",
+        offset: offsetPage * PAGE_SIZE,
+        limit: PAGE_SIZE,
+      });
+      setUsers(rows);
+      setHasMore(rows.length === PAGE_SIZE);
+      setPage(offsetPage);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unable to load users.");
     } finally {
@@ -73,8 +110,28 @@ export default function AdminUsersPage() {
     }
   };
 
+  const reload = async (overrides?: { status?: string }) => {
+    await load(page, overrides);
+  };
+
   useEffect(() => {
-    queueMicrotask(() => void load(""));
+    queueMicrotask(async () => {
+      // deep links from Overview attention items, e.g. /admin/users?status=restricted
+      const deepStatus = params.get("status");
+      if (deepStatus) setStatusFilter(deepStatus);
+      try {
+        const schoolRows = await listAdminSchools(createClient());
+        setSchools(schoolRows.map((school) => ({ id: school.id, name: school.name })));
+      } catch {
+        // university filter options are optional — the page still works without them
+      }
+      if (deepStatus) {
+        await load(0, { status: deepStatus });
+      } else {
+        await load(0);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const runAction = async (user: AdminListedUser, action: AdminUserAction) => {
@@ -84,7 +141,7 @@ export default function AdminUsersPage() {
     try {
       await adminUpdateUser(createClient(), user.id, action);
       setMessage(`${user.full_name ?? user.email} — action applied (${action}).`);
-      await load(search);
+      await reload();
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "The action failed.");
     } finally {
@@ -124,9 +181,68 @@ export default function AdminUsersPage() {
         placeholder="Search by name, email, or university…"
         value={search}
         onChange={setSearch}
-        onSubmit={() => void load(search)}
+        onSubmit={() => void load(0)}
         busy={busy}
       />
+
+      <AdminCard className="flex flex-wrap items-end gap-3 p-4">
+        <label className="flex min-w-40 flex-1 flex-col gap-1 sm:max-w-56">
+          <span className="text-xs font-medium text-slate-500">University</span>
+          <select
+            aria-label="Filter by university"
+            value={universityFilter}
+            onChange={(event) => setUniversityFilter(event.target.value)}
+            className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          >
+            <option value="">All universities</option>
+            {schools.map((school) => (
+              <option key={school.id} value={school.name}>{school.name}</option>
+            ))}
+          </select>
+        </label>
+        <label className="flex min-w-36 flex-1 flex-col gap-1 sm:max-w-44">
+          <span className="text-xs font-medium text-slate-500">Account status</span>
+          <select
+            aria-label="Filter by account status"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          >
+            {STATUS_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+        <label className="flex min-w-28 flex-1 flex-col gap-1 sm:max-w-36">
+          <span className="text-xs font-medium text-slate-500">Email verified</span>
+          <select
+            aria-label="Filter by email verification"
+            value={verifiedFilter}
+            onChange={(event) => setVerifiedFilter(event.target.value)}
+            className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          >
+            {TRISTATE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+        <label className="flex min-w-28 flex-1 flex-col gap-1 sm:max-w-36">
+          <span className="text-xs font-medium text-slate-500">Student verified</span>
+          <select
+            aria-label="Filter by student verification"
+            value={studentVerifiedFilter}
+            onChange={(event) => setStudentVerifiedFilter(event.target.value)}
+            className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          >
+            {TRISTATE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+        <AdminButton variant="primary" size="sm" disabled={loading} onClick={() => void load(0)}>
+          Apply filters
+        </AdminButton>
+      </AdminCard>
 
       {error ? <AdminAlert tone="error">{error}</AdminAlert> : null}
       {message ? <AdminAlert tone="success">{message}</AdminAlert> : null}
@@ -155,7 +271,9 @@ export default function AdminUsersPage() {
                         </p>
                         {user.is_verified ? <AdminPill tone="success">verified</AdminPill> : null}
                         {user.student_verified ? <AdminPill tone="info">student verified</AdminPill> : null}
-                        {user.is_suspended ? <AdminPill tone="warning">suspended</AdminPill> : null}
+                        {(user.account_status ?? "active") === "suspended" ? <AdminPill tone="warning">suspended</AdminPill> : null}
+                        {(user.account_status ?? "active") === "banned" ? <AdminPill tone="danger">banned</AdminPill> : null}
+                        {(user.account_status ?? "active") === "restricted" ? <AdminPill tone="warning">restricted</AdminPill> : null}
                       </div>
                       <p className="mt-0.5 truncate text-xs text-slate-500">
                         {user.email} · {user.university ?? "no university"} · {user.level ?? "—"} · joined{" "}
@@ -226,6 +344,40 @@ export default function AdminUsersPage() {
           })}
         </div>
       )}
+
+      {!loading && users.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-slate-500">
+            Showing page {page + 1} — users {page * PAGE_SIZE + 1}&ndash;{page * PAGE_SIZE + users.length}
+          </p>
+          <div className="flex gap-2">
+            <AdminButton
+              variant="secondary"
+              size="sm"
+              disabled={page === 0 || busy || loading}
+              onClick={() => void load(page - 1)}
+            >
+              Previous
+            </AdminButton>
+            <AdminButton
+              variant="secondary"
+              size="sm"
+              disabled={!hasMore || busy || loading}
+              onClick={() => void load(page + 1)}
+            >
+              Next
+            </AdminButton>
+          </div>
+        </div>
+      ) : null}
     </div>
+  );
+}
+
+export default function AdminUsersPage() {
+  return (
+    <Suspense fallback={<AdminLoadingRows rows={4} />}>
+      <AdminUsersPageInner />
+    </Suspense>
   );
 }

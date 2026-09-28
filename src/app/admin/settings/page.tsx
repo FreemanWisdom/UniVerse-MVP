@@ -2,19 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { formatOrbitTime } from "@/features/orbit/orbit.utils";
+import { AdminEmergencyState, AdminFeatureFlag } from "@/features/admin/admin.types";
 import {
-  AdminAuditEntry,
-  AdminEmergencyState,
-  AdminFeatureFlag,
-  AdminSystemHealth,
-} from "@/features/admin/admin.types";
-import {
-  getAdminAuditLog,
   getAdminEmergencyState,
   getAdminFeatureFlags,
-  getAdminSystemHealth,
-  publishAdminAnnouncement,
   setAdminFeatureFlag,
   setEmergencyLockdown,
 } from "@/services/admin/admin.service";
@@ -27,7 +18,6 @@ import {
   AdminLoadingRows,
   AdminPageHeader,
   AdminPill,
-  AdminTextarea,
 } from "@/components/admin/ui";
 import { cn } from "@/lib/utils/cn";
 
@@ -55,35 +45,34 @@ function Toggle({ checked, disabled, onChange, label }: { checked: boolean; disa
   );
 }
 
+/**
+ * Settings — platform configuration only.
+ * Announcements live under Communication; system health under Operations;
+ * audit history under Security → Audit Logs.
+ *
+ * Administration (admin invitations, role management) is a future section
+ * pending its schema change (E3). No placeholder UI is shown for it yet.
+ */
 export default function AdminSettingsPage() {
   const [flags, setFlags] = useState<AdminFeatureFlag[]>([]);
   const [emergency, setEmergency] = useState<AdminEmergencyState | null>(null);
-  const [health, setHealth] = useState<AdminSystemHealth | null>(null);
-  const [audit, setAudit] = useState<AdminAuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-
   const [lockdownReason, setLockdownReason] = useState("");
-  const [announcementTitle, setAnnouncementTitle] = useState("");
-  const [announcementBody, setAnnouncementBody] = useState("");
 
   const load = async () => {
     setLoading(true);
     setError(null);
     try {
       const supabase = createClient();
-      const [flagRows, emergencyState, healthState, auditRows] = await Promise.all([
+      const [flagRows, emergencyState] = await Promise.all([
         getAdminFeatureFlags(supabase),
         getAdminEmergencyState(supabase),
-        getAdminSystemHealth(supabase),
-        getAdminAuditLog(supabase, 30),
       ]);
       setFlags(flagRows);
       setEmergency(emergencyState);
-      setHealth(healthState);
-      setAudit(auditRows);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unable to load settings.");
     } finally {
@@ -142,36 +131,18 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const publishAnnouncement = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!announcementTitle.trim() || !announcementBody.trim()) return;
-    setBusy(true);
-    setError(null);
-    setMessage(null);
-    try {
-      await publishAdminAnnouncement(createClient(), "global", announcementTitle.trim(), announcementBody.trim());
-      setMessage("Announcement published.");
-      setAnnouncementTitle("");
-      setAnnouncementBody("");
-    } catch (publishError) {
-      setError(publishError instanceof Error ? publishError.message : "Could not publish the announcement.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   return (
     <div className="space-y-6">
       <AdminPageHeader
         title="Settings"
-        description="Feature flags, emergency controls, announcements, and audit."
+        description="Platform configuration: feature flags and emergency controls."
       />
 
       {error ? <AdminAlert tone="error">{error}</AdminAlert> : null}
       {message ? <AdminAlert tone="success">{message}</AdminAlert> : null}
 
       {loading ? (
-        <AdminLoadingRows rows={4} />
+        <AdminLoadingRows rows={3} />
       ) : (
         <>
           <AdminCard>
@@ -197,7 +168,7 @@ export default function AdminSettingsPage() {
           <AdminCard>
             <AdminCardHeader title="Emergency lockdown" description="Blocks every capability gate platform-wide. Super admin only." />
             <div className="space-y-4 p-5">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm text-slate-500">Current state:</span>
                 {emergency?.lockdown ? (
                   <AdminPill tone="danger">Lockdown active</AdminPill>
@@ -213,7 +184,7 @@ export default function AdminSettingsPage() {
                 maxLength={300}
                 onChange={(event) => setLockdownReason(event.target.value)}
               />
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <AdminButton
                   variant="danger"
                   disabled={busy || emergency?.lockdown === true}
@@ -231,76 +202,15 @@ export default function AdminSettingsPage() {
               </div>
               <p className="text-xs text-slate-400">
                 Lockdown disables posting, messaging, and uploads platform-wide and switches all feature flags off.
+                Every change is recorded in the audit log.
               </p>
             </div>
           </AdminCard>
 
-          <AdminCard>
-            <AdminCardHeader title="Publish announcement" description="Shown to every student across the platform." />
-            <form className="space-y-3 p-5" onSubmit={publishAnnouncement}>
-              <AdminInput
-                aria-label="Announcement title"
-                placeholder="Title"
-                value={announcementTitle}
-                maxLength={200}
-                onChange={(event) => setAnnouncementTitle(event.target.value)}
-              />
-              <AdminTextarea
-                aria-label="Announcement body"
-                placeholder="Body"
-                value={announcementBody}
-                maxLength={2000}
-                rows={3}
-                onChange={(event) => setAnnouncementBody(event.target.value)}
-              />
-              <AdminButton type="submit" variant="primary" disabled={busy}>
-                {busy ? "Publishing…" : "Publish"}
-              </AdminButton>
-            </form>
-          </AdminCard>
-
-          {health ? (
-            <AdminCard>
-              <AdminCardHeader title="System health" />
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 p-5 text-sm">
-                {(["database", "auth", "realtime", "storage", "rpc"] as const).map((key) => (
-                  <span key={key} className="flex items-center gap-1.5 capitalize text-slate-600">
-                    <span
-                      className={cn(
-                        "h-2 w-2 rounded-full",
-                        health[key] === "online" ? "bg-emerald-500" : "bg-red-500"
-                      )}
-                    />
-                    {key}
-                  </span>
-                ))}
-                <span className="text-slate-400">activity 24h: {health.activity_events_24h}</span>
-              </div>
-            </AdminCard>
-          ) : null}
-
-          <AdminCard>
-            <AdminCardHeader title="Recent audit entries" description="Every administrative action is recorded." />
-            <div className="max-h-96 divide-y divide-slate-100 overflow-y-auto">
-              {audit.length === 0 ? (
-                <p className="p-5 text-sm text-slate-400">No audit entries yet.</p>
-              ) : (
-                audit.map((entry, index) => (
-                  <div key={index} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
-                    <p className="min-w-0 truncate text-sm text-slate-700">
-                      <span className="font-medium text-slate-900">{entry.admin_name ?? entry.admin_id?.slice(0, 8) ?? "system"}</span>{" "}
-                      {entry.action}
-                      {entry.target_type ? <span className="text-slate-400"> → {entry.target_type}</span> : null}
-                    </p>
-                    <div className="flex shrink-0 items-center gap-2.5">
-                      <AdminPill tone={entry.result === "success" ? "success" : "warning"}>{entry.result}</AdminPill>
-                      <span className="text-xs text-slate-400">{formatOrbitTime(entry.created_at)}</span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </AdminCard>
+          <AdminAlert tone="neutral">
+            Platform administration (admin invitations, role management) will appear here once its
+            backend change is approved and implemented. It is intentionally not shown yet.
+          </AdminAlert>
         </>
       )}
     </div>

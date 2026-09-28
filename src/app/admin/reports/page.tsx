@@ -88,13 +88,22 @@ export default function AdminReportsPage() {
                     ) : null}
                     <p className="mt-2 text-xs text-slate-400">{formatOrbitTime(report.created_at)}</p>
                   </div>
-                  <div className="flex shrink-0 gap-2">
-                    <AdminButton variant="secondary" size="sm" disabled={busy} onClick={() => void act(report, "dismiss")}>
-                      Dismiss
-                    </AdminButton>
-                    <AdminButton variant="dangerSoft" size="sm" disabled={busy} onClick={() => void act(report, "remove")}>
-                      Remove content
-                    </AdminButton>
+                  <div className="flex shrink-0 flex-col items-end gap-1.5">
+                    <div className="flex gap-2">
+                      <AdminButton variant="secondary" size="sm" disabled={busy} onClick={() => void act(report, "dismiss")}>
+                        Dismiss
+                      </AdminButton>
+                      {report.content_type === "whisper" ? null : (
+                        <AdminButton variant="dangerSoft" size="sm" disabled={busy} onClick={() => void act(report, "remove")}>
+                          Remove content
+                        </AdminButton>
+                      )}
+                    </div>
+                    {report.content_type === "whisper" ? (
+                      <span className="max-w-52 text-right text-[10px] leading-tight text-slate-400">
+                        Whisper removal is not supported by the moderation function yet
+                      </span>
+                    ) : null}
                   </div>
                 </div>
               </AdminCard>

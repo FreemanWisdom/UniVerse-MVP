@@ -1,3 +1,14 @@
+-- Phase CC: whisper removal in admin_moderate_report
+-- Approved by Freeman via Antigravity handoff, Sept 28 2026. APPLIED LIVE via
+-- management API after review; live-verified: report resolved, whisper hidden
+-- from feed, audit row written, non-admin blocked.
+-- Surgical CREATE OR REPLACE of public.admin_moderate_report:
+--   adds 'whisper' branch to the remove action (soft-delete via is_deleted=true)
+--   adds an else-guard (unsupported_content_type) so unknown content types raise
+--   instead of silently resolving
+-- Everything else identical to the live definition (incl. report_not_found check,
+-- updated_at stamps, audit trail, SECURITY DEFINER, search_path).
+
 CREATE OR REPLACE FUNCTION public.admin_moderate_report(p_report_id uuid, p_action text)
  RETURNS jsonb
  LANGUAGE plpgsql

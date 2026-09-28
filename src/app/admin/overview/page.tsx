@@ -140,7 +140,7 @@ export default function AdminOverviewPage() {
                 />
               ) : (
                 overview.recent_activity.slice(0, 40).map((item) => (
-                  <div key={String(item.id)} className="flex items-center justify-between gap-3 px-5 py-3">
+                  <div key={String(item.id)} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
                     <div className="flex min-w-0 items-center gap-2.5">
                       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500">
                         {item.result === "success" ? <IconCheckCircle size={13} /> : <IconAlertTriangle size={13} />}

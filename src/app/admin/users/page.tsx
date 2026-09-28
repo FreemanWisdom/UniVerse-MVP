@@ -210,8 +210,8 @@ export default function AdminUsersPage() {
                         maxLength={300}
                         onChange={(event) => setRestrictionReason(event.target.value)}
                       />
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-xs text-slate-400">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="min-w-0 flex-1 text-xs text-slate-400">
                           Unchecked capabilities are blocked server-side until changed again.
                         </p>
                         <AdminButton variant="primary" size="sm" disabled={busy} onClick={() => void applyRestrictions(user)}>

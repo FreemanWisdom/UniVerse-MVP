@@ -20,7 +20,7 @@ export default async function AdminLayout({
     return (
       <div className="min-h-screen bg-slate-50">
         <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center px-4">
-          <div className="w-full rounded-xl border border-slate-200 bg-white p-10 text-center shadow-[0_1px_2px_rgb(15_23_42/0.04)]">
+          <div className="w-full rounded-xl border border-slate-200 bg-white p-6 text-center sm:p-10 shadow-[0_1px_2px_rgb(15_23_42/0.04)]">
             <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400" aria-hidden="true">
                 <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
@@ -41,10 +41,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-100/70">
+    <div className="min-h-screen bg-slate-100/70 md:flex">
       <AdminSidebar role={bootstrap?.admin?.role ?? null} />
       <main className="min-w-0 flex-1">
-        <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">{children}</div>
+        <div className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-8">{children}</div>
       </main>
     </div>
   );

@@ -89,7 +89,13 @@ export async function setAdminUserRestrictions(
 ): Promise<{ ok: boolean }> {
   return rpc<{ ok: boolean }>(supabase, "admin_set_user_restrictions", {
     p_user_id: userId,
-    ...restrictions,
+    p_can_post: restrictions.can_post,
+    p_can_message: restrictions.can_message,
+    p_can_upload: restrictions.can_upload,
+    p_can_use_whisper: restrictions.can_use_whisper,
+    p_can_marketplace: restrictions.can_marketplace,
+    p_reason: restrictions.reason ?? null,
+    p_expires_at: restrictions.expires_at ?? null,
   });
 }
 

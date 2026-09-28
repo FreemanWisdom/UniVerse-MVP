@@ -178,7 +178,7 @@ export default function AdminSettingsPage() {
             <AdminCardHeader title="Feature flags" description="Gate individual product features platform-wide." />
             <div className="grid gap-3 p-5 sm:grid-cols-2">
               {flags.map((flag) => (
-                <div key={flag.key} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 px-4 py-3">
+                <div key={flag.key} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 px-4 py-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-slate-900">{flag.name}</p>
                     <p className="truncate font-mono text-[10px] text-slate-400">{flag.key}</p>
@@ -286,7 +286,7 @@ export default function AdminSettingsPage() {
                 <p className="p-5 text-sm text-slate-400">No audit entries yet.</p>
               ) : (
                 audit.map((entry, index) => (
-                  <div key={index} className="flex items-center justify-between gap-3 px-5 py-3">
+                  <div key={index} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
                     <p className="min-w-0 truncate text-sm text-slate-700">
                       <span className="font-medium text-slate-900">{entry.admin_name ?? entry.admin_id?.slice(0, 8) ?? "system"}</span>{" "}
                       {entry.action}

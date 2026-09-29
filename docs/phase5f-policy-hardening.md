@@ -1,7 +1,7 @@
 # Phase 5F — Policy hardening: the two deferred RLS risks
 
-**Status: PROPOSED — NOT APPLIED.** SQL draft: `sql/phase5f-policy-hardening.sql`
-(requires owner approval; rollback included in the file).
+**Status: APPLIED + LIVE-VERIFIED (Sept 29 2026, owner approved).** SQL: `sql/phase5f-policy-hardening.sql`
+(rollback included in the file).
 
 Audit date: Sept 29 2026, after the write-path sweep shipped at `d412c48`.
 Both risks were first documented in the Phase 4E audit (Sept 26) and were
@@ -61,14 +61,17 @@ already same-campus, so this only matters when a UUID leaks outside campus
 
 ## Verification plan (after approval, apply then verify)
 
-1. Apply via management API; confirm `pg_policies` shows the new quals.
-2. Simulated JWT, campus A caller:
-   - join own-campus tribe → succeeds
-   - join other-campus tribe (known UUID) → 42501 blocked
-   - UPDATE own-campus course row → 42501 blocked
-3. Browser e2e as throwaway: join tribe from the tribes page (UI one-click
-   join still works), zero console errors.
-4. Cleanup test rows; commit the SQL record to `my-new-feature`.
+All steps executed Sept 29 2026, as a real throwaway UNN user
+(cc-5f@universeicos.app, created via the real signup API, deleted after):
+
+1. Applied via management API; `pg_policies` confirmed the new quals.
+2. Join own-campus tribe (Firts Tribe) → INSERT succeeded.
+3. Join other-campus tribe (ajax, UAES, known UUID) → 42501 blocked.
+4. UPDATE study_courses (seeded SWEEP101 row) → 0 rows affected; title
+   untouched in DB (no UPDATE policy exists for the student role).
+5. Browser e2e: one-click Join from /study/tribes → button flipped to
+   Leave, zero console errors.
+6. All test data cleaned (membership, course row, account, rate counters).
 
 ## Explicitly out of scope
 

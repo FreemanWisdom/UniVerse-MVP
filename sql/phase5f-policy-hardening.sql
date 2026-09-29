@@ -1,6 +1,6 @@
 -- =====================================================================
 -- Phase 5F: Policy hardening — the two deferred RLS risks
--- Status: PROPOSED — NOT APPLIED. Requires Freeman's approval.
+-- Status: APPLIED + LIVE-VERIFIED Sept 29 2026 (owner approved).
 -- Audit date: Sept 29 2026 (d412c48). Read-only audit, live-verified.
 --
 -- RISK 1 (from Phase 4E audit, never resolved):

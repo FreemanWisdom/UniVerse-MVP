@@ -9,6 +9,7 @@ import {
   listAdminUsers,
   listAdminSchools,
   setAdminUserRestrictions,
+  setCampusAdmin,
 } from "@/services/admin/admin.service";
 import { useSearchParams } from "next/navigation";
 import {
@@ -74,6 +75,7 @@ function AdminUsersPageInner() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [adminSchoolId, setAdminSchoolId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -144,6 +146,31 @@ function AdminUsersPageInner() {
       await reload();
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "The action failed.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const runCampusAdmin = async (user: AdminListedUser, enabled: boolean) => {
+    if (!adminSchoolId) return;
+    setBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      await setCampusAdmin(createClient(), user.id, adminSchoolId, enabled);
+      setMessage(
+        enabled
+          ? `Campus admin granted for ${user.full_name ?? user.email}.`
+          : `Campus admin removed for ${user.full_name ?? user.email}.`
+      );
+    } catch (adminError) {
+      setError(
+        adminError instanceof Error && adminError.message === "super_admin_required"
+          ? "Only a super admin can assign campus admins."
+          : adminError instanceof Error
+            ? adminError.message
+            : "Could not change campus admin access."
+      );
     } finally {
       setBusy(false);
     }
@@ -300,6 +327,46 @@ function AdminUsersPageInner() {
                           {label}
                         </AdminButton>
                       ))}
+                    </div>
+
+                    <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Campus admin
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Grant or revoke this user&apos;s campus administrator access for a school.
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <select
+                          aria-label="School for campus admin"
+                          value={adminSchoolId}
+                          onChange={(event) => setAdminSchoolId(event.target.value)}
+                          className="h-9 min-w-52 rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 focus:border-blue-500 focus:outline-none"
+                        >
+                          <option value="">Select school…</option>
+                          {schools.map((school) => (
+                            <option key={school.id} value={school.id}>
+                              {school.name}
+                            </option>
+                          ))}
+                        </select>
+                        <AdminButton
+                          variant="secondary"
+                          size="sm"
+                          disabled={busy || !adminSchoolId}
+                          onClick={() => void runCampusAdmin(user, true)}
+                        >
+                          Make campus admin
+                        </AdminButton>
+                        <AdminButton
+                          variant="ghost"
+                          size="sm"
+                          disabled={busy || !adminSchoolId}
+                          onClick={() => void runCampusAdmin(user, false)}
+                        >
+                          Remove
+                        </AdminButton>
+                      </div>
                     </div>
 
                     <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-4">

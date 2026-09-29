@@ -186,6 +186,9 @@ export default function AdminSchoolsPage() {
                 value={adminUserId}
                 onChange={(event) => setAdminUserId(event.target.value)}
               />
+              <p className="text-[11px] text-slate-400">
+                Easier: open Users → Manage → &quot;Campus admin&quot; to grant access by search, no UUID needed.
+              </p>
             </div>
             <div className="space-y-1.5">
               <label htmlFor="campus-admin-school" className="text-xs font-medium text-slate-600">

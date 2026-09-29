@@ -46,9 +46,6 @@ export function ProfileView({ profile, onEdit, onAvatarUpdated }: ProfileViewPro
           </div>
           
           <div className="flex flex-wrap gap-2">
-            {profile.is_verified && (
-              <Badge variant="campus">Verified</Badge>
-            )}
             {profile.student_verified && (
               <Badge variant="campus">Verified Student</Badge>
             )}
@@ -68,6 +65,12 @@ export function ProfileView({ profile, onEdit, onAvatarUpdated }: ProfileViewPro
           <div>
             <p className="text-slate-400 font-medium">Institution</p>
             <p className="text-foreground">{profile.university || "Not provided"}</p>
+            {!profile.university && (
+              <p className="mt-1 text-xs text-slate-400">
+                No campus set — chat discovery, study resources, and tribes are
+                matched to your school. Contact your campus admin to set yours.
+              </p>
+            )}
           </div>
           <div>
             <p className="text-slate-400 font-medium">Department</p>

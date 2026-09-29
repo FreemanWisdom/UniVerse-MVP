@@ -1,25 +1,28 @@
 # Phase 5B — School-Gating UX Design Review
 
-Status: READ-ONLY AUDIT (no code or DB changes made). Sept 29 2026.
+Status: READ-ONLY AUDIT + IMPLEMENTED (frontend-only). Sept 29 2026.
 Scope per phase5-verification-design.md §5.2: verification status UX + school
 gating messaging, under the standing Phase 5 decisions (verification OPTIONAL,
 badge admin-granted, no new workflow RPCs without approval).
 
 ## 1. Verified facts (live audit)
 
-### F1 — New-UI signups get NO campus, permanently
-- `signup-form.tsx` collects email + password only and sends **no metadata**;
-  after signup it routes to `/verify`.
-- `sync_profile_from_auth` maps `profiles.university` from
-  `raw_user_meta_data->>'university'` (legacy school picker used this).
-- `guard_profile_client_mutation` **locks `university` to its old value on every
-  client UPDATE** — a user can never set or change their campus themselves.
-- The profile edit form has no university field at all.
-- Consequence chain: a user who signs up on the new build has
-  `university = NULL` forever → chat discovery returns same-university only
-  (empty), study resources are campus-scoped (empty), tribes INSERT requires
-  `university = profile.university` (blocked). **All campus features are
-  silently empty with no explanation.** This is the school-gating UX bug.
+### F1 — New-UI signup was BROKEN at the server, not just campus-less
+- `signup-form.tsx` (pre-5B) collected email + password only and sent **no
+  metadata**; after signup it routed to `/verify`.
+- **Auth-layer contract found during implementation:** a BEFORE INSERT trigger
+  `public.enforce_verified_student_signup()` on `auth.users` REQUIRES a
+  university in signup metadata — it raises `Please select your university`
+  when absent and `Selected university is unavailable` when the name doesn't
+  match a `verification_enabled` school. With no metadata the signup dies with
+  an opaque GoTrue 500 `Database error saving new user` (reproduced via the
+  raw /auth/v1/signup API). So the new UI's signup button was broken outright;
+  legacy signups always sent the school (which is why all 47 profiles have one).
+- The trigger also canonicalizes `metadata.university` to the exact
+  `schools.name` match — so picker values must be the school list names.
+- `sync_profile_from_auth` maps `profiles.university` from that metadata;
+  `guard_profile_client_mutation` then **locks `university` on every client
+  UPDATE** — campus is set once, at signup, server-enforced.
 
 ### F2 — Badge semantics are split and misleading
 - Profile shows two badges: "Verified" (`is_verified` = **email confirmed**,
@@ -62,10 +65,12 @@ badge admin-granted, no new workflow RPCs without approval).
 
 **5B-1 — School picker at signup (fixes F1).** Required select populated
 from `verify-student-public` GET; chosen school name passed as
-`options.data.university` on signup → existing sync trigger stores it →
-guard makes it immutable. "My school isn't listed" submits with no campus and
-lands the user in a *visible* "no campus set" state (see 5B-4), never a silent
-one.
+`options.data.university` on signup → enforcement trigger validates it,
+sync trigger stores it, guard makes it immutable. DP-1 amended by the F1
+finding: the server already REQUIRES a school and rejects unlisted names, so
+there is no "isn't listed" path — the picker is strictly required and the
+submit is blocked until a school is chosen. If the school list fails to
+load, signup shows a retry (it cannot proceed without it).
 
 **5B-2 — Honest `/verify` status page.** Gated to signed-in students. Shows:
 your campus, your actual badge state, email-confirmed state. A

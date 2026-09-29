@@ -102,7 +102,8 @@ export function DiscoveryView({ pendingRequestIds, onRequestSent }: DiscoveryVie
               </div>
             ) : discoverResults.length === 0 && !isDiscoverLoading ? (
               <div className="text-center p-12 bg-surface-100/50 rounded-lg border border-surface-200 border-dashed">
-                <p className="text-slate-400">No students available to discover right now.</p>
+                <p className="text-slate-400">Discovery shows students from your campus.</p>
+                <p className="mt-1 text-xs text-slate-500">No one else from your school has joined yet — invite your coursemates, or check back soon.</p>
               </div>
             ) : (
               <div className="space-y-8">

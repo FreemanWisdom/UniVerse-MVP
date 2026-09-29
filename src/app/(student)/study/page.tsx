@@ -523,7 +523,7 @@ export default function StudyPage() {
                 <p className="text-sm text-slate-400">
                   {filtersActive
                     ? "No resources match these filters."
-                    : "No study resources are available yet."}
+                    : "No study resources for your campus yet — they're matched to your school. Upload the first one."}
                 </p>
               ) : (
                 <>

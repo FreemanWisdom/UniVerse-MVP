@@ -29,9 +29,7 @@ export function StudentCard({ student, isPendingRequest, onRequestSent }: Studen
               <h3 className="text-sm font-semibold text-foreground truncate">
                 {student.full_name}
               </h3>
-              {student.is_verified && (
-                <Badge variant="campus" className="px-1 py-0 text-[10px] h-4">Verified</Badge>
-              )}
+
             </div>
             
             <p className="text-xs text-slate-400 truncate mt-0.5">

@@ -159,15 +159,15 @@ export function WhisperPostCard({
           {post.content}
         </p>
 
-        <div className="flex items-center space-x-6 mt-4 pt-2 border-t border-slate-800/50">
-          {/* Like button */}
+        <div className="flex items-center space-x-2 sm:space-x-6 mt-4 pt-2 border-t border-slate-800/50">
+          {/* Like button — padded to a ~40px touch target on mobile (WCAG 2.5.8) */}
           <button
             type="button"
             onClick={handleLike}
             disabled={isLikeDisabled}
             aria-label={likedLabel}
             aria-pressed={post.liked ?? false}
-            className={`flex items-center space-x-1.5 transition-colors min-w-0
+            className={`flex items-center space-x-1.5 transition-colors min-w-0 -my-2.5 py-2.5 px-1
               ${isLikeDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
               ${post.liked ? "text-rose-400 hover:text-rose-300" : "text-slate-500 hover:text-slate-300"}
             `}
@@ -203,7 +203,7 @@ export function WhisperPostCard({
             <button
               type="button"
               onClick={() => setIsReporting(true)}
-              className="flex items-center space-x-1.5 transition-colors cursor-pointer text-slate-500 hover:text-slate-300"
+              className="flex items-center space-x-1.5 transition-colors cursor-pointer text-slate-500 hover:text-slate-300 -my-2.5 py-2.5 px-1"
               aria-label="Report this Whisper post"
             >
               <svg

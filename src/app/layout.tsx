@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
 import { RegisterServiceWorker } from "@/components/register-sw";
+import { EnvironmentBadge } from "@/components/environment-badge";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -57,6 +58,7 @@ export default function RootLayout({
         />
         {children}
         <RegisterServiceWorker />
+        <EnvironmentBadge />
       </body>
     </html>
   );

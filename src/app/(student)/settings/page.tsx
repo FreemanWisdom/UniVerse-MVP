@@ -7,6 +7,7 @@ import { NotificationSettings } from "@/features/settings/components/notificatio
 import { ThemeSettings } from "@/features/settings/components/theme-settings";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ReplayIntroButton } from "@/components/onboarding/replay-intro-button";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export default async function SettingsPage() {
   const user = await getCurrentUser();
@@ -53,6 +54,9 @@ export default async function SettingsPage() {
 
         {/* Notifications Section */}
         <NotificationSettings />
+
+        {/* Install experience */}
+        <InstallPrompt />
 
         {/* Privacy Section */}
         <Card>

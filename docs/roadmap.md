@@ -51,14 +51,19 @@ Admin ✓ (14-page console), and more (market/hustles/lodges backend-ready).
 
 ## Phase 6 — PWA & Mobile Experience (in progress)
 - Web manifest ✓, service worker ✓ (5G, auto-registered)
-- Install experience — installable since 5G; prompt UX REMAINING
-- Offline strategy / caching — REMAINING (SW fetch handler deliberately inert)
+- Install experience ✓ installable since 5G; Settings → Install App card
+  handles beforeinstallprompt, iOS Safari "Add to Home Screen" hint, and
+  already-installed state
+- Offline strategy / caching ✓ minimal shell: network-first navigation with
+  a self-contained offline fallback page; runtime cache for static assets
+  only — campus data (Supabase) is never cached or served stale
 - Push notifications ✓ real wiring (on-device check pending)
 - Onboarding walkthrough ✓ (Phase 6 addition, owner-approved): first-launch
   5-slide swipeable carousel (campus scope → Orbit → Whisper → Study → all
   set), once per device via localStorage, Skip/Back/dots/keyboard, bottom
   sheet on mobile, "Replay intro" in Settings. No DB involvement.
-- Mobile-first optimization — responsive drawer done; audit pass REMAINING
+- Mobile-first optimization ✓ 390px audit sweep across all 10 student
+  pages: zero horizontal overflow, zero console errors
 
 ## Phase 7 — Testing & Hardening (pending)
 Auth/authz, RLS, file-upload, chat/realtime, whisper anonymity,

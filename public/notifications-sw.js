@@ -3,14 +3,81 @@
    One documented adjustment: background push payloads carry legacy routes
    (e.g. /dashboard.html) because notification rows are created server-side
    with legacy links. Those now fall back to the app root instead of 404ing. */
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+/* Offline strategy (Phase 6, minimal by design):
+   - Navigations are network-first; on failure the SW serves the
+     self-contained /offline.html fallback (no runtime data caching).
+   - Same-origin static assets (/_next/static, /icons, manifest, favicon)
+     are cached at runtime, cache-first with background revalidation.
+   - Everything else — notably all Supabase API/auth/storage requests —
+     passes straight through and fails naturally when offline. Campus data
+     is never served from cache: it is scoped, moderated, and
+     rate-limited, so stale content or stale auth state must not render. */
+const SHELL_CACHE = "universe-shell-v1";
+const OFFLINE_URL = "/offline.html";
 
-/* Inert fetch handler: required for Chrome's installability criteria
-   (an installable PWA must control fetches). Deliberately does NOT respond,
-   so network behavior is exactly the browser default online and offline.
-   Offline caching is a possible future enhancement, not current behavior. */
-self.addEventListener("fetch", () => {});
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(SHELL_CACHE)
+      .then((cache) => cache.add(new Request(OFFLINE_URL, { cache: "reload" })))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(keys.filter((k) => k !== SHELL_CACHE).map((k) => caches.delete(k)))
+      )
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  const req = event.request;
+  if (req.method !== "GET") return;
+
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return; // Supabase etc.: pass through
+
+  if (req.mode === "navigate") {
+    // Network-first navigation with offline fallback.
+    event.respondWith(
+      fetch(req).catch(() =>
+        caches
+          .match(OFFLINE_URL, { cacheName: SHELL_CACHE })
+          .then((r) => r || Response.error())
+      )
+    );
+    return;
+  }
+
+  if (
+    url.pathname.startsWith("/_next/static/") ||
+    url.pathname.startsWith("/icons/") ||
+    url.pathname === "/manifest.json" ||
+    url.pathname === "/favicon.ico" ||
+    url.pathname === OFFLINE_URL
+  ) {
+    // Cache-first for immutable static assets; refresh in the background.
+    event.respondWith(
+      caches.match(req, { cacheName: SHELL_CACHE }).then((cached) => {
+        const network = fetch(req)
+          .then((res) => {
+            if (res && res.status === 200) {
+              const copy = res.clone();
+              caches.open(SHELL_CACHE).then((c) => c.put(req, copy));
+            }
+            return res;
+          })
+          .catch(() => cached || Response.error());
+        return cached || network;
+      })
+    );
+  }
+});
 
 
 self.addEventListener("push", (event) => {

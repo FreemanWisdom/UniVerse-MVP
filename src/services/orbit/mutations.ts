@@ -1,9 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { removeOrbitImages, uploadOrbitImages } from "./storage";
 
-export async function createOrbitPost(supabase: SupabaseClient, userId: string, content: string, files: File[], mentionedUserIds: string[]): Promise<void> {
+export async function createOrbitPost(supabase: SupabaseClient, userId: string, university: string, content: string, files: File[], mentionedUserIds: string[]): Promise<void> {
+  if (!university.trim()) {
+    throw new Error("Your school/campus information is unavailable. Please update your profile.");
+  }
   const uploaded = await uploadOrbitImages(supabase, userId, files);
-  const { data: post, error } = await supabase.from("orbit_feed").insert({ content: content.trim() || null, images: uploaded.urls, poster_id: userId }).select("id").single();
+  const { data: post, error } = await supabase.from("orbit_feed").insert({ content: content.trim() || null, images: uploaded.urls, poster_id: userId, school_tag: university }).select("id").single();
   if (error || !post) { await removeOrbitImages(supabase, uploaded.paths); throw new Error("We couldn't publish your post."); }
   if (mentionedUserIds.length) {
     const { error: mentionError } = await supabase.from("orbit_post_mentions").upsert(mentionedUserIds.map((mentioned_user_id) => ({ post_id: post.id, mentioned_user_id })), { onConflict: "post_id,mentioned_user_id", ignoreDuplicates: true });

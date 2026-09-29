@@ -136,7 +136,7 @@ export function OrbitPage({ userId, university }: { userId: string; university: 
       <p className="mt-1 text-sm text-slate-400">{university || "Your campus"} · a verified student space</p>
     </header>
     <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search loaded posts…" aria-label="Search loaded Orbit posts" className="w-full rounded-xl border border-surface-300 bg-surface-100 px-4 py-3 text-sm outline-none focus:border-campus-500" />
-    <OrbitComposer userId={userId} onCreated={refresh} />
+    <OrbitComposer userId={userId} university={university} onCreated={refresh} />
     <div className="flex gap-1 border-b border-surface-200" role="tablist">
       {["for-you", "latest", "trending"].map((item) => <button key={item} role="tab" aria-selected={mode === item} onClick={() => setMode(item as OrbitFeedMode)} className={`px-4 py-3 text-sm font-semibold capitalize ${mode === item ? "border-b-2 border-campus-500 text-campus-400" : "text-slate-500"}`}>{item.replace("-", " ")}</button>)}
     </div>

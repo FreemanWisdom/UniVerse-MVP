@@ -139,10 +139,9 @@ export async function enableDevicePush(supabase: SupabaseClient): Promise<void> 
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
     throw new Error("Push notifications are not supported by this browser.");
   }
-  if (window.Notification.permission === "denied") {
-    throw new Error("Notifications are blocked for this site in your browser settings.");
-  }
-
+  // No pre-check on Notification.permission here: the synchronous read can be
+  // stale in some browsers/embedded webviews. requestPermission() below is the
+  // authoritative source and handles the denied case itself.
   const permission = await window.Notification.requestPermission();
   if (permission !== "granted") {
     throw new Error(

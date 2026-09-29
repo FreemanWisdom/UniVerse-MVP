@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
+import { RegisterServiceWorker } from "@/components/register-sw";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,8 +14,17 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: siteConfig.shortName,
+  },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
   },
 };
 
@@ -46,6 +56,7 @@ export default function RootLayout({
           }}
         />
         {children}
+        <RegisterServiceWorker />
       </body>
     </html>
   );

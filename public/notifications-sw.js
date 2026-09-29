@@ -6,6 +6,13 @@
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
 
+/* Inert fetch handler: required for Chrome's installability criteria
+   (an installable PWA must control fetches). Deliberately does NOT respond,
+   so network behavior is exactly the browser default online and offline.
+   Offline caching is a possible future enhancement, not current behavior. */
+self.addEventListener("fetch", () => {});
+
+
 self.addEventListener("push", (event) => {
   let data = {};
   try {

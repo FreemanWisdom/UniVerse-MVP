@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { createClient } from "@/lib/supabase/client";
 
 interface SchoolOption {
@@ -136,9 +137,8 @@ export function SignUpForm() {
         <label htmlFor="signup-password" className="text-sm font-medium text-slate-200">
           Password
         </label>
-        <Input
+        <PasswordInput
           id="signup-password"
-          type="password"
           autoComplete="new-password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}

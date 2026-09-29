@@ -13,8 +13,10 @@ export function subscribeToMessages(
 ) {
   // We listen to all public.messages INSERTs.
   // The actual event filtering is handled safely below.
+  // Unique channel name: supabase-js reuses channels by name, and a second
+  // .on('postgres_changes') on an already-subscribed channel throws.
   const channel = supabase
-    .channel("public:messages")
+    .channel(`messages:${crypto.randomUUID()}`)
     .on(
       "postgres_changes",
       {

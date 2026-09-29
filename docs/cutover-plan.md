@@ -35,10 +35,19 @@ until that day.
 
 ## 2. Decision points (owner)
 
-1. **Host for the Next app.** Recommended: Vercel (zero-config Next.js, free
-   tier is enough to start, preview deployments for a dress rehearsal).
-   Alternatives: Cloudflare Pages, Railway, a VPS. Whoever hosts it, import
-   from GitHub targeting `my-new-feature` (or a dedicated branch) — NOT main.
+1. **Host for the Next app — DECIDED: Vercel** (owner, Sept 29 2026).
+   Import from GitHub with production branch set to `my-new-feature` — NOT
+   main (main is the legacy static site). Vercel-specific setup:
+   - Framework preset: Next.js (auto-detected). Root directory: repo root
+     (`my-new-feature` holds the Next app at the root of the same repo).
+   - Environment variables (Production + Preview):
+     `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (values in
+     `.env.local`, never committed).
+   - Supabase dashboard → Auth → URL Configuration: add the Vercel domain(s)
+     and `https://www.universeicos.app` to the allowed redirect URLs so the
+     signup email-confirmation links resolve to the right host.
+   - Free tier is enough to start; every PR gets a preview deployment for the
+     dress rehearsal.
 2. **Domain strategy.** Recommended: point `www` (and the apex redirect) at the
    new host only after the dress rehearsal passes. Keep the legacy host
    untouched as the rollback target until post-cutover stability is confirmed.

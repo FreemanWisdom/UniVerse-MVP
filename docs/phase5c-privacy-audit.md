@@ -1,6 +1,7 @@
-# Phase 5C — Privacy Audit (read-only)
+# Phase 5C — Privacy Audit + X3 Hardening
 
-Date: Sept 29 2026 · Status: READ-ONLY AUDIT COMPLETE. No code or DB changes made.
+Date: Sept 29 2026 · Status: COMPLETE. Audit was read-only; the single DB fix
+(X3) was owner-approved ("go ahead") and is applied live.
 Scope per Phase 5 plan: (1) discover/search RPC field minimization,
 (2) whisper anonymity browser check.
 
@@ -15,63 +16,64 @@ Scope per Phase 5 plan: (1) discover/search RPC field minimization,
 - No email, phone, matric, or moderation fields. `id` is required to send
   chat requests (campus_chat_send_request takes the target uuid) — expected
   exposure, same as legacy.
-- is_verified is still returned (5B-3 removed the misleading UI badge; field
-  is harmless and may be reused for the real verified badge later).
 
-### Whisper frontend — anonymity-safe in the browser
-- The new UI reads ONLY the `whisper_posts_public` view
+### Whisper anonymity — VERIFIED SAFE at every layer
+- Browser: the new UI reads ONLY the `whisper_posts_public` view
   (id, anon_label, content, like_count, created_at — no author_id) and calls
   only SECURITY DEFINER RPCs: create_whisper, get_or_create_whisper_identity,
-  get_my_whisper_state, toggle_whisper_like, delete_whisper,
-  create_whisper_report.
-- `get_my_whisper_state` returns only booleans (is_mine/liked) — no author
-  ids ever reach the client. `delete_whisper` is own-scoped server-side.
-- `src/features/whisper/whisper.types.ts` carries an explicit rule:
-  "Never add `author_id` to these models."
-- `whisper_identities` (user_id ↔ anon_label map) is fully locked:
-  SELECT policy `false` — properly private.
+  get_my_whisper_state (returns booleans only), toggle_whisper_like,
+  delete_whisper (own-scoped), create_whisper_report.
+- Grants: `authenticated` has SELECT only on safe columns of
+  whisper_posts / whisper_comments; **author_id and moderation_status were
+  never granted to clients** — X1/X2 from the first audit pass were false
+  alarms (the RLS "exposure" was masked by column-level grants all along).
+- `whisper_identities` (user_id ↔ anon_label map): SELECT policy `false`.
+  Direct `select author_id from whisper_posts` as authenticated → 42501.
 
-## 2. ⚠ Server-side residual exposures (DB layer — any authenticated user
-can query directly with the anon key; UI minimization does NOT protect these)
+## 2. X3 — profiles over-exposure (FIXED, live-applied)
 
-- **X1 — whisper_posts exposes author_id to campus peers.** RLS policy
-  "whisper campus safe select" filters rows (active, not deleted, same
-  campus) but returns ALL columns — `select author_id, anon_label from
-  whisper_posts` links every anonymous post to its author uuid. Combined
-  with X2 this de-anonymizes whispers outright.
-- **X2 — whisper_comments exposes author_id** the same way (table unused by
-  the new UI but still client-selectable).
-- **X3 — profiles SELECT policy is `qual: true`**: every authenticated user
-  can read ALL profiles rows in full, including `admin_note` (internal
-  moderation notes), `account_status`, `wallet_balance`,
-  `onboarding_completed`. The discover/search RPC minimization is cosmetic
-  against direct table reads. No email/phone/matric columns exist in
-  profiles (verified) — the sensitive set is admin_note + account_status +
-  wallet_balance.
+Finding: profiles had a FULL table-level grant to `authenticated`; the
+SELECT RLS policy was `qual: true` — every student could read
+`admin_note`, `account_status`, `wallet_balance` on ALL rows via direct
+table queries (all client profile reads use explicit safe column lists,
+verified by grep of both UIs).
 
-## 3. Remediation options (ALL are DB changes — require Freeman's approval;
-none implemented)
+Fix applied (`sql/phase5c-profiles-column-hardening.sql`):
+`revoke select on public.profiles from authenticated` + column-level
+grants for the 14 safe columns. **admin_note and account_status are now
+permission-denied for all client roles.**
 
-- R-X1/X2: Revoke direct client access to whisper_posts/whisper_comments
-  tables (or column-level SELECT grants hiding author_id) and route all
-  reads through the existing view + RPCs. Must re-check the whisper_likes
-  INSERT policy (its WITH CHECK subquery reads whisper_posts) and
-  moderation flows (admin_moderate_report touches whisper rows as
-  SECURITY DEFINER, unaffected).
-- R-X3: Column-level grants: revoke SELECT(admin_note, account_status,
-  wallet_balance) from authenticated; or move admin-only fields to a
-  separate admin schema. Legacy dashboard.html reads profiles too — its
-  column usage must be checked before revoking (it may render
-  wallet_balance; admin_note unlikely).
-- Cheapest hardening with zero functional risk: none of X1–X3 are
-  exploitable by the shipped UI; they require a deliberate crafted query.
-  Risk is privacy-by-obscurity only, but the whisper feature's core promise
-  is anonymity, so X1 is the priority.
+- Kept readable: wallet_balance (the LIVE legacy dashboard renders the
+  user's own balance — 12 references in dashboard.html; revoking it would
+  break production). ACCEPTED RESIDUAL: students can read other students'
+  wallet_balance via a crafted query. Fix at legacy retirement/cutover:
+  drop wallet_balance from the grant list.
+- Safety checks before applying: sync_profile_from_auth and
+  guard_profile_client_mutation are SECURITY DEFINER owned by postgres
+  (unaffected); both auth.users triggers verified; auth flows unaffected.
 
-## 4. Verdict
+## 3. Live verification (all passed)
 
-- Frontend: PASS — no changes needed; browser payloads contain no private
-  ids or admin fields.
-- Backend: 3 findings (X1–X3) awaiting a fix/no-fix decision; fixes are
-  small, surgical SQL (policy/grant tightening), but each needs owner
-  approval per project rules.
+As simulated authenticated user (management API `set local role`):
+1. select full_name → OK; 2. select admin_note → 42501 DENIED;
+3. select account_status → 42501 DENIED; 4. select wallet_balance → OK;
+5. update own profile (no-op) → OK; 6. campus_chat_discover_students → OK;
+7. whisper_posts_public view → OK; 8. get_my_whisper_state → OK;
+9. direct whisper_posts author_id select → 42501 DENIED.
+
+Browser end-to-end (throwaway cc-5f@universeicos.app, deleted after):
+signup → login → profile page (university renders) → /whisper feed +
+composer post via RPC (persisted) → /chat → /verify — zero console errors.
+
+## 4. Notes
+
+- NEVER add `select("*")` on profiles in client code — PostgREST would
+  return permission-denied now that column grants are narrowed. All current
+  reads use explicit column lists (safe).
+- Rollback if ever needed: `grant select on public.profiles to authenticated;`
+- Audit incident during verification: raw /auth/v1/signup tests 500'd with
+  "Database error saving new user" — root cause was MY test harness using
+  the wrong payload shape ({"options":{"data":...}} instead of top-level
+  "data" → university metadata never reached the trigger → clean
+  trigger-raise surfaced as opaque 500). Signup itself is healthy;
+  correct-shape signup verified working. No platform outage.

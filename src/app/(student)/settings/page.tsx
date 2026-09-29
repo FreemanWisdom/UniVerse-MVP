@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { NotificationSettings } from "@/features/settings/components/notification-settings";
 import { ThemeSettings } from "@/features/settings/components/theme-settings";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { ReplayIntroButton } from "@/components/onboarding/replay-intro-button";
 
 export default async function SettingsPage() {
   const user = await getCurrentUser();
@@ -32,7 +33,7 @@ export default async function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Account</CardTitle>
-            <CardDescription>Update your campus identity</CardDescription>
+            <CardDescription>Update your campus identity, or replay the welcome tour</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -77,6 +78,14 @@ export default async function SettingsPage() {
               <div className="bg-surface-200 rounded-md">
                  <LogoutButton />
               </div>
+            </div>
+
+            <div className="pt-4 mt-4 border-t border-surface-200 flex justify-between items-center">
+              <div>
+                <p className="text-sm font-medium text-foreground">Welcome Tour</p>
+                <p className="text-xs text-slate-400">Replay the first-launch campus intro</p>
+              </div>
+              <ReplayIntroButton />
             </div>
           </CardContent>
         </Card>

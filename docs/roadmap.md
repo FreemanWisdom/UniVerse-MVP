@@ -54,6 +54,10 @@ Admin ✓ (14-page console), and more (market/hustles/lodges backend-ready).
 - Install experience — installable since 5G; prompt UX REMAINING
 - Offline strategy / caching — REMAINING (SW fetch handler deliberately inert)
 - Push notifications ✓ real wiring (on-device check pending)
+- Onboarding walkthrough ✓ (Phase 6 addition, owner-approved): first-launch
+  5-slide swipeable carousel (campus scope → Orbit → Whisper → Study → all
+  set), once per device via localStorage, Skip/Back/dots/keyboard, bottom
+  sheet on mobile, "Replay intro" in Settings. No DB involvement.
 - Mobile-first optimization — responsive drawer done; audit pass REMAINING
 
 ## Phase 7 — Testing & Hardening (pending)

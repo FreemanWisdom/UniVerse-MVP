@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { NotificationsBell } from "@/features/notifications/components/notifications-bell";
+import { WelcomeCarousel } from "@/components/onboarding/welcome-carousel";
 import { isAuthenticated } from "@/lib/auth/session";
 
 export default async function StudentLayout({
@@ -15,6 +16,7 @@ export default async function StudentLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-16 md:pb-0">
+      <WelcomeCarousel />
       <header className="sticky top-0 z-40 border-b border-surface-200 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
           <Link href="/orbit" className="flex items-center space-x-2">

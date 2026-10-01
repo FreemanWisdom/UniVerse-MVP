@@ -26,12 +26,14 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto w-full">
-      <div className="flex items-center justify-between pb-2 border-b border-surface-200">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Student Profile</h1>
-          <p className="text-sm text-slate-400">Manage your campus identity.</p>
-        </div>
+    <div className="space-y-5 max-w-2xl mx-auto w-full">
+      <div>
+        <p className="font-display text-[0.65rem] font-bold uppercase tracking-[0.25em] text-campus-400">
+          Profile
+        </p>
+        <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground">
+          Your campus identity
+        </h1>
       </div>
 
       <ProfilePageClient initialProfile={profile} />

@@ -7,7 +7,7 @@ import { updateProfile } from "@/services/profile";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 interface ProfileEditFormProps {
   profile: StudentProfile;
@@ -71,12 +71,13 @@ export function ProfileEditForm({ profile, onCancel, onSuccess }: ProfileEditFor
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Edit Profile</CardTitle>
+        <CardTitle className="font-display">Edit Profile</CardTitle>
+        <CardDescription>Update your campus identity</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-200">Full Name</label>
+            <label className="text-xs font-medium uppercase tracking-wider text-slate-400">Full Name</label>
             <Input
               name="full_name"
               value={formData.full_name}
@@ -87,7 +88,7 @@ export function ProfileEditForm({ profile, onCancel, onSuccess }: ProfileEditFor
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-200">Department</label>
+            <label className="text-xs font-medium uppercase tracking-wider text-slate-400">Department</label>
             <Input
               name="department"
               value={formData.department}
@@ -97,7 +98,7 @@ export function ProfileEditForm({ profile, onCancel, onSuccess }: ProfileEditFor
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-200">Level</label>
+            <label className="text-xs font-medium uppercase tracking-wider text-slate-400">Level</label>
             <Input
               name="level"
               value={formData.level}
@@ -107,7 +108,7 @@ export function ProfileEditForm({ profile, onCancel, onSuccess }: ProfileEditFor
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-200">Bio</label>
+            <label className="text-xs font-medium uppercase tracking-wider text-slate-400">Bio</label>
             <textarea
               name="bio"
               value={formData.bio}

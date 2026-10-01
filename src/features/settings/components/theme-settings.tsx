@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const THEME_STORAGE_KEY = "universe-theme";
@@ -49,48 +48,41 @@ export function ThemeSettings() {
   }, []);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Appearance</CardTitle>
-        <CardDescription>Choose how UniVerse ICOS looks on this device</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-medium text-foreground">Theme</p>
-            <p className="text-xs text-slate-400">Switch between light and dark mode</p>
-          </div>
-          <div
-            className="flex gap-1 rounded-lg border border-surface-200 bg-surface-100 p-1"
-            role="group"
-            aria-label="Theme"
-          >
-            <Button
-              type="button"
-              variant={theme === "light" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => choose("light")}
-              aria-pressed={theme === "light"}
-              className="text-xs"
-            >
-              ☀️ Light
-            </Button>
-            <Button
-              type="button"
-              variant={theme === "dark" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => choose("dark")}
-              aria-pressed={theme === "dark"}
-              className="text-xs"
-            >
-              🌙 Dark
-            </Button>
-          </div>
+    <div className="rounded-lg border border-surface-200 bg-surface-100/70 p-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-foreground">Theme</p>
+          <p className="text-xs text-slate-400">
+            {theme === "light" ? "Light mode is on" : "Dark mode is on"} · saved on this device
+          </p>
         </div>
-        <p className="text-xs text-slate-500">
-          Your choice is saved on this device and applies every time you open UniVerse ICOS.
-        </p>
-      </CardContent>
-    </Card>
+        <div
+          className="flex gap-1 rounded-lg border border-surface-200 bg-surface-100 p-1"
+          role="group"
+          aria-label="Theme"
+        >
+          <Button
+            type="button"
+            variant={theme === "light" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => choose("light")}
+            aria-pressed={theme === "light"}
+            className="min-h-[36px] text-xs"
+          >
+            ☀️ Light
+          </Button>
+          <Button
+            type="button"
+            variant={theme === "dark" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => choose("dark")}
+            aria-pressed={theme === "dark"}
+            className="min-h-[36px] text-xs"
+          >
+            🌙 Dark
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

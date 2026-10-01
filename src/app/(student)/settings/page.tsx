@@ -1,17 +1,45 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NotificationSettings } from "@/features/settings/components/notification-settings";
 import { ThemeSettings } from "@/features/settings/components/theme-settings";
+import { PasswordSettings } from "@/features/settings/components/password-settings";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ReplayIntroButton } from "@/components/onboarding/replay-intro-button";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="font-display text-[0.65rem] font-bold uppercase tracking-[0.25em] text-campus-400">
+      {children}
+    </h2>
+  );
+}
+
+function SettingRow({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="flex min-h-[56px] items-center justify-between gap-4 rounded-lg border border-surface-200 bg-surface-100/70 p-4">
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-foreground">{title}</p>
+        <p className="text-xs text-slate-400">{description}</p>
+      </div>
+      {children && <div className="shrink-0">{children}</div>}
+    </div>
+  );
+}
+
 export default async function SettingsPage() {
   const user = await getCurrentUser();
-  
+
   if (!user) {
     return (
       <div className="flex h-[50vh] items-center justify-center text-slate-400">
@@ -20,80 +48,90 @@ export default async function SettingsPage() {
     );
   }
 
+  const emailConfirmed = Boolean(user.email_confirmed_at);
+
   return (
-    <div className="space-y-6 max-w-2xl mx-auto w-full">
-      <div className="flex items-center justify-between pb-2 border-b border-surface-200">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Settings</h1>
-          <p className="text-sm text-slate-400">Manage your account and preferences.</p>
+    <div className="max-w-2xl mx-auto w-full space-y-8">
+      <div>
+        <p className="font-display text-[0.65rem] font-bold uppercase tracking-[0.25em] text-campus-400">
+          Settings
+        </p>
+        <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground">
+          Account &amp; preferences
+        </h1>
+      </div>
+
+      {/* Account */}
+      <section className="space-y-3" aria-label="Account">
+        <SectionHeading>Account</SectionHeading>
+        <div className="space-y-2">
+          <SettingRow
+            title="Edit profile"
+            description="Name, bio, department, and photo"
+          >
+            <Link href="/profile">
+              <Button variant="outline" size="sm" className="min-h-[36px]">Open</Button>
+            </Link>
+          </SettingRow>
+
+          <SettingRow
+            title="Email"
+            description={user.email ?? "No email on file"}
+          >
+            <Badge variant={emailConfirmed ? "campus" : "outline"}>
+              {emailConfirmed ? "Confirmed" : "Unconfirmed"}
+            </Badge>
+          </SettingRow>
+
+          <PasswordSettings />
         </div>
-      </div>
+      </section>
 
-      <div className="space-y-6">
-        {/* Account Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Account</CardTitle>
-            <CardDescription>Update your campus identity, or replay the welcome tour</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-foreground">Profile Information</p>
-                <p className="text-xs text-slate-400">Edit your name, bio, and academic details</p>
-              </div>
-              <Link href="/profile">
-                <Button variant="outline" size="sm">Edit Profile</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Appearance Section */}
+      {/* Appearance */}
+      <section className="space-y-3" aria-label="Appearance">
+        <SectionHeading>Appearance</SectionHeading>
         <ThemeSettings />
+      </section>
 
-        {/* Notifications Section */}
+      {/* Notifications */}
+      <section className="space-y-3" aria-label="Notifications">
+        <SectionHeading>Notifications</SectionHeading>
         <NotificationSettings />
+      </section>
 
-        {/* Install experience */}
-        <InstallPrompt />
+      {/* Privacy & Security */}
+      <section className="space-y-3" aria-label="Privacy and security">
+        <SectionHeading>Privacy &amp; Security</SectionHeading>
+        <div className="space-y-2">
+          <SettingRow
+            title="Data protection"
+            description="Your records are isolated by Supabase row-level security"
+          >
+            <Badge variant="campus">Active</Badge>
+          </SettingRow>
 
-        {/* Privacy Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Privacy & Security</CardTitle>
-            <CardDescription>Manage your data</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-foreground">Security Defaults</p>
-                <p className="text-xs text-slate-400">Your data is protected by Supabase RLS</p>
-              </div>
-              <Badge variant="campus">Active</Badge>
+          <SettingRow title="Sign out" description="End your current session">
+            <div className="flex min-h-[36px] items-center">
+              <LogoutButton />
             </div>
-            
-            <div className="pt-4 mt-4 border-t border-surface-200 flex justify-between items-center">
-              <div>
-                <p className="text-sm font-medium text-foreground">Sign Out</p>
-                <p className="text-xs text-slate-400">End your current session</p>
-              </div>
-              {/* Ensure LogoutButton uses a solid appearance if preferred, but ghost is fine */}
-              <div className="bg-surface-200 rounded-md">
-                 <LogoutButton />
-              </div>
-            </div>
+          </SettingRow>
+        </div>
+      </section>
 
-            <div className="pt-4 mt-4 border-t border-surface-200 flex justify-between items-center">
-              <div>
-                <p className="text-sm font-medium text-foreground">Welcome Tour</p>
-                <p className="text-xs text-slate-400">Replay the first-launch campus intro</p>
-              </div>
-              <ReplayIntroButton />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Application */}
+      <section className="space-y-3" aria-label="Application">
+        <SectionHeading>Application</SectionHeading>
+        <div className="space-y-2">
+          <InstallPrompt />
+
+          <SettingRow
+            title="Welcome tour"
+            description="Replay the first-launch campus intro"
+          >
+            <ReplayIntroButton />
+          </SettingRow>
+        </div>
+      </section>
     </div>
   );
 }

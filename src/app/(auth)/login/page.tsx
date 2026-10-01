@@ -12,27 +12,21 @@ export default async function LoginPage() {
   return (
     <>
       <CardHeader>
-        <CardTitle className="text-xl">Sign In</CardTitle>
-        <CardDescription>
-          Access your UniVerse ICOS student workspace.
-        </CardDescription>
+        <p className="font-display text-[0.65rem] font-bold uppercase tracking-[0.25em] text-campus-400">
+          Welcome back
+        </p>
+        <CardTitle className="font-display text-xl">Sign in</CardTitle>
+        <CardDescription>Access your campus workspace.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="rounded-lg border border-surface-200 bg-surface-50 p-3 text-xs text-slate-300">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-campus-400">Route: /login</p>
-          <p className="mt-2 text-slate-400">
-            Secure login uses the existing Supabase Auth session and project configuration.
-          </p>
-        </div>
-
         <LoginForm />
 
-        <div className="text-center text-xs text-slate-400 pt-2">
+        <p className="border-t border-surface-200 pt-3 text-center text-xs text-slate-400">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-campus-400 hover:underline">
+          <Link href="/signup" className="font-medium text-campus-400 hover:underline">
             Sign up
           </Link>
-        </div>
+        </p>
       </CardContent>
     </>
   );

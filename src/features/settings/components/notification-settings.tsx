@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -74,48 +73,48 @@ export function NotificationSettings() {
   }, []);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg flex justify-between items-center">
-          Push Notifications
-          <span className={`text-xs px-2 py-1 rounded-full font-medium ${isEnabled ? 'bg-campus-900 text-campus-400' : 'bg-surface-200 text-slate-400'}`}>
-            {isEnabled ? 'Enabled' : 'Disabled'}
-          </span>
-        </CardTitle>
-        <CardDescription>Get alerts for new messages, whispers, and orbit posts.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-slate-300">
-          Push notifications are delivered securely to this device.
+    <div className="rounded-lg border border-surface-200 bg-surface-100/70 p-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-foreground">
+            Push notifications
+            <span
+              className={`ml-2 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                isEnabled ? "bg-campus-950 text-campus-400" : "bg-surface-200 text-slate-400"
+              }`}
+            >
+              {isEnabled ? "Enabled" : "Disabled"}
+            </span>
+          </p>
+          <p className="text-xs text-slate-400">Alerts for new messages, whispers, and orbit posts</p>
+        </div>
+        <Button
+          onClick={isEnabled ? handleDisablePush : handleEnablePush}
+          disabled={isRegistering}
+          variant={isEnabled ? "secondary" : "default"}
+          size="sm"
+          className="shrink-0 min-h-[36px]"
+        >
+          {isRegistering ? "Working…" : isEnabled ? "Disable" : "Enable"}
+        </Button>
+      </div>
+
+      {error && (
+        <p className="mt-3 border-t border-surface-200 pt-3 text-xs text-red-400" role="alert">
+          {error}
         </p>
-
-        {error && (
-          <div className="text-sm text-red-400 p-2 bg-red-950/50 rounded border border-red-800" role="alert">
-            {error}
-          </div>
-        )}
-        {notice && (
-          <div className="text-sm text-campus-300 p-2 rounded border border-campus-800 bg-campus-900/30" role="status">
-            {notice}
-          </div>
-        )}
-        {permission === "denied" && !isEnabled && (
-          <div className="text-sm text-amber-300 p-2 bg-amber-950/40 rounded border border-amber-800">
-            Notifications are blocked for this site in your browser settings. Unblock them
-            (site settings &rarr; notifications) and try again.
-          </div>
-        )}
-
-        {isEnabled ? (
-          <Button onClick={handleDisablePush} disabled={isRegistering} variant="secondary">
-            {isRegistering ? "Turning off..." : "Disable on this device"}
-          </Button>
-        ) : (
-          <Button onClick={handleEnablePush} disabled={isRegistering} variant="default">
-            {isRegistering ? "Enabling..." : "Enable Push Notifications"}
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+      )}
+      {notice && (
+        <p className="mt-3 border-t border-surface-200 pt-3 text-xs text-campus-300" role="status">
+          {notice}
+        </p>
+      )}
+      {permission === "denied" && !isEnabled && (
+        <p className="mt-3 border-t border-surface-200 pt-3 text-xs text-amber-300">
+          Notifications are blocked for this site in your browser settings. Unblock them
+          (site settings &rarr; notifications) and try again.
+        </p>
+      )}
+    </div>
   );
 }

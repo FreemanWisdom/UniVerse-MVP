@@ -59,7 +59,7 @@ export function InstallPrompt() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Install App</CardTitle>
+        <CardTitle className="font-display text-sm">Install App</CardTitle>
         <CardDescription>Put UniVerse on your home screen</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">

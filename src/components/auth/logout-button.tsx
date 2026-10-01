@@ -36,7 +36,7 @@ export function LogoutButton() {
       size="sm"
       onClick={handleSignOut}
       disabled={isLoading}
-      className="text-slate-300 hover:text-foreground"
+      className="min-h-[36px] text-slate-300 hover:text-foreground"
     >
       {isLoading ? "Signing out..." : "Sign out"}
     </Button>

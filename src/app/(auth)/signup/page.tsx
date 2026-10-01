@@ -12,28 +12,24 @@ export default async function SignUpPage() {
   return (
     <>
       <CardHeader>
-        <CardTitle className="text-xl">Create Account</CardTitle>
+        <p className="font-display text-[0.65rem] font-bold uppercase tracking-[0.25em] text-campus-400">
+          Join your campus
+        </p>
+        <CardTitle className="font-display text-xl">Create account</CardTitle>
         <CardDescription>
-          Start your student account and continue to verification.
+          Your school sets your campus — chat, study, and tribes are matched
+          to it.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="rounded-lg border border-surface-200 bg-surface-50 p-3 text-xs text-slate-300">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-campus-400">Route: /signup</p>
-          <p className="mt-2 text-slate-400">
-            Your school choice sets your campus — chat, study, and tribes are matched to it.
-            Verification is optional and never blocks any feature.
-          </p>
-        </div>
-
         <SignUpForm />
 
-        <div className="text-center text-xs text-slate-400 pt-2">
+        <p className="border-t border-surface-200 pt-3 text-center text-xs text-slate-400">
           Already registered?{" "}
-          <Link href="/login" className="text-campus-400 hover:underline">
+          <Link href="/login" className="font-medium text-campus-400 hover:underline">
             Sign in
           </Link>
-        </div>
+        </p>
       </CardContent>
     </>
   );

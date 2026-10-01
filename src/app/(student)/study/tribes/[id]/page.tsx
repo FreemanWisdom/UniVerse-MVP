@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import {
   countTribeMembers,
@@ -19,6 +18,7 @@ import {
 import { Tribe, TribePost } from "@/features/study/tribes.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
 import { BackButton } from "@/components/back-button";
+import { StudyMeta, StudyNotice, StudySkeletonRows } from "@/features/study/components/study-ui";
 
 function formatDateTime(value: string): string {
   const date = new Date(value);
@@ -248,34 +248,28 @@ export default function TribeDetailPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <Card aria-busy="true" aria-label="Loading tribe">
-          <CardContent className="p-6 text-sm text-slate-400">Loading tribe…</CardContent>
-        </Card>
+      <div className="space-y-4">
+        <StudySkeletonRows count={2} />
       </div>
     );
   }
 
   if (tribeMissing) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <BackButton href="/study/tribes" label="All tribes" />
-        <Card>
-          <CardContent className="p-6 text-sm text-slate-400">
-            This tribe doesn&#39;t exist or isn&#39;t available at your campus.
-          </CardContent>
-        </Card>
+        <StudyNotice>
+          This tribe doesn&#39;t exist or isn&#39;t available at your campus.
+        </StudyNotice>
       </div>
     );
   }
 
   if (error && !tribe) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <BackButton href="/study/tribes" label="All tribes" />
-        <Card>
-          <CardContent className="p-6 text-sm text-red-400" role="alert">{error}</CardContent>
-        </Card>
+        <StudyNotice tone="danger" role="alert">{error}</StudyNotice>
       </div>
     );
   }
@@ -283,54 +277,54 @@ export default function TribeDetailPage() {
   if (!tribe) return null;
 
   return (
-    <div className="space-y-6">
-      <BackButton href="/study/tribes" label="All tribes" />
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-200 pb-2">
+        <div className="flex min-w-0 items-center gap-3">
+          <BackButton href="/study/tribes" label="All tribes" className="shrink-0" />
+          <h1 className="truncate text-lg font-bold tracking-tight text-foreground">{tribe.name}</h1>
+        </div>
+        <Button
+          type="button"
+          size="sm"
+          variant={isMember ? "outline" : "default"}
+          onClick={() => void handleToggleMembership()}
+          disabled={membershipBusy}
+          aria-pressed={isMember}
+        >
+          {membershipBusy ? "…" : isMember ? "Leave" : "Join"}
+        </Button>
+      </div>
 
-      <Card>
-        <CardContent className="space-y-2 p-6">
-          <div className="flex items-start justify-between gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">{tribe.name}</h1>
-            <Button
-              type="button"
-              size="sm"
-              variant={isMember ? "outline" : "default"}
-              onClick={() => void handleToggleMembership()}
-              disabled={membershipBusy}
-              aria-pressed={isMember}
-            >
-              {membershipBusy ? "…" : isMember ? "Leave" : "Join"}
-            </Button>
-          </div>
-
-          {tribe.description ? (
-            <p className="text-sm text-slate-300">{tribe.description}</p>
-          ) : null}
-
-          <div className="flex flex-wrap gap-2 text-[11px] text-slate-400">
-            {tribe.course_code ? <span>{tribe.course_code}</span> : null}
-            {tribe.category ? <span>· {tribe.category}</span> : null}
-            {tribe.department ? <span>· {tribe.department}</span> : null}
-            {tribe.level ? <span>· {tribe.level}</span> : null}
-            <span>· {memberCount === null ? "—" : `${memberCount} member${memberCount === 1 ? "" : "s"}`}</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-2">
+        {tribe.description ? (
+          <p className="text-sm leading-relaxed text-slate-300">{tribe.description}</p>
+        ) : null}
+        <StudyMeta
+          items={[
+            tribe.course_code,
+            tribe.category,
+            tribe.department,
+            tribe.level,
+            memberCount === null ? "—" : `${memberCount} member${memberCount === 1 ? "" : "s"}`,
+          ]}
+        />
+      </div>
 
       {isMember ? (
-        <Card>
-          <CardContent className="space-y-3 p-6">
-            <textarea
-              aria-label="Write a tribe post"
-              value={postInput}
-              maxLength={STUDY_CONSTANTS.TRIBE_POST_MAX_LENGTH}
-              onChange={(event) => setPostInput(event.target.value)}
-              placeholder="Share something with your tribe…"
-              rows={3}
-              className="w-full rounded-lg border border-surface-300 bg-surface-50 p-3 text-sm text-foreground"
-            />
+        <div className="space-y-2">
+          <textarea
+            aria-label="Write a tribe post"
+            value={postInput}
+            maxLength={STUDY_CONSTANTS.TRIBE_POST_MAX_LENGTH}
+            onChange={(event) => setPostInput(event.target.value)}
+            placeholder="Share something with your tribe…"
+            rows={2}
+            className="w-full rounded-lg border border-surface-300 bg-surface-50 p-3 text-sm text-foreground placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500"
+          />
+          <div className="flex items-center justify-between gap-3">
             {postError ? (
-              <p className="text-sm text-red-400" role="alert">{postError}</p>
-            ) : null}
+              <p className="text-xs text-red-400" role="alert">{postError}</p>
+            ) : <span />}
             <Button
               type="button"
               size="sm"
@@ -339,14 +333,12 @@ export default function TribeDetailPage() {
             >
               {posting ? "Posting…" : "Post"}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
-        <Card>
-          <CardContent className="p-6 text-sm text-slate-400">
-            Join this tribe to see and write its posts.
-          </CardContent>
-        </Card>
+        <StudyNotice>
+          Join this tribe to see and write its posts.
+        </StudyNotice>
       )}
 
       {isMember ? (
@@ -356,16 +348,18 @@ export default function TribeDetailPage() {
           <p className="text-sm text-slate-400">No posts yet. Start the conversation.</p>
         ) : (
           <>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {posts.map((post) => {
                 const isMine = myPostIds.includes(post.id);
                 return (
-                  <Card key={post.id}>
-                    <CardContent className="space-y-2 p-4">
-                      <p className="text-sm text-slate-200">{post.content}</p>
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-[11px] text-slate-500">{formatDateTime(post.created_at)}</span>
-                        {isMine ? (
+                  <div
+                    key={post.id}
+                    className="rounded-lg border border-surface-200 bg-surface-50/50 p-3"
+                  >
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-200">{post.content}</p>
+                    <div className="mt-2 flex items-center justify-between gap-3 border-t border-surface-200/70 pt-2">
+                      <span className="text-[11px] text-slate-500">{formatDateTime(post.created_at)}</span>
+                      {isMine ? (
                           deleteConfirmId === post.id ? (
                             <span className="flex items-center gap-2">
                               <Button
@@ -398,8 +392,7 @@ export default function TribeDetailPage() {
                           )
                         ) : null}
                       </div>
-                    </CardContent>
-                  </Card>
+                  </div>
                 );
               })}
             </div>

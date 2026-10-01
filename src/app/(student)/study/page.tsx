@@ -27,6 +27,12 @@ import {
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
 import { StudyResourceCard } from "@/features/study/components/study-resource-card";
 import { StudyContributionPanel } from "@/features/study/components/study-contribution-panel";
+import {
+  StudyNotice,
+  StudySectionHeader,
+  StudySelect,
+  StudySkeletonRows,
+} from "@/features/study/components/study-ui";
 
 const RESOURCE_TYPE_OPTIONS: Array<{ value: StudyFilterValue; label: string }> = [
   { value: "all", label: "All types" },
@@ -40,7 +46,7 @@ const COURSE_FILTER_ENROLLED = "enrolled";
 
 function StudyState({ children }: { children: React.ReactNode }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {children}
     </div>
   );
@@ -371,9 +377,7 @@ export default function StudyPage() {
   if (error) {
     return (
       <StudyState>
-        <Card>
-          <CardContent className="p-6 text-sm text-red-400" role="alert">{error}</CardContent>
-        </Card>
+        <StudyNotice tone="danger" role="alert">{error}</StudyNotice>
       </StudyState>
     );
   }
@@ -381,14 +385,10 @@ export default function StudyPage() {
   if (!university && !loading) {
     return (
       <StudyState>
-        <Card>
-          <CardContent className="p-6 space-y-2">
-            <p className="text-sm font-medium text-foreground">No university configured</p>
-            <p className="text-sm text-slate-400">
-              We couldn&#39;t determine your university. Set your university in your profile to use Study.
-            </p>
-          </CardContent>
-        </Card>
+        <StudyNotice>
+          <span className="font-medium text-foreground">No university configured.</span>{" "}
+          We couldn&#39;t determine your university. Set your university in your profile to use Study.
+        </StudyNotice>
       </StudyState>
     );
   }
@@ -402,16 +402,18 @@ export default function StudyPage() {
   return (
     <StudyState>
       {loading ? (
-        <Card aria-busy="true" aria-label="Loading study resources">
-          <CardContent className="p-6 text-sm text-slate-400">Loading Study resources…</CardContent>
-        </Card>
+        <>
+          <StudySectionHeader title="Study" subtitle={university ?? undefined} />
+          <StudySkeletonRows count={3} />
+        </>
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-sm font-medium text-slate-400">{university}</h2>
-            <div className="flex gap-2">
+            <h1 className="text-lg font-bold tracking-tight text-foreground">Study</h1>
+            <div className="flex items-center gap-2">
+              <span className="hidden truncate text-xs text-slate-500 sm:inline">{university}</span>
               <Link href="/study/tribes">
-                <Button variant="outline" size="sm">Study Tribes</Button>
+                <Button variant="outline" size="sm">Tribes</Button>
               </Link>
               <Link href="/study/tutor">
                 <Button variant="outline" size="sm">AI Tutor</Button>
@@ -419,24 +421,20 @@ export default function StudyPage() {
             </div>
           </div>
 
-          <Card>
-            <CardHeader><CardTitle>Course library</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <Input
-                aria-label="Search study resources"
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-                placeholder="Search study resources"
-              />
-
+          <section className="space-y-2">
+            <StudySectionHeader
+              title="Course library"
+              subtitle={courses.length > 0 ? `${courses.length} course${courses.length === 1 ? "" : "s"}` : undefined}
+            />
+            <div className="rounded-lg border border-surface-200 bg-surface-50/30 p-3">
               {courses.length === 0 ? (
-                <p className="text-sm text-slate-400">No courses are available yet.</p>
+                <p className="text-xs text-slate-500">No courses are available yet.</p>
               ) : (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => setSelectedCourse(COURSE_FILTER_ALL)}
-                    className={`rounded-full border px-3 py-1.5 text-xs font-medium ${selectedCourse === COURSE_FILTER_ALL ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
+                    className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${selectedCourse === COURSE_FILTER_ALL ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-400 hover:border-surface-400 hover:text-slate-300"}`}
                   >
                     All courses
                   </button>
@@ -444,18 +442,18 @@ export default function StudyPage() {
                     type="button"
                     onClick={() => setSelectedCourse(COURSE_FILTER_ENROLLED)}
                     aria-pressed={selectedCourse === COURSE_FILTER_ENROLLED}
-                    className={`rounded-full border px-3 py-1.5 text-xs font-medium ${selectedCourse === COURSE_FILTER_ENROLLED ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
+                    className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${selectedCourse === COURSE_FILTER_ENROLLED ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-400 hover:border-surface-400 hover:text-slate-300"}`}
                   >
                     My courses
                   </button>
                   {courses.map((course) => {
                     const isEnrolled = enrolledCourseIds.includes(course.id);
                     return (
-                      <div key={course.id} className="flex items-center gap-1.5">
+                      <div key={course.id} className="flex items-center gap-1">
                         <button
                           type="button"
                           onClick={() => setSelectedCourse(course.course_code)}
-                          className={`rounded-full border px-3 py-1.5 text-xs font-medium ${selectedCourse === course.course_code ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
+                          className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${selectedCourse === course.course_code ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-400 hover:border-surface-400 hover:text-slate-300"}`}
                         >
                           {course.course_code}
                         </button>
@@ -465,7 +463,7 @@ export default function StudyPage() {
                           disabled={toggleEnrollIds.includes(course.id)}
                           aria-pressed={isEnrolled}
                           aria-label={isEnrolled ? `Leave ${course.course_code}` : `Enroll in ${course.course_code}`}
-                          className={`rounded-full border px-2 py-1 text-[10px] font-medium ${isEnrolled ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-400"}`}
+                          className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition-colors ${isEnrolled ? "border-campus-500/60 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-500 hover:border-surface-400 hover:text-slate-400"}`}
                         >
                           {toggleEnrollIds.includes(course.id) ? "…" : isEnrolled ? "Enrolled" : "Enroll"}
                         </button>
@@ -479,8 +477,8 @@ export default function StudyPage() {
                   })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
           {university ? (
           <StudyContributionPanel
@@ -493,72 +491,80 @@ export default function StudyPage() {
           />
           ) : null}
 
-          <Card>
-            <CardHeader><CardTitle>Resources</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <select
-                  aria-label="Filter resource type"
-                  value={resourceType}
-                  onChange={(event) => setResourceType(event.target.value as StudyFilterValue)}
-                  className="h-11 rounded-lg border border-surface-300 bg-surface-50 px-3 text-sm text-foreground"
-                >
-                  {RESOURCE_TYPE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+          <section className="space-y-3">
+            <StudySectionHeader
+              title="Resources"
+              subtitle={resources.length > 0 ? `${resources.length} shown` : undefined}
+            />
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                aria-label="Search study resources"
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                placeholder="Search resources"
+                className="h-9 w-full max-w-xs rounded-lg text-xs sm:w-auto"
+              />
+              <StudySelect
+                aria-label="Filter resource type"
+                value={resourceType}
+                onChange={(value) => setResourceType(value as StudyFilterValue)}
+              >
+                {RESOURCE_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </StudySelect>
+              <button
+                type="button"
+                onClick={() => setSavedOnly((current) => !current)}
+                aria-pressed={savedOnly}
+                className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${savedOnly ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-400 hover:border-surface-400 hover:text-slate-300"}`}
+              >
+                Saved
+              </button>
+            </div>
+
+            {resourcesLoading && resources.length === 0 ? (
+              <StudySkeletonRows count={3} />
+            ) : resources.length === 0 ? (
+              <StudyNotice>
+                {filtersActive
+                  ? "No resources match these filters. Try clearing a filter or search."
+                  : "No study resources for your campus yet — they're matched to your school. Upload the first one."}
+              </StudyNotice>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  {resources.map((resource) => (
+                    <StudyResourceCard
+                      key={resource.id}
+                      resource={resource}
+                      isSaved={bookmarkedIds.includes(resource.id)}
+                      isTogglingSave={toggleSaveIds.includes(resource.id)}
+                      saveError={saveError[resource.id] || null}
+                      accessBusy={accessingResourceId === resource.id}
+                      accessError={resourceError[resource.id] || null}
+                      onToggleSave={(target) => void handleToggleSave(target)}
+                      onOpen={(target) => void handleResourceAction(target, false)}
+                      onDownload={(target) => void handleResourceAction(target, true)}
+                    />
                   ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={() => setSavedOnly((current) => !current)}
-                  aria-pressed={savedOnly}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-medium ${savedOnly ? "border-campus-500 bg-campus-500/10 text-campus-300" : "border-surface-300 text-slate-300"}`}
-                >
-                  Saved
-                </button>
-              </div>
+                </div>
 
-              {resourcesLoading && resources.length === 0 ? (
-                <p className="text-sm text-slate-400" aria-live="polite">Loading resources…</p>
-              ) : resources.length === 0 ? (
-                <p className="text-sm text-slate-400">
-                  {filtersActive
-                    ? "No resources match these filters."
-                    : "No study resources for your campus yet — they're matched to your school. Upload the first one."}
-                </p>
-              ) : (
-                <>
-                  <div className="space-y-3">
-                    {resources.map((resource) => (
-                      <StudyResourceCard
-                        key={resource.id}
-                        resource={resource}
-                        isSaved={bookmarkedIds.includes(resource.id)}
-                        isTogglingSave={toggleSaveIds.includes(resource.id)}
-                        saveError={saveError[resource.id] || null}
-                        accessBusy={accessingResourceId === resource.id}
-                        accessError={resourceError[resource.id] || null}
-                        onToggleSave={(target) => void handleToggleSave(target)}
-                        onOpen={(target) => void handleResourceAction(target, false)}
-                        onDownload={(target) => void handleResourceAction(target, true)}
-                      />
-                    ))}
-                  </div>
-
-                  {hasMore ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => void loadMore()}
-                      disabled={loadingMore || resourcesLoading}
-                    >
-                      {loadingMore ? "Loading…" : "Load more resources"}
-                    </Button>
-                  ) : null}
-                </>
-              )}
-            </CardContent>
-          </Card>
+                {hasMore ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void loadMore()}
+                    disabled={loadingMore || resourcesLoading}
+                  >
+                    {loadingMore ? "Loading…" : "Load more resources"}
+                  </Button>
+                ) : null}
+              </>
+            )}
+          </section>
         </>
       )}
     </StudyState>

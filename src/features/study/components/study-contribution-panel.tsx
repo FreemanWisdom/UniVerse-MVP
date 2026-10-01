@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -18,6 +17,7 @@ import {
   StudyResourceType,
   StudySemester,
 } from "@/features/study/study.types";
+import { StudySelect, StudySectionHeader } from "./study-ui";
 
 const RESOURCE_TYPE_OPTIONS: Array<{ value: StudyResourceType; label: string }> = [
   { value: "material", label: "Material" },
@@ -197,8 +197,9 @@ export function StudyContributionPanel({ university, onUploaded, onDeleted }: St
   };
 
   return (
-    <Card>
-      <CardContent className="space-y-4 p-4">
+    <section className="space-y-2">
+      <StudySectionHeader title="Contribute" subtitle="Share materials with your campus" />
+      <div className="space-y-3 rounded-lg border border-surface-200 bg-surface-50/30 p-3">
         <div className="flex flex-wrap gap-2">
           <Button type="button" size="sm" onClick={() => setShowUpload((current) => !current)}>
             {showUpload ? "Cancel" : "Upload resource"}
@@ -215,7 +216,7 @@ export function StudyContributionPanel({ university, onUploaded, onDeleted }: St
         </div>
 
         {showUpload ? (
-          <div className="space-y-3">
+          <div className="space-y-3 border-t border-surface-200 pt-3">
             <Input
               aria-label="Resource title"
               placeholder="Title (required)"
@@ -231,7 +232,7 @@ export function StudyContributionPanel({ university, onUploaded, onDeleted }: St
                 accept={ACCEPT_ATTR}
                 aria-label="Resource file (PDF, Word, PowerPoint, or plain text)"
                 onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-                className="text-sm text-slate-300"
+                className="text-xs text-slate-300"
               />
               <p className="mt-1 text-[11px] text-slate-500">
                 PDF, Word, PowerPoint, or plain text · {formatMaxSize(STUDY_MAX_FILE_SIZE_BYTES)} max
@@ -239,34 +240,32 @@ export function StudyContributionPanel({ university, onUploaded, onDeleted }: St
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <select
+              <StudySelect
                 aria-label="Resource type"
                 value={form.resourceType}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, resourceType: event.target.value as StudyResourceType }))
+                onChange={(value) =>
+                  setForm((current) => ({ ...current, resourceType: value as StudyResourceType }))
                 }
-                className="h-11 rounded-lg border border-surface-300 bg-surface-50 px-3 text-sm text-foreground"
               >
                 {RESOURCE_TYPE_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
-              </select>
-              <select
+              </StudySelect>
+              <StudySelect
                 aria-label="Semester"
                 value={form.semester}
-                onChange={(event) =>
+                onChange={(value) =>
                   setForm((current) => ({
                     ...current,
-                    semester: event.target.value as "" | StudySemester,
+                    semester: value as "" | StudySemester,
                   }))
                 }
-                className="h-11 rounded-lg border border-surface-300 bg-surface-50 px-3 text-sm text-foreground"
               >
                 <option value="">Semester (optional)</option>
                 {SEMESTER_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
-              </select>
+              </StudySelect>
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -331,7 +330,7 @@ export function StudyContributionPanel({ university, onUploaded, onDeleted }: St
         ) : null}
 
         {showMyUploads ? (
-          <div className="space-y-2">
+          <div className="space-y-2 border-t border-surface-200 pt-3">
             {uploadsLoading ? (
               <p className="text-sm text-slate-400" aria-live="polite">Loading your uploads…</p>
             ) : uploadsError ? (
@@ -342,9 +341,9 @@ export function StudyContributionPanel({ university, onUploaded, onDeleted }: St
               uploads.map((upload) => (
                 <div
                   key={upload.id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-surface-200 bg-surface-50 p-3"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-surface-200 bg-surface-50/50 px-3 py-2"
                 >
-                  <span className="text-sm text-slate-200">{upload.title}</span>
+                  <span className="min-w-0 truncate text-sm text-slate-200">{upload.title}</span>
                   {deleteConfirmId === upload.id ? (
                     <span className="flex items-center gap-2">
                       <Button
@@ -380,7 +379,7 @@ export function StudyContributionPanel({ university, onUploaded, onDeleted }: St
             )}
           </div>
         ) : null}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

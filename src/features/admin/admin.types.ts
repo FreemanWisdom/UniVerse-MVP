@@ -92,6 +92,26 @@ export interface AdminListedUser {
   account_status: string | null;
 }
 
+/** Platform roles, mirrors admin.roles (live-verified). */
+export type AdminRoleName = "super_admin" | "platform_admin" | "school_admin" | "moderator";
+
+/** admin_get_user payload (incl. derived admin membership added 2026-09-30). */
+export interface AdminUserDetail {
+  id: string;
+  full_name: string | null;
+  email: string;
+  university: string | null;
+  department: string | null;
+  level: string | null;
+  is_verified: boolean;
+  student_verified: boolean;
+  is_suspended: boolean;
+  created_at: string;
+  admin_role: AdminRoleName | null;
+  admin_role_school_id: string | null;
+  admin_role_active: boolean;
+}
+
 export type AdminUserAction =
   | "verify"
   | "unverify"

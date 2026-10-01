@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { isAuthenticated } from "@/lib/auth/session";
 
@@ -14,35 +13,53 @@ export default async function PublicLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-40 border-b border-surface-200 bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="h-3 w-3 rounded-full bg-campus-500 shadow-[0_0_12px_#22c55e]" />
-            <span className="text-lg font-bold tracking-tight text-foreground">
-              UniVerse <span className="text-campus-500 font-mono text-sm">ICOS</span>
+    <div className="relative flex min-h-screen flex-col overflow-x-hidden">
+      {/* Atmospheric layers — fixed, behind everything */}
+      <div className="uv-bg-field" aria-hidden="true" />
+      <div className="uv-grid-overlay" aria-hidden="true" />
+
+      {/* Navigation */}
+      <header className="uv-content sticky top-0 z-40 border-b border-white/[0.06] bg-background/70 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+          <Link
+            href="/"
+            className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500 rounded-md"
+          >
+            {/* Green glow dot — UniVerse brand mark */}
+            <span
+              className="h-2.5 w-2.5 rounded-full bg-campus-500 shadow-[0_0_10px_#22c55e]"
+              aria-hidden="true"
+            />
+            <span className="font-display text-base font-bold tracking-tight text-foreground">
+              UniVerse
             </span>
           </Link>
 
-          <div className="flex items-center space-x-3">
+          <nav className="flex items-center gap-2">
             <Link href="/login">
               <Button variant="ghost" size="sm">
-                Sign In
+                Sign in
               </Button>
             </Link>
             <Link href="/signup">
               <Button variant="default" size="sm">
-                Get Started
+                Get started
               </Button>
             </Link>
-          </div>
+          </nav>
         </div>
       </header>
 
-      <main className="flex-1">{children}</main>
+      {/* Page content */}
+      <main className="uv-content flex-1">{children}</main>
 
-      <footer className="border-t border-surface-200 py-6 text-center text-xs text-slate-500">
-        <p>© {new Date().getFullYear()} {siteConfig.name}. Integrated Campus Operating System for Nigerian Students.</p>
+      {/* Footer */}
+      <footer className="uv-content border-t border-white/[0.05] py-6">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <p className="text-center text-xs text-slate-500">
+            © {new Date().getFullYear()} UniVerse ICOS — Integrated Campus Operating System for Nigerian Students.
+          </p>
+        </div>
       </footer>
     </div>
   );

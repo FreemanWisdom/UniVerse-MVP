@@ -86,7 +86,7 @@ export function WhisperFeed() {
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {isLoading && posts.length === 0 ? (
           <div className="py-8 text-center text-slate-500">
             Loading whispers…
@@ -94,16 +94,15 @@ export function WhisperFeed() {
         ) : error && posts.length === 0 ? (
           <div className="py-8 text-center text-red-400">
             {error}
-            <Button
-              variant="outline"
-              className="ml-4"
+            <button
+              className="ml-4 rounded-md border border-white/10 px-3 py-1.5 text-xs hover:bg-white/5 transition-colors"
               onClick={() => (isLatest ? refreshLatest() : handleLoadMore())}
             >
               Retry
-            </Button>
+            </button>
           </div>
         ) : posts.length === 0 ? (
-          <div className="py-12 text-center text-slate-500 bg-slate-900/50 rounded-lg border border-slate-800 border-dashed">
+          <div className="py-12 text-center text-slate-500 bg-surface-100/40 rounded-lg border border-white/5">
             {isLatest
               ? "No whispers yet. Be the first to share!"
               : "No trending whispers this week."}
@@ -120,14 +119,14 @@ export function WhisperFeed() {
             ))}
 
             {hasMore && (
-              <div className="pt-4 pb-8 flex justify-center">
-                <Button
-                  variant="outline"
+              <div className="pt-2 pb-8">
+                <button
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
+                  className="w-full rounded-md border border-white/5 bg-surface-100/30 px-4 py-2.5 text-xs font-medium text-slate-400 transition-colors hover:bg-surface-100 disabled:opacity-50"
                 >
                   {isLoadingMore ? "Loading…" : "Load More"}
-                </Button>
+                </button>
               </div>
             )}
 

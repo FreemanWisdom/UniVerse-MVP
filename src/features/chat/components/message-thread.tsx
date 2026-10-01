@@ -110,11 +110,11 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
       {/* Header */}
-      <div className="flex items-center px-4 py-3 border-b border-surface-200 bg-surface-50/50 shrink-0">
+      <div className="flex items-center px-4 py-2 border-b border-white/5 bg-surface-100/40 shrink-0">
         {onBack && (
           <button 
             onClick={onBack}
-            className="mr-3 lg:hidden p-2 -ml-2 text-slate-500 hover:text-foreground rounded-full hover:bg-surface-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500"
+            className="mr-3 lg:hidden p-1.5 -ml-2 text-slate-400 hover:text-foreground rounded-full hover:bg-white/5 transition-colors focus-visible:outline-none"
             aria-label="Back to conversations"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
@@ -122,7 +122,7 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
         )}
         <div className="flex items-center gap-3">
           <div
-            className="h-8 w-8 rounded-full bg-surface-300 flex items-center justify-center text-xs font-semibold overflow-hidden shrink-0"
+            className="h-8 w-8 rounded-full bg-surface-200 flex items-center justify-center text-xs font-semibold overflow-hidden shrink-0 text-slate-300"
             aria-hidden="true"
           >
             {conversation.other_member.profile.avatar_url ? (
@@ -139,7 +139,7 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
             <h2 className="text-sm font-semibold text-foreground leading-tight">
               {conversation.other_member.profile.full_name}
             </h2>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-slate-400">
               {conversation.other_member.profile.department} • {conversation.other_member.profile.level}
             </p>
           </div>
@@ -150,7 +150,7 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-3 sm:p-4"
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-3 sm:p-4 bg-transparent"
         role="log"
         aria-label="Message history"
         aria-live="polite"
@@ -167,7 +167,7 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className={`h-10 rounded-2xl bg-surface-200 animate-pulse ${
+                className={`h-10 rounded-2xl bg-surface-100/50 animate-pulse ${
                   i % 2 === 0 ? "self-start w-40 sm:w-56" : "self-end w-52 sm:w-72"
                 }`}
               />
@@ -182,7 +182,7 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
                   size="sm" 
                   onClick={loadMore} 
                   disabled={isLoadingMore}
-                  className="text-xs text-slate-500 focus-visible:ring-2 focus-visible:ring-campus-500"
+                  className="text-xs text-slate-500 hover:text-slate-300 hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-campus-500"
                 >
                   {isLoadingMore ? "Loading older messages…" : "Load older messages"}
                 </Button>
@@ -191,14 +191,14 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
             
             {messages.length === 0 && !hasMore && (
               <div className="m-auto text-center text-sm text-slate-400 max-w-xs py-8">
-                <div className="w-12 h-12 rounded-full bg-surface-200 flex items-center justify-center mx-auto mb-3" aria-hidden="true">
-                  <svg className="w-5 h-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <div className="w-10 h-10 rounded-full bg-surface-100/50 flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                  <svg className="w-4 h-4 text-slate-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </div>
                 <p>Say hi to start the conversation!</p>
               </div>
             )}
 
-            <div className="flex flex-col gap-3 mt-auto">
+            <div className="flex flex-col gap-2.5 mt-auto">
               {messages.map(msg => {
                 const isMine = msg.sender_id === currentUserId;
                 const isOptimistic = msg.id.startsWith("temp-");
@@ -209,17 +209,17 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
                     className={`flex flex-col max-w-[80%] sm:max-w-[75%] ${isMine ? 'self-end' : 'self-start'}`}
                   >
                     <div 
-                      className={`px-4 py-2.5 rounded-2xl whitespace-pre-wrap break-words text-sm leading-relaxed ${
+                      className={`px-3 py-2 rounded-2xl whitespace-pre-wrap break-words text-sm leading-relaxed ${
                         isMine 
                           ? 'bg-campus-600 text-white rounded-br-sm' 
-                          : 'bg-surface-200 text-foreground rounded-bl-sm'
+                          : 'bg-surface-200/80 text-slate-200 rounded-bl-sm'
                       } ${isOptimistic ? 'opacity-60' : ''}`}
                     >
                       {msg.content}
                     </div>
                     <time
                       dateTime={msg.created_at}
-                      className={`text-[10px] text-slate-400 mt-1 ${isMine ? 'text-right' : 'text-left'}`}
+                      className={`text-[9px] text-slate-500 mt-0.5 ${isMine ? 'text-right pr-1' : 'text-left pl-1'}`}
                     >
                       {new Date(msg.created_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
                     </time>
@@ -233,34 +233,34 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
       </div>
 
       {/* Composer */}
-      <div className="shrink-0 border-t border-surface-200 bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-4">
+      <div className="shrink-0 border-t border-white/5 bg-background p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {sendError && (
-          <div className="mb-2 text-xs text-red-500 flex items-center gap-1" role="alert">
+          <div className="mb-2 text-xs text-red-400 flex items-center gap-1 px-2" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             {sendError}
             <button
-              className="ml-auto text-[10px] underline"
+              className="ml-auto text-[10px] underline hover:text-red-300"
               onClick={() => setSendError(null)}
               aria-label="Dismiss error"
             >Dismiss</button>
           </div>
         )}
-        <div className="flex items-end gap-2 bg-surface-100 rounded-xl border border-surface-200 p-1 focus-within:ring-1 focus-within:ring-campus-500 focus-within:border-campus-500 transition-shadow">
+        <div className="flex items-end gap-2 bg-surface-100/40 rounded-xl border border-white/10 p-1 focus-within:border-campus-500 transition-colors">
           <label htmlFor="message-composer" className="sr-only">Message</label>
           <textarea
             id="message-composer"
             ref={textareaRef}
-            placeholder="Type a message… (Enter to send, Shift+Enter for newline)"
+            placeholder="Type a message…"
             value={composerText}
             onChange={(e) => setComposerText(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isSending}
             rows={1}
-            className="flex-1 max-h-32 min-h-[40px] bg-transparent resize-none outline-none py-2 px-3 text-sm text-foreground placeholder:text-slate-500 disabled:opacity-50"
+            className="flex-1 max-h-32 min-h-[36px] bg-transparent resize-none outline-none py-2 px-3 text-sm text-foreground placeholder:text-slate-500 disabled:opacity-50"
           />
           <Button 
             size="sm" 
-            className="h-8 w-8 p-0 rounded-lg shrink-0 mb-1 mr-1 bg-campus-600 hover:bg-campus-700 text-white disabled:opacity-50 disabled:bg-surface-300 disabled:text-slate-500 focus-visible:ring-2 focus-visible:ring-campus-500"
+            className="h-8 w-8 p-0 rounded-lg shrink-0 mb-0.5 mr-0.5 bg-campus-600 hover:bg-campus-500 text-white disabled:opacity-50 disabled:bg-white/10 disabled:text-slate-500 transition-colors"
             onClick={handleSend}
             disabled={!composerText.trim() || isSending}
             aria-label="Send message"
@@ -268,7 +268,7 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
             {isSending ? (
                <svg className="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
             )}
           </Button>
         </div>

@@ -19,10 +19,10 @@ export default async function StudentLayout({
       <WelcomeCarousel />
       <header className="sticky top-0 z-40 border-b border-surface-200 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <Link href="/orbit" className="flex items-center space-x-2">
-            <span className="h-3 w-3 rounded-full bg-campus-500 shadow-[0_0_10px_#22c55e]" />
-            <span className="text-base font-bold tracking-tight text-foreground">
-              UniVerse <span className="text-campus-500 font-mono text-xs">ICOS</span> <span className="text-slate-400 font-mono text-xs">STUDENT</span>
+          <Link href="/orbit" className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-campus-500 shadow-[0_0_10px_#22c55e]" aria-hidden="true" />
+            <span className="font-display text-sm font-bold tracking-tight text-foreground">
+              UniVerse
             </span>
           </Link>
 
@@ -38,7 +38,7 @@ export default async function StudentLayout({
         </div>
       </header>
 
-      <div className="container mx-auto flex max-w-7xl flex-1 px-4 py-6">
+      <div className="container mx-auto flex max-w-7xl flex-1 px-2 py-3 sm:px-4 md:py-6">
         <aside className="hidden w-64 flex-col space-y-1 pr-8 md:flex">
           <div className="pb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Campus Navigation
@@ -79,12 +79,12 @@ export default async function StudentLayout({
           </Link>
         </aside>
 
-        <main className="flex-1 max-w-3xl">
+        <main className="flex-1 w-full max-w-2xl">
           {children}
         </main>
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 border-t border-surface-200 bg-surface-50/95 backdrop-blur-lg md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-14 border-t border-surface-200 bg-surface-50/95 backdrop-blur-lg md:hidden">
         <div className="flex w-full items-center justify-around px-2">
           <Link
             href="/orbit"

@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -17,6 +16,7 @@ import {
 import { Tribe } from "@/features/study/tribes.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
 import { BackButton } from "@/components/back-button";
+import { StudyNotice, StudySkeletonRows } from "@/features/study/components/study-ui";
 
 interface CreateTribeFormState {
   name: string;
@@ -247,13 +247,12 @@ export default function StudyTribesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <BackButton href="/study" label="Back to Study" />
-
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Study Tribes</h1>
-          <p className="text-sm text-slate-400">Departmental &amp; course collaboration groups.</p>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-200 pb-2">
+        <div className="flex min-w-0 items-center gap-3">
+          <BackButton href="/study" label="Back to Study" className="shrink-0" />
+          <h1 className="truncate text-lg font-bold tracking-tight text-foreground">Study Tribes</h1>
+          <span className="hidden truncate text-xs text-slate-500 md:inline">Departmental &amp; course collaboration groups</span>
         </div>
         <Button type="button" size="sm" onClick={() => setShowCreate((current) => !current)}>
           {showCreate ? "Cancel" : "Create tribe"}
@@ -261,8 +260,7 @@ export default function StudyTribesPage() {
       </div>
 
       {showCreate ? (
-        <Card>
-          <CardContent className="space-y-3 p-6">
+        <div className="space-y-3 rounded-lg border border-surface-200 bg-surface-50/30 p-3">
             <Input
               aria-label="Tribe name"
               placeholder="Tribe name"
@@ -309,83 +307,84 @@ export default function StudyTribesPage() {
             <Button type="button" size="sm" onClick={() => void handleCreateTribe()} disabled={creating}>
               {creating ? "Creating…" : "Create tribe"}
             </Button>
-          </CardContent>
-        </Card>
+        </div>
       ) : null}
 
       <Input
         aria-label="Search study tribes"
-        placeholder="Search study tribes"
+        placeholder="Search tribes"
         value={searchInput}
         onChange={(event) => setSearchInput(event.target.value)}
+        className="h-9 max-w-xs text-xs"
       />
 
       {error ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-red-400" role="alert">{error}</CardContent>
-        </Card>
+        <StudyNotice tone="danger" role="alert">{error}</StudyNotice>
       ) : loading ? (
-        <Card aria-busy="true" aria-label="Loading study tribes">
-          <CardContent className="p-6 text-sm text-slate-400">Loading Study Tribes…</CardContent>
-        </Card>
+        <StudySkeletonRows count={3} />
       ) : tribes.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-slate-400">
-            {searchQuery.trim()
-              ? "No tribes match your search."
-              : "No tribes exist at your campus yet. Create the first one."}
-          </CardContent>
-        </Card>
+        <StudyNotice>
+          {searchQuery.trim()
+            ? "No tribes match your search."
+            : "No tribes exist at your campus yet. Create the first one."}
+        </StudyNotice>
       ) : (
         <>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {tribes.map((tribe) => {
               const isMember = myTribeIds.includes(tribe.id);
               const memberCount = memberCounts[tribe.id];
               return (
-                <Card key={tribe.id}>
-                  <CardContent className="space-y-2 p-4">
-                    <div className="flex items-start justify-between gap-3">
+                <div
+                  key={tribe.id}
+                  className="rounded-lg border border-surface-200 bg-surface-50/50 p-3 transition-colors hover:border-surface-300"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1 space-y-1">
                       <Link
                         href={`/study/tribes/${tribe.id}`}
-                        className="text-lg font-semibold text-foreground hover:underline"
+                        className="text-sm font-medium text-foreground hover:text-campus-300"
                       >
                         {tribe.name}
                       </Link>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant={isMember ? "outline" : "default"}
-                        onClick={() => void handleToggleMembership(tribe)}
-                        disabled={joinBusyIds.includes(tribe.id)}
-                        aria-pressed={isMember}
-                      >
-                        {joinBusyIds.includes(tribe.id)
-                          ? "…"
-                          : isMember
-                            ? "Leave"
-                            : "Join"}
-                      </Button>
+                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] leading-relaxed text-slate-500">
+                        {tribe.course_code ? <span className="truncate">{tribe.course_code}</span> : null}
+                        {tribe.category ? <span aria-hidden="true" className="text-surface-400">·</span> : null}
+                        {tribe.category ? <span className="truncate">{tribe.category}</span> : null}
+                        {tribe.department ? <span aria-hidden="true" className="text-surface-400">·</span> : null}
+                        {tribe.department ? <span className="truncate">{tribe.department}</span> : null}
+                        {tribe.level ? <span aria-hidden="true" className="text-surface-400">·</span> : null}
+                        {tribe.level ? <span className="truncate">{tribe.level}</span> : null}
+                        <span aria-hidden="true" className="text-surface-400">·</span>
+                        <span>{memberCount === null ? "—" : `${memberCount} member${memberCount === 1 ? "" : "s"}`}</span>
+                        <span aria-hidden="true" className="text-surface-400">·</span>
+                        <span>{formatDate(tribe.created_at)}</span>
+                      </div>
                     </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={isMember ? "outline" : "default"}
+                      onClick={() => void handleToggleMembership(tribe)}
+                      disabled={joinBusyIds.includes(tribe.id)}
+                      aria-pressed={isMember}
+                    >
+                      {joinBusyIds.includes(tribe.id)
+                        ? "…"
+                        : isMember
+                          ? "Leave"
+                          : "Join"}
+                    </Button>
+                  </div>
 
-                    {tribe.description ? (
-                      <p className="text-sm text-slate-300">{tribe.description}</p>
-                    ) : null}
+                  {tribe.description ? (
+                    <p className="mt-2 text-xs leading-relaxed text-slate-400 line-clamp-2">{tribe.description}</p>
+                  ) : null}
 
-                    <div className="flex flex-wrap gap-2 text-[11px] text-slate-400">
-                      {tribe.course_code ? <span>{tribe.course_code}</span> : null}
-                      {tribe.category ? <span>· {tribe.category}</span> : null}
-                      {tribe.department ? <span>· {tribe.department}</span> : null}
-                      {tribe.level ? <span>· {tribe.level}</span> : null}
-                      <span>· {memberCount === null ? "—" : `${memberCount} member${memberCount === 1 ? "" : "s"}`}</span>
-                      <span>· created {formatDate(tribe.created_at)}</span>
-                    </div>
-
-                    {tribeError[tribe.id] ? (
-                      <p className="text-sm text-red-400" role="alert">{tribeError[tribe.id]}</p>
-                    ) : null}
-                  </CardContent>
-                </Card>
+                  {tribeError[tribe.id] ? (
+                    <p className="mt-2 text-xs text-red-400" role="alert">{tribeError[tribe.id]}</p>
+                  ) : null}
+                </div>
               );
             })}
           </div>

@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AdminEmergencyState, AdminFeatureFlag } from "@/features/admin/admin.types";
 import {
+  adminBootstrap,
   getAdminEmergencyState,
   getAdminFeatureFlags,
   setAdminFeatureFlag,
   setEmergencyLockdown,
 } from "@/services/admin/admin.service";
+import { AdministrationSection } from "./administration-section";
 import {
   AdminAlert,
   AdminButton,
@@ -46,16 +48,15 @@ function Toggle({ checked, disabled, onChange, label }: { checked: boolean; disa
 }
 
 /**
- * Settings — platform configuration only.
+ * Settings — platform configuration, plus the Administration section
+ * (super admin only): grant/revoke platform roles via admin_grant_role.
  * Announcements live under Communication; system health under Operations;
  * audit history under Security → Audit Logs.
- *
- * Administration (admin invitations, role management) is a future section
- * pending its schema change (E3). No placeholder UI is shown for it yet.
  */
 export default function AdminSettingsPage() {
   const [flags, setFlags] = useState<AdminFeatureFlag[]>([]);
   const [emergency, setEmergency] = useState<AdminEmergencyState | null>(null);
+  const [self, setSelf] = useState<{ userId: string; role: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,12 +68,14 @@ export default function AdminSettingsPage() {
     setError(null);
     try {
       const supabase = createClient();
-      const [flagRows, emergencyState] = await Promise.all([
+      const [flagRows, emergencyState, bootstrap] = await Promise.all([
         getAdminFeatureFlags(supabase),
         getAdminEmergencyState(supabase),
+        adminBootstrap(supabase),
       ]);
       setFlags(flagRows);
       setEmergency(emergencyState);
+      setSelf(bootstrap.authorized ? { userId: bootstrap.admin?.user_id ?? "", role: bootstrap.admin?.role ?? "" } : null);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unable to load settings.");
     } finally {
@@ -207,10 +210,9 @@ export default function AdminSettingsPage() {
             </div>
           </AdminCard>
 
-          <AdminAlert tone="neutral">
-            Platform administration (admin invitations, role management) will appear here once its
-            backend change is approved and implemented. It is intentionally not shown yet.
-          </AdminAlert>
+          {self?.role === "super_admin" ? (
+            <AdministrationSection selfUserId={self.userId} />
+          ) : null}
         </>
       )}
     </div>

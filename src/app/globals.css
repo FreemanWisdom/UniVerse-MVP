@@ -85,3 +85,131 @@ html.light .bg-slate-900 { background-color: rgb(241 245 249); }
 html.light .bg-slate-900\/50 { background-color: rgb(241 245 249 / 0.5); }
 html.light .border-slate-800 { border-color: rgb(226 232 240); }
 html.light .border-slate-800\/50 { border-color: rgb(226 232 240 / 0.7); }
+
+/* ============================================================
+   UniVerse Shared Visual System
+   ============================================================ */
+
+/*
+ * Glass surface utility — used by the home page cards and student shell.
+ * Backdrop-filter is expensive; it is halved on mobile and disabled for
+ * users who prefer reduced motion.
+ */
+@layer components {
+  .uv-glass {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  html.light .uv-glass {
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  /*
+   * Atmospheric page background — fixed, pointer-events off, z-0.
+   * Applied to the <body> on public pages via a wrapper div.
+   */
+  .uv-bg-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 45% at 20% 8%, rgba(34, 197, 94, 0.09), transparent 62%),
+      radial-gradient(ellipse 48% 38% at 88% 14%, rgba(34, 197, 94, 0.05), transparent 64%),
+      rgb(var(--background));
+  }
+
+  html.light .uv-bg-field {
+    background:
+      radial-gradient(ellipse 60% 45% at 20% 8%, rgba(34, 197, 94, 0.07), transparent 62%),
+      radial-gradient(ellipse 48% 38% at 88% 14%, rgba(34, 197, 94, 0.04), transparent 64%),
+      rgb(var(--background));
+  }
+
+  /* Subtle grid overlay used in the public hero */
+  .uv-grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.25;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 20%, black 10%, transparent 75%);
+    mask-image: radial-gradient(ellipse 70% 55% at 50% 20%, black 10%, transparent 75%);
+  }
+
+  /* Content layer above atmospheric layers */
+  .uv-content {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* ============================================================
+   Keyframes — used by the home-page orbit visual
+   ============================================================ */
+
+@keyframes uv-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 50px 8px rgba(34, 197, 94, 0.30),
+      inset 0 0 28px rgba(255, 255, 255, 0.14);
+  }
+  50% {
+    box-shadow:
+      0 0 72px 14px rgba(34, 197, 94, 0.44),
+      inset 0 0 32px rgba(255, 255, 255, 0.18);
+  }
+}
+
+@keyframes uv-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes uv-spin-rev {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+@keyframes uv-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes uv-fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   Reduced-motion: disable all decorative animations
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .uv-orbit-spin,
+  .uv-orbit-node,
+  .uv-orbit-core,
+  .uv-status-dot {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ============================================================
+   Mobile: cheaper rendering — halve blur radii on small screens
+   ============================================================ */
+@media (max-width: 768px) {
+  .uv-glass {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+}

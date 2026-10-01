@@ -55,7 +55,7 @@ export function ConversationList({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain" role="list" aria-label="Conversations">
-      <div className="divide-y divide-surface-200">
+      <div className="divide-y divide-white/5">
         {conversations.map(conv => {
           const isSelected = selectedId === conv.id;
           const isUnread = conv.last_message 
@@ -69,10 +69,10 @@ export function ConversationList({
               onClick={() => onSelect(conv.id)}
               aria-label={`Conversation with ${conv.other_member.profile.full_name}${isUnread ? ', unread' : ''}`}
               aria-current={isSelected ? "true" : undefined}
-              className={`w-full text-left p-4 hover:bg-surface-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-campus-500 ${isSelected ? 'bg-surface-100' : ''}`}
+              className={`w-full text-left px-3 py-2.5 hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:bg-white/5 ${isSelected ? 'bg-white/5' : ''}`}
             >
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-surface-300 flex items-center justify-center text-sm font-semibold relative shrink-0" aria-hidden="true">
+                <div className="h-9 w-9 rounded-full bg-surface-200 flex items-center justify-center text-xs font-semibold relative shrink-0 text-slate-300" aria-hidden="true">
                   {conv.other_member.profile.avatar_url ? (
                     <img 
                       src={conv.other_member.profile.avatar_url} 
@@ -83,25 +83,25 @@ export function ConversationList({
                     conv.other_member.profile.full_name.charAt(0).toUpperCase()
                   )}
                   {isUnread && (
-                    <div className="absolute top-0 right-0 h-3 w-3 bg-campus-500 border-2 border-background rounded-full" aria-hidden="true" />
+                    <div className="absolute top-0 right-0 h-2.5 w-2.5 bg-campus-500 border-2 border-background rounded-full" aria-hidden="true" />
                   )}
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-baseline mb-1">
-                    <h3 className={`text-sm truncate ${isUnread ? 'font-bold text-foreground' : 'font-semibold text-slate-700'}`}>
+                  <div className="flex justify-between items-baseline">
+                    <h3 className={`text-sm truncate ${isUnread ? 'font-bold text-foreground' : 'font-medium text-slate-200'}`}>
                       {conv.other_member.profile.full_name}
                     </h3>
                     {conv.last_message && (
                       <time
                         dateTime={conv.last_message.created_at}
-                        className="text-[10px] text-slate-400 whitespace-nowrap ml-2 shrink-0"
+                        className={`text-[10px] whitespace-nowrap ml-2 shrink-0 ${isUnread ? 'text-campus-400 font-medium' : 'text-slate-500'}`}
                       >
                         {new Date(conv.last_message.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                       </time>
                     )}
                   </div>
-                  <p className={`text-xs truncate ${isUnread ? 'text-slate-700 font-medium' : 'text-slate-500'}`}>
+                  <p className={`text-xs truncate mt-0.5 ${isUnread ? 'text-slate-300 font-medium' : 'text-slate-500'}`}>
                     {conv.last_message ? conv.last_message.content : "No messages yet"}
                   </p>
                 </div>

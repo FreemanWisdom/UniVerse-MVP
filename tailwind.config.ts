@@ -10,6 +10,11 @@ const config: Config = {
   darkMode: "class",
   theme: {
     extend: {
+      fontFamily: {
+        // `font-sans` → Inter (body text); `font-display` → Space Grotesk (headings, labels)
+        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-space-grotesk)", "var(--font-inter)", "ui-sans-serif", "sans-serif"],
+      },
       colors: {
         // RGB triplets defined in globals.css; flip between dark (default)
         // and light via the "light" class on <html>.
@@ -34,7 +39,7 @@ const config: Config = {
           200: "rgb(var(--surface-200) / <alpha-value>)",
           300: "rgb(var(--surface-300) / <alpha-value>)",
           400: "rgb(var(--surface-400) / <alpha-value>)",
-        }
+        },
       },
     },
   },

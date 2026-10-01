@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -12,6 +11,7 @@ import {
 } from "@/services/study/tutor.service";
 import { TutorMessage } from "@/features/study/tutor.types";
 import { BackButton } from "@/components/back-button";
+import { StudyNotice } from "@/features/study/components/study-ui";
 
 interface CourseContextState {
   courseCode: string;
@@ -91,22 +91,23 @@ export default function StudyTutorPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <BackButton href="/study" label="Back to Study" />
-
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">AI Tutor</h1>
-        <p className="text-sm text-slate-400">Ask anything about your courses. It teaches, it doesn&#39;t just answer.</p>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-200 pb-2">
+        <div className="flex items-center gap-3">
+          <BackButton href="/study" label="Back to Study" className="shrink-0" />
+          <div>
+            <h1 className="text-lg font-bold tracking-tight text-foreground">AI Tutor</h1>
+            <p className="hidden text-xs text-slate-500 sm:block">Ask anything about your courses. It teaches, it doesn&#39;t just answer.</p>
+          </div>
+        </div>
+        <Button type="button" size="sm" variant="outline" onClick={() => setShowContext((current) => !current)} aria-expanded={showContext}>
+          {showContext ? "Hide context" : "Add course context"}
+        </Button>
       </div>
 
-      <Card>
-        <CardContent className="space-y-3 p-4">
-          <Button type="button" size="sm" variant="outline" onClick={() => setShowContext((current) => !current)} aria-expanded={showContext}>
-            {showContext ? "Hide course context" : "Add course context (optional)"}
-          </Button>
-
+      <div>
           {showContext ? (
-            <div className="space-y-3">
+            <div className="space-y-3 rounded-lg border border-surface-200 bg-surface-50/30 p-3">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <Input
                   aria-label="Course code"
@@ -136,32 +137,30 @@ export default function StudyTutorPage() {
                 maxLength={TUTOR_MAX_CONTEXT_LENGTH}
                 onChange={(event) => setCourseContext((current) => ({ ...current, material: event.target.value }))}
                 placeholder="Paste study material or notes for the tutor to use (optional)"
-                rows={5}
-                className="w-full rounded-lg border border-surface-300 bg-surface-50 p-3 text-sm text-foreground"
+                rows={4}
+                className="w-full rounded-lg border border-surface-300 bg-surface-50 p-3 text-sm text-foreground placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500"
               />
               <p className="text-[11px] text-slate-500">
                 Pasted material is sent with your question so the tutor can prioritize it.
               </p>
             </div>
           ) : null}
-        </CardContent>
-      </Card>
+      </div>
 
       {messages.length === 0 && !sending ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-slate-400">
-            Ask a question below to get started — for example: &#8220;Explain pointers in C like I&#8217;m new to programming.&#8221;
-          </CardContent>
-        </Card>
+        <StudyNotice>
+          <span className="text-slate-300">Ask a question below to get started</span> — for example:
+          &#8220;Explain pointers in C like I&#8217;m new to programming.&#8221;
+        </StudyNotice>
       ) : (
-        <div className="space-y-3" aria-live="polite">
+        <div className="space-y-2" aria-live="polite">
           {messages.map((message, index) => (
             <div key={`${index}-${message.role}`} className={message.role === "user" ? "flex justify-end" : "flex justify-start"}>
               <div
                 className={
                   message.role === "user"
-                    ? "max-w-[85%] rounded-xl bg-campus-500/15 p-3 text-sm text-slate-100"
-                    : "max-w-[85%] rounded-xl border border-surface-200 bg-surface-50 p-3 text-sm whitespace-pre-wrap text-slate-200"
+                    ? "max-w-[85%] rounded-lg bg-campus-500/15 px-3.5 py-2.5 text-sm text-slate-100"
+                    : "max-w-[85%] rounded-lg border border-surface-200 bg-surface-50 px-3.5 py-2.5 text-sm whitespace-pre-wrap leading-relaxed text-slate-200"
                 }
               >
                 {message.content}
@@ -169,46 +168,51 @@ export default function StudyTutorPage() {
             </div>
           ))}
           {sending ? (
-            <p className="text-sm text-slate-400">Thinking…</p>
+            <div className="flex items-center gap-2 text-sm text-slate-400" aria-live="polite">
+              <span className="flex gap-1" aria-hidden="true">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-campus-500" />
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-campus-500 [animation-delay:150ms]" />
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-campus-500 [animation-delay:300ms]" />
+              </span>
+              Thinking…
+            </div>
           ) : null}
           <div ref={bottomRef} />
         </div>
       )}
 
       {error ? (
-        <p className="text-sm text-red-400" role="alert">{error}</p>
+        <p className="text-xs text-red-400" role="alert">{error}</p>
       ) : null}
 
-      <Card>
-        <CardContent className="space-y-3 p-4">
-          <textarea
-            aria-label="Your question"
-            value={input}
-            maxLength={TUTOR_MAX_QUESTION_LENGTH}
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                void send();
-              }
-            }}
-            placeholder="Ask the tutor anything about your studies…"
-            rows={3}
-            className="w-full rounded-lg border border-surface-300 bg-surface-50 p-3 text-sm text-foreground"
-          />
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px] text-slate-500">Enter to send · Shift+Enter for a new line</p>
-            <Button
-              type="button"
-              size="sm"
-              onClick={() => void send()}
-              disabled={sending || input.trim().length === 0}
-            >
-              {sending ? "Sending…" : "Send"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="rounded-lg border border-surface-200 bg-surface-50/50 p-3">
+        <textarea
+          aria-label="Your question"
+          value={input}
+          maxLength={TUTOR_MAX_QUESTION_LENGTH}
+          onChange={(event) => setInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              void send();
+            }
+          }}
+          placeholder="Ask the tutor anything about your studies…"
+          rows={2}
+          className="w-full resize-none rounded-md border-0 bg-transparent p-1 text-sm text-foreground placeholder:text-slate-500 focus-visible:outline-none"
+        />
+        <div className="mt-2 flex items-center justify-between gap-3 border-t border-surface-200/70 pt-2">
+          <p className="text-[11px] text-slate-500">Enter to send · Shift+Enter for a new line</p>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => void send()}
+            disabled={sending || input.trim().length === 0}
+          >
+            {sending ? "Sending…" : "Send"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

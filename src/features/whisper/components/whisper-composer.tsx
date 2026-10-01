@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { getOrCreateWhisperIdentity, createWhisper } from "@/services/whisper/interaction.service";
@@ -33,7 +32,6 @@ export function WhisperComposer({ onPostCreated }: WhisperComposerProps) {
           return;
         }
 
-        // Fetch the user's profile to get their university (authoritative school tag)
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("university")
@@ -65,7 +63,7 @@ export function WhisperComposer({ onPostCreated }: WhisperComposerProps) {
     try {
       const newPost = await createWhisper(supabase, content.trim());
       onPostCreated(newPost);
-      setContent(""); // Clear input on success
+      setContent("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to post.");
     } finally {
@@ -74,41 +72,46 @@ export function WhisperComposer({ onPostCreated }: WhisperComposerProps) {
   };
 
   return (
-    <Card className="mb-6 border-primary/20">
-      <CardContent className="pt-6">
-        <div className="mb-2 text-sm text-slate-400">
-          Posting as: <span className="font-semibold text-slate-200">{anonLabel || "Loading identity..."}</span>
+    <section className="rounded-lg border border-white/5 bg-surface-100/40 p-3 sm:p-4 mb-4">
+      <div className="flex gap-3">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-800 font-semibold text-slate-300">
+          <span className="text-xs">🤫</span>
         </div>
-        
-        <textarea
-          className="w-full min-h-[100px] p-3 rounded-md bg-slate-900 border border-slate-800 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 resize-y"
-          placeholder="What's happening on campus?"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          disabled={isSubmitting}
-          aria-label="Whisper content"
-        />
-
-        {error && (
-          <p className="text-red-400 text-xs mt-2" role="alert">{error}</p>
-        )}
-
-        <div className="flex items-center justify-between mt-3">
-          <div 
-            className={`text-xs ${isOverLimit ? 'text-red-400' : 'text-slate-500'}`}
-            aria-live="polite"
-          >
-            {charsRemaining} characters remaining
+        <div className="flex-1 space-y-2">
+          <div className="text-xs text-slate-400">
+            Posting anonymously as: <span className="font-semibold text-slate-200">{anonLabel || "Loading identity..."}</span>
           </div>
-          <Button 
-            onClick={handleSubmit}
-            disabled={isEmpty || isOverLimit || isSubmitting}
-            className="w-24"
-          >
-            {isSubmitting ? "Posting..." : "Whisper"}
-          </Button>
+          
+          <textarea
+            className="w-full resize-y bg-transparent p-1 text-sm text-foreground outline-none placeholder:text-slate-500 min-h-[80px]"
+            placeholder="What's happening on campus?"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            disabled={isSubmitting}
+            aria-label="Whisper content"
+          />
+
+          {error && (
+            <p className="text-red-400 text-xs mt-2" role="alert">{error}</p>
+          )}
+
+          <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-2">
+            <div 
+              className={`text-xs ${isOverLimit ? 'text-red-400' : 'text-slate-500'}`}
+              aria-live="polite"
+            >
+              {charsRemaining}
+            </div>
+            <button 
+              onClick={handleSubmit}
+              disabled={isEmpty || isOverLimit || isSubmitting}
+              className="rounded-full bg-slate-200 px-4 py-1.5 text-xs font-bold text-black transition-colors hover:bg-white disabled:opacity-50"
+            >
+              {isSubmitting ? "Posting..." : "Whisper"}
+            </button>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

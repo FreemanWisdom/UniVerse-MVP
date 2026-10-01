@@ -9,6 +9,8 @@ import {
   AdminFeatureFlag,
   AdminListedUser,
   AdminOverview,
+  AdminRoleName,
+  AdminUserDetail,
   AdminReport,
   AdminSchool,
   AdminSystemHealth,
@@ -202,6 +204,38 @@ export async function setCampusAdmin(
     p_school_id: schoolId,
     p_enabled: enabled,
   });
+}
+
+/**
+ * Grant or revoke an administrative role. Backend: admin_grant_role —
+ * SECURITY DEFINER, super_admin-only inside the RPC (the UI gate is
+ * convenience only). school_admin requires schoolId; platform roles
+ * normalize it to null server-side.
+ */
+export async function grantAdminRole(
+  supabase: SupabaseClient,
+  userId: string,
+  role: AdminRoleName,
+  enabled: boolean,
+  schoolId?: string | null
+): Promise<{ ok: boolean; role: string; school_id: string | null; is_active: boolean }> {
+  return rpc(supabase, "admin_grant_role", {
+    p_user_id: userId,
+    p_role: role,
+    p_school_id: schoolId ?? null,
+    p_enabled: enabled,
+  });
+}
+
+/**
+ * One user's console detail incl. their derived admin role
+ * (admin_get_user; admin-gated, never exposes raw admin.members rows).
+ */
+export async function getAdminUserDetail(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<AdminUserDetail> {
+  return rpc<AdminUserDetail>(supabase, "admin_get_user", { p_user_id: userId });
 }
 
 export async function getAdminFeatureFlags(

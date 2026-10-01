@@ -129,26 +129,98 @@ export function OrbitPage({ userId, university }: { userId: string; university: 
     window.requestAnimationFrame(() => section.querySelector<HTMLInputElement>("input[aria-label='Write a comment']")?.focus());
   }
 
-  return <div className="mx-auto w-full max-w-2xl space-y-5">
-    <header>
-      <p className="text-xs font-bold uppercase tracking-[0.25em] text-campus-400">The Orbit</p>
-      <h1 className="mt-2 text-2xl font-bold tracking-tight">What’s happening on campus?</h1>
-      <p className="mt-1 text-sm text-slate-400">{university || "Your campus"} · a verified student space</p>
-    </header>
-    <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search loaded posts…" aria-label="Search loaded Orbit posts" className="w-full rounded-xl border border-surface-300 bg-surface-100 px-4 py-3 text-sm outline-none focus:border-campus-500" />
-    <OrbitComposer userId={userId} university={university} onCreated={refresh} />
-    <div className="flex gap-1 border-b border-surface-200" role="tablist">
-      {["for-you", "latest", "trending"].map((item) => <button key={item} role="tab" aria-selected={mode === item} onClick={() => setMode(item as OrbitFeedMode)} className={`px-4 py-3 text-sm font-semibold capitalize ${mode === item ? "border-b-2 border-campus-500 text-campus-400" : "text-slate-500"}`}>{item.replace("-", " ")}</button>)}
-    </div>
-    {newPosts > 0 && <button onClick={() => void refresh()} className="w-full rounded-xl border border-campus-500/30 bg-campus-500/10 px-3 py-2 text-sm text-campus-300">{newPosts} new post{newPosts === 1 ? "" : "s"} available · refresh</button>}
-    {error ? <OrbitError message={error} retry={() => void load(false)} /> : loading ? <div role="status" className="space-y-4"><div className="h-40 animate-pulse rounded-2xl bg-surface-100" /><div className="h-40 animate-pulse rounded-2xl bg-surface-100" /></div> : visible.length === 0 ? <OrbitEmpty /> : <div className="space-y-4">
-      {visible.map((post) => post.status !== "deleted" && <div key={post.id}>
-        <OrbitPostCard post={post} userId={userId} onChangeAction={updatePost} onCommentAction={() => openComments(post.id)} />
-        <div ref={(element) => { if (element) commentSections.current.set(post.id, element); else commentSections.current.delete(post.id); }}>
-          <OrbitComments postId={post.id} userId={userId} count={post.comment_count} />
+  return (
+    <div className="mx-auto w-full max-w-2xl space-y-4">
+      <header>
+        <p className="font-display text-[0.65rem] font-bold uppercase tracking-[0.25em] text-campus-400">
+          The Orbit
+        </p>
+        <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground">
+          What’s happening on campus?
+        </h1>
+        <p className="mt-1 text-xs text-slate-400">
+          {university || "Your campus"} · a verified student space
+        </p>
+      </header>
+      
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search loaded posts…"
+        aria-label="Search loaded Orbit posts"
+        className="w-full rounded-md border border-white/10 bg-surface-100/40 px-3 py-2 text-sm outline-none placeholder:text-slate-500 focus:border-campus-500 transition-colors"
+      />
+      
+      <OrbitComposer userId={userId} university={university} onCreated={refresh} />
+      
+      <div className="flex gap-2 border-b border-white/10" role="tablist">
+        {["for-you", "latest", "trending"].map((item) => (
+          <button
+            key={item}
+            role="tab"
+            aria-selected={mode === item}
+            onClick={() => setMode(item as OrbitFeedMode)}
+            className={`px-3 py-2 text-xs font-semibold capitalize transition-colors ${
+              mode === item
+                ? "border-b-2 border-campus-500 text-campus-400"
+                : "text-slate-500 hover:text-slate-300"
+            }`}
+          >
+            {item.replace("-", " ")}
+          </button>
+        ))}
+      </div>
+
+      {newPosts > 0 && (
+        <button
+          onClick={() => void refresh()}
+          className="w-full rounded-md border border-campus-500/30 bg-campus-500/10 px-3 py-2 text-xs font-medium text-campus-300 transition-colors hover:bg-campus-500/20"
+        >
+          {newPosts} new post{newPosts === 1 ? "" : "s"} available · refresh
+        </button>
+      )}
+
+      {error ? (
+        <OrbitError message={error} retry={() => void load(false)} />
+      ) : loading ? (
+        <div role="status" className="space-y-3">
+          <div className="h-32 animate-pulse rounded-lg bg-surface-100/50" />
+          <div className="h-32 animate-pulse rounded-lg bg-surface-100/50" />
         </div>
-      </div>)}
-      <button disabled={!cursor || loadingMore} onClick={() => void load(true)} className="w-full rounded-xl border border-surface-300 px-4 py-3 text-sm font-semibold text-slate-300 disabled:opacity-50">{loadingMore ? "Loading…" : cursor ? "Load more" : "You’re caught up"}</button>
-    </div>}
-  </div>;
+      ) : visible.length === 0 ? (
+        <OrbitEmpty />
+      ) : (
+        <div className="space-y-3 pb-8">
+          {visible.map(
+            (post) =>
+              post.status !== "deleted" && (
+                <div key={post.id} className="group">
+                  <OrbitPostCard
+                    post={post}
+                    userId={userId}
+                    onChangeAction={updatePost}
+                    onCommentAction={() => openComments(post.id)}
+                  />
+                  <div
+                    ref={(element) => {
+                      if (element) commentSections.current.set(post.id, element);
+                      else commentSections.current.delete(post.id);
+                    }}
+                  >
+                    <OrbitComments postId={post.id} userId={userId} count={post.comment_count} />
+                  </div>
+                </div>
+              )
+          )}
+          <button
+            disabled={!cursor || loadingMore}
+            onClick={() => void load(true)}
+            className="w-full rounded-md border border-white/5 bg-surface-100/30 px-4 py-2.5 text-xs font-medium text-slate-400 transition-colors hover:bg-surface-100 disabled:opacity-50"
+          >
+            {loadingMore ? "Loading…" : cursor ? "Load more" : "You’re caught up"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }

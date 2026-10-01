@@ -1,11 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
 import { RegisterServiceWorker } from "@/components/register-sw";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -41,8 +46,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-background text-foreground antialiased selection:bg-campus-500 selection:text-black`}>
+    <html
+      lang="en"
+      className="dark"
+      suppressHydrationWarning
+    >
+      <body
+        className={`${inter.variable} ${spaceGrotesk.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-campus-500 selection:text-black`}
+      >
         {/* Apply the saved theme before first paint to avoid a flash.
             Dark is the default (no class); light adds the "light" class.
             next/script beforeInteractive injects this into the initial HTML

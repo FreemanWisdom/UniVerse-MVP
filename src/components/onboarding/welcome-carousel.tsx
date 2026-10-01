@@ -134,9 +134,9 @@ export function WelcomeCarousel() {
         onTouchEnd={onTouchEnd}
       >
         <div className="flex items-center justify-between px-5 pt-4">
-          <span className="text-sm font-bold tracking-tight text-foreground">
-            UniVerse <span className="font-mono text-xs text-campus-500">ICOS</span>
-          </span>
+          <span className="font-display text-sm font-bold tracking-tight text-foreground">
+              UniVerse
+            </span>
           {!isLast && (
             <button
               type="button"

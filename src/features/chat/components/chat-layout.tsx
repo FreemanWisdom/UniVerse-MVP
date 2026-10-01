@@ -64,7 +64,7 @@ export function ChatLayout() {
   }`;
 
   return (
-    <div className="flex h-[calc(100dvh-10rem)] min-h-[28rem] max-h-[48rem] w-full min-w-0 overflow-hidden overscroll-none rounded-xl border border-surface-200 bg-background shadow-sm">
+    <div className="flex h-[calc(100dvh-8rem)] min-h-[32rem] w-full min-w-0 overflow-hidden overscroll-none rounded-xl border border-white/5 bg-surface-100/40">
       {/* Sidebar */}
       <div className={sidebarClasses}>
         <div className="flex border-b border-surface-200" role="tablist" aria-label="Chat sections">

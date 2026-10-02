@@ -67,6 +67,32 @@ html.light ::-webkit-scrollbar-thumb:hover {
 }
 
 /*
+ * Admin console is always light, regardless of the student theme.
+ * The admin layout marks its root element with [data-admin-root]; when it
+ * is present, the body-level theme tokens resolve to the light palette so
+ * the admin background and inherited text render light even while the
+ * student theme is dark. This is intentionally scoped to the two body
+ * tokens and scrollbars only — the admin UI itself uses fixed slate
+ * classes and needs no remapping.
+ */
+body:has([data-admin-root]) {
+  --background: 248 250 252;
+  --foreground: 15 23 42;
+}
+
+body:has([data-admin-root]) ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+body:has([data-admin-root]) ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+body:has([data-admin-root]) ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/*
  * Light theme remaps for the slate utilities used across the app.
  * The codebase was written dark-first with fixed slate grays; these
  * unlayered overrides keep every existing class readable on the light

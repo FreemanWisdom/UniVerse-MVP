@@ -66,7 +66,7 @@ export function DiscoveryView({ pendingRequestIds, onRequestSent }: DiscoveryVie
                 <p className="text-slate-400">No students found matching your search.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
                 {searchResults.map((student) => (
                   <StudentCard 
                     key={student.id} 
@@ -107,7 +107,7 @@ export function DiscoveryView({ pendingRequestIds, onRequestSent }: DiscoveryVie
               </div>
             ) : (
               <div className="space-y-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
                   {discoverResults.map((student) => (
                     <StudentCard 
                       key={student.id} 

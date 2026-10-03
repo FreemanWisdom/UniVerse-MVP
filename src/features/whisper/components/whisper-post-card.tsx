@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { IconWhisper } from "@/components/icons";
 import { WhisperPostUI } from "@/features/whisper/whisper.types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -77,11 +78,11 @@ export function WhisperPostCard({
     : `Like this whisper (${post.like_count ?? 0} likes)`;
 
   return (
-    <article className="rounded-lg border border-white/5 bg-surface-100/40 p-3 sm:p-4">
+    <article className="rounded-lg border border-white/5 bg-surface-100/40 p-3">
       {/* HEADER */}
       <header className="flex items-center gap-2">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-800 font-semibold text-slate-300">
-          <span className="text-xs">🤫</span>
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-800 font-semibold text-slate-300">
+          <IconWhisper size={16} />
         </div>
         <div className="min-w-0 flex-1 flex flex-wrap items-baseline gap-1.5">
           <Badge
@@ -125,12 +126,12 @@ export function WhisperPostCard({
       </header>
 
       {/* CONTENT */}
-      <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-200">
+      <p className="mt-1.5 whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-200">
         {post.content}
       </p>
 
       {/* ACTIONS */}
-      <footer className="mt-3 flex flex-wrap gap-1 border-t border-white/5 pt-2 text-xs">
+      <footer className="mt-2 flex flex-wrap gap-1 border-t border-white/5 pt-1.5 text-xs">
         <button
           type="button"
           onClick={handleLike}
@@ -193,7 +194,7 @@ export function WhisperPostCard({
       </footer>
 
       {isReporting && (
-        <div className="mt-3 space-y-2 border-t border-white/5 pt-3" role="group" aria-label="Report this Whisper">
+        <div className="mt-2 space-y-2 border-t border-white/5 pt-2" role="group" aria-label="Report this Whisper">
           <textarea
             value={reportReason}
             onChange={(event) => setReportReason(event.target.value)}

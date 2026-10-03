@@ -95,6 +95,19 @@ export interface AdminListedUser {
 /** Platform roles, mirrors admin.roles (live-verified). */
 export type AdminRoleName = "super_admin" | "platform_admin" | "school_admin" | "moderator";
 
+/** Row from admin_list_admins() — the administrator roster (Phase 7). */
+export interface AdminMember {
+  user_id: string;
+  full_name: string;
+  email: string;
+  role: AdminRoleName;
+  school_id: string | null;
+  school_name: string | null;
+  is_active: boolean;
+  granted_at: string;
+  updated_at: string;
+}
+
 /** admin_get_user payload (incl. derived admin membership added 2026-09-30). */
 export interface AdminUserDetail {
   id: string;

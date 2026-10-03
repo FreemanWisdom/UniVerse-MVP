@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { IconSparkle, IconCamera } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 import { createOrbitPost } from "@/services/orbit";
 import { validatePost } from "../orbit.validation";
@@ -47,7 +48,7 @@ export function OrbitComposer({
           className="flex w-full items-center gap-3 text-left text-sm text-slate-400 group"
         >
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-campus-500/20 text-campus-400 transition-colors group-hover:bg-campus-500/30">
-            ✦
+            <IconSparkle size={16} />
           </span>
           <span className="rounded-full bg-surface-200/50 px-4 py-2 flex-1 border border-transparent transition-colors group-hover:border-white/10 group-hover:bg-surface-200 text-slate-400">
             Share something with your campus...
@@ -57,7 +58,7 @@ export function OrbitComposer({
         <div className="space-y-3">
           <div className="flex gap-3">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-campus-500/20 text-campus-400">
-              ✦
+              <IconSparkle size={16} />
             </span>
             <div className="flex-1 space-y-2">
               <textarea
@@ -86,7 +87,7 @@ export function OrbitComposer({
                 onClick={() => input.current?.click()}
                 className="flex items-center gap-1.5 rounded-full px-3 py-1.5 hover:bg-white/5 hover:text-campus-400 transition-colors"
               >
-                <span>📷</span>
+                <IconCamera size={16} />
                 <span className="hidden sm:inline">Photo</span>
               </button>
               <input

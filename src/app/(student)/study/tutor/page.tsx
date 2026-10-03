@@ -11,6 +11,7 @@ import {
 } from "@/services/study/tutor.service";
 import { TutorMessage } from "@/features/study/tutor.types";
 import { BackButton } from "@/components/back-button";
+import { IconBot, IconSend } from "@/components/icons";
 import { StudyNotice } from "@/features/study/components/study-ui";
 
 interface CourseContextState {
@@ -19,6 +20,12 @@ interface CourseContextState {
   level: string;
   material: string;
 }
+
+const SUGGESTIONS = [
+  "Explain pointers in C like I'm new to programming",
+  "Quiz me on the course I'm studying",
+  "Break down this topic into a study plan",
+];
 
 const EMPTY_CONTEXT: CourseContextState = {
   courseCode: "",
@@ -93,11 +100,17 @@ export default function StudyTutorPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-200 pb-2">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
           <BackButton href="/study" label="Back to Study" className="shrink-0" />
-          <div>
-            <h1 className="text-lg font-bold tracking-tight text-foreground">AI Tutor</h1>
-            <p className="hidden text-xs text-slate-500 sm:block">Ask anything about your courses. It teaches, it doesn&#39;t just answer.</p>
+          <span
+            aria-hidden="true"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-campus-500/30 bg-campus-500/10 text-campus-300"
+          >
+            <IconBot size={20} />
+          </span>
+          <div className="min-w-0">
+            <h1 className="truncate text-base font-bold leading-tight tracking-tight text-foreground">AI Tutor</h1>
+            <p className="truncate text-xs text-slate-500">Your course assistant · it teaches, it doesn&#39;t just answer</p>
           </div>
         </div>
         <Button type="button" size="sm" variant="outline" onClick={() => setShowContext((current) => !current)} aria-expanded={showContext}>
@@ -148,19 +161,38 @@ export default function StudyTutorPage() {
       </div>
 
       {messages.length === 0 && !sending ? (
-        <StudyNotice>
-          <span className="text-slate-300">Ask a question below to get started</span> — for example:
-          &#8220;Explain pointers in C like I&#8217;m new to programming.&#8221;
-        </StudyNotice>
+        <div className="space-y-4 rounded-lg border border-dashed border-surface-300 bg-surface-50/30 px-4 py-10 text-center">
+          <p className="text-sm text-slate-300">Ask anything about your courses — or start with:</p>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {SUGGESTIONS.map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                onClick={() => setInput(suggestion)}
+                className="rounded-full border border-surface-300 bg-surface-50 px-3 py-1.5 text-xs text-slate-300 transition-colors hover:border-campus-500/50 hover:text-campus-300"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        </div>
       ) : (
         <div className="space-y-2" aria-live="polite">
           {messages.map((message, index) => (
-            <div key={`${index}-${message.role}`} className={message.role === "user" ? "flex justify-end" : "flex justify-start"}>
+            <div key={`${index}-${message.role}`} className={message.role === "user" ? "flex justify-end" : "flex items-end justify-start gap-2"}>
+              {message.role === "assistant" ? (
+                <span
+                  aria-hidden="true"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-campus-500/30 bg-campus-500/10 text-campus-300"
+                >
+                  <IconBot size={14} />
+                </span>
+              ) : null}
               <div
                 className={
                   message.role === "user"
-                    ? "max-w-[85%] rounded-lg bg-campus-500/15 px-3.5 py-2.5 text-sm text-slate-100"
-                    : "max-w-[85%] rounded-lg border border-surface-200 bg-surface-50 px-3.5 py-2.5 text-sm whitespace-pre-wrap leading-relaxed text-slate-200"
+                    ? "max-w-[85%] rounded-2xl rounded-br-md bg-campus-500/15 px-3.5 py-2.5 text-sm break-words text-slate-100"
+                    : "max-w-[85%] rounded-2xl rounded-bl-md border border-surface-200 bg-surface-50 px-3.5 py-2.5 text-sm whitespace-pre-wrap break-words leading-relaxed text-slate-200"
                 }
               >
                 {message.content}
@@ -168,13 +200,18 @@ export default function StudyTutorPage() {
             </div>
           ))}
           {sending ? (
-            <div className="flex items-center gap-2 text-sm text-slate-400" aria-live="polite">
+            <div className="flex items-end gap-2 text-sm text-slate-400" aria-live="polite">
+              <span aria-hidden="true" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-campus-500/30 bg-campus-500/10 text-campus-300">
+                <IconBot size={14} />
+              </span>
+              <span className="flex items-center gap-2 rounded-2xl rounded-bl-md border border-surface-200 bg-surface-50 px-3.5 py-2.5">
               <span className="flex gap-1" aria-hidden="true">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-campus-500" />
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-campus-500 [animation-delay:150ms]" />
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-campus-500 [animation-delay:300ms]" />
               </span>
               Thinking…
+              </span>
             </div>
           ) : null}
           <div ref={bottomRef} />
@@ -206,9 +243,12 @@ export default function StudyTutorPage() {
           <Button
             type="button"
             size="sm"
+            className="gap-1.5 rounded-full"
             onClick={() => void send()}
             disabled={sending || input.trim().length === 0}
+            aria-label="Send question to AI Tutor"
           >
+            <IconSend size={14} />
             {sending ? "Sending…" : "Send"}
           </Button>
         </div>

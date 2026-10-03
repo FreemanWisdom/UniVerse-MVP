@@ -30,6 +30,7 @@ const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
     label: "People",
     items: [
       { title: "Users", href: "/admin/users", icon: <IconUsers size={16} /> },
+      { title: "Administrators", href: "/admin/admins", icon: <IconShieldCheck size={16} /> },
       { title: "Verification", href: "/admin/verification", icon: <IconShieldCheck size={16} /> },
       { title: "Schools", href: "/admin/schools", icon: <IconSchool size={16} /> },
     ],
@@ -143,7 +144,7 @@ function Brand({ compact = false }: { compact?: boolean }) {
         U
       </span>
       <div className="leading-tight">
-        <p className="text-sm font-semibold tracking-tight text-slate-900">UniVerse ICOS</p>
+        <p className="text-sm font-semibold tracking-tight text-slate-900">Universe ICOS</p>
         <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400">Admin Console</p>
       </div>
     </div>
@@ -167,14 +168,16 @@ export function AdminSidebar({ role }: { role?: string | null }) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-slate-200 bg-white md:flex">
+      <aside className="hidden w-60 shrink-0 flex-col border-r border-slate-200 bg-white md:sticky md:top-0 md:flex md:h-screen">
         <Brand />
         <SidebarNav pathname={pathname} role={role} />
       </aside>
 
-      {/* Mobile: sticky top bar with hamburger + slide-in drawer */}
-      <div className="md:hidden">
-        <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4">
+      {/* Mobile: sticky top bar with hamburger + slide-in drawer.
+          Direct child of the admin root (full-height) — a wrapper div would
+          cap the sticky travel at the bar's own height on long pages. */}
+      <>
+        <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 md:hidden">
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -189,7 +192,7 @@ export function AdminSidebar({ role }: { role?: string | null }) {
               </svg>
             </button>
             <p className="text-sm font-semibold tracking-tight text-slate-900">
-              UniVerse ICOS <span className="text-xs font-medium text-slate-400">Admin</span>
+              Universe ICOS <span className="text-xs font-medium text-slate-400">Admin</span>
             </p>
           </div>
           <Link href="/" className="text-xs font-medium text-slate-500 hover:text-slate-900">
@@ -231,7 +234,7 @@ export function AdminSidebar({ role }: { role?: string | null }) {
           </div>
           <SidebarNav pathname={pathname} role={role} onNavigate={() => setMobileOpen(false)} />
         </aside>
-      </div>
+      </>
     </>
   );
 }

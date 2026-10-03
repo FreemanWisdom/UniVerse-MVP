@@ -1,4 +1,4 @@
-export type OrbitFeedMode = "for-you" | "latest" | "trending";
+export type OrbitFeedMode = "for-you" | "trending";
 
 export interface OrbitProfileSummary {
   id: string;
@@ -27,7 +27,7 @@ export interface OrbitPost {
   like_count: number;
   comment_count: number;
   liked: boolean;
-  saved: boolean;
+  share_count: number;
 }
 
 export interface OrbitComment {
@@ -43,8 +43,7 @@ export interface OrbitComment {
 }
 
 export interface OrbitLike { id: string; post_id: string; user_id: string; created_at: string; }
-export interface OrbitSave { id: string; post_id: string; user_id: string; created_at: string; }
 export interface OrbitMention { id: string; post_id: string; mentioned_user_id: string; created_at: string; }
 export interface OrbitFeedCursor { createdAt: string; id: string; }
-export interface OrbitRealtimeEvent { table: "orbit_feed" | "orbit_post_likes" | "orbit_comments" | "orbit_post_saves"; eventType: "INSERT" | "UPDATE" | "DELETE"; new: Record<string, unknown>; old: Record<string, unknown>; }
+export interface OrbitRealtimeEvent { table: "orbit_feed"; eventType: "INSERT" | "UPDATE" | "DELETE"; new: Record<string, unknown>; old: Record<string, unknown>; }
 export interface OrbitPageResult { posts: OrbitPost[]; nextCursor: OrbitFeedCursor | null; }

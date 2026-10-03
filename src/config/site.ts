@@ -1,6 +1,6 @@
 export const siteConfig = {
-  name: "UniVerse ICOS",
-  shortName: "UniVerse",
+  name: "Universe ICOS",
+  shortName: "Universe ICOS",
   description: "Integrated Campus Operating System — The digital campus environment for Nigerian students.",
   navItems: [
     { title: "Orbit", href: "/orbit" },

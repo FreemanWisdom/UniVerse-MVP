@@ -26,10 +26,14 @@ export function searchPosts(posts: OrbitPost[], query: string): OrbitPost[] {
   return posts.filter((post) => [post.content, post.poster_name, post.school_tag].some((value) => value?.toLowerCase().includes(normalized)));
 }
 
-export function rankForYou(posts: OrbitPost[]): OrbitPost[] {
-  return [...posts].sort((a, b) => (b.like_count + b.comment_count * 2) - (a.like_count + a.comment_count * 2));
-}
-
+// Trending ranks purely by measured social engagement — likes, comments and
+// shares. Saves are deliberately NOT a signal. Ties break newest first so
+// ordering stays deterministic while pagination loads older pages.
 export function rankTrending(posts: OrbitPost[]): OrbitPost[] {
-  return [...posts].sort((a, b) => (b.like_count + b.comment_count) - (a.like_count + a.comment_count));
+  return [...posts].sort((a, b) => {
+    const scoreA = a.like_count + a.comment_count + a.share_count;
+    const scoreB = b.like_count + b.comment_count + b.share_count;
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    return b.created_at.localeCompare(a.created_at);
+  });
 }

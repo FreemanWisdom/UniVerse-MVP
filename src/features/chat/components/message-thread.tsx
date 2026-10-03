@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { UserAvatar } from "@/components/user/user-avatar";
+import { UserLink } from "@/components/user/user-link";
 import { useMessages } from "@/features/chat/hooks/use-messages";
 import { ConversationWithDetails } from "@/services/chat/conversations.service";
 import { Button } from "@/components/ui/button";
@@ -121,25 +123,21 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
           </button>
         )}
         <div className="flex items-center gap-3">
-          <div
-            className="h-8 w-8 rounded-full bg-surface-200 flex items-center justify-center text-xs font-semibold overflow-hidden shrink-0 text-slate-300"
-            aria-hidden="true"
-          >
-            {conversation.other_member.profile.avatar_url ? (
-              <img
-                src={conversation.other_member.profile.avatar_url}
-                alt=""
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              conversation.other_member.profile.full_name.charAt(0).toUpperCase()
-            )}
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-foreground leading-tight">
-              {conversation.other_member.profile.full_name}
-            </h2>
-            <p className="text-[10px] text-slate-400">
+          <UserAvatar
+            profile={{
+              id: conversation.other_member.profile.id,
+              full_name: conversation.other_member.profile.full_name,
+              avatar_url: conversation.other_member.profile.avatar_url,
+            }}
+            size="sm"
+          />
+          <div className="min-w-0">
+            <UserLink
+              userId={conversation.other_member.profile.id}
+              name={conversation.other_member.profile.full_name ?? "Student"}
+              className="text-sm font-semibold text-foreground leading-tight"
+            />
+            <p className="text-[10px] text-slate-400 truncate">
               {conversation.other_member.profile.department} • {conversation.other_member.profile.level}
             </p>
           </div>
@@ -203,6 +201,8 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
                 const isMine = msg.sender_id === currentUserId;
                 const isOptimistic = msg.id.startsWith("temp-");
                 
+                const orbitMatch = msg.content.match(/^\/orbit\?post=([0-9a-f-]{36})$/m);
+                
                 return (
                   <div 
                     key={msg.id} 
@@ -215,7 +215,19 @@ export function MessageThread({ conversation, onBack, markAsRead }: MessageThrea
                           : 'bg-surface-200/80 text-slate-200 rounded-bl-sm'
                       } ${isOptimistic ? 'opacity-60' : ''}`}
                     >
-                      {msg.content}
+                      {orbitMatch ? (
+                        <>
+                          {msg.content.replace(/^\/orbit\?post=[0-9a-f-]{36}$/m, "").trimEnd()}
+                          <a
+                            href={`/orbit?post=${orbitMatch[1]}`}
+                            className="mt-1 block rounded-md bg-black/20 px-2 py-1.5 text-xs font-medium text-sky-300 underline-offset-2 hover:underline"
+                          >
+                            Open shared Orbit post →
+                          </a>
+                        </>
+                      ) : (
+                        msg.content
+                      )}
                     </div>
                     <time
                       dateTime={msg.created_at}

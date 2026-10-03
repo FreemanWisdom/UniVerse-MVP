@@ -113,7 +113,7 @@ html.light .border-slate-800 { border-color: rgb(226 232 240); }
 html.light .border-slate-800\/50 { border-color: rgb(226 232 240 / 0.7); }
 
 /* ============================================================
-   UniVerse Shared Visual System
+   Universe ICOS Shared Visual System
    ============================================================ */
 
 /*
@@ -222,7 +222,8 @@ html.light .border-slate-800\/50 { border-color: rgb(226 232 240 / 0.7); }
   .uv-orbit-spin,
   .uv-orbit-node,
   .uv-orbit-core,
-  .uv-status-dot {
+  .uv-status-dot,
+  .uv-blink-el {
     animation: none !important;
   }
   html {

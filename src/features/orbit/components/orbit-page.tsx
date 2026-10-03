@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { loadOrbitFeed, subscribeToOrbit } from "@/services/orbit";
+import { loadOrbitFeed, loadOrbitPost, subscribeToOrbit } from "@/services/orbit";
 import type { OrbitFeedMode, OrbitPost } from "../orbit.types";
-import { rankForYou, rankTrending, searchPosts } from "../orbit.utils";
+import { rankTrending, searchPosts } from "../orbit.utils";
 import { OrbitComposer } from "./orbit-composer";
 import { OrbitPostCard } from "./orbit-post-card";
 import { OrbitComments } from "./orbit-comments";
@@ -20,6 +20,12 @@ export function OrbitPage({ userId, university }: { userId: string; university: 
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [newPosts, setNewPosts] = useState(0);
+  // ?post=<id> deep link (used by shared-post chat messages)
+  const [deepLinkId, setDeepLinkId] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("post")
+  );
+  const [deepPost, setDeepPost] = useState<OrbitPost | null>(null);
+  const [deepMissing, setDeepMissing] = useState(false);
   const requestGeneration = useRef(0);
   const activeRequest = useRef<number | null>(null);
   const mounted = useRef(true);
@@ -103,11 +109,31 @@ export function OrbitPage({ userId, university }: { userId: string; university: 
     };
   }, [supabase, university]);
 
+  // For You keeps the exact order returned by the database — created_at
+  // descending (newest first). It is NEVER re-sorted client-side; pagination
+  // appends strictly older posts so the ordering holds as you load more.
+  // Only Trending re-ranks, by measured engagement (likes + comments + shares).
+  // Resolve the deep link against the loaded feed; if the post is older than
+  // the loaded pages, fetch that single post (RLS-scoped) and pin it above
+  // the feed instead of breaking the newest-first ordering.
+  useEffect(() => {
+    if (!deepLinkId || loading || deepPost || deepMissing) return;
+    if (posts.some((post) => post.id === deepLinkId)) {
+      const element = document.getElementById(`orbit-post-${deepLinkId}`);
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    void loadOrbitPost(supabase, userId, deepLinkId).then((found) => {
+      if (mounted.current) {
+        if (found) setDeepPost(found);
+        else setDeepMissing(true);
+      }
+    });
+  }, [deepLinkId, deepMissing, deepPost, loading, posts, supabase, userId]);
+
   const visible = useMemo(() => {
     const searched = searchPosts(posts, search);
-    if (mode === "latest") return searched;
-    if (mode === "trending") return rankTrending(searched);
-    return rankForYou(searched);
+    return mode === "trending" ? rankTrending(searched) : searched;
   }, [mode, posts, search]);
 
   async function refresh() {
@@ -154,19 +180,19 @@ export function OrbitPage({ userId, university }: { userId: string; university: 
       <OrbitComposer userId={userId} university={university} onCreated={refresh} />
       
       <div className="flex gap-2 border-b border-white/10" role="tablist">
-        {["for-you", "latest", "trending"].map((item) => (
+        {(["for-you", "trending"] as const).map((item) => (
           <button
             key={item}
             role="tab"
             aria-selected={mode === item}
-            onClick={() => setMode(item as OrbitFeedMode)}
+            onClick={() => setMode(item)}
             className={`px-3 py-2 text-xs font-semibold capitalize transition-colors ${
               mode === item
                 ? "border-b-2 border-campus-500 text-campus-400"
                 : "text-slate-500 hover:text-slate-300"
             }`}
           >
-            {item.replace("-", " ")}
+            {item === "for-you" ? "For You" : "Trending"}
           </button>
         ))}
       </div>
@@ -179,6 +205,33 @@ export function OrbitPage({ userId, university }: { userId: string; university: 
           {newPosts} new post{newPosts === 1 ? "" : "s"} available · refresh
         </button>
       )}
+
+      {deepMissing ? (
+        <p className="rounded-md border border-white/10 bg-surface-100/40 px-3 py-2 text-xs text-slate-400">
+          This shared post is no longer available.
+        </p>
+      ) : null}
+
+      {deepPost ? (
+        <div className="rounded-lg ring-2 ring-campus-500/70" id={`orbit-post-${deepPost.id}`}>
+          <OrbitPostCard
+            post={deepPost}
+            userId={userId}
+            onChangeAction={(next) => setDeepPost(next)}
+            onCommentAction={() => setDeepPost((current) => current)}
+          />
+          <div>
+            <OrbitComments postId={deepPost.id} userId={userId} count={deepPost.comment_count} />
+          </div>
+          <button
+            type="button"
+            onClick={() => { setDeepPost(null); setDeepLinkId(null); }}
+            className="mt-1 w-full rounded-md border border-white/5 px-3 py-1.5 text-[11px] text-slate-500 hover:bg-white/5"
+          >
+            Show all posts
+          </button>
+        </div>
+      ) : null}
 
       {error ? (
         <OrbitError message={error} retry={() => void load(false)} />
@@ -194,7 +247,7 @@ export function OrbitPage({ userId, university }: { userId: string; university: 
           {visible.map(
             (post) =>
               post.status !== "deleted" && (
-                <div key={post.id} className="group">
+                <div key={post.id} id={`orbit-post-${post.id}`} className={`group rounded-lg ${deepLinkId === post.id ? "ring-2 ring-campus-500/70" : ""}`}>
                   <OrbitPostCard
                     post={post}
                     userId={userId}

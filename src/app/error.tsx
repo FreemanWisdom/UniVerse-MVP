@@ -11,7 +11,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("UniVerse ICOS application error:", error);
+    console.error("Universe ICOS application error:", error);
   }, [error]);
 
   return (

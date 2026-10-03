@@ -17,7 +17,7 @@ import {
  * - There is no admin UI anywhere for reading private messages.
  * - No message plaintext, search, export, or decryption exists in the admin console.
  *
- * IMPORTANT internal fact: UniVerse Chat is NOT currently end-to-end encrypted.
+ * IMPORTANT internal fact: Universe Chat is NOT currently end-to-end encrypted.
  * Messages are stored server-side today. This page must not display any "E2EE"
  * claim; genuine client-side E2EE is a separate planned security project.
  */
@@ -82,7 +82,7 @@ export default function AdminChatHealthPage() {
                 exists in the admin console.
               </p>
               <AdminAlert tone="warning">
-                UniVerse Chat is not end-to-end encrypted yet. Message content is stored
+                Universe Chat is not end-to-end encrypted yet. Message content is stored
                 server-side today; a genuine client-side E2EE rebuild is a separate planned security
                 project. This page intentionally makes no encryption claims.
               </AdminAlert>

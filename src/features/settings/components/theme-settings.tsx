@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
+import { IconSun, IconMoon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 
 export const THEME_STORAGE_KEY = "universe-theme";
@@ -69,7 +70,7 @@ export function ThemeSettings() {
             aria-pressed={theme === "light"}
             className="min-h-[36px] text-xs"
           >
-            ☀️ Light
+            <IconSun size={14} className="mr-1 inline-block align-[-2px]" /> Light
           </Button>
           <Button
             type="button"
@@ -79,7 +80,7 @@ export function ThemeSettings() {
             aria-pressed={theme === "dark"}
             className="min-h-[36px] text-xs"
           >
-            🌙 Dark
+            <IconMoon size={14} className="mr-1 inline-block align-[-2px]" /> Dark
           </Button>
         </div>
       </div>

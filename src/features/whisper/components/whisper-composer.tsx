@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { IconWhisper } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { getOrCreateWhisperIdentity, createWhisper } from "@/services/whisper/interaction.service";
@@ -72,10 +73,10 @@ export function WhisperComposer({ onPostCreated }: WhisperComposerProps) {
   };
 
   return (
-    <section className="rounded-lg border border-white/5 bg-surface-100/40 p-3 sm:p-4 mb-4">
+    <section className="rounded-lg border border-white/5 bg-surface-100/40 p-3 mb-3">
       <div className="flex gap-3">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-800 font-semibold text-slate-300">
-          <span className="text-xs">🤫</span>
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-800 font-semibold text-slate-300">
+          <IconWhisper size={16} />
         </div>
         <div className="flex-1 space-y-2">
           <div className="text-xs text-slate-400">
@@ -83,7 +84,7 @@ export function WhisperComposer({ onPostCreated }: WhisperComposerProps) {
           </div>
           
           <textarea
-            className="w-full resize-y bg-transparent p-1 text-sm text-foreground outline-none placeholder:text-slate-500 min-h-[80px]"
+            className="w-full resize-y bg-transparent p-1 text-sm text-foreground outline-none placeholder:text-slate-500 min-h-[64px]"
             placeholder="What's happening on campus?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -95,7 +96,7 @@ export function WhisperComposer({ onPostCreated }: WhisperComposerProps) {
             <p className="text-red-400 text-xs mt-2" role="alert">{error}</p>
           )}
 
-          <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-2">
+          <div className="flex items-center justify-between border-t border-white/5 pt-2 mt-1">
             <div 
               className={`text-xs ${isOverLimit ? 'text-red-400' : 'text-slate-500'}`}
               aria-live="polite"

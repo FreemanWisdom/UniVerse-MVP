@@ -46,11 +46,11 @@ export function WhisperFeed() {
         }}
       />
 
-      <div className="flex border-b border-slate-800 mb-6">
+      <div className="flex border-b border-slate-800 mb-3">
         <button
           type="button"
           onClick={() => handleTabChange("latest")}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
+          className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
             isLatest
               ? "text-primary border-b-2 border-primary"
               : "text-slate-400 hover:text-slate-300"
@@ -63,7 +63,7 @@ export function WhisperFeed() {
         <button
           type="button"
           onClick={() => handleTabChange("trending")}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
+          className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
             !isLatest
               ? "text-primary border-b-2 border-primary"
               : "text-slate-400 hover:text-slate-300"
@@ -78,7 +78,7 @@ export function WhisperFeed() {
       {/* Interaction error banner */}
       {interactionError && (
         <div
-          className="mb-4 px-4 py-3 rounded-md bg-red-950/50 border border-red-800/50 text-red-300 text-sm"
+          className="mb-3 px-4 py-2.5 rounded-md bg-red-950/50 border border-red-800/50 text-red-300 text-sm"
           role="alert"
           aria-live="assertive"
         >
@@ -86,7 +86,7 @@ export function WhisperFeed() {
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {isLoading && posts.length === 0 ? (
           <div className="py-8 text-center text-slate-500">
             Loading whispers…
@@ -102,7 +102,7 @@ export function WhisperFeed() {
             </button>
           </div>
         ) : posts.length === 0 ? (
-          <div className="py-12 text-center text-slate-500 bg-surface-100/40 rounded-lg border border-white/5">
+          <div className="py-8 text-center text-slate-500 bg-surface-100/40 rounded-lg border border-white/5">
             {isLatest
               ? "No whispers yet. Be the first to share!"
               : "No trending whispers this week."}
@@ -119,7 +119,7 @@ export function WhisperFeed() {
             ))}
 
             {hasMore && (
-              <div className="pt-2 pb-8">
+              <div className="pt-1 pb-4">
                 <button
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
@@ -131,7 +131,7 @@ export function WhisperFeed() {
             )}
 
             {!hasMore && posts.length > 0 && (
-              <div className="py-8 text-center text-xs text-slate-600">
+              <div className="py-4 text-center text-xs text-slate-600">
                 You&apos;ve reached the end of the feed.
               </div>
             )}

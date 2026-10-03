@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { UserAvatar } from "@/components/user/user-avatar";
+import { UserLink } from "@/components/user/user-link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -260,28 +262,24 @@ export default function NotificationsPage() {
             const actor = row.actor_id ? actors[row.actor_id] : undefined;
             const name = actor ? displayName(actor) : "Campus";
             return (
-              <button
+              <div
                 key={row.id}
-                type="button"
-                onClick={() => void open(row)}
-                disabled={busyId === row.id}
                 className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left transition-colors hover:border-campus-500 ${
                   row.is_read ? "border-surface-200 bg-surface-50" : "border-campus-500/40 bg-campus-500/5"
                 }`}
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-campus-500/20 font-semibold text-campus-300">
-                  {actor?.avatar_url ? (
-                    <img
-                      src={actor.avatar_url}
-                      alt={`${name} profile`}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : (
-                    initials(name)
-                  )}
-                </span>
-                <span className="min-w-0 flex-1">
+                {/* Avatar opens the actor's profile; system notifications keep a plain avatar */}
+                <UserAvatar
+                  profile={{ id: actor?.id, full_name: name, avatar_url: actor?.avatar_url }}
+                  size="md"
+                />
+                <button
+                  type="button"
+                  onClick={() => void open(row)}
+                  disabled={busyId === row.id}
+                  aria-label={`Open notification: ${row.title}`}
+                  className="flex min-w-0 flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500 rounded"
+                >
                   <span className="flex items-center justify-between gap-2">
                     <span className={`block text-sm ${row.is_read ? "font-medium text-slate-300" : "font-semibold text-foreground"}`}>
                       {row.title}
@@ -291,12 +289,19 @@ export default function NotificationsPage() {
                   {row.body ? (
                     <span className="mt-1 block break-words text-xs text-slate-400">{row.body}</span>
                   ) : null}
-                  <span className="mt-2 block text-[11px] text-slate-500">{name} · {row.type.replace(/_/g, " ")}</span>
-                </span>
+                  <span className="mt-2 block text-[11px] text-slate-500">
+                    {actor ? (
+                      <UserLink mode="action" userId={actor.id} name={name} className="text-[11px] text-slate-500" />
+                    ) : (
+                      name
+                    )}{" "}
+                    · {row.type.replace(/_/g, " ")}
+                  </span>
+                </button>
                 {!row.is_read ? (
                   <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-campus-500" aria-label="Unread" />
                 ) : null}
-              </button>
+              </div>
             );
           })}
 

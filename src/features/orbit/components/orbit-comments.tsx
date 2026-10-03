@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { UserLink } from "@/components/user/user-link";
 import type { OrbitComment } from "../orbit.types";
 import { createClient } from "@/lib/supabase/client";
 import { createOrbitComment, deleteOrbitComment, loadOrbitComments } from "@/services/orbit";
@@ -71,7 +72,13 @@ export function OrbitComments({ postId, userId, count }: { postId: string; userI
       {!loading && comments.length > 0 && <div className="space-y-2">
         {comments.map((comment) => <div key={comment.id} className="rounded-lg bg-background/50 p-2 text-xs">
           <div className="flex justify-between gap-2">
-            <strong>{comment.author?.full_name ?? "Student"}</strong>
+            <strong className="font-semibold">
+              <UserLink
+                userId={comment.author?.id}
+                name={comment.author?.full_name ?? "Student"}
+                className="text-foreground"
+              />
+            </strong>
             {comment.user_id === userId && <button type="button" onClick={() => void remove(comment.id)} className="text-slate-500">Delete</button>}
           </div>
           <p className="mt-1 text-slate-300">{comment.content}</p>

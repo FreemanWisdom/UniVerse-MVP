@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { AuthTransition } from "@/components/auth/auth-transition";
 import { createClient } from "@/lib/supabase/client";
 
 /** Map known Supabase Auth failures to plain, human messages. */
@@ -31,6 +33,12 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+
+  const enterApp = () => {
+    router.push("/orbit");
+    router.refresh();
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,7 +47,7 @@ export function LoginForm() {
 
     try {
       const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -48,8 +56,14 @@ export function LoginForm() {
         throw signInError;
       }
 
-      router.push("/orbit");
-      router.refresh();
+      // Authentication already succeeded — the overlay is a brief brand
+      // moment, never a fake "still signing in" state.
+      if (data.session) {
+        setShowTransition(true);
+      } else {
+        router.push("/orbit");
+        router.refresh();
+      }
     } catch (submitError) {
       const raw =
         submitError instanceof Error ? submitError.message : "";
@@ -98,9 +112,20 @@ export function LoginForm() {
         </p>
       ) : null}
 
+      <div className="flex items-center justify-between">
+        <Link
+          href="/forgot-password"
+          className="text-xs text-slate-400 transition-colors hover:text-campus-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500 rounded-sm"
+        >
+          Forgotten password?
+        </Link>
+      </div>
+
       <Button type="submit" className="w-full min-h-[36px]" disabled={isLoading}>
         {isLoading ? "Signing in…" : "Sign in"}
       </Button>
+
+      {showTransition ? <AuthTransition variant="sign-in" onDone={enterApp} /> : null}
     </form>
   );
 }

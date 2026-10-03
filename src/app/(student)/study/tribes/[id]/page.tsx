@@ -18,7 +18,15 @@ import {
 import { Tribe, TribePost } from "@/features/study/tribes.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
 import { BackButton } from "@/components/back-button";
+import { IconSend } from "@/components/icons";
 import { StudyMeta, StudyNotice, StudySkeletonRows } from "@/features/study/components/study-ui";
+
+function displayTribeName(name: string): string {
+  return name
+    .split(/(\s+)/)
+    .map((part) => (/^[a-z]/.test(part) ? part.charAt(0).toUpperCase() + part.slice(1) : part))
+    .join("");
+}
 
 function formatDateTime(value: string): string {
   const date = new Date(value);
@@ -278,10 +286,24 @@ export default function TribeDetailPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-200 pb-2">
-        <div className="flex min-w-0 items-center gap-3">
-          <BackButton href="/study/tribes" label="All tribes" className="shrink-0" />
-          <h1 className="truncate text-lg font-bold tracking-tight text-foreground">{tribe.name}</h1>
+      <div className="flex items-center justify-between gap-2 border-b border-surface-200 pb-2">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <BackButton href="/study/tribes" label="Back to all tribes" className="shrink-0" />
+          <span
+            aria-hidden="true"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-campus-500/30 bg-campus-500/10 text-base font-bold text-campus-300"
+          >
+            {displayTribeName(tribe.name).charAt(0).toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <h1 className="truncate text-base font-bold leading-tight tracking-tight text-foreground">
+              {displayTribeName(tribe.name)}
+            </h1>
+            <p className="truncate text-xs text-slate-500">
+              {memberCount === null ? "—" : `${memberCount} member${memberCount === 1 ? "" : "s"}`}
+              {tribe.course_code ? ` · ${tribe.course_code}` : ""} · group conversation
+            </p>
+          </div>
         </div>
         <Button
           type="button"
@@ -295,43 +317,48 @@ export default function TribeDetailPage() {
         </Button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1">
         {tribe.description ? (
           <p className="text-sm leading-relaxed text-slate-300">{tribe.description}</p>
         ) : null}
         <StudyMeta
-          items={[
-            tribe.course_code,
-            tribe.category,
-            tribe.department,
-            tribe.level,
-            memberCount === null ? "—" : `${memberCount} member${memberCount === 1 ? "" : "s"}`,
-          ]}
+          items={[tribe.category, tribe.department, tribe.level]}
         />
       </div>
 
       {isMember ? (
-        <div className="space-y-2">
+        <div className="rounded-2xl border border-surface-300 bg-surface-50 p-2 focus-within:border-campus-500/50 focus-within:ring-1 focus-within:ring-campus-500/40">
           <textarea
-            aria-label="Write a tribe post"
+            aria-label="Message your tribe"
             value={postInput}
             maxLength={STUDY_CONSTANTS.TRIBE_POST_MAX_LENGTH}
             onChange={(event) => setPostInput(event.target.value)}
-            placeholder="Share something with your tribe…"
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                if (postInput.trim().length > 0 && !posting) void handleCreatePost();
+              }
+            }}
+            placeholder={`Message ${displayTribeName(tribe.name)}…`}
             rows={2}
-            className="w-full rounded-lg border border-surface-300 bg-surface-50 p-3 text-sm text-foreground placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500"
+            className="w-full resize-none rounded-lg bg-transparent p-2 text-sm leading-relaxed text-foreground placeholder:text-slate-500 focus-visible:outline-none"
           />
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-3 px-1 pb-1">
             {postError ? (
-              <p className="text-xs text-red-400" role="alert">{postError}</p>
-            ) : <span />}
+              <p className="min-w-0 flex-1 text-xs text-red-400" role="alert">{postError}</p>
+            ) : (
+              <p className="hidden text-[11px] text-slate-500 sm:block">Enter to send · Shift+Enter for a new line</p>
+            )}
             <Button
               type="button"
               size="sm"
+              className="gap-1.5 rounded-full"
               onClick={() => void handleCreatePost()}
               disabled={posting || postInput.trim().length === 0}
+              aria-label="Send message to tribe"
             >
-              {posting ? "Posting…" : "Post"}
+              <IconSend size={14} />
+              {posting ? "Sending…" : "Send"}
             </Button>
           </div>
         </div>
@@ -345,27 +372,38 @@ export default function TribeDetailPage() {
         postsLoading ? (
           <p className="text-sm text-slate-400" aria-live="polite">Loading posts…</p>
         ) : posts.length === 0 ? (
-          <p className="text-sm text-slate-400">No posts yet. Start the conversation.</p>
+          <p className="py-8 text-center text-sm text-slate-400">
+            No messages yet. Start the conversation.
+          </p>
         ) : (
           <>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {posts.map((post) => {
                 const isMine = myPostIds.includes(post.id);
                 return (
                   <div
                     key={post.id}
-                    className="rounded-lg border border-surface-200 bg-surface-50/50 p-3"
+                    className={isMine ? "flex flex-col items-end" : "flex flex-col items-start"}
                   >
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-200">{post.content}</p>
-                    <div className="mt-2 flex items-center justify-between gap-3 border-t border-surface-200/70 pt-2">
+                    <div
+                      className={
+                        isMine
+                          ? "max-w-[85%] rounded-2xl rounded-br-md bg-campus-500/15 px-3.5 py-2.5"
+                          : "max-w-[85%] rounded-2xl rounded-bl-md border border-surface-200 bg-surface-50 px-3.5 py-2.5"
+                      }
+                    >
+                      <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-200">{post.content}</p>
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 px-1">
                       <span className="text-[11px] text-slate-500">{formatDateTime(post.created_at)}</span>
                       {isMine ? (
                           deleteConfirmId === post.id ? (
-                            <span className="flex items-center gap-2">
+                            <span className="flex items-center gap-1.5">
                               <Button
                                 type="button"
                                 size="sm"
                                 variant="outline"
+                                className="h-7 rounded-full px-2.5 text-[11px]"
                                 onClick={() => void handleDeletePost(post.id)}
                                 disabled={deletingId === post.id}
                               >
@@ -375,6 +413,7 @@ export default function TribeDetailPage() {
                                 type="button"
                                 size="sm"
                                 variant="outline"
+                                className="h-7 rounded-full px-2.5 text-[11px]"
                                 onClick={() => setDeleteConfirmId(null)}
                               >
                                 Cancel
@@ -384,14 +423,16 @@ export default function TribeDetailPage() {
                             <Button
                               type="button"
                               size="sm"
-                              variant="outline"
+                              variant="ghost"
+                              className="h-7 rounded-full px-2.5 text-[11px] text-slate-500 hover:text-foreground"
                               onClick={() => setDeleteConfirmId(post.id)}
+                              aria-label="Delete your message"
                             >
                               Delete
                             </Button>
                           )
                         ) : null}
-                      </div>
+                    </div>
                   </div>
                 );
               })}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { IconBell } from "@/components/icons";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { getUnreadNotificationCount } from "@/services/notifications/notification.service";
@@ -51,7 +52,7 @@ export function NotificationsBell() {
       aria-label={unread !== null && unread > 0 ? `Notifications, ${unread} unread` : "Notifications"}
       className="relative flex h-8 w-8 items-center justify-center rounded-full border border-surface-300 bg-surface-200 text-sm text-foreground transition-colors hover:border-campus-500"
     >
-      🔔
+      <IconBell size={16} />
       {unread !== null && unread > 0 ? (
         <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-campus-500 px-1 text-[9px] font-bold text-surface-50">
           {unread > 99 ? "99+" : unread}

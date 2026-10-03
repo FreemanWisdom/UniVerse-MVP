@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { IconFileText } from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -226,14 +227,23 @@ export function StudyContributionPanel({ university, onUploaded, onDeleted }: St
             />
 
             <div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept={ACCEPT_ATTR}
-                aria-label="Resource file (PDF, Word, PowerPoint, or plain text)"
-                onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-                className="text-xs text-slate-300"
-              />
+              <label className="flex min-h-9 cursor-pointer items-center gap-3 rounded-lg border border-surface-300 bg-surface-50 px-3 py-2 text-xs transition-colors hover:border-surface-400">
+                <IconFileText size={16} className="shrink-0 text-slate-400" aria-hidden="true" />
+                <span className="min-w-0 flex-1 truncate text-slate-300">
+                  {file ? file.name : "Choose a file…"}
+                </span>
+                <span className="shrink-0 rounded-md border border-surface-300 px-2 py-1 text-[11px] font-medium text-slate-400">
+                  Browse
+                </span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={ACCEPT_ATTR}
+                  aria-label="Resource file (PDF, Word, PowerPoint, or plain text)"
+                  onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+                  className="hidden"
+                />
+              </label>
               <p className="mt-1 text-[11px] text-slate-500">
                 PDF, Word, PowerPoint, or plain text · {formatMaxSize(STUDY_MAX_FILE_SIZE_BYTES)} max
               </p>

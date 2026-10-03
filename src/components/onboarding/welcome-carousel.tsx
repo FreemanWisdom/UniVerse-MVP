@@ -1,23 +1,58 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  IconGraduationCap,
+  IconPlanet,
+  IconWhisper,
+  IconBooks,
+  IconRocket,
+} from "@/components/icons";
 
 /**
- * First-launch onboarding walkthrough.
+ * First-launch onboarding walkthrough (VERSIONED).
  *
- * Shown once per device on the first authenticated visit (Phase 6 install/
- * onboarding experience). A swipeable carousel of core features with dots,
- * Skip, and keyboard navigation. Dismissal (finish or skip) sets a
- * localStorage flag — deliberately NOT stored in the database: it is a
- * per-device presentation preference, not user data (data minimization,
- * no speculative backend contract). Settings offers a "Replay intro" that
- * clears the flag.
+ * The tour carries a version number. A user sees the tour whenever their
+ * last COMPLETED tour version is lower than the current one:
+ *
+ *   - never seen anything → show
+ *   - completed v1 (legacy "universe-onboarding-v1" flag) → show v2
+ *   - completed v2 → do not show again
+ *   - refresh / logout+login → state persists, no re-show
+ *   - new account → show
+ *
+ * State lives in localStorage under `universe-tour-version` (value = highest
+ * completed version as a string). The legacy v1 key is honored as "version 1
+ * completed" so every existing user gets the v2 tour exactly once.
+ * Deliberately NOT stored in the database: presentation preference, not user
+ * data (data minimization, no speculative backend contract). Settings offers
+ * a "Replay intro" that clears the version key.
  */
 
-const STORAGE_KEY = "universe-onboarding-v1";
+const CURRENT_TOUR_VERSION = 2;
+const VERSION_KEY = "universe-tour-version";
+const LEGACY_V1_KEY = "universe-onboarding-v1";
+
+/** Highest tour version this device has completed (0 = never). */
+function getCompletedTourVersion(): number {
+  try {
+    const stored = window.localStorage.getItem(VERSION_KEY);
+    if (stored !== null) {
+      const parsed = Number.parseInt(stored, 10);
+      if (Number.isFinite(parsed) && parsed >= 0) return parsed;
+    }
+    if (window.localStorage.getItem(LEGACY_V1_KEY) !== null) return 1;
+  } catch {
+    // localStorage unavailable (private mode etc.) — treat as already seen
+    // so the tour never nags on every visit; it can still be replayed from
+    // Settings for the current session.
+    return CURRENT_TOUR_VERSION;
+  }
+  return 0;
+}
 
 type Slide = {
-  icon: string;
+  icon: (p: React.SVGProps<SVGSVGElement> & { size?: number }) => React.JSX.Element;
   title: string;
   body: string;
   detail?: string;
@@ -25,30 +60,31 @@ type Slide = {
 
 const SLIDES: Slide[] = [
   {
-    icon: "🎓",
+    icon: IconGraduationCap,
     title: "Welcome to your campus",
-    body: "UniVerse ICOS is your school's own social hub — every feed, chat, and study group here is scoped to your university.",
+    body: "Universe ICOS is your school's own social hub — every feed, chat, and study group here is scoped to your university.",
     detail: "Only students from your school can see what happens here.",
   },
   {
-    icon: "🪐",
+    icon: IconPlanet,
     title: "Orbit — the campus feed",
     body: "Share what's happening on campus. Posts, likes, and comments stay inside your school.",
     detail: "From your Orbit you can also reach Chat, Whisper, and Study.",
   },
   {
-    icon: "🤫",
+    icon: IconWhisper,
     title: "Whisper — stay anonymous",
-    body: "Confess, vent, or share without a name. Whisper never shows who you are — not even to admins.",
+    body: "Confess, vent, or share under an anonymous label. Other students never see your name or profile on a Whisper.",
+    detail: "Your likes and reports are linked to your account so moderators can keep the space safe and remove rule-breaking posts.",
   },
   {
-    icon: "📚",
+    icon: IconBooks,
     title: "Study — pass together",
     body: "Find course materials, join study tribes, and ask the AI Tutor when you're stuck at 2am.",
     detail: "Uploads are checked by moderators, so resources stay safe.",
   },
   {
-    icon: "🚀",
+    icon: IconRocket,
     title: "You're all set",
     body: "Your campus is waiting. You can replay this intro anytime from Settings.",
   },
@@ -64,25 +100,24 @@ export function WelcomeCarousel() {
   // render the same (hidden) markup first.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    try {
-      if (!window.localStorage.getItem(STORAGE_KEY)) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSlide(SLIDES[0]);
-        setVisible(true);
-      }
-    } catch {
-      // localStorage unavailable (private mode etc.) — skip onboarding.
+    if (getCompletedTourVersion() < CURRENT_TOUR_VERSION) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSlide(SLIDES[0]);
+      setVisible(true);
     }
   }, []);
 
   const finish = useCallback(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, "done");
+      window.localStorage.setItem(VERSION_KEY, String(CURRENT_TOUR_VERSION));
     } catch {
       // Best-effort: even without storage, close the overlay for this session.
     }
     setVisible(false);
     setIndex(0);
+    // Let the post-tour install invitation (and any future post-tour step)
+    // know the tour just completed.
+    window.dispatchEvent(new Event("universe:tour-completed"));
   }, []);
 
   const go = useCallback(
@@ -125,7 +160,7 @@ export function WelcomeCarousel() {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Welcome to UniVerse ICOS"
+      aria-label="Welcome to Universe ICOS"
       className="fixed inset-0 z-[60] flex items-end justify-center bg-background/90 p-0 backdrop-blur-sm sm:items-center sm:p-6"
     >
       <div
@@ -135,7 +170,7 @@ export function WelcomeCarousel() {
       >
         <div className="flex items-center justify-between px-5 pt-4">
           <span className="font-display text-sm font-bold tracking-tight text-foreground">
-              UniVerse
+              Universe ICOS
             </span>
           {!isLast && (
             <button
@@ -154,8 +189,11 @@ export function WelcomeCarousel() {
           aria-live="polite"
           className="flex flex-col items-center px-8 pb-2 pt-8 text-center sm:pt-10"
         >
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-surface-200 text-4xl">
-            {slide.icon}
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-surface-200 text-campus-300">
+            {(() => {
+              const SlideIcon = slide.icon;
+              return <SlideIcon size={34} />;
+            })()}
           </div>
           <h2 className="mt-5 text-xl font-bold tracking-tight text-foreground">
             {slide.title}

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { UserAvatar } from "@/components/user/user-avatar";
+import { UserLink } from "@/components/user/user-link";
 import { CampusChatDiscoverStudent, CampusChatSearchStudent } from "@/features/chat/chat.types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,16 +21,19 @@ export function StudentCard({ student, isPendingRequest, onRequestSent }: Studen
     <Card className="flex flex-col h-full bg-surface-100 hover:bg-surface-200 transition-colors border-surface-300">
       <CardContent className="p-4 flex flex-col flex-grow">
         <div className="flex items-start gap-4">
-          {/* Avatar Placeholder */}
-          <div className="h-12 w-12 rounded-full bg-surface-300 flex-shrink-0 flex items-center justify-center text-sm font-semibold text-slate-300 border border-surface-400">
-            {student.full_name.charAt(0).toUpperCase()}
-          </div>
-          
+          {/* Avatar opens the student's profile */}
+          <UserAvatar
+            profile={{ id: student.id, full_name: student.full_name, avatar_url: student.avatar_url }}
+            size="lg"
+          />
+
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground truncate">
-                {student.full_name}
-              </h3>
+              <UserLink
+                userId={student.id}
+                name={student.full_name}
+                className="text-sm font-semibold text-foreground"
+              />
 
             </div>
             

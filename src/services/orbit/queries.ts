@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { ORBIT_COMMENT_PAGE_SIZE, ORBIT_PAGE_SIZE } from "@/features/orbit/orbit.constants";
+import { ORBIT_COMMENT_PAGE_SIZE, ORBIT_PAGE_SIZE, ORBIT_SHARES_TRACKED } from "@/features/orbit/orbit.constants";
 import type { OrbitComment, OrbitFeedCursor, OrbitPageResult, OrbitPost, OrbitProfileSummary } from "@/features/orbit/orbit.types";
 
 const PROFILE_FIELDS = "id, full_name, avatar_url, university, department, level, bio";
@@ -7,9 +7,22 @@ const PROFILE_FIELDS = "id, full_name, avatar_url, university, department, level
 async function hydratePosts(supabase: SupabaseClient, rows: Record<string, unknown>[], userId: string): Promise<OrbitPost[]> {
   const postIds = rows.map((row) => String(row.id));
   const posterIds = [...new Set(rows.map((row) => String(row.poster_id)))];
-  const [{ data: likes }, { data: saves }, { data: comments }, { data: profiles }] = await Promise.all([
+  // Share counts come from the phase4 orbit_post_shares table, which only
+  // exists once its migration is applied. ORBIT_SHARES_TRACKED gates the query
+  // (kept false pre-migration so no 404s hit the console); shares count as 0.
+  const sharesPromise = ORBIT_SHARES_TRACKED
+    ? (async (): Promise<{ post_id: string }[]> => {
+        try {
+          const { data } = await supabase.from("orbit_post_shares").select("post_id").in("post_id", postIds);
+          return (data ?? []) as { post_id: string }[];
+        } catch {
+          return [];
+        }
+      })()
+    : Promise.resolve([] as { post_id: string }[]);
+  const [{ data: likes }, shares, { data: comments }, { data: profiles }] = await Promise.all([
     supabase.from("orbit_post_likes").select("post_id, user_id").in("post_id", postIds),
-    supabase.from("orbit_post_saves").select("post_id, user_id").in("post_id", postIds).eq("user_id", userId),
+    sharesPromise,
     supabase.from("orbit_comments").select("post_id").in("post_id", postIds).is("deleted_at", null),
     supabase.from("profiles").select(PROFILE_FIELDS).in("id", posterIds),
   ]);
@@ -17,7 +30,7 @@ async function hydratePosts(supabase: SupabaseClient, rows: Record<string, unkno
   return rows.map((row) => {
     const postId = String(row.id);
     const postLikes = (likes ?? []).filter((like) => like.post_id === postId);
-    return { ...row, id: postId, author: profileMap.get(String(row.poster_id)) ?? null, like_count: postLikes.length, comment_count: (comments ?? []).filter((comment) => comment.post_id === postId).length, liked: postLikes.some((like) => like.user_id === userId), saved: (saves ?? []).some((save) => save.post_id === postId) } as OrbitPost;
+    return { ...row, id: postId, author: profileMap.get(String(row.poster_id)) ?? null, like_count: postLikes.length, comment_count: (comments ?? []).filter((comment) => comment.post_id === postId).length, liked: postLikes.some((like) => like.user_id === userId), share_count: (shares ?? []).filter((share) => share.post_id === postId).length } as OrbitPost;
   });
 }
 
@@ -29,6 +42,23 @@ export async function loadOrbitFeed(supabase: SupabaseClient, userId: string, ca
   const posts = await hydratePosts(supabase, (data ?? []) as Record<string, unknown>[], userId);
   const last = posts.at(-1);
   return { posts, nextCursor: posts.length === ORBIT_PAGE_SIZE && last ? { createdAt: last.created_at, id: last.id } : null };
+}
+
+// Fetches one post by id for the ?post=<id> deep link used by shared posts.
+// RLS (orbit_read_same_campus / orbit_read_own_posts) scopes visibility, and
+// the same active/moderation filters as the feed are applied server-side.
+export async function loadOrbitPost(supabase: SupabaseClient, userId: string, postId: string): Promise<OrbitPost | null> {
+  const { data, error } = await supabase
+    .from("orbit_feed")
+    .select("id, created_at, content, school_tag, poster_name, poster_id, images, updated_at, edited_at, status, visibility, moderation_status")
+    .eq("id", postId)
+    .eq("status", "active")
+    .eq("visibility", "campus")
+    .eq("moderation_status", "active")
+    .maybeSingle();
+  if (error || !data) return null;
+  const [post] = await hydratePosts(supabase, [data as Record<string, unknown>], userId);
+  return post ?? null;
 }
 
 export async function loadOrbitComments(supabase: SupabaseClient, postId: string, cursor?: OrbitFeedCursor): Promise<{ comments: OrbitComment[]; nextCursor: OrbitFeedCursor | null }> {

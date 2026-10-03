@@ -16,6 +16,7 @@ import {
 import { Tribe } from "@/features/study/tribes.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
 import { BackButton } from "@/components/back-button";
+import { IconChevronRight } from "@/components/icons";
 import { StudyNotice, StudySkeletonRows } from "@/features/study/components/study-ui";
 
 interface CreateTribeFormState {
@@ -35,6 +36,18 @@ const EMPTY_FORM: CreateTribeFormState = {
   department: "",
   level: "",
 };
+
+/**
+ * Display-only capitalization for tribe names: capitalizes the first letter of
+ * each word without lowercasing the rest, so acronyms like "UNN" survive.
+ * The stored name is never modified.
+ */
+function displayTribeName(name: string): string {
+  return name
+    .split(/(\s+)/)
+    .map((part) => (/^[a-z]/.test(part) ? part.charAt(0).toUpperCase() + part.slice(1) : part))
+    .join("");
+}
 
 function formatDate(value: string | null): string {
   if (!value) return "";
@@ -340,13 +353,21 @@ export default function StudyTribesPage() {
                   className="rounded-lg border border-surface-200 bg-surface-50/50 p-3 transition-colors hover:border-surface-300"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <Link
-                        href={`/study/tribes/${tribe.id}`}
-                        className="text-sm font-medium text-foreground hover:text-campus-300"
+                    <div className="flex min-w-0 flex-1 items-start gap-2.5">
+                      <span
+                        aria-hidden="true"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-campus-500/30 bg-campus-500/10 text-sm font-bold text-campus-300"
                       >
-                        {tribe.name}
-                      </Link>
+                        {displayTribeName(tribe.name).charAt(0).toUpperCase()}
+                      </span>
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <Link
+                          href={`/study/tribes/${tribe.id}`}
+                          className="inline-flex min-w-0 max-w-full items-center gap-1 text-left text-sm font-semibold text-campus-300 underline-offset-4 transition-colors hover:text-campus-200 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500 rounded-sm"
+                        >
+                          <span className="truncate">{displayTribeName(tribe.name)}</span>
+                          <IconChevronRight size={14} className="shrink-0 text-slate-500" />
+                        </Link>
                       <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] leading-relaxed text-slate-500">
                         {tribe.course_code ? <span className="truncate">{tribe.course_code}</span> : null}
                         {tribe.category ? <span aria-hidden="true" className="text-surface-400">·</span> : null}
@@ -359,6 +380,7 @@ export default function StudyTribesPage() {
                         <span>{memberCount === null ? "—" : `${memberCount} member${memberCount === 1 ? "" : "s"}`}</span>
                         <span aria-hidden="true" className="text-surface-400">·</span>
                         <span>{formatDate(tribe.created_at)}</span>
+                      </div>
                       </div>
                     </div>
                     <Button

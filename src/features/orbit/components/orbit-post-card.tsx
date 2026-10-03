@@ -1,9 +1,13 @@
 "use client";
 import { useState } from "react";
+import { IconHeart, IconMessageSquare, IconShare, IconFlag } from "@/components/icons";
+import { UserAvatar } from "@/components/user/user-avatar";
+import { UserLink } from "@/components/user/user-link";
 import type { OrbitPost } from "../orbit.types";
-import { displayName, formatOrbitTime, initials } from "../orbit.utils";
+import { displayName, formatOrbitTime } from "../orbit.utils";
 import { createClient } from "@/lib/supabase/client";
-import { deleteOrbitPost, reportOrbitPost, toggleOrbitLike, toggleOrbitSave } from "@/services/orbit";
+import { deleteOrbitPost, reportOrbitPost, toggleOrbitLike } from "@/services/orbit";
+import { OrbitShareDialog } from "./orbit-share-dialog";
 import { validateReportReason } from "../orbit.validation";
 
 export function OrbitPostCard({
@@ -18,25 +22,28 @@ export function OrbitPostCard({
   onCommentAction: () => void;
 }) {
   const [busy, setBusy] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [toast, setToast] = useState("");
   const name = displayName(post.author, post.poster_name ?? undefined);
   const supabase = createClient();
 
-  async function action(kind: "like" | "save") {
+  async function like() {
     if (busy) return;
     setBusy(true);
-    const next = kind === "like" ? !post.liked : !post.saved;
-    onChangeAction({
-      ...post,
-      ...(kind === "like" ? { liked: next, like_count: post.like_count + (next ? 1 : -1) } : { saved: next }),
-    });
+    const next = !post.liked;
+    onChangeAction({ ...post, liked: next, like_count: post.like_count + (next ? 1 : -1) });
     try {
-      if (kind === "like") await toggleOrbitLike(supabase, post.id, userId, post.liked);
-      else await toggleOrbitSave(supabase, post.id, userId, post.saved);
+      await toggleOrbitLike(supabase, post.id, userId, post.liked);
     } catch {
       onChangeAction(post);
     } finally {
       setBusy(false);
     }
+  }
+
+  function onShared(recipientName: string) {
+    setToast(`Shared with ${recipientName} ✓`);
+    window.setTimeout(() => setToast(""), 3000);
   }
 
   async function report() {
@@ -74,20 +81,16 @@ export function OrbitPostCard({
     <article className="rounded-lg border border-white/5 bg-surface-100/40 p-3 sm:p-4">
       {/* HEADER */}
       <header className="flex items-center gap-2">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-campus-500/20 font-semibold text-campus-300">
-          {post.author?.avatar_url ? (
-            <img
-              src={post.author.avatar_url}
-              alt={`${name} profile`}
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <span className="text-xs">{initials(name)}</span>
-          )}
-        </div>
+        <UserAvatar
+          profile={{ id: post.author?.id, full_name: name, avatar_url: post.author?.avatar_url }}
+          size="sm"
+        />
         <div className="min-w-0 flex-1 flex flex-wrap items-baseline gap-1.5">
-          <p className="truncate text-sm font-semibold text-foreground">{name}</p>
+          <UserLink
+            userId={post.author?.id}
+            name={name}
+            className="text-sm font-semibold text-foreground"
+          />
           <p className="truncate text-xs text-slate-500">
             {post.school_tag ?? post.author?.university ?? "Campus"} · {formatOrbitTime(post.created_at)}
             {post.edited_at ? " · edited" : ""}
@@ -95,10 +98,11 @@ export function OrbitPostCard({
         </div>
         <button
           onClick={report}
-          className="rounded px-1.5 py-1 text-xs text-slate-500 hover:bg-white/5 transition-colors"
+          className="rounded p-1.5 text-slate-500 transition-colors hover:bg-white/5 hover:text-red-400"
           aria-label="Report post"
+          title="Report post"
         >
-          •••
+          <IconFlag size={16} />
         </button>
       </header>
 
@@ -131,16 +135,28 @@ export function OrbitPostCard({
         </div>
       )}
 
+      {toast ? (
+        <p className="mt-2 text-xs text-campus-300" role="status">{toast}</p>
+      ) : null}
+
+      {sharing ? (
+        <OrbitShareDialog
+          post={post}
+          onClose={() => setSharing(false)}
+          onShared={onShared}
+        />
+      ) : null}
+
       {/* ACTIONS */}
       <footer className="mt-3 flex flex-wrap gap-1 border-t border-white/5 pt-2 text-xs">
         <button
           disabled={busy}
-          onClick={() => action("like")}
+          onClick={like}
           className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 transition-colors hover:bg-white/5 ${
             post.liked ? "text-campus-400" : "text-slate-400"
           }`}
         >
-          <span>{post.liked ? "♥" : "♡"}</span>
+          <IconHeart size={14} fill={post.liked ? "currentColor" : "none"} />
           <span>{post.like_count > 0 ? post.like_count : "Like"}</span>
         </button>
         
@@ -149,19 +165,18 @@ export function OrbitPostCard({
           onClick={onCommentAction}
           className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-slate-400 transition-colors hover:bg-white/5"
         >
-          <span>💬</span>
+          <IconMessageSquare size={14} />
           <span>{post.comment_count > 0 ? post.comment_count : "Comment"}</span>
         </button>
 
         <button
-          disabled={busy}
-          onClick={() => action("save")}
-          className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 transition-colors hover:bg-white/5 ${
-            post.saved ? "text-amber-400" : "text-slate-400"
-          }`}
+          type="button"
+          onClick={() => setSharing(true)}
+          className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-slate-400 transition-colors hover:bg-white/5"
+          aria-label="Share post in chat"
         >
-          <span>{post.saved ? "🔖" : "📑"}</span>
-          <span className="hidden sm:inline">{post.saved ? "Saved" : "Save"}</span>
+          <IconShare size={14} />
+          <span>Share</span>
         </button>
 
         {post.poster_id === userId && (

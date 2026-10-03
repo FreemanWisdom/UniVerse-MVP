@@ -60,7 +60,7 @@ export function InstallPrompt() {
     <Card>
       <CardHeader>
         <CardTitle className="font-display text-sm">Install App</CardTitle>
-        <CardDescription>Put UniVerse on your home screen</CardDescription>
+        <CardDescription>Put Universe ICOS on your home screen</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {isStandalone ? (
@@ -73,7 +73,7 @@ export function InstallPrompt() {
         ) : deferredPrompt ? (
           <div className="flex items-center justify-between">
             <p className="text-sm text-slate-400">
-              Install UniVerse as an app for quicker access and full-screen use.
+              Install Universe ICOS as an app for quicker access and full-screen use.
             </p>
             <Button onClick={install}>Install app</Button>
           </div>

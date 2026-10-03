@@ -1,5 +1,7 @@
 import { ConversationWithDetails } from "@/services/chat/conversations.service";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/user/user-avatar";
+import { UserLink } from "@/components/user/user-link";
 
 interface ConversationListProps {
   conversations: ConversationWithDetails[];
@@ -62,36 +64,33 @@ export function ConversationList({
             ? (!conv.my_membership?.last_read_at || new Date(conv.last_message.created_at) > new Date(conv.my_membership.last_read_at))
             : false;
             
+          const other = conv.other_member.profile;
           return (
-            <button
+            <div
               key={conv.id}
               role="listitem"
-              onClick={() => onSelect(conv.id)}
-              aria-label={`Conversation with ${conv.other_member.profile.full_name}${isUnread ? ', unread' : ''}`}
-              aria-current={isSelected ? "true" : undefined}
-              className={`w-full text-left px-3 py-2.5 hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:bg-white/5 ${isSelected ? 'bg-white/5' : ''}`}
+              className={`w-full px-3 py-2.5 transition-colors ${isSelected ? 'bg-white/5' : ''}`}
             >
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full bg-surface-200 flex items-center justify-center text-xs font-semibold relative shrink-0 text-slate-300" aria-hidden="true">
-                  {conv.other_member.profile.avatar_url ? (
-                    <img 
-                      src={conv.other_member.profile.avatar_url} 
-                      alt=""
-                      className="h-full w-full rounded-full object-cover"
-                    />
-                  ) : (
-                    conv.other_member.profile.full_name.charAt(0).toUpperCase()
-                  )}
-                  {isUnread && (
-                    <div className="absolute top-0 right-0 h-2.5 w-2.5 bg-campus-500 border-2 border-background rounded-full" aria-hidden="true" />
-                  )}
-                </div>
-                
-                <div className="flex-1 min-w-0">
+                {/* Avatar opens the fellow user's profile (real link, outside the conversation button) */}
+                <UserAvatar
+                  profile={{ id: other.id, full_name: other.full_name, avatar_url: other.avatar_url }}
+                  size="md"
+                />
+
+                <button
+                  onClick={() => onSelect(conv.id)}
+                  aria-label={`Open conversation with ${other.full_name}${isUnread ? ', unread' : ''}`}
+                  aria-current={isSelected ? "true" : undefined}
+                  className="flex-1 min-w-0 text-left focus-visible:outline-none focus-visible:bg-white/5 rounded"
+                >
                   <div className="flex justify-between items-baseline">
-                    <h3 className={`text-sm truncate ${isUnread ? 'font-bold text-foreground' : 'font-medium text-slate-200'}`}>
-                      {conv.other_member.profile.full_name}
-                    </h3>
+                    <UserLink
+                      mode="action"
+                      userId={other.id}
+                      name={other.full_name ?? "Student"}
+                      className={`text-sm ${isUnread ? 'font-bold text-foreground' : 'font-medium text-slate-200'}`}
+                    />
                     {conv.last_message && (
                       <time
                         dateTime={conv.last_message.created_at}
@@ -104,9 +103,9 @@ export function ConversationList({
                   <p className={`text-xs truncate mt-0.5 ${isUnread ? 'text-slate-300 font-medium' : 'text-slate-500'}`}>
                     {conv.last_message ? conv.last_message.content : "No messages yet"}
                   </p>
-                </div>
+                </button>
               </div>
-            </button>
+            </div>
           );
         })}
       </div>

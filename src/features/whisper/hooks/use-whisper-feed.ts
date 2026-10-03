@@ -269,7 +269,14 @@ export function useWhisperFeed() {
   };
 
   const prependNewPost = useCallback((post: WhisperPostUI) => {
-    setLatestPosts((prev) => [post, ...prev]);
+    // The create_whisper RPC returns only {id, anon_label, content, like_count,
+    // created_at} — no is_mine/liked. The author of a just-created post is by
+    // definition the owner and has not liked it yet, so enrich client-side.
+    // (Otherwise the Delete action stays hidden until the next feed reload.)
+    setLatestPosts((prev) => [
+      { ...post, is_mine: true, liked: post.liked ?? false },
+      ...prev,
+    ]);
     // Trending is rank-ordered; new posts are not prepended there.
   }, []);
 

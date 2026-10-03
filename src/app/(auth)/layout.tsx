@@ -34,7 +34,7 @@ export default async function AuthLayout({
               aria-hidden="true"
             />
             <span className="font-display text-lg font-bold tracking-tight text-foreground">
-              UniVerse
+              Universe ICOS
             </span>
           </Link>
           <p className="mt-1 font-display text-[0.6rem] font-bold uppercase tracking-[0.25em] text-campus-400">
@@ -48,7 +48,7 @@ export default async function AuthLayout({
 
         <p className="text-center text-xs text-slate-500">
           <Link href="/" className="transition-colors hover:text-campus-400">
-            ← Return to UniVerse ICOS home
+            ← Return to Universe ICOS home
           </Link>
         </p>
       </div>

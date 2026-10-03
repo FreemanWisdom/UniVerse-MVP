@@ -8,13 +8,14 @@ import {
   AdminEmergencyState,
   AdminFeatureFlag,
   AdminListedUser,
+  AdminMember,
   AdminOverview,
   AdminRoleName,
+  AdminUserAction,
   AdminUserDetail,
   AdminReport,
   AdminSchool,
   AdminSystemHealth,
-  AdminUserAction,
 } from "@/features/admin/admin.types";
 
 async function rpc<T>(
@@ -225,6 +226,17 @@ export async function grantAdminRole(
     p_school_id: schoolId ?? null,
     p_enabled: enabled,
   });
+}
+
+/**
+ * Administrator roster (admin_list_admins; admin-gated read of admin.members
+ * joined to profiles/auth.users/schools — direct client reads are impossible
+ * by design, so the SECURITY DEFINER RPC is the only path).
+ */
+export async function listAdmins(
+  supabase: SupabaseClient
+): Promise<AdminMember[]> {
+  return rpc<AdminMember[]>(supabase, "admin_list_admins", {});
 }
 
 /**

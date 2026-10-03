@@ -31,6 +31,39 @@ const TYPE_LABEL: Record<string, string> = {
   other: "Other",
 };
 
+/**
+ * Human-friendly file-kind labels. Raw MIME strings (e.g.
+ * "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+ * are long, technical, and can wreck narrow layouts — they are never rendered
+ * as-is; unknown kinds degrade to "File".
+ */
+const FILE_KIND_LABEL: Record<string, string> = {
+  pdf: "PDF",
+  doc: "Word",
+  docx: "Word",
+  word: "Word",
+  ppt: "PowerPoint",
+  pptx: "PowerPoint",
+  slides: "PowerPoint",
+  txt: "Text",
+  text: "Text",
+  plain: "Text",
+  csv: "Text",
+};
+
+function fileKindLabel(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const value = raw.toLowerCase();
+  // extension-style values first ("pdf", "docx")
+  if (FILE_KIND_LABEL[value]) return FILE_KIND_LABEL[value];
+  // mime strings: look for the subtype keyword ("...pdf", "wordprocessing", "presentation", "text/plain")
+  if (value.includes("pdf")) return "PDF";
+  if (value.includes("word")) return "Word";
+  if (value.includes("presentation") || value.includes("powerpoint")) return "PowerPoint";
+  if (value.startsWith("text/")) return "Text";
+  return "File";
+}
+
 export interface StudyResourceCardProps {
   resource: StudyResource;
   isSaved: boolean;
@@ -55,7 +88,7 @@ export function StudyResourceCard({
   onDownload,
 }: StudyResourceCardProps) {
   const typeLabel = TYPE_LABEL[resource.resource_type] ?? resource.resource_type;
-  const fileType = resource.file_type ?? resource.mime_type ?? null;
+  const fileType = fileKindLabel(resource.file_type ?? resource.mime_type ?? null);
 
   return (
     <div className="rounded-lg border border-surface-200 bg-surface-50/50 p-3 transition-colors hover:border-surface-300">
@@ -83,7 +116,7 @@ export function StudyResourceCard({
               formatDate(resource.created_at),
               `${resource.download_count} downloads`,
             ]}
-          />
+ />
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">

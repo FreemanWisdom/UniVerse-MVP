@@ -1,6 +1,8 @@
 "use client";
 
 import { CampusChatMessageRequest } from "@/features/chat/chat.types";
+import { UserAvatar } from "@/components/user/user-avatar";
+import { UserLink } from "@/components/user/user-link";
 import { CHAT_REQUEST_ACTIONS, ChatRequestAction } from "@/features/chat/chat.constants";
 import { Button } from "@/components/ui/button";
 
@@ -73,11 +75,16 @@ export function RequestsSidebar({
             {incomingRequests.map((req) => (
               <div key={req.id} className="bg-surface-100 p-3 rounded-lg border border-surface-200">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="h-8 w-8 rounded-full bg-surface-300 flex items-center justify-center text-xs font-semibold">
-                    {req.sender_full_name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-foreground">{req.sender_full_name}</p>
+                  <UserAvatar
+                    profile={{ id: req.sender_id, full_name: req.sender_full_name, avatar_url: req.sender_avatar_url }}
+                    size="sm"
+                  />
+                  <div className="min-w-0">
+                    <UserLink
+                      userId={req.sender_id}
+                      name={req.sender_full_name}
+                      className="text-xs font-semibold text-foreground"
+                    />
                     <p className="text-[10px] text-slate-500">{req.sender_department}</p>
                   </div>
                 </div>
@@ -116,11 +123,16 @@ export function RequestsSidebar({
             {outgoingRequests.map((req) => (
               <div key={req.id} className="bg-surface-100 p-3 rounded-lg border border-surface-200 opacity-80">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="h-8 w-8 rounded-full bg-surface-300 flex items-center justify-center text-xs font-semibold">
-                    {req.recipient_full_name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-foreground">{req.recipient_full_name}</p>
+                  <UserAvatar
+                    profile={{ id: req.recipient_id, full_name: req.recipient_full_name, avatar_url: req.recipient_avatar_url }}
+                    size="sm"
+                  />
+                  <div className="min-w-0">
+                    <UserLink
+                      userId={req.recipient_id}
+                      name={req.recipient_full_name}
+                      className="text-xs font-semibold text-foreground"
+                    />
                     <p className="text-[10px] text-amber-500">Pending</p>
                   </div>
                 </div>

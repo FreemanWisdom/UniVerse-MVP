@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 
 interface BackButtonProps {
+  /** Fallback destination when there is no in-app history to go back to. */
   href: string;
   /** Used as the accessible name (aria-label + tooltip) — not rendered as text. */
   label: string;
@@ -12,13 +14,36 @@ interface BackButtonProps {
 
 /**
  * Arrow-only back button for sub-pages: icon affordance, accessible label,
- * 36px touch target, tooltip on hover. Keep the label descriptive
- * (e.g. "Back to Study Tribes").
+ * 36px touch target, tooltip on hover.
+ *
+ * History-aware: if the user arrived here through in-app navigation
+ * (AppHistoryTracker keeps a per-tab depth counter), go back one step so
+ * e.g. a profile opened from Chat returns to Chat — not to the button's
+ * fallback section. Direct visits (fresh deep link, no in-app history)
+ * use the provided href instead.
  */
 export function BackButton({ href, label, className }: BackButtonProps) {
+  const router = useRouter();
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    let depth = 0;
+    try {
+      depth = parseInt(window.sessionStorage.getItem("universe-nav-depth") || "0", 10);
+    } catch {
+      /* private mode */
+    }
+    if (depth > 1) {
+      router.back();
+    } else {
+      router.push(href);
+    }
+  };
+
   return (
     <Link
       href={href}
+      onClick={handleClick}
       aria-label={label}
       title={label}
       className={cn(

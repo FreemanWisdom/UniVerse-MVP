@@ -103,13 +103,6 @@ export default async function SettingsPage() {
       <section className="space-y-3" aria-label="Privacy and security">
         <SectionHeading>Privacy &amp; Security</SectionHeading>
         <div className="space-y-2">
-          <SettingRow
-            title="Data protection"
-            description="Your records are isolated by Supabase row-level security"
-          >
-            <Badge variant="campus">Active</Badge>
-          </SettingRow>
-
           <SettingRow title="Sign out" description="End your current session">
             <div className="flex min-h-[36px] items-center">
               <LogoutButton />

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ChatLayout } from "@/features/chat/components/chat-layout";
 
 export default function ChatPage() {
@@ -8,7 +9,9 @@ export default function ChatPage() {
         <p className="text-sm text-slate-400">Discover and connect with students across your campus.</p>
       </div>
 
-      <ChatLayout />
+      <Suspense>
+        <ChatLayout />
+      </Suspense>
     </div>
   );
 }

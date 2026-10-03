@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { DiscoveryView } from "@/features/chat/components/discovery-view";
 import { RequestsSidebar } from "@/features/chat/components/requests-sidebar";
 import { ConversationList } from "@/features/chat/components/conversation-list";
@@ -12,6 +13,11 @@ import { CHAT_REQUEST_ACTIONS, ChatRequestAction } from "@/features/chat/chat.co
 export function ChatLayout() {
   const [activeTab, setActiveTab] = useState<"conversations" | "requests" | "discover">("conversations");
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  // Deep link (?c=<id>): e.g. the Message button on a profile opens the
+  // conversation directly. Applied once, when the list has loaded.
+  const deepLinkId = searchParams.get("c");
+  const deepLinkAppliedRef = useRef(false);
 
   const {
     incomingRequests,
@@ -49,6 +55,19 @@ export function ChatLayout() {
     }
     return newConvId;
   };
+
+  useEffect(() => {
+    if (
+      !deepLinkAppliedRef.current &&
+      deepLinkId &&
+      !isConversationsLoading &&
+      conversations.some(c => c.id === deepLinkId)
+    ) {
+      deepLinkAppliedRef.current = true;
+      setSelectedConversationId(deepLinkId);
+      setActiveTab("conversations");
+    }
+  }, [deepLinkId, isConversationsLoading, conversations]);
 
   const pendingRequestIds = new Set(outgoingRequests.map(r => r.recipient_id));
   

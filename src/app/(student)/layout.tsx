@@ -4,6 +4,8 @@ import { siteConfig } from "@/config/site";
 import { NotificationsBell } from "@/features/notifications/components/notifications-bell";
 import { WelcomeCarousel } from "@/components/onboarding/welcome-carousel";
 import { PostTourInstallPrompt } from "@/components/pwa/post-tour-install-prompt";
+import { FloatingInstallButton } from "@/components/pwa/floating-install-button";
+import { AppHistoryTracker } from "@/components/app-history-tracker";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/services/profile";
@@ -36,8 +38,10 @@ export default async function StudentLayout({
   return (
     <PresenceProvider userId={profile?.id ?? user.id} university={profile?.university ?? ""}>
     <div className="flex min-h-screen flex-col bg-background pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
+      <AppHistoryTracker />
       <WelcomeCarousel />
       <PostTourInstallPrompt />
+      <FloatingInstallButton />
       <header className="sticky top-0 z-40 border-b border-surface-200 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
           <Link href="/orbit" className="flex items-center gap-2">

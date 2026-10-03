@@ -6,6 +6,10 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/services/profile";
 import { StudentProfile } from "@/features/profile/profile.types";
+import {
+  ProfileActions,
+  ProfileRelation,
+} from "@/features/profile/components/profile-actions";
 
 /**
  * Read-only profile view for a fellow student.
@@ -40,17 +44,39 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
   const { id } = await params;
   const user = await getCurrentUser();
 
+  if (!user) redirect("/login");
+
   // A user viewing their own id goes to the editable profile instead.
-  if (user && user.id === id) redirect("/profile");
+  if (user.id === id) redirect("/profile");
 
   const supabase = await createClient();
   const profile: StudentProfile | null = await getProfile(supabase, id);
+
+  // Relationship state for the connect actions: latest request between the
+  // pair, either direction. RLS on message_requests lets each party read
+  // rows they sent or received, so both directions are visible to us.
+  const { data: relRows } = await supabase
+    .from("message_requests")
+    .select("id, sender_id, status, conversation_id")
+    .or(`and(sender_id.eq.${user.id},recipient_id.eq.${id}),and(sender_id.eq.${id},recipient_id.eq.${user.id})`)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  const rel = relRows?.[0] ?? null;
+  const relation: ProfileRelation = !rel
+    ? "none"
+    : rel.status === "accepted"
+      ? "friends"
+      : rel.status === "pending"
+        ? rel.sender_id === user.id
+          ? "pending_outgoing"
+          : "pending_incoming"
+        : "none";
 
   const name = profile?.full_name?.trim() || "Student";
 
   return (
     <div className="space-y-4">
-      <BackButton href="/orbit" label="Back to Orbit" />
+      <BackButton href="/orbit" label="Back" />
       {!profile ? (
         <div className="rounded-lg border border-surface-200 bg-surface-100/50 p-8 text-center">
           <p className="text-sm font-semibold text-foreground">Profile not found</p>
@@ -87,12 +113,22 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
                   {profile.department ? ` · ${profile.department}` : ""}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
+                  {relation === "friends" && <Badge variant="campus">Friends</Badge>}
                   {profile.student_verified && <Badge>Verified student</Badge>}
                   {profile.is_verified && <Badge>Email verified</Badge>}
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Connect actions */}
+          <ProfileActions
+            profileId={id}
+            profileName={name}
+            relation={relation}
+            requestId={rel?.id}
+            conversationId={rel?.conversation_id ?? undefined}
+          />
 
           {/* Details */}
           <div className="divide-y divide-white/5 rounded-lg border border-surface-200 bg-surface-100/50 px-4">

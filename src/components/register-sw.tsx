@@ -12,6 +12,10 @@ import { useEffect } from "react";
 export function RegisterServiceWorker() {
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+    // Dev servers (Turbopack) must not be served through the SW's cache-first
+    // static handler — it made `next dev` feel slow and showed stale builds
+    // after branch switches. Register only in production builds.
+    if (process.env.NODE_ENV !== "production") return;
     navigator.serviceWorker
       .register("/notifications-sw.js", { scope: "/" })
       .catch(() => {

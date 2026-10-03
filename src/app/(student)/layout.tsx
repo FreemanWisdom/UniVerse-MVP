@@ -5,6 +5,7 @@ import { NotificationsBell } from "@/features/notifications/components/notificat
 import { WelcomeCarousel } from "@/components/onboarding/welcome-carousel";
 import { PostTourInstallPrompt } from "@/components/pwa/post-tour-install-prompt";
 import { FloatingInstallButton } from "@/components/pwa/floating-install-button";
+import { LaunchWaitlistBanner } from "@/components/launch/launch-notice";
 import { AppHistoryTracker } from "@/components/app-history-tracker";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -62,6 +63,8 @@ export default async function StudentLayout({
           </div>
         </div>
       </header>
+
+      <LaunchWaitlistBanner university={profile?.university ?? null} />
 
       <div className="container mx-auto flex max-w-7xl flex-1 px-2 py-3 sm:px-4 md:py-6">
         <aside className="hidden w-64 flex-col space-y-1 pr-8 md:flex">

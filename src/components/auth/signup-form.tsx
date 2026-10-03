@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { createClient } from "@/lib/supabase/client";
 import { SchoolCombobox, SchoolOption } from "./school-combobox";
+import { LaunchNotice } from "@/components/launch/launch-notice";
 
 interface FieldErrors {
   full_name?: string;
@@ -179,6 +180,7 @@ export function SignUpForm() {
             sign in.
           </p>
         </div>
+        <LaunchNotice university={selectedSchool?.name ?? null} />
         <Link
           href="/login"
           className="block w-full rounded-lg bg-campus-600 px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-campus-700"

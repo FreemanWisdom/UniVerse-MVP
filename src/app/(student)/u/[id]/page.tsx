@@ -50,18 +50,23 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
   if (user.id === id) redirect("/profile");
 
   const supabase = await createClient();
-  const profile: StudentProfile | null = await getProfile(supabase, id);
 
-  // Relationship state for the connect actions: latest request between the
-  // pair, either direction. RLS on message_requests lets each party read
-  // rows they sent or received, so both directions are visible to us.
-  const { data: relRows } = await supabase
-    .from("message_requests")
-    .select("id, sender_id, status, conversation_id")
-    .or(`and(sender_id.eq.${user.id},recipient_id.eq.${id}),and(sender_id.eq.${id},recipient_id.eq.${user.id})`)
-    .order("created_at", { ascending: false })
-    .limit(1);
-  const rel = relRows?.[0] ?? null;
+  // Fetch the profile and the relationship state in parallel — these two
+  // sequential round-trips used to double the wait before the page rendered.
+  const [profileResult, relResult] = await Promise.all([
+    getProfile(supabase, id),
+    supabase
+      .from("message_requests")
+      .select("id, sender_id, status, conversation_id")
+      // Relationship state for the connect actions: latest request between
+      // the pair, either direction. RLS on message_requests lets each party
+      // read rows they sent or received, so both directions are visible to us.
+      .or(`and(sender_id.eq.${user.id},recipient_id.eq.${id}),and(sender_id.eq.${id},recipient_id.eq.${user.id})`)
+      .order("created_at", { ascending: false })
+      .limit(1),
+  ]);
+  const profile: StudentProfile | null = profileResult;
+  const rel = relResult.data?.[0] ?? null;
   const relation: ProfileRelation = !rel
     ? "none"
     : rel.status === "accepted"

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 /**
  * Shared clickable display-name link to a user's profile.
@@ -34,30 +35,15 @@ export function UserLink({ userId, name, href, className = "", children, mode = 
 
   if (mode === "action") {
     return (
-      <span
-        role="link"
-        tabIndex={0}
-        className={sharedClass}
-        aria-label={`View ${name}'s profile`}
-        onClick={(e) => {
-          e.stopPropagation();
-          window.location.assign(destination);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            e.stopPropagation();
-            window.location.assign(destination);
-          }
-        }}
-      >
+      <ActionLink destination={destination} className={sharedClass} name={name}>
         {content}
-      </span>
+      </ActionLink>
     );
   }
 
   return (
     <Link
+      prefetch
       href={destination}
       className={sharedClass}
       aria-label={`View ${name}'s profile`}
@@ -65,5 +51,48 @@ export function UserLink({ userId, name, href, className = "", children, mode = 
     >
       {content}
     </Link>
+  );
+}
+
+/**
+ * Keyboard-accessible link replacement for names inside another interactive
+ * element (e.g. the open-conversation button in the chat list), where an
+ * anchor inside a button would be invalid HTML. Navigates with the app
+ * router — the previous window.location reload here cost users a full page
+ * reload (seconds on a real network) every time they opened a profile from
+ * chat or notifications.
+ */
+function ActionLink({
+  destination,
+  className,
+  name,
+  children,
+}: {
+  destination: string;
+  className: string;
+  name: string;
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  return (
+    <span
+      role="link"
+      tabIndex={0}
+      className={className}
+      aria-label={`View ${name}'s profile`}
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push(destination);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          router.push(destination);
+        }
+      }}
+    >
+      {children}
+    </span>
   );
 }

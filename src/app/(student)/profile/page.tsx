@@ -25,6 +25,17 @@ export default async function ProfilePage() {
     );
   }
 
+  // Own profile only: wallet is client-readable per the 5C column grants.
+  let walletBalance: number | null = null;
+  const { data: walletRow } = await supabase
+    .from("profiles")
+    .select("wallet_balance")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (walletRow && typeof walletRow.wallet_balance === "number") {
+    walletBalance = walletRow.wallet_balance;
+  }
+
   return (
     <div className="space-y-5 max-w-2xl mx-auto w-full">
       <div>
@@ -36,7 +47,12 @@ export default async function ProfilePage() {
         </h1>
       </div>
 
-      <ProfilePageClient initialProfile={profile} />
+      <ProfilePageClient
+        initialProfile={profile}
+        email={user.email ?? ""}
+        walletBalance={walletBalance}
+        memberSince={user.created_at ?? null}
+      />
     </div>
   );
 }

@@ -7,29 +7,40 @@ import { ProfileEditForm } from "./profile-edit-form";
 
 interface ProfilePageClientProps {
   initialProfile: StudentProfile;
+  email: string;
+  walletBalance: number | null;
+  memberSince: string | null;
 }
 
-export function ProfilePageClient({ initialProfile }: ProfilePageClientProps) {
+export function ProfilePageClient({
+  initialProfile,
+  email,
+  walletBalance,
+  memberSince,
+}: ProfilePageClientProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<StudentProfile>(initialProfile);
 
   if (isEditing) {
     return (
-      <ProfileEditForm 
-        profile={profile} 
-        onCancel={() => setIsEditing(false)} 
+      <ProfileEditForm
+        profile={profile}
+        onCancel={() => setIsEditing(false)}
         onSuccess={(updated) => {
           setProfile({ ...profile, ...updated });
           setIsEditing(false);
-        }} 
+        }}
       />
     );
   }
 
   return (
-    <ProfileView 
-      profile={profile} 
-      onEdit={() => setIsEditing(true)} 
+    <ProfileView
+      profile={profile}
+      email={email}
+      walletBalance={walletBalance}
+      memberSince={memberSince}
+      onEdit={() => setIsEditing(true)}
       onAvatarUpdated={(newAvatarUrl) => {
         setProfile((prev) => ({ ...prev, avatar_url: newAvatarUrl }));
       }}

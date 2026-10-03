@@ -84,6 +84,15 @@ export default async function SettingsPage() {
           </SettingRow>
 
           <PasswordSettings />
+
+          <SettingRow
+            title="UniVerse Survey"
+            description="Tell us how V1.0 is working for you"
+          >
+            <Link href="/settings/survey">
+              <Button variant="outline" size="sm" className="min-h-[36px]">Take survey</Button>
+            </Link>
+          </SettingRow>
         </div>
       </section>
 

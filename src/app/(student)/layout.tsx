@@ -5,8 +5,9 @@ import { NotificationsBell } from "@/features/notifications/components/notificat
 import { WelcomeCarousel } from "@/components/onboarding/welcome-carousel";
 import { PostTourInstallPrompt } from "@/components/pwa/post-tour-install-prompt";
 import { FloatingInstallButton } from "@/components/pwa/floating-install-button";
-import { LaunchWaitlistBanner } from "@/components/launch/launch-notice";
+import { LaunchGate } from "@/components/launch/launch-gate";
 import { AppHistoryTracker } from "@/components/app-history-tracker";
+import { isLaunchCampus } from "@/lib/launch";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/services/profile";
@@ -36,6 +37,14 @@ export default async function StudentLayout({
   const supabase = await createClient();
   const profile = await getProfile(supabase, user.id);
 
+  // Access gate: the MVP is live only at the five launch campuses. Everyone
+  // else is signed in but sees the waitlist message instead of the app —
+  // no nav, no feed, no chat. /admin is a separate route group and is not
+  // affected by this gate.
+  if (!isLaunchCampus(profile?.university)) {
+    return <LaunchGate university={profile?.university ?? null} />;
+  }
+
   return (
     <PresenceProvider userId={profile?.id ?? user.id} university={profile?.university ?? ""}>
     <div className="flex min-h-screen flex-col bg-background pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
@@ -63,8 +72,6 @@ export default async function StudentLayout({
           </div>
         </div>
       </header>
-
-      <LaunchWaitlistBanner university={profile?.university ?? null} />
 
       <div className="container mx-auto flex max-w-7xl flex-1 px-2 py-3 sm:px-4 md:py-6">
         <aside className="hidden w-64 flex-col space-y-1 pr-8 md:flex">

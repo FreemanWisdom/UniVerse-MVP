@@ -5,17 +5,22 @@ import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import {
+  acceptTribeJoinRequest,
+  cancelTribeJoinRequest,
   countTribeMembers,
   createTribePost,
+  declineTribeJoinRequest,
   deleteTribePost,
   getTribe,
-  joinTribe,
   leaveTribe,
+  listMyJoinRequestTribeIds,
   listMyTribeIds,
   listMyTribePostIds,
+  listTribeJoinRequests,
   listTribePosts,
+  requestTribeJoin,
 } from "@/services/study/tribes.service";
-import { Tribe, TribePost } from "@/features/study/tribes.types";
+import { Tribe, TribeJoinRequest, TribePost } from "@/features/study/tribes.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
 import { BackButton } from "@/components/back-button";
 import { IconSend } from "@/components/icons";
@@ -62,6 +67,10 @@ export default function TribeDetailPage() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [membershipBusy, setMembershipBusy] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [isCreator, setIsCreator] = useState(false);
+  const [joinRequests, setJoinRequests] = useState<TribeJoinRequest[]>([]);
+  const [requestActionBusyId, setRequestActionBusyId] = useState<string | null>(null);
 
   // Initial load: tribe, membership, member count, and posts (members only).
   useEffect(() => {
@@ -76,11 +85,15 @@ export default function TribeDetailPage() {
         setLoading(true);
         setError(null);
 
-        const [nextTribe, myTribeIds] = await Promise.all([
+        const [nextTribe, myTribeIds, myPending, requestsResult] = await Promise.all([
           getTribe(supabase, tribeId),
           listMyTribeIds(supabase)
             .then((ids) => ids.includes(tribeId))
             .catch(() => false),
+          listMyJoinRequestTribeIds(supabase)
+            .then((ids) => ids.includes(tribeId))
+            .catch(() => false),
+          listTribeJoinRequests(supabase, tribeId).catch(() => null),
         ]);
 
         if (cancelled) return;
@@ -93,6 +106,9 @@ export default function TribeDetailPage() {
         setTribe(nextTribe);
         const member = myTribeIds;
         setIsMember(member);
+        setIsPending(!member && myPending);
+        setIsCreator(Boolean(requestsResult?.is_creator));
+        setJoinRequests(requestsResult?.requests ?? []);
 
         void countTribeMembers(supabase, tribeId)
           .then((count) => {
@@ -169,23 +185,12 @@ export default function TribeDetailPage() {
       if (isMember) {
         await leaveTribe(supabase, tribe.id);
         setIsMember(false);
+      } else if (isPending) {
+        await cancelTribeJoinRequest(supabase, tribe.id);
+        setIsPending(false);
       } else {
-        await joinTribe(supabase, tribe.id);
-        setIsMember(true);
-
-        // Newly a member: load posts now.
-        setPostsLoading(true);
-        try {
-          const [nextPosts, nextMyPostIds] = await Promise.all([
-            listTribePosts(supabase, tribe.id),
-            listMyTribePostIds(supabase, tribe.id).catch(() => [] as string[]),
-          ]);
-          setPosts(nextPosts);
-          setMyPostIds(nextMyPostIds);
-          setHasMore(nextPosts.length === STUDY_CONSTANTS.TRIBE_POST_PAGE_SIZE);
-        } finally {
-          setPostsLoading(false);
-        }
+        await requestTribeJoin(supabase, tribe.id);
+        setIsPending(true);
       }
 
       void countTribeMembers(supabase, tribe.id)
@@ -196,10 +201,55 @@ export default function TribeDetailPage() {
       setError(
         message === "session_expired"
           ? "Your session expired. Please sign in again."
-          : `We couldn't ${isMember ? "remove you from" : "add you to"} this tribe. Please try again.`
+          : isMember
+            ? "We couldn't remove you from this tribe. Please try again."
+            : "We couldn't send your join request. Please try again."
       );
     } finally {
       setMembershipBusy(false);
+    }
+  };
+
+  const handleAcceptRequest = async (requestId: string) => {
+    if (!tribe) return;
+
+    const supabase = createClient();
+    setRequestActionBusyId(requestId);
+
+    try {
+      await acceptTribeJoinRequest(supabase, requestId);
+      setJoinRequests((current) => current.filter((request) => request.id !== requestId));
+      void countTribeMembers(supabase, tribe.id)
+        .then((count) => setMemberCount(count))
+        .catch(() => setMemberCount(null));
+    } catch (acceptError) {
+      setError(
+        acceptError instanceof Error && acceptError.message === "session_expired"
+          ? "Your session expired. Please sign in again."
+          : "We couldn't accept this request. Please try again."
+      );
+    } finally {
+      setRequestActionBusyId(null);
+    }
+  };
+
+  const handleDeclineRequest = async (requestId: string) => {
+    if (!tribe) return;
+
+    const supabase = createClient();
+    setRequestActionBusyId(requestId);
+
+    try {
+      await declineTribeJoinRequest(supabase, requestId);
+      setJoinRequests((current) => current.filter((request) => request.id !== requestId));
+    } catch (declineError) {
+      setError(
+        declineError instanceof Error && declineError.message === "session_expired"
+          ? "Your session expired. Please sign in again."
+          : "We couldn't decline this request. Please try again."
+      );
+    } finally {
+      setRequestActionBusyId(null);
     }
   };
 
@@ -308,12 +358,13 @@ export default function TribeDetailPage() {
         <Button
           type="button"
           size="sm"
-          variant={isMember ? "outline" : "default"}
+          variant={isMember || isPending ? "outline" : "default"}
           onClick={() => void handleToggleMembership()}
           disabled={membershipBusy}
-          aria-pressed={isMember}
+          aria-pressed={isMember || isPending}
+          title={isPending ? "Waiting for the creator's approval — tap to cancel" : undefined}
         >
-          {membershipBusy ? "…" : isMember ? "Leave" : "Join"}
+          {membershipBusy ? "…" : isMember ? "Leave" : isPending ? "Requested" : "Request to join"}
         </Button>
       </div>
 
@@ -364,9 +415,52 @@ export default function TribeDetailPage() {
         </div>
       ) : (
         <StudyNotice>
-          Join this tribe to see and write its posts.
+          {isPending
+            ? "Your request is waiting for the creator's approval. Tap Requested to cancel."
+            : "Request to join — the creator approves members before you can see and write posts."}
         </StudyNotice>
       )}
+
+      {isCreator && joinRequests.length > 0 ? (
+        <div className="rounded-lg border border-surface-200 bg-surface-50/50 p-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Join requests ({joinRequests.length})
+          </h2>
+          <ul className="mt-2 space-y-2">
+            {joinRequests.map((request) => (
+              <li key={request.id} className="flex items-center justify-between gap-2 rounded-md border border-surface-200 bg-surface-50 px-3 py-2">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {request.full_name?.trim() || "Unnamed student"}
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    Requested {formatDateTime(request.requested_at)}
+                  </p>
+                </div>
+                <span className="flex shrink-0 items-center gap-1.5">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => void handleAcceptRequest(request.id)}
+                    disabled={requestActionBusyId === request.id}
+                  >
+                    {requestActionBusyId === request.id ? "…" : "Accept"}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => void handleDeclineRequest(request.id)}
+                    disabled={requestActionBusyId === request.id}
+                  >
+                    Decline
+                  </Button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {isMember ? (
         postsLoading ? (

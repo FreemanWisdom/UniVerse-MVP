@@ -6,6 +6,8 @@ import {
   ListTribePostsParams,
   ListTribesParams,
   Tribe,
+  TribeJoinRequest,
+  TribeJoinRequestsResult,
   TribePost,
 } from "@/features/study/tribes.types";
 import { getCurrentUniversity } from "@/services/study/study.service";
@@ -118,19 +120,104 @@ export async function listMyTribeIds(supabase: SupabaseClient): Promise<string[]
   return (data ?? []).map((row) => row.tribe_id as string);
 }
 
-export async function joinTribe(
+// --- Join requests (creator approval) ---------------------------------------
+// Joining is no longer instant: the student files a request, the tribe
+// creator accepts or declines. Decline deletes the row; a former member
+// re-requesting resets their old accepted row to pending.
+
+export async function requestTribeJoin(
   supabase: SupabaseClient,
   tribeId: string
 ): Promise<void> {
   const userId = await getCurrentUserId(supabase);
 
-  const { error } = await supabase.from("tribe_members").upsert(
-    { tribe_id: tribeId, user_id: userId, role: "member" },
-    { onConflict: "tribe_id,user_id", ignoreDuplicates: true }
+  // Upsert (not insert-only): a former member whose accepted row still
+  // exists gets it reset to pending so they can rejoin after leaving.
+  const { error } = await supabase.from("tribe_join_requests").upsert(
+    { tribe_id: tribeId, user_id: userId, status: "pending" },
+    { onConflict: "tribe_id,user_id" }
   );
 
   if (error) {
-    throw new Error(`Unable to join this tribe: ${error.message}`);
+    throw new Error(`Unable to send your join request: ${error.message}`);
+  }
+}
+
+export async function cancelTribeJoinRequest(
+  supabase: SupabaseClient,
+  tribeId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from("tribe_join_requests")
+    .delete()
+    .eq("tribe_id", tribeId)
+    .eq("status", "pending");
+
+  if (error) {
+    throw new Error(`Unable to cancel your join request: ${error.message}`);
+  }
+}
+
+export async function listMyJoinRequestTribeIds(
+  supabase: SupabaseClient
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("tribe_join_requests")
+    .select("tribe_id")
+    .eq("user_id", (await getCurrentUserId(supabase)))
+    .eq("status", "pending");
+
+  if (error) {
+    // New table; treat unavailable as "no pending requests" rather than
+    // breaking the whole page.
+    return [];
+  }
+
+  return (data ?? []).map((row) => row.tribe_id as string);
+}
+
+// Creator side. The RPC gates on creator and joins names server-side,
+// so creator_id never reaches the client.
+export async function listTribeJoinRequests(
+  supabase: SupabaseClient,
+  tribeId: string
+): Promise<TribeJoinRequestsResult> {
+  const { data, error } = await supabase.rpc("tribe_list_join_requests", {
+    p_tribe_id: tribeId,
+  });
+
+  if (error) {
+    throw new Error(`Unable to load join requests: ${error.message}`);
+  }
+
+  return (data ?? { is_creator: false, requests: [] }) as TribeJoinRequestsResult;
+}
+
+export async function acceptTribeJoinRequest(
+  supabase: SupabaseClient,
+  requestId: string
+): Promise<void> {
+  const { error } = await supabase.rpc("tribe_accept_join_request", {
+    p_request_id: requestId,
+  });
+
+  if (error) {
+    throw new Error(`Unable to accept this request: ${error.message}`);
+  }
+}
+
+export async function declineTribeJoinRequest(
+  supabase: SupabaseClient,
+  requestId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from("tribe_join_requests")
+    .delete()
+    .eq("id", requestId)
+    .eq("status", "pending");
+
+  if (error) {
+    throw new Error(`Unable to decline this request: ${error.message}`);
   }
 }
 

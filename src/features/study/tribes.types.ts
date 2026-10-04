@@ -40,3 +40,15 @@ export interface TribePost {
 export interface ListTribePostsParams {
   cursor?: StudyCursor;
 }
+
+export interface TribeJoinRequest {
+  id: string;
+  user_id: string;
+  full_name: string | null;
+  requested_at: string;
+}
+
+export interface TribeJoinRequestsResult {
+  is_creator: boolean;
+  requests: TribeJoinRequest[];
+}

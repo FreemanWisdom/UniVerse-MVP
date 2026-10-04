@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import {
+  cancelTribeJoinRequest,
   countTribeMembers,
   createTribe,
-  joinTribe,
   leaveTribe,
+  listMyJoinRequestTribeIds,
   listMyTribeIds,
   listTribes,
+  requestTribeJoin,
 } from "@/services/study/tribes.service";
 import { Tribe } from "@/features/study/tribes.types";
 import { STUDY_CONSTANTS } from "@/features/study/study.constants";
@@ -61,6 +63,7 @@ function formatDate(value: string | null): string {
 export default function StudyTribesPage() {
   const [tribes, setTribes] = useState<Tribe[]>([]);
   const [myTribeIds, setMyTribeIds] = useState<string[]>([]);
+  const [myPendingTribeIds, setMyPendingTribeIds] = useState<string[]>([]);
   const [memberCounts, setMemberCounts] = useState<Record<string, number | null>>({});
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -95,17 +98,19 @@ export default function StudyTribesPage() {
       setError(null);
 
       try {
-        const [nextTribes, nextMyIds] = await Promise.all([
+        const [nextTribes, nextMyIds, nextPendingIds] = await Promise.all([
           listTribes(supabase, {
             search: searchQuery.trim() || undefined,
           }),
           listMyTribeIds(supabase).catch(() => [] as string[]),
+          listMyJoinRequestTribeIds(supabase).catch(() => [] as string[]),
         ]);
 
         if (cancelled || requestId !== requestRef.current) return;
 
         setTribes(nextTribes);
         setMyTribeIds(nextMyIds);
+        setMyPendingTribeIds(nextPendingIds);
         setHasMore(nextTribes.length === STUDY_CONSTANTS.TRIBE_PAGE_SIZE);
 
         // One lightweight HEAD count per visible tribe (no member rows fetched).
@@ -175,45 +180,55 @@ export default function StudyTribesPage() {
 
   const handleToggleMembership = async (tribe: Tribe) => {
     const isMember = myTribeIds.includes(tribe.id);
+    const isPending = myPendingTribeIds.includes(tribe.id);
     const supabase = createClient();
 
     setJoinBusyIds((current) => [...current, tribe.id]);
     setTribeError((current) => ({ ...current, [tribe.id]: "" }));
 
-    setMyTribeIds((current) =>
-      isMember
-        ? current.filter((id) => id !== tribe.id)
-        : sortByKey([...current, tribe.id])
-    );
-    setMemberCounts((current) => {
-      const count = current[tribe.id];
-      if (typeof count !== "number") return current;
-      return { ...current, [tribe.id]: Math.max(0, count + (isMember ? -1 : 1)) };
-    });
-
     try {
       if (isMember) {
+        setMyTribeIds((current) => current.filter((id) => id !== tribe.id));
+        setMemberCounts((current) => {
+          const count = current[tribe.id];
+          if (typeof count !== "number") return current;
+          return { ...current, [tribe.id]: Math.max(0, count - 1) };
+        });
         await leaveTribe(supabase, tribe.id);
+      } else if (isPending) {
+        setMyPendingTribeIds((current) => current.filter((id) => id !== tribe.id));
+        await cancelTribeJoinRequest(supabase, tribe.id);
       } else {
-        await joinTribe(supabase, tribe.id);
+        setMyPendingTribeIds((current) => sortByKey([...current, tribe.id]));
+        await requestTribeJoin(supabase, tribe.id);
       }
     } catch (toggleError) {
-      setMyTribeIds((current) =>
-        isMember
-          ? sortByKey([...current, tribe.id])
-          : current.filter((id) => id !== tribe.id)
-      );
-      setMemberCounts((current) => {
-        const count = current[tribe.id];
-        if (typeof count !== "number") return current;
-        return { ...current, [tribe.id]: Math.max(0, count + (isMember ? 1 : -1)) };
-      });
       setTribeError((current) => ({
         ...current,
         [tribe.id]: toggleError instanceof Error && toggleError.message === "session_expired"
           ? "Your session expired. Please sign in again."
-          : `We couldn't ${isMember ? "remove you from" : "add you to"} this tribe. Please try again.`,
+          : isMember
+            ? "We couldn't remove you from this tribe. Please try again."
+            : "We couldn't send your join request. Please try again.",
       }));
+      // Re-sync both lists from the server on failure so the buttons
+      // always reflect the real membership/request state.
+      try {
+        const [ids, pendingIds] = await Promise.all([
+          listMyTribeIds(supabase),
+          listMyJoinRequestTribeIds(supabase).catch(() => [] as string[]),
+        ]);
+        setMyTribeIds(ids);
+        setMyPendingTribeIds(pendingIds);
+      } catch {
+        if (isMember) {
+          setMyTribeIds((current) => sortByKey([...current, tribe.id]));
+        } else if (isPending) {
+          setMyPendingTribeIds((current) => sortByKey([...current, tribe.id]));
+        } else {
+          setMyPendingTribeIds((current) => current.filter((id) => id !== tribe.id));
+        }
+      }
     } finally {
       setJoinBusyIds((current) => current.filter((id) => id !== tribe.id));
     }
@@ -346,6 +361,7 @@ export default function StudyTribesPage() {
           <div className="space-y-2">
             {tribes.map((tribe) => {
               const isMember = myTribeIds.includes(tribe.id);
+              const isPending = !isMember && myPendingTribeIds.includes(tribe.id);
               const memberCount = memberCounts[tribe.id];
               return (
                 <div
@@ -386,16 +402,19 @@ export default function StudyTribesPage() {
                     <Button
                       type="button"
                       size="sm"
-                      variant={isMember ? "outline" : "default"}
+                      variant={isMember || isPending ? "outline" : "default"}
                       onClick={() => void handleToggleMembership(tribe)}
                       disabled={joinBusyIds.includes(tribe.id)}
-                      aria-pressed={isMember}
+                      aria-pressed={isMember || isPending}
+                      title={isPending ? "Waiting for the creator's approval — tap to cancel" : undefined}
                     >
                       {joinBusyIds.includes(tribe.id)
                         ? "…"
                         : isMember
                           ? "Leave"
-                          : "Join"}
+                          : isPending
+                            ? "Requested"
+                            : "Request to join"}
                     </Button>
                   </div>
 

@@ -21,6 +21,20 @@ interface CourseContextState {
   material: string;
 }
 
+// Safety net for AI answers: the tutor is instructed to write plain text,
+// but if the model still emits markdown markers, render them readably
+// instead of showing raw asterisks/hashes to the student.
+function displayTutorText(content: string): string {
+  return content
+    .replace(/^#{1,6}\s+/gm, "") // headings -> plain line
+    .replace(/\*\*(.+?)\*\*/g, "$1") // **bold**
+    .replace(/(?<!\w)\*(?!\s)([^*\n]+?)\*(?!\w)/g, "$1") // *italic* (not a bullet)
+    .replace(/(?<![\w*])_(?!\s)([^_\n]+?)_(?!\w)/g, "$1") // _underline_
+    .replace(/`([^`\n]+)`/g, "$1") // `code`
+    .replace(/^\s*[-*+]\s+/gm, "- ") // normalize bullets to dashes;
+    .replace(/\n{3,}/g, "\n\n"); // tidy spacing
+}
+
 const SUGGESTIONS = [
   "Explain pointers in C like I'm new to programming",
   "Quiz me on the course I'm studying",
@@ -195,7 +209,7 @@ export default function StudyTutorPage() {
                     : "max-w-[85%] rounded-2xl rounded-bl-md border border-surface-200 bg-surface-50 px-3.5 py-2.5 text-sm whitespace-pre-wrap break-words leading-relaxed text-slate-200"
                 }
               >
-                {message.content}
+                {message.role === "assistant" ? displayTutorText(message.content) : message.content}
               </div>
             </div>
           ))}

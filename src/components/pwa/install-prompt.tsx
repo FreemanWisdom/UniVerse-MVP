@@ -4,56 +4,54 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import {
+  ensureInstallListeners,
+  getCapturedInstallPrompt,
+  isIOSUserAgent,
+  isStandaloneDisplay,
+  subscribeInstallState,
+  triggerInstall,
+} from "@/lib/pwa-install";
 
 /**
- * Install experience (Phase 6).
+ * Install experience (Settings).
  *
- * - Chrome/Edge/Android (beforeinstallprompt): show an "Install app" button
- *   that triggers the native install prompt.
+ * - Chrome/Edge/Android (captured beforeinstallprompt): show an "Install app"
+ *   button that triggers the native install prompt.
  * - iOS Safari: no prompt API exists — show the manual
  *   "Share → Add to Home Screen" hint instead.
- * - Already installed (standalone display-mode or navigator.standalone):
- *   confirm the state instead of offering a redundant install.
- * The captured beforeinstallprompt event is never cached beyond the tab:
- * it can be invalidated by the browser at any time, so a failed prompt()
- * simply falls back to the browser-menu hint.
+ * - Already installed (standalone display-mode): confirm the state instead
+ *   of offering a redundant install.
+ * - Stale/invalidated events never hang the UI: the shared triggerInstall()
+ *   caps the wait and this card falls back to the browser-menu guidance.
  */
 export function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [available, setAvailable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const nav = navigator as any;
-    const standalone =
-      window.matchMedia?.("(display-mode: standalone)").matches || nav.standalone === true;
+    ensureInstallListeners();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsStandalone(standalone);
-    const ua = nav.userAgent || "";
-    setIsIOS(/iPad|iPhone|iPod/.test(ua) || (nav.platform === "MacIntel" && nav.maxTouchPoints > 1));
-
-    const onBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
+    setIsStandalone(isStandaloneDisplay());
+     
+    setIsIOS(isIOSUserAgent());
+    const sync = () => {
+      setAvailable(getCapturedInstallPrompt() !== null);
+      setIsStandalone(isStandaloneDisplay());
     };
-    const onInstalled = () => setDeferredPrompt(null);
-    window.addEventListener("beforeinstallprompt", onBeforeInstall);
-    window.addEventListener("appinstalled", onInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
+    sync();
+    return subscribeInstallState(sync);
   }, []);
 
   const install = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    try {
-      await deferredPrompt.userChoice;
-    } catch {
-      // prompt() was invalidated by the browser — fall back to hint state.
-    }
-    setDeferredPrompt(null);
+    // Fallback copy below stays honest: after a stale/no-op prompt the card
+    // simply stops offering one-tap install (capture consumed).
+    setBusy(true);
+    await triggerInstall();
+    setBusy(false);
+    setAvailable(getCapturedInstallPrompt() !== null);
   };
 
   return (
@@ -70,12 +68,14 @@ export function InstallPrompt() {
             </p>
             <Badge variant="campus">Installed</Badge>
           </div>
-        ) : deferredPrompt ? (
+        ) : available || busy ? (
           <div className="flex items-center justify-between">
             <p className="text-sm text-slate-400">
               Install Universe ICOS as an app for quicker access and full-screen use.
             </p>
-            <Button onClick={install}>Install app</Button>
+            <Button onClick={() => void install()} disabled={busy}>
+              {busy ? "Installing…" : "Install app"}
+            </Button>
           </div>
         ) : isIOS ? (
           <div className="text-sm text-slate-400">
@@ -94,4 +94,3 @@ export function InstallPrompt() {
     </Card>
   );
 }
-

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { ensureInstallListeners } from "@/lib/pwa-install";
 
 /**
  * Registers the notifications service worker on first load so the app meets
@@ -11,7 +12,12 @@ import { useEffect } from "react";
  */
 export function RegisterServiceWorker() {
   useEffect(() => {
-    if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+    if (typeof window === "undefined") return;
+    // Chrome can fire beforeinstallprompt as early as the first page (login
+    // included) — before any student layout mounts. Wire the global capture
+    // here so the event is never lost; install surfaces read it later.
+    ensureInstallListeners();
+    if (!("serviceWorker" in navigator)) return;
     // Dev servers (Turbopack) must not be served through the SW's cache-first
     // static handler — it made `next dev` feel slow and showed stale builds
     // after branch switches. Register only in production builds.

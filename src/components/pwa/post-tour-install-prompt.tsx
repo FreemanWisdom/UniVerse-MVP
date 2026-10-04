@@ -1,17 +1,26 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  ensureInstallListeners,
+  getCapturedInstallPrompt,
+  isIOSUserAgent,
+  isStandaloneDisplay,
+  subscribeInstallState,
+  triggerInstall,
+  type InstallOutcome,
+} from "@/lib/pwa-install";
 
 /**
  * Post-tour install invitation (Phase 7).
  *
  * Shown once, right after the welcome tour completes. Behavior:
  * - Listens for the tour's "universe:tour-completed" signal.
- * - Already installed (standalone display-mode / navigator.standalone):
- *   never shows.
- * - Chromium/Android (beforeinstallprompt captured since layout mount —
- *   the event usually fires before the tour finishes): clear "Install app"
- *   action via prompt().
+ * - Already installed (standalone display-mode): never shows.
+ * - Chromium/Android (captured beforeinstallprompt): clear "Install app"
+ *   action via the shared triggerInstall() — which never hangs on a stale
+ *   event; on a no-op/timeout the card switches to honest browser-menu
+ *   guidance instead of sitting on "Installing…" forever.
  * - iOS Safari and browsers without an install API: platform-specific
  *   guidance (Share → Add to Home Screen / browser menu). Never pretends
  *   an install happened.
@@ -24,65 +33,46 @@ import { useEffect, useRef, useState } from "react";
  */
 
 const DISMISS_KEY = "universe-install-prompt-v1";
-
-function isStandaloneNow(): boolean {
-  const nav = navigator as Navigator & { standalone?: boolean };
-  return window.matchMedia?.("(display-mode: standalone)").matches || nav.standalone === true;
-}
 const TOUR_DONE_EVENT = "universe:tour-completed";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
 
 export function PostTourInstallPrompt() {
   const [visible, setVisible] = useState(false);
-  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
+  const [available, setAvailable] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [busy, setBusy] = useState(false);
-  const deferredRef = useRef<BeforeInstallPromptEvent | null>(null);
-
+  const [outcome, setOutcome] = useState<InstallOutcome | null>(null);
   useEffect(() => {
-    const nav = navigator as Navigator & { standalone?: boolean };
-    const standalone =
-      window.matchMedia?.("(display-mode: standalone)").matches || nav.standalone === true;
+    ensureInstallListeners();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsIOS(
-      /iPad|iPhone|iPod/.test(nav.userAgent) ||
-        (nav.platform === "MacIntel" && nav.maxTouchPoints > 1)
-    );
+    setIsIOS(isIOSUserAgent());
 
     const markSeen = () => {
       try { window.localStorage.setItem(DISMISS_KEY, "done"); } catch { /* best-effort */ }
     };
     const close = () => setVisible(false);
 
-    const onBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      deferredRef.current = e as BeforeInstallPromptEvent;
-      // If the card is already open, surface the real install action now.
-      setDeferred(e as BeforeInstallPromptEvent);
-    };
     const onInstalled = () => {
       markSeen();
       close();
     };
     const onTourDone = () => {
-      if (isStandaloneNow()) { markSeen(); return; }
+      if (isStandaloneDisplay()) { markSeen(); return; }
       let seen = false;
       try { seen = window.localStorage.getItem(DISMISS_KEY) === "done"; } catch { seen = true; }
       if (seen) return;
       setVisible(true);
     };
 
-    window.addEventListener("beforeinstallprompt", onBeforeInstall);
     window.addEventListener("appinstalled", onInstalled);
     window.addEventListener(TOUR_DONE_EVENT, onTourDone);
+    const unsubscribe = subscribeInstallState(() => {
+      setAvailable(getCapturedInstallPrompt() !== null);
+    });
+    setAvailable(getCapturedInstallPrompt() !== null);
     return () => {
-      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
       window.removeEventListener("appinstalled", onInstalled);
       window.removeEventListener(TOUR_DONE_EVENT, onTourDone);
+      unsubscribe();
     };
   }, []);
 
@@ -92,22 +82,19 @@ export function PostTourInstallPrompt() {
   };
 
   const install = async () => {
-    const promptEvent = deferredRef.current;
-    if (!promptEvent) return;
     setBusy(true);
-    try {
-      await promptEvent.prompt();
-      await promptEvent.userChoice;
-    } catch {
-      // Browser invalidated the prompt — fall back to the guidance copy.
-    }
-    deferredRef.current = null;
-    setDeferred(null);
+    const result = await triggerInstall();
     setBusy(false);
-    markSeenAndClose();
+    setOutcome(result);
+    setAvailable(getCapturedInstallPrompt() !== null);
+    if (result === "accepted" || result === "dismissed") markSeenAndClose();
   };
 
-  if (!visible || isStandaloneNow()) return null;
+  if (!visible || isStandaloneDisplay()) return null;
+
+  // A stale/no-op one-tap prompt falls through to the always-true path:
+  // the browser's own menu (⋮ → Install app / Add to Home screen).
+  const showGuidance = outcome === "unavailable" || outcome === "timeout";
 
   return (
     <div
@@ -132,7 +119,14 @@ export function PostTourInstallPrompt() {
         </div>
 
         <div className="mt-3 text-sm text-slate-400">
-          {deferred ? (
+          {showGuidance ? (
+            <p>
+              The one-tap install didn&rsquo;t open on its own — use your browser&rsquo;s menu:{" "}
+              <span className="font-semibold text-foreground">⋮ → Install app</span> (or{" "}
+              <span className="font-semibold text-foreground">Add to Home screen</span>). It takes
+              two taps and always works.
+            </p>
+          ) : available ? (
             <p>
               Install the app with one tap — it opens straight to your campus, no browser bar.
               Totally optional.
@@ -153,7 +147,7 @@ export function PostTourInstallPrompt() {
         </div>
 
         <div className="mt-4 flex items-center gap-3">
-          {deferred ? (
+          {(available || busy) && !showGuidance ? (
             <button
               type="button"
               onClick={() => void install()}
@@ -168,7 +162,7 @@ export function PostTourInstallPrompt() {
             onClick={markSeenAndClose}
             className="flex h-10 flex-1 items-center justify-center rounded-lg border border-surface-300 bg-surface-50 px-4 text-sm font-medium text-slate-300 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500"
           >
-            {deferred ? "Not now" : "Got it"}
+            {available && !showGuidance ? "Not now" : "Got it"}
           </button>
         </div>
       </div>

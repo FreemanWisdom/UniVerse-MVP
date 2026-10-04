@@ -1,6 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  ensureInstallListeners,
+  getCapturedInstallPrompt,
+  isIOSUserAgent,
+  isStandaloneDisplay,
+  subscribeInstallState,
+  triggerInstall,
+} from "@/lib/pwa-install";
 
 const DISMISS_KEY = "universe-install-float-dismissed";
 
@@ -13,53 +21,49 @@ const DISMISS_KEY = "universe-install-float-dismissed";
  * after the user dismisses it (persisted per device — same spirit as the
  * tour keys: presentation preference, no DB row).
  *
- * Shares the platform install logic with the Settings InstallPrompt and the
- * post-tour invitation but renders independently: the captured
- * beforeinstallprompt event is per-tab and never cached, so each surface
- * listens for its own event.
+ * Shares the single captured install event with the Settings card and the
+ * post-tour invitation through src/lib/pwa-install — one prompt() consumes
+ * it for everyone. A stale event never leaves the user with no feedback:
+ * the pill falls back to honest browser-menu guidance.
  */
 export function FloatingInstallButton() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [available, setAvailable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [dismissed, setDismissed] = useState(true); // hidden until mount checks pass
   const [showIOSHint, setShowIOSHint] = useState(false);
+  const [showFallbackHint, setShowFallbackHint] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const nav = navigator as any;
+    ensureInstallListeners();
     // Hydration-safe device detection (deferred setState in effect, per the
     // lint rule — same approach as the Settings InstallPrompt).
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsStandalone(
-      window.matchMedia?.("(display-mode: standalone)").matches || nav.standalone === true
-    );
-    setIsIOS(
-      /iPad|iPhone|iPod/.test(nav.userAgent || "") ||
-        (nav.platform === "MacIntel" && nav.maxTouchPoints > 1)
-    );
+    setIsStandalone(isStandaloneDisplay());
+     
+    setIsIOS(isIOSUserAgent());
     try {
       setDismissed(window.localStorage.getItem(DISMISS_KEY) === "1");
     } catch {
       /* private mode: treat as not dismissed */
     }
 
-    const onBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    const onInstalled = () => {
-      setDeferredPrompt(null);
-      setShowIOSHint(false);
-    };
-    window.addEventListener("beforeinstallprompt", onBeforeInstall);
+    const unsubscribe = subscribeInstallState(() => {
+      setAvailable(getCapturedInstallPrompt() !== null);
+      setIsStandalone(isStandaloneDisplay());
+    });
+    setAvailable(getCapturedInstallPrompt() !== null);
+
+    const onInstalled = () => setShowFallbackHint(false);
     window.addEventListener("appinstalled", onInstalled);
     return () => {
-      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
       window.removeEventListener("appinstalled", onInstalled);
+      unsubscribe();
     };
   }, []);
 
-  const visible = !isStandalone && !dismissed && (!!deferredPrompt || isIOS);
+  const visible = !isStandalone && !dismissed && (available || isIOS || showFallbackHint || busy);
   if (!visible) return null;
 
   const dismiss = () => {
@@ -71,13 +75,29 @@ export function FloatingInstallButton() {
     }
   };
 
-  const install = () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
+  const install = async () => {
+    if (available) {
+      // Never hangs: stale events resolve via the shared timeout, and the
+      // pill then points at the browser menu instead of silently doing nothing.
+      setBusy(true);
+      const result = await triggerInstall();
+      setBusy(false);
+      setAvailable(getCapturedInstallPrompt() !== null);
+      if (result === "unavailable" || result === "timeout") {
+        setAvailable(false);
+        setShowFallbackHint(true);
+        setTimeout(() => setShowFallbackHint(false), 12000);
+      }
       return;
     }
-    // iOS: toggle the manual hint.
-    setShowIOSHint(v => !v);
+    if (isIOS) {
+      // iOS: toggle the manual Add-to-Home-Screen hint.
+      setShowIOSHint(v => !v);
+      return;
+    }
+    // No usable one-tap event (e.g. after a stale no-op prompt): toggle the
+    // browser-menu guidance so the user is never left with a silent button.
+    setShowFallbackHint(v => !v);
   };
 
   return (
@@ -91,11 +111,22 @@ export function FloatingInstallButton() {
           </p>
         </div>
       )}
+      {showFallbackHint && (
+        <div className="w-64 rounded-lg border border-surface-300 bg-surface-100 p-3 text-xs text-foreground shadow-xl">
+          <p className="font-semibold">One-tap install didn&rsquo;t open</p>
+          <p className="mt-1 text-slate-500">
+            Use your browser&rsquo;s menu:{" "}
+            <span className="font-medium text-foreground">⋮ → Install app</span> or{" "}
+            <span className="font-medium text-foreground">Add to Home screen</span>.
+          </p>
+        </div>
+      )}
       <div className="flex items-center overflow-hidden rounded-full border border-campus-700/60 bg-campus-500 text-black shadow-[0_4px_16px_-4px_rgba(34,197,94,0.5)]">
         <button
           type="button"
-          onClick={install}
-          className="flex h-11 items-center gap-2 pl-4 pr-2 text-sm font-semibold transition-colors hover:bg-campus-400"
+          onClick={() => void install()}
+          disabled={busy}
+          className="flex h-11 items-center gap-2 pl-4 pr-2 text-sm font-semibold transition-colors hover:bg-campus-400 disabled:opacity-50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -113,7 +144,7 @@ export function FloatingInstallButton() {
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" x2="12" y1="15" y2="3" />
           </svg>
-          Install app
+          {busy ? "Installing…" : "Install app"}
         </button>
         <button
           type="button"

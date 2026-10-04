@@ -38,7 +38,7 @@ export function DiscoveryView({ pendingRequestIds, onRequestSent }: DiscoveryVie
             id="student-search"
             type="text"
             placeholder="Search students by name, university, or department..."
-            className="pl-9 bg-surface-100 border-surface-200 focus-visible:ring-campus-500"
+            className="pl-9 bg-surface-100 border-surface-200 text-foreground focus-visible:ring-campus-500"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search students"

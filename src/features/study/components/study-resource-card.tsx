@@ -17,7 +17,7 @@ function formatDate(value: string | null): string {
   });
 }
 
-function formatSize(bytes: number | null): string {
+export function formatSize(bytes: number | null): string {
   if (bytes === null || bytes === undefined) return "";
 
   if (bytes < 1024) return `${bytes} B`;
@@ -51,7 +51,7 @@ const FILE_KIND_LABEL: Record<string, string> = {
   csv: "Text",
 };
 
-function fileKindLabel(raw: string | null | undefined): string | null {
+export function fileKindLabel(raw: string | null | undefined): string | null {
   if (!raw) return null;
   const value = raw.toLowerCase();
   // extension-style values first ("pdf", "docx")

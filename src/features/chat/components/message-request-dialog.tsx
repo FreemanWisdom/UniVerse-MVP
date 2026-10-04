@@ -114,7 +114,7 @@ export function MessageRequestDialog({
           <textarea
             id="request-message"
             ref={textareaRef}
-            className="flex min-h-[120px] w-full rounded-md border border-surface-200 bg-surface-100 px-3 py-2 text-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-campus-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex min-h-[120px] w-full rounded-md border border-surface-200 bg-surface-100 px-3 py-2 text-sm text-foreground placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-campus-500 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Introduce yourself…"
             value={message}
             onChange={(e) => setMessage(e.target.value)}

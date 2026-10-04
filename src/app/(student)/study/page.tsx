@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -61,6 +62,7 @@ function sortByKey<T>(items: T[]): T[] {
 }
 
 export default function StudyPage() {
+  const router = useRouter();
   const [university, setUniversity] = useState<string | null>(null);
   const [universityResolved, setUniversityResolved] = useState(false);
   const [courses, setCourses] = useState<StudyCourse[]>([]);
@@ -357,7 +359,7 @@ export default function StudyPage() {
         return;
       }
 
-      window.open(url, "_blank", "noopener,noreferrer");
+      router.push(`/study/resources/${resource.id}`);
     } catch (actionError) {
       const friendlyError =
         actionError instanceof Error && actionError.message === "session_expired"

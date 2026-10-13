@@ -57,6 +57,18 @@ export function ResetPasswordForm() {
 
       try {
         if (code) {
+          // The Supabase browser client auto-consumes ?code= on init (and
+          // codes are single-use), so a second manual exchange would fail
+          // even though the first succeeded. Wait for that automatic
+          // exchange to land a session first; only exchange manually if
+          // none appears.
+          for (let i = 0; i < 12; i++) {
+            if (await hasSession()) {
+              setStage("ready");
+              return;
+            }
+            await new Promise((r) => setTimeout(r, 250));
+          }
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(
             window.location.href
           );

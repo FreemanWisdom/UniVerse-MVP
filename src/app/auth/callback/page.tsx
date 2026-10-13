@@ -45,8 +45,20 @@ function CallbackInner() {
     (async () => {
       try {
         const supabase = createClient();
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (error) throw error;
+        // The browser client auto-consumes ?code= on init and codes are
+        // single-use, so a manual exchange can lose that race. Accept the
+        // automatic exchange's session first; exchange manually only if
+        // none appears.
+        let signedIn = false;
+        for (let i = 0; i < 12 && !signedIn; i++) {
+          const { data } = await supabase.auth.getSession();
+          signedIn = Boolean(data.session);
+          if (!signedIn) await new Promise((r) => setTimeout(r, 250));
+        }
+        if (!signedIn) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) throw error;
+        }
         router.replace(next);
         router.refresh();
       } catch {

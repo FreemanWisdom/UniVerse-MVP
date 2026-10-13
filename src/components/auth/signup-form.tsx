@@ -18,8 +18,8 @@ interface FieldErrors {
   school?: string;
 }
 
-/** Supabase sends an 8-digit confirmation code (mailer_otp_length). */
-const CODE_LENGTH = 8;
+/** Supabase sends a 6-digit confirmation code (mailer_otp_length). */
+const CODE_LENGTH = 6;
 const RESEND_COOLDOWN_SECONDS = 60;
 
 /**
@@ -172,7 +172,7 @@ export function SignUpForm() {
             university: school.name,
           },
           // Clicking the confirmation link in the email lands on the callback
-          // route, which finishes the sign-in. The 8-digit code in the email
+          // route, which finishes the sign-in. The 6-digit code in the email
           // is the primary path and is entered right here.
           emailRedirectTo: `${window.location.origin}/auth/callback?next=/verify`,
         },
@@ -187,7 +187,7 @@ export function SignUpForm() {
         router.refresh();
         return;
       }
-      // Session withheld — the account exists but awaits the 8-digit code
+      // Session withheld — the account exists but awaits the 6-digit code
       // (or the email link). Switch to the verification screen.
       setAccountCreated(true);
     } catch (submitError) {

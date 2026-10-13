@@ -146,6 +146,15 @@ export function ResetPasswordForm() {
         return;
       }
 
+      // Best-effort password-change notification (spec §5). Fires while the
+      // recovery session is still valid; any failure is swallowed so it can
+      // never block an already-successful password change.
+      try {
+        await fetch("/api/auth/notify-password-change", { method: "POST" });
+      } catch {
+        // Notification is optional infrastructure — ignore.
+      }
+
       setStage("done");
     } catch {
       setError("We couldn't update your password. Please try again.");

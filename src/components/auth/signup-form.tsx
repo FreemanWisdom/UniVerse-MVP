@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { createClient } from "@/lib/supabase/client";
 import { SchoolCombobox, SchoolOption } from "./school-combobox";
-import { LaunchNotice } from "@/components/launch/launch-notice";
 
 interface FieldErrors {
   full_name?: string;
@@ -187,6 +186,17 @@ export function SignUpForm() {
         router.refresh();
         return;
       }
+      // GoTrue answers an already-registered, confirmed address with a
+      // fake user whose identities list is empty and sends NO email
+      // (anti-enumeration). Waiting for a code here would hang forever,
+      // so point the person at sign-in / reset instead.
+      if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        setFieldErrors({
+          email:
+            "This email already has a UniVerse account. Sign in instead, or use “Forgot password” if you can’t remember it.",
+        });
+        return;
+      }
       // Session withheld — the account exists but awaits the 6-digit code
       // (or the email link). Switch to the verification screen.
       setAccountCreated(true);
@@ -285,7 +295,7 @@ export function SignUpForm() {
         <div className="space-y-1.5">
           <h3 className="text-sm font-semibold text-foreground">Check your mail</h3>
           <p className="text-sm text-slate-400">
-            We sent an {CODE_LENGTH}-digit code to{" "}
+            We sent a {CODE_LENGTH}-digit code to{" "}
             <span className="font-medium text-foreground">{email}</span>. Enter it
             below to activate your account.
           </p>
@@ -372,7 +382,6 @@ export function SignUpForm() {
             Start over
           </button>
         </p>
-        <LaunchNotice university={selectedSchool?.name ?? null} />
       </div>
     );
   }

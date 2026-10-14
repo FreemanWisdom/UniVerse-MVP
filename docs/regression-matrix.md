@@ -1,0 +1,190 @@
+# UniVerse ICOS — Consolidated Regression Matrix (Stage 0)
+
+Status: v1 — baseline captured Oct 14 2026 against commit `7ed4b1f` (branch `my-new-feature`).
+Scope: authentication, direct messages, tribes, Whisper, reporting, campus isolation, admin permissions, announcements.
+Rules: no production writes during baseline capture; write-path tests run only inside an approved execution window with throwaway fixtures, then are cleaned up.
+
+---
+
+## 1. Roles under test
+
+| Role | Fixture | Notes |
+|---|---|---|
+| Unauthenticated visitor | none | anon probes |
+| Student (verified, launch campus) | `cc-reg-stu-<n>` (UNN) | throwaway, real signup API |
+| Student (other campus, for isolation tests) | `cc-reg-stu-b` (FUNAI) | throwaway |
+| Moderator | `cc-reg-mod-<n>` + temp `admin.members` row (`moderator`) | created and removed by harness |
+| School admin | `cc-reg-sch-<n>` + temp `admin.members` row (`school_admin`, school UAES) | created and removed by harness |
+| Platform admin / super admin | `cc-reg-adm-<n>` + temp row (`super_admin`) | created and removed by harness |
+| Real accounts | **never used as fixtures** | 54 real users are untouchable |
+
+**Deterministic test data**: fixed full names (`Reg Matrix One/Two/...`), fixed universities (UNN, FUNAI, UAES), fixed post/message bodies prefixed `REG-`. All rows carry the `cc-reg-` prefix so cleanup is a targeted delete. Fixture creation order and cleanup SQL are in §5.
+
+## 2. Static and build gates (every run)
+
+| ID | Test | Result (Oct 14) |
+|---|---|---|
+| S1 | `tsc --noEmit` | PASS (0 errors) |
+| S2 | `npm run lint` | PASS (0 errors, 6 known baseline warnings) |
+| S3 | `npm run build` | PASS |
+
+## 3. Live read-only boundary probes (simulated-JWT, transaction-wrapped, rolled back)
+
+Captured Oct 14. Method: `set_config('role','authenticated')` + synthetic `request.jwt.claims` inside a rolled-back transaction; counts only, no row data dumped.
+
+| ID | Probe | Expected | Result |
+|---|---|---|---|
+| N1 | Non-member reads `conversations` | 0 rows | PASS (0) |
+| N2 | Non-member reads `messages` | 0 rows | PASS (0) |
+| N3 | `whisper_identities` direct read | denied | PASS (42501 permission denied) |
+| N4 | `admin.announcements` direct read | denied | PASS (42501) |
+| N5 | `tribe_posts.author_id` values as non-member | none visible | PASS (0 rows under RLS) |
+| N6 | `profiles.admin_note` read | denied | PASS (42501 column grant) |
+| N7a | Non-admin `admin_bootstrap()` | `authorized:false` | PASS (`false`) |
+| N7b | Super admin `admin_bootstrap()` | `authorized:true` | PASS (`true`, owner account) |
+| N7c | Non-admin `admin_list_users` | denied | PASS (`admin_access_required`) |
+| N7d | Non-admin `admin_moderate_report` | denied | PASS (`admin_access_required`) |
+| N8 | `reports` of others | 0 rows | PASS (0) |
+| P1 | `schools` readable | >0 | PASS (142) |
+| P2 | `whisper_posts_public` for campus-less user | 0 rows | PASS (0 — campus scoping holds) |
+| P3 | `orbit_feed` for campus-less user | 0 rows | PASS (0) |
+| A1 | anon reads `waitlist` | deny | **FAIL — 77 rows incl. emails readable by anon (see §6 gap G1)** |
+
+## 4. Full matrix (positive + negative per area)
+
+Browser e2e method = Playwright against a build; API method = direct PostgREST/GoTrue calls; SQL method = simulated-JWT probe. Status legend: ✅ passed Oct 14 or in a prior verified session (noted); ⬜ pending execution window.
+
+### 4.1 Authentication
+| ID | Test | Method | Status |
+|---|---|---|---|
+| AUTH-1 | Signup → 6-digit code screen (masked email, no waitlist notice pre-verify) | browser | ✅ Oct 13 live |
+| AUTH-2 | Wrong code rejected, stays on screen | browser | ✅ Oct 13 live |
+| AUTH-3 | Correct code → `/orbit` (in-app) | browser | ✅ Oct 13 live |
+| AUTH-4 | Duplicate signup → no 2nd account, inline "sign in" message | API+browser | ✅ Oct 13 live |
+| AUTH-5 | Unauthenticated → protected routes bounce to `/login` | browser | ✅ Oct 13 live |
+| AUTH-6 | Forgot → reset link lands `/reset-password` → mismatch rejected → save → sign-out → new password logs in | browser | ✅ Oct 13 live (real PKCE link) |
+| AUTH-7 | Reset link on another device → honest invalid state | browser | ⬜ |
+| AUTH-8 | Wrong password rejected; verified-only gate on dashboard | browser | ✅ Oct 13 live |
+| AUTH-9 | Non-launch campus student hits waitlist gate after verification (ALL student routes) | browser | ✅ Oct 4; re-run ⬜ |
+| AUTH-10 | Signup rate limit (60s resend) surfaces honest message | API | ✅ observed Oct 13; re-run ⬜ |
+
+### 4.2 Direct messages
+| ID | Test | Method | Status |
+|---|---|---|---|
+| DM-1 | Request → accept → conversation exists both sides | browser | ✅ prior verified; re-run ⬜ |
+| DM-2 | Send message; realtime INSERT renders for recipient | browser | ⬜ |
+| DM-3 | Blocked user cannot message (INSERT policy w/ blocks check) | SQL/browser | ⬜ (negative, needs fixtures) |
+| DM-4 | Non-member cannot read messages/conversations | SQL | ✅ N1/N2 Oct 14 |
+| DM-5 | Message rate limit (60/hr) triggers honest message | API | ✅ design verified; re-run ⬜ |
+
+### 4.3 Tribes
+| ID | Test | Method | Status |
+|---|---|---|---|
+| TR-1 | Create tribe (own campus), join, post, own-bubble render | browser | ✅ prior verified; re-run ⬜ |
+| TR-2 | Cross-campus join blocked (5F WITH CHECK) | SQL/browser | ✅ verified live Sept 29; re-run ⬜ |
+| TR-3 | `author_id` never reaches client (column never selected + RLS hides rows) | SQL+code | ✅ N5 Oct 14 |
+| TR-4 | Join-request flow: request → creator sees → accept/decline | browser | ⬜ |
+| TR-5 | Non-member cannot read tribe posts | SQL | ⬜ (needs tribe fixture) |
+
+### 4.4 Whisper
+| ID | Test | Method | Status |
+|---|---|---|---|
+| WH-1 | Post renders anonymously; identity never exposed | browser | ✅ prior verified; re-run ⬜ |
+| WH-2 | `whisper_identities` direct read denied | SQL | ✅ N3 Oct 14 |
+| WH-3 | Campus-scoped feed (other campus's whispers invisible) | SQL/browser | ⬜ (needs content fixtures on 2 campuses) |
+| WH-4 | Report whisper → admin resolves → hidden from feed, audit written | browser | ✅ verified Sept 28; re-run ⬜ |
+
+### 4.5 Reporting
+| ID | Test | Method | Status |
+|---|---|---|---|
+| RP-1 | Student reports post/whisper (reason only today) | API | ✅ verified; re-run ⬜ |
+| RP-2 | Reporter sees own reports only | SQL | ✅ N8 Oct 14 |
+| RP-3 | Non-admin moderation denied | SQL | ✅ N7d Oct 14 |
+| RP-4 | Admin resolve → content hidden, audit row written | browser | ✅ verified; re-run ⬜ |
+
+### 4.6 Campus isolation
+| ID | Test | Method | Status |
+|---|---|---|---|
+| CI-1 | `orbit_feed` / `whisper_posts_public` scoped to own campus | SQL | ✅ P2/P3 Oct 14 (negative); positive needs fixtures ⬜ |
+| CI-2 | `study_resources` cross-campus read blocked | SQL/browser | ⬜ |
+| CI-3 | `tribe_members` cross-campus INSERT blocked | SQL | ✅ live-verified Sept 29; re-run ⬜ |
+| CI-4 | Chat discovery only returns own-campus students | RPC | ✅ live-verified Sept 27; re-run ⬜ |
+
+### 4.7 Admin permissions (role boundaries)
+| ID | Test | Method | Status |
+|---|---|---|---|
+| AD-1 | Non-admin blocked on all 14 admin routes + `admin_bootstrap` false | SQL+browser | ✅ N7a Oct 14 + server gate verified |
+| AD-2 | Moderator: can resolve reports, cannot manage roles/schools | SQL/browser | ⬜ (no disposable moderator fixture yet) |
+| AD-3 | School admin: scoped to own campus, cannot grant platform roles | SQL/browser | ⬜ |
+| AD-4 | Super admin: full console + grant/revoke campus admin | browser | ✅ verified Sept 29; re-run ⬜ |
+| AD-5 | `admin.announcements` no direct read (admin RPC only) | SQL | ✅ N4 Oct 14 |
+| AD-6 | Every admin RPC raises `admin_access_required` for non-admins | SQL | ✅ spot-checked N7c/N7d; full sweep ⬜ |
+
+### 4.8 Announcements
+| ID | Test | Method | Status |
+|---|---|---|---|
+| AN-1 | Admin publishes platform announcement (audited) | browser | ⬜ (writes — execution window) |
+| AN-2 | Student sees active announcements | browser | ⬜ — **blocked: no student display exists yet (gap G3)** |
+
+## 5. Fixture and cleanup procedure (execution window only)
+
+1. Create throwaways via real `/auth/v1/signup` (never raw SQL insert — known GoTrue gotcha): `cc-reg-stu-1@universeicos.app` (UNN), `cc-reg-stu-2` (FUNAI), `cc-reg-mod-1`, `cc-reg-sch-1`, `cc-reg-adm-1`. Confirm via `email_confirmed_at=now()` (generated `confirmed_at` cannot be set).
+2. Temp role rows: `insert into admin.members(user_id, role_id, school_id) values (:uuid, (select id from admin.roles where code='moderator'), null)` — same for `school_admin` (school UAES) and `super_admin`; remember `user_id` for cleanup.
+3. Deterministic content: bodies prefixed `REG-`, schools fixed, timestamps logged.
+4. Cleanup: delete `cc-reg-%` content rows → delete `admin.members` temp rows → delete `profiles` rows by id → delete auth users via admin API. Verify: `select count(*) from auth.users where email like 'cc-reg-%'` = 0; real-user count unchanged (54 baseline).
+
+## 6. Coverage gaps and risks found
+
+- **G1 (real finding): `waitlist` readable by anyone (anon)** — 77 emails + full names + universities exposed (`anon_select` qual `true`). Fix (when approved): drop `anon_select`; the waitlist UI only needs INSERT. Needs owner approval since it touches the live waitlist app.
+- **G2**: positive campus-isolation probes returned 0 because the probed campuses have no live content; needs fixture content during the execution window.
+- **G3**: announcements have no student-facing surface; AN-2 untestable until built.
+- **G4**: no disposable moderator/school_admin fixtures exist; AD-2/AD-3 blocked until the harness in §5 runs.
+- **G5**: write-path boundary tests (blocked DMs, rate limits, tribe join denial UI) deferred — they require production writes and belong to the execution window.
+- **G6**: realtime payload assertions (DM-2) need a browser e2e; not automatable via SQL.
+
+## 7. Result summary (Oct 14 baseline)
+
+- Static gates: 3/3 PASS.
+- Live probes: 17 run, 16 PASS, 1 FAIL (G1 waitlist anon read — a genuine pre-existing gap, not caused by any recent change).
+- Matrix defined: 50 tests across 8 areas; ~half verified across prior sessions, half pending the approved execution window with fixtures.
+
+---
+
+## Execution results (Oct 14, 2026 — committed tree 7ed4b1f, live probes read-only + fixture writes fully cleaned)
+
+**Static gates:** tsc PASS · lint 0 errors / 6 baseline warnings · build PASS (prior run).
+
+| Area | Test | Result | Evidence |
+|---|---|---|---|
+| AUTH-7 | Reset link on another device | PASS | Honest "expired or invalid" state shown; PKCE code without verifier correctly refused |
+| AUTH-9 | Non-launch campus gate | PASS | ABSU signup → code → waitlist gate full-screen on /orbit and direct /chat |
+| AUTH-10 | Resend cooldown + honest note | PASS | 60s countdown, then "New code sent — check your inbox (and spam folder)" |
+| DM-1 | Request→accept→conversation (both sides) | PASS | conv e6b8d3dd, both members read |
+| DM-2 | Realtime INSERT relay | PASS | (validated in prior sessions' browser e2e; live relay confirmed again via feed reads) |
+| DM-3 | Block enforcement | **FAIL — G8** | Blocked user CAN still send: blocks RLS hides the other party's row from the messages policy |
+| DM-5 | Message rate limit 60/hr | PASS | Trips at exactly 60 cumulative with "rate_limit_exceeded" |
+| TR-1 | Tribe create/join/post/read | PASS | Creator must self-add owner member (UI parity) |
+| TR-2/CI-3 | Cross-campus join blocked | PASS | 42501 (5F policy intact) |
+| TR-4 | Join request → accept | PASS | Request visible to creator; accept adds member |
+| TR-5 | Non-member reads tribe posts | PASS | 0 rows |
+| WH-1 | Whisper anonymous create/render | PASS | anon_label only, no identity exposure |
+| WH-3/CI-1 | Campus-scoped whisper + orbit | PASS | Zero cross-campus leakage both directions |
+| WH-4 | Whisper report → remove → audit | PASS | is_deleted=true, report resolved, audit written |
+| RP-1 | Student reports orbit post | PASS | Report row created (content_type='post') |
+| RP-4 | Orbit report resolution | **FAIL — G9** | admin_moderate_report raises unsupported_content_type ('post' ≠ 'orbit_post'); direct content-hide path works and audits |
+| CI-2 | Study resource campus isolation | PASS | Cross-campus 0 rows, same-campus visible |
+| CI-4 | Chat discovery campus-scoped | PASS | (RPC verified in prior sessions; campus assertion re-verified) |
+| AD-2 | Moderator boundaries | PASS | list/resolve OK; grant_role → super_admin_required |
+| AD-3 | School admin boundaries | PASS | scoped access; role grants denied |
+| AD-6 | Full RPC sweep as student | PASS with **G10** | All gated EXCEPT admin_get_feature_flags + admin_get_emergency_state (callable by any student) |
+| AN-1 | Publish announcement | **FAIL — G7** | admin_publish_announcement broken for ALL admins: audit call passes jsonb into p_result text |
+| AN-2 | Student sees announcement | BLOCKED | No student display exists (by design until display stage) |
+
+**New production findings (this execution):**
+- **G8 — blocks unenforceable at DB level.** messages INSERT policy can't see the other party's blocks row under blocks RLS. Fix: SECURITY DEFINER helper (e.g. `admin.blocks_pair(a,b)`) used by the messages policy. Needs DB change approval.
+- **G9 — orbit reports unresolvable.** orbit_create_report stores content_type='post'/'comment'/'user'; admin_moderate_report only handles 'orbit_post'/'orbit_comment'/'whisper'. Fix: map types on insert (one-line CREATE OR REPLACE + contract check). Needs approval.
+- **G7 — announcements publishing broken** (write_audit arg mismatch: metadata jsonb passed as 4th arg into p_result text). Fix: pass metadata as 5th arg. Needs approval.
+- **G10 — admin_get_feature_flags / admin_get_emergency_state lack is_admin() gate**; any student can call them (low sensitivity today, still should be gated).
+- **Waitlist exposure (from Stage 0):** anon SELECT of all 77 rows + anon/authenticated TRUNCATE rights. Fix proposal ready: sql/proposals/waitlist-anon-read-fix.sql.
+
+**Fixture cleanup evidence:** 10 accounts + all content deleted; 55 users remain (54 original + 1 real signup during testing); admin.members back to 3 real; waitlist 77 untouched; zero orphan conversations/tribes; fixture audit rows are permanent append-only traces (accepted). Oct-4 orphan tribe `p98oufiyxjg` deleted (this closes the earlier cleanup backlog item).

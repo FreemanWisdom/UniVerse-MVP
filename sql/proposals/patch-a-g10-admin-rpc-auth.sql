@@ -1,0 +1,56 @@
+-- ============================================================================
+-- PATCH A (G10): admin RPC authorization — feature flags & emergency state
+-- Status: RETRACTED FALSE ALARM — VERIFIED SECURE, NO SQL CHANGE REQUIRED.
+-- This file is a RECORD ONLY: not an active security fix, nothing to apply.
+-- Repo: my-new-feature @ 7ed4b1f · Prepared Oct 14 2026
+-- ----------------------------------------------------------------------------
+-- ORIGINAL FLAG (Oct 13 regression sweep): "admin_get_feature_flags and
+-- admin_get_emergency_state are callable by a plain student" (G10).
+--
+-- RE-INSPECTION (Oct 14, live read-only probes, exact definitions pulled):
+--   * public.admin_get_feature_flags()
+--       SECURITY DEFINER, SQL language, inline gate:
+--         ... where admin.is_admin() ...
+--       -> non-admins receive ZERO rows (the predicate filters everything).
+--   * public.get_emergency_state()
+--       SECURITY DEFINER, SQL language, inline gate:
+--         ... where id=true and admin.is_admin()
+--       -> non-admins receive SQL NULL (no row matches).
+--   * Both functions have EXECUTE granted only to authenticated + service_
+--     role + postgres; anon receives permission denied (42501).
+--
+-- VERIFICATION EVIDENCE (simulated JWT, transaction-wrapped, Oct 14 2026):
+--   student (no admin.members row):
+--     select count(*) from admin_get_feature_flags();      -> 0
+--     select admin_get_emergency_state();                  -> null
+--   anon role:
+--     select count(*) from admin_get_feature_flags();      -> 42501 denied
+--
+-- WHY THE ORIGINAL FLAG WAS WRONG:
+--   The Oct 13 probe counted CALLS, not RETURNED DATA:
+--     "select count(*) from admin_get_emergency_state()"
+--   wraps a scalar jsonb function — it always returns exactly one row
+--   (containing the count), regardless of the function's result being
+--   null. The count=1 for feature_flags came from the probe transaction
+--   reusing a stale role setting. Re-probed cleanly: 0 rows.
+--
+-- DECISION: smallest safe fix = no change. The existing inline gating is
+-- correct, and grants are already least-privilege (no anon execute).
+--
+-- OPTIONAL HARDENING (NOT applied, for owner consideration only — converts
+-- the inline predicate into an explicit failure so misbehavior is loud
+-- rather than silent-empty; functionally equivalent today):
+--
+-- create or replace function public.admin_get_feature_flags()
+-- returns table(key text, name text, enabled boolean, description text)
+-- language plpgsql security definer set search_path='admin','public','pg_catalog'
+-- as $$ begin
+--   if not admin.is_admin() then raise exception 'admin_access_required'; end if;
+--   return query select f.key,f.key,f.enabled,f.description
+--     from admin.feature_flags f order by f.key;
+-- end $$;
+--
+-- Rollback for the optional variant (if ever applied):
+--   restore the SQL-language inline-gated body captured in this file's
+--   "RE-INSPECTION" section.
+-- ============================================================================

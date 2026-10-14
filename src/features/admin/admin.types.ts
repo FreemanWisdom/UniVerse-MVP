@@ -93,7 +93,7 @@ export interface AdminListedUser {
 }
 
 /** Platform roles, mirrors admin.roles (live-verified). */
-export type AdminRoleName = "super_admin" | "platform_admin" | "school_admin" | "moderator";
+export type AdminRoleName = "super_admin" | "platform_admin" | "school_admin" | "moderator" | "campus_ambassador";
 
 /** Row from admin_list_admins() — the administrator roster (Phase 7). */
 export interface AdminMember {

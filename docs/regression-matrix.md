@@ -138,6 +138,32 @@ Browser e2e method = Playwright against a build; API method = direct PostgREST/G
 
 Implementation: `sql/announcements-student-read.sql` (applied Oct 14, rollback alongside) + student page `src/app/(student)/announcements/` + admin console scope/attribution UI. Test window fixtures `cc-ann-*` fully cleaned (profiles 55, waitlist 77, roster 3); publish audit rows are permanent (append-only, pre-flagged).
 
+### 4.9 Campus Ambassador (shipped Oct 14 2026)
+| ID | Test | Method | Status |
+|---|---|---|---|
+| AM-1 | Grant campus_ambassador via amended admin_grant_role (school required) | simulated JWT as super admin | ✅ PASS |
+| AM-2 | Grant without school → school_required_for_campus_ambassador | simulated JWT | ✅ PASS (22023) |
+| AM-3 | Grant to active admin → ambassador_incompatible_role guard | simulated JWT | ✅ PASS (22023) |
+| AM-4 | Grant by non-super → super_admin_required | simulated JWT | ✅ PASS (42501) |
+| AM-5 | Non-ambassador: scope null; stats/list/escalate → ambassador_access_required | simulated JWT | ✅ PASS |
+| AM-6 | Ambassador scope = own campus only (membership AND profile.university must match) | simulated JWT | ✅ PASS |
+| AM-7 | Campus stats: counts only, campus-correct (UNN vs FUNAI) | simulated JWT | ✅ PASS |
+| AM-8 | Report list: campus-isolated, actionable statuses only (pending+escalated), metadata-only shape {id, content_type, reason, status, created_at} | simulated JWT | ✅ PASS |
+| AM-9 | Escalate own-campus report: status→escalated, audit row written, reviewed_by/at stay null | simulated JWT | ✅ PASS |
+| AM-10 | Escalate same report → idempotent {ok, already_escalated:true}, no 2nd audit row | simulated JWT | ✅ PASS |
+| AM-11 | Escalate other-campus report → report_outside_scope (42501) | simulated JWT | ✅ PASS |
+| AM-12 | Escalate resolved/dismissed report → report_already_resolved | simulated JWT | ✅ PASS |
+| AM-13 | Rate limit: 10 escalations/hour per ambassador, then rate_limit_exceeded | simulated JWT (11 attempts) | ✅ PASS |
+| AM-14 | Revoke via admin_grant_role(enabled=false) → scope null, RPCs deny immediately | simulated JWT | ✅ PASS |
+| AM-15 | Ambassador NOT admin: is_admin()=false; admin_moderate_report/admin_grant_role → admin_access_required/super_admin_required | simulated JWT | ✅ PASS |
+| AM-16 | anon denied EXECUTE on all 4 ambassador RPCs (42501); _report_campus helper postgres-only | simulated JWT (role anon) | ✅ PASS |
+| AM-17 | Admin console: Users manage panel appoints ambassador w/ school picker; blocked-on-admin surfaces friendly guard message | browser | ✅ PASS |
+| AM-18 | Ambassador student: Settings shows Ambassador dashboard row; dashboard renders stats + campus-scoped reports; escalate from UI flips status | browser | ✅ PASS |
+| AM-19 | Plain student: no Settings entry; direct URL → "Not available" | browser | ✅ PASS |
+| AM-20 | 390px dashboard: no horizontal overflow, zero console errors | browser | ✅ PASS |
+
+Implementation: `sql/ambassador-program.sql` (applied Oct 14, rollback alongside) + client files in `src/services/ambassador/`, `src/app/(student)/settings/ambassador/`, admin Users manage panel card. Escalation is NO schema change: `status='escalated'` + audit log (reviewed_by/reviewed_at untouched). Ambassadors can never ban, remove content, grant roles, or read private messages (AM-15 hard boundaries, existing gates untouched). Test fixtures `cc-amb-*` fully cleaned (profiles 55, waitlist 77, roster 3, zero AMB- reports/content, escalate counters cleared); grant/revoke/escalate audit rows are permanent (append-only, pre-flagged).
+
 ## 5. Fixture and cleanup procedure (execution window only)
 
 1. Create throwaways via real `/auth/v1/signup` (never raw SQL insert — known GoTrue gotcha): `cc-reg-stu-1@universeicos.app` (UNN), `cc-reg-stu-2` (FUNAI), `cc-reg-mod-1`, `cc-reg-sch-1`, `cc-reg-adm-1`. Confirm via `email_confirmed_at=now()` (generated `confirmed_at` cannot be set).

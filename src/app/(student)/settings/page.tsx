@@ -8,6 +8,8 @@ import { PasswordSettings } from "@/features/settings/components/password-settin
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ReplayIntroButton } from "@/components/onboarding/replay-intro-button";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
+import { createClient } from "@/lib/supabase/server";
+import { getAmbassadorScope } from "@/services/ambassador/ambassador.service";
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -49,6 +51,16 @@ export default async function SettingsPage() {
   }
 
   const emailConfirmed = Boolean(user.email_confirmed_at);
+
+  // Ambassador section is rendered only when the server-side scope RPC says
+  // this user is an active campus ambassador (the dashboard re-checks).
+  const supabase = await createClient();
+  let ambassadorScope = null;
+  try {
+    ambassadorScope = await getAmbassadorScope(supabase);
+  } catch {
+    ambassadorScope = null;
+  }
 
   return (
     <div className="max-w-2xl mx-auto w-full space-y-8">
@@ -95,6 +107,23 @@ export default async function SettingsPage() {
           </SettingRow>
         </div>
       </section>
+
+      {/* Campus Ambassador */}
+      {ambassadorScope ? (
+        <section className="space-y-3" aria-label="Campus ambassador">
+          <SectionHeading>Campus Ambassador</SectionHeading>
+          <div className="space-y-2">
+            <SettingRow
+              title="Ambassador dashboard"
+              description={`Campus pulse and reports for ${ambassadorScope.school_name}`}
+            >
+              <Link href="/settings/ambassador">
+                <Button variant="outline" size="sm" className="min-h-[36px]">Open</Button>
+              </Link>
+            </SettingRow>
+          </div>
+        </section>
+      ) : null}
 
       {/* Appearance */}
       <section className="space-y-3" aria-label="Appearance">

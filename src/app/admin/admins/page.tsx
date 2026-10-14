@@ -86,6 +86,10 @@ export default function AdminAdminsPage() {
       setError("Pick a school for this school admin first.");
       return;
     }
+    if (role === "campus_ambassador" && enabled && !schoolId) {
+      setError("Pick a campus for this ambassador first.");
+      return;
+    }
     if (
       !window.confirm(
         `${enabled ? "GRANT" : "REVOKE"} "${label}" for ${m.full_name || m.email}? This changes what they can access.`
@@ -102,7 +106,7 @@ export default function AdminAdminsPage() {
         m.user_id,
         role,
         enabled,
-        role === "school_admin" ? schoolId : null
+        role === "school_admin" || role === "campus_ambassador" ? schoolId : null
       );
       setMessage(`${label} ${enabled ? "granted to" : "revoked from"} ${m.full_name || m.email}.`);
       setManaging(null);
@@ -183,7 +187,7 @@ export default function AdminAdminsPage() {
                 ))}
               </AdminSelect>
             </label>
-            {role === "school_admin" ? (
+            {role === "school_admin" || role === "campus_ambassador" ? (
               <label className="block text-xs font-medium text-slate-600">
                 Campus
                 <AdminSelect

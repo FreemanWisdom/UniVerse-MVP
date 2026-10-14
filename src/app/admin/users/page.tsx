@@ -10,6 +10,7 @@ import {
   listAdminSchools,
   setAdminUserRestrictions,
   setCampusAdmin,
+  setCampusAmbassador,
 } from "@/services/admin/admin.service";
 import { useSearchParams } from "next/navigation";
 import {
@@ -76,6 +77,7 @@ function AdminUsersPageInner() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [adminSchoolId, setAdminSchoolId] = useState("");
+  const [ambassadorSchoolId, setAmbassadorSchoolId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -146,6 +148,31 @@ function AdminUsersPageInner() {
       await reload();
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "The action failed.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const runAmbassador = async (user: AdminListedUser, enabled: boolean) => {
+    if (!ambassadorSchoolId) return;
+    setBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      await setCampusAmbassador(createClient(), user.id, ambassadorSchoolId, enabled);
+      setMessage(
+        enabled
+          ? `Campus ambassador appointed for ${user.full_name ?? user.email}.`
+          : `Campus ambassador removed for ${user.full_name ?? user.email}.`
+      );
+    } catch (ambassadorError) {
+      setError(
+        ambassadorError instanceof Error && ambassadorError.message.includes("ambassador_incompatible_role")
+          ? "Blocked: admins cannot be campus ambassadors at the same time."
+          : ambassadorError instanceof Error
+            ? ambassadorError.message
+            : "Could not change ambassador status."
+      );
     } finally {
       setBusy(false);
     }
@@ -363,6 +390,49 @@ function AdminUsersPageInner() {
                           size="sm"
                           disabled={busy || !adminSchoolId}
                           onClick={() => void runCampusAdmin(user, false)}
+                        >
+                          Remove
+                        </AdminButton>
+                      </div>
+                    </div>
+
+
+                    <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Campus ambassador
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Appoint this student as campus ambassador. Ambassadors see campus
+                        stats and report context, and can escalate reports to moderators —
+                        they are not admins.
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <select
+                          aria-label="School for campus ambassador"
+                          value={ambassadorSchoolId}
+                          onChange={(event) => setAmbassadorSchoolId(event.target.value)}
+                          className="h-9 min-w-52 rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 focus:border-blue-500 focus:outline-none"
+                        >
+                          <option value="">Select school…</option>
+                          {schools.map((school) => (
+                            <option key={school.id} value={school.id}>
+                              {school.name}
+                            </option>
+                          ))}
+                        </select>
+                        <AdminButton
+                          variant="secondary"
+                          size="sm"
+                          disabled={busy || !ambassadorSchoolId}
+                          onClick={() => void runAmbassador(user, true)}
+                        >
+                          Appoint ambassador
+                        </AdminButton>
+                        <AdminButton
+                          variant="ghost"
+                          size="sm"
+                          disabled={busy || !ambassadorSchoolId}
+                          onClick={() => void runAmbassador(user, false)}
                         >
                           Remove
                         </AdminButton>

@@ -1,8 +1,6 @@
-# Campus Ambassador Feature — Design Proposal (Stage 2, PROPOSAL ONLY)
+# Campus Ambassador Feature — Design Proposal
 
-Status: PROPOSED — no SQL applied, no code written. Awaiting owner review.
-Repo state reviewed: `my-new-feature` @ 7ed4b1f. All catalog facts below were
-read from production in read-only mode (never written).
+**Status: IMPLEMENTED Oct 14 2026** (owner directive): `sql/ambassador-program.sql` applied to production (rollback alongside) + client shipped. Open decisions resolved at implementation: (1) escalation storage = status + audit log, NO new columns (reviewed_by/reviewed_at untouched); (2) who grants = unchanged admin_grant_role path, super_admin-only (school_admin self-service deferred); (3) added an admin-compatibility guard — granting campus_ambassador to an active admin is refused (admin.members is one row per user; without the guard the upsert would silently strip an admin role). Verified by matrix rows AM-1..AM-20 (docs/regression-matrix.md §4.9). Original proposal below.
 
 ## Current facts (verified)
 

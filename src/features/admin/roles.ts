@@ -6,6 +6,7 @@ export const ADMIN_ROLES: Array<{ value: AdminRoleName; label: string }> = [
   { value: "platform_admin", label: "Platform admin" },
   { value: "school_admin", label: "School admin (campus-scoped)" },
   { value: "moderator", label: "Moderator" },
+  { value: "campus_ambassador", label: "Campus ambassador (student program, campus-scoped)" },
 ];
 
 export const ROLE_LABEL: Record<AdminRoleName, string> = {
@@ -13,6 +14,7 @@ export const ROLE_LABEL: Record<AdminRoleName, string> = {
   platform_admin: "Platform admin",
   school_admin: "School admin",
   moderator: "Moderator",
+  campus_ambassador: "Campus ambassador",
 };
 
 /** Friendly copy for the error codes admin_grant_role can raise. */
@@ -26,6 +28,9 @@ export const ADMIN_ROLE_ERRORS: Record<string, string> = {
   role_not_configured: "That role is not configured in the backend. Contact the platform team.",
   last_super_admin_lockout_protection:
     "Blocked: this would leave the platform with no active super admin.",
+  school_required_for_campus_ambassador: "Campus ambassadors need a campus — pick a school first.",
+  ambassador_incompatible_role:
+    "Blocked: that person holds an admin role. Ambassadors are students — admins cannot be ambassadors at the same time.",
   authentication_required: "Your session expired — sign in again.",
 };
 

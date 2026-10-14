@@ -213,6 +213,26 @@ export async function setCampusAdmin(
  * convenience only). school_admin requires schoolId; platform roles
  * normalize it to null server-side.
  */
+/**
+ * Appoints or removes a campus ambassador for a school. Backend:
+ * admin_grant_role with role='campus_ambassador' — super-admin-gated,
+ * school required, refuses active admins (one membership row per user).
+ */
+export async function setCampusAmbassador(
+  supabase: SupabaseClient,
+  userId: string,
+  schoolId: string,
+  enabled: boolean
+): Promise<{ ok: boolean; role: string }> {
+  const result = await rpc<{ ok: boolean; role: string }>(supabase, "admin_grant_role", {
+    p_user_id: userId,
+    p_role: "campus_ambassador",
+    p_school_id: schoolId,
+    p_enabled: enabled,
+  });
+  return result;
+}
+
 export async function grantAdminRole(
   supabase: SupabaseClient,
   userId: string,

@@ -330,15 +330,26 @@ export async function importStudentRows(
   });
 }
 
+export type AnnouncementAttributionMode = "official" | "pseudonymous";
+
+/**
+ * Publishes an announcement. Scope is validated server-side:
+ * 'global' (legacy 'platform' is normalized) or 'campus:<exact schools.name>'.
+ * Pseudonymous attribution requires a non-empty public byline.
+ */
 export async function publishAdminAnnouncement(
   supabase: SupabaseClient,
   scope: string,
   title: string,
-  body: string
+  body: string,
+  attributionMode: AnnouncementAttributionMode = "official",
+  displayName?: string | null
 ): Promise<{ ok: boolean; announcement_id: string }> {
   return rpc<{ ok: boolean; announcement_id: string }>(supabase, "admin_publish_announcement", {
     p_scope: scope,
     p_title: title,
     p_body: body,
+    p_attribution_mode: attributionMode,
+    p_display_name: displayName ?? null,
   });
 }

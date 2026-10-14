@@ -8,6 +8,7 @@ export const siteConfig = {
     { title: "Whisper", href: "/whisper" },
     { title: "Chat", href: "/chat" },
     { title: "Notifications", href: "/notifications" },
+    { title: "Announcements", href: "/announcements" },
     { title: "Profile", href: "/profile" },
     { title: "Settings", href: "/settings" },
   ],

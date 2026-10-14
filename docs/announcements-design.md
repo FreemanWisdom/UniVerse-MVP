@@ -1,7 +1,6 @@
-# Student-Facing Announcements — Design Proposal (PROPOSAL ONLY)
+# Student-Facing Announcements — Design Proposal
 
-Status: PROPOSED — no SQL applied, no code written. Awaiting owner review.
-Repo state reviewed: `my-new-feature` @ 7ed4b1f.
+**Status: IMPLEMENTED Oct 14 2026** (owner directive): `sql/announcements-student-read.sql` applied to production (rollback alongside), student page + nav shipped, admin console scope/attribution picker shipped. Decisions taken at implementation: single 5-arg `admin_publish_announcement` with defaults (old 3-arg calls stay valid; stale 3-arg overload dropped) and legacy `'platform'` scope normalized to `'global'` on write so the previously-deployed console kept working with zero regression window. Verified by matrix rows AN-1..AN-12 (docs/regression-matrix.md §4.8). Original proposal below.
 
 ## Current facts (verified)
 

@@ -123,8 +123,20 @@ Browser e2e method = Playwright against a build; API method = direct PostgREST/G
 ### 4.8 Announcements
 | ID | Test | Method | Status |
 |---|---|---|---|
-| AN-1 | Admin publishes platform announcement (audited) | browser | ⬜ (writes — execution window) |
-| AN-2 | Student sees active announcements | browser | ⬜ — **blocked: no student display exists yet (gap G3)** |
+| AN-1 | Admin publishes announcement, audited with scope + attribution | browser (admin console) | ✅ PASS (Oct 14 — cc-ann-* window, cleaned) |
+| AN-2 | Student sees active global + own-campus announcements | browser (/announcements) | ✅ PASS (Oct 14 — student-facing page shipped, gap G3 closed) |
+| AN-3 | Campus isolation: UNN student does not see campus:FUNAI row (and inverse) | browser + simulated JWT | ✅ PASS |
+| AN-4 | `is_active=false` hidden from student read RPC | simulated JWT | ✅ PASS |
+| AN-5 | Student read shape contains no `published_by` | simulated JWT (jsonb_object_keys) | ✅ PASS |
+| AN-6 | anon denied EXECUTE on `get_active_announcements` | simulated JWT (role anon) | ✅ PASS (42501) |
+| AN-7 | Unauthenticated caller → `not_authenticated` | simulated JWT (no sub) | ✅ PASS |
+| AN-8 | Direct `admin.announcements` student SELECT stays denied | simulated JWT | ✅ PASS (42501) |
+| AN-9 | Publish rejects unknown campus / invalid scope / pseudonymous w/o byline / bad attribution | simulated JWT | ✅ PASS (4 error codes) |
+| AN-10 | Non-admin publish → `admin_access_required` | simulated JWT | ✅ PASS |
+| AN-11 | Legacy `'platform'` scope normalized to `'global'` on write (old console compat) | simulated JWT | ✅ PASS |
+| AN-12 | 390px mobile: nav entry present, no horizontal overflow, zero console errors | browser | ✅ PASS |
+
+Implementation: `sql/announcements-student-read.sql` (applied Oct 14, rollback alongside) + student page `src/app/(student)/announcements/` + admin console scope/attribution UI. Test window fixtures `cc-ann-*` fully cleaned (profiles 55, waitlist 77, roster 3); publish audit rows are permanent (append-only, pre-flagged).
 
 ## 5. Fixture and cleanup procedure (execution window only)
 

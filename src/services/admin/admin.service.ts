@@ -18,7 +18,7 @@ import {
   AdminSystemHealth,
 } from "@/features/admin/admin.types";
 
-async function rpc<T>(
+export async function rpc<T>(
   supabase: SupabaseClient,
   name: string,
   args: Record<string, unknown>

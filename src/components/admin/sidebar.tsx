@@ -31,6 +31,7 @@ const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
     items: [
       { title: "Users", href: "/admin/users", icon: <IconUsers size={16} /> },
       { title: "Administrators", href: "/admin/admins", icon: <IconShieldCheck size={16} /> },
+      { title: "Admin Access", href: "/admin/admin-access", icon: <IconShieldCheck size={16} /> },
       { title: "Verification", href: "/admin/verification", icon: <IconShieldCheck size={16} /> },
       { title: "Schools", href: "/admin/schools", icon: <IconSchool size={16} /> },
     ],

@@ -164,6 +164,39 @@ Implementation: `sql/announcements-student-read.sql` (applied Oct 14, rollback a
 
 Implementation: `sql/ambassador-program.sql` (applied Oct 14, rollback alongside) + client files in `src/services/ambassador/`, `src/app/(student)/settings/ambassador/`, admin Users manage panel card. Escalation is NO schema change: `status='escalated'` + audit log (reviewed_by/reviewed_at untouched). Ambassadors can never ban, remove content, grant roles, or read private messages (AM-15 hard boundaries, existing gates untouched). Test fixtures `cc-amb-*` fully cleaned (profiles 55, waitlist 77, roster 3, zero AMB- reports/content, escalate counters cleared); grant/revoke/escalate audit rows are permanent (append-only, pre-flagged).
 
+### 4.10 Admin Schools discovery + Super Admin invitations (shipped Oct 15 2026)
+| ID | Test | Result |
+|----|------|--------|
+| SCH-1 | Schools default view = exactly the five pioneer campuses (launch.ts names) | PASS (e2e) |
+| SCH-2 | Non-pioneer school absent from default view | PASS (e2e) |
+| SCH-3 | Search finds zero-user non-pioneer school (ATBU) | PASS (e2e) |
+| SCH-4 | Search results distinguish Pioneer vs Community | PASS (e2e) |
+| SCH-5 | SQL-side pagination (page change + prev restore) | PASS (e2e) |
+| SCH-6 | Details: registered + waitlisted counts vs ground truth | PASS (e2e + RPC) |
+| SCH-7 | Active users labeled unavailable (no activity data exists) | PASS (e2e) |
+| SCH-8 | anon + non-admin denied on all 3 school RPCs | PASS (simulated JWT) |
+| SCH-9 | User list search + pagination, safe columns only | PASS (e2e + RPC) |
+| INV-1 | create: non-super-admin/anon denied | PASS (simulated JWT) |
+| INV-2 | create refuses email of an active super admin | PASS |
+| INV-3 | create: rate limit 3/hour per admin | PASS |
+| INV-4 | token stored as sha256 hash only; raw never persisted | PASS |
+| INV-5 | duplicate pending invitation for same email refused | PASS |
+| INV-6 | accept requires session email == invitee email | PASS |
+| INV-7 | accept grants super_admin + records accepted_by + audit | PASS |
+| INV-8 | replay / garbage token refused (single-use) | PASS (e2e + RPC) |
+| INV-9 | revoked and expired tokens refused | PASS |
+| INV-10 | revoke restricted to super admin | PASS |
+| INV-11 | list shows no token_hash; effective status incl. expired | PASS |
+| INV-12 | accept page reachable pre-login; full UI accept flow | PASS (e2e) |
+| SCR-A | schools/admin-access/security-events scroll + 390px no overflow | PASS (e2e) |
+
+Notes: invitations table RLS-on with no client grants (RPC-only). Pending (1) list
+rendered for the invited email; Resend invite + confirmation emails delivered
+(noreply@universeicos.app). Fixtures cc-acc-* (3 raw + 3 UI accounts) fully
+cleaned: profiles/wallet counts back to baseline +2 genuine new signups, roster
+3 original admins, invitations table empty. Invitation audit rows permanent
+(pre-flagged).
+
 ## 5. Fixture and cleanup procedure (execution window only)
 
 1. Create throwaways via real `/auth/v1/signup` (never raw SQL insert — known GoTrue gotcha): `cc-reg-stu-1@universeicos.app` (UNN), `cc-reg-stu-2` (FUNAI), `cc-reg-mod-1`, `cc-reg-sch-1`, `cc-reg-adm-1`. Confirm via `email_confirmed_at=now()` (generated `confirmed_at` cannot be set).

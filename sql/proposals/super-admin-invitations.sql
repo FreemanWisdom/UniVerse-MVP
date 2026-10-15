@@ -1,7 +1,7 @@
 -- ============================================================================
 -- UniVerse ICOS — Super Admin invitation flow (PROPOSAL, NOT APPLIED)
 -- ============================================================================
--- STATUS: PROPOSAL — NOT APPLIED. Written Oct 15 2026 for the Schools /
+-- STATUS: APPLIED (Oct 15 2026). APPLIED to production Oct 15 2026 and live-verified (INV-1..12). Runtime fixes during verification: rate helper column window_started_at; extensions.gen_random_bytes qualification; write_audit ::text casts + jsonb metadata; anon+PUBLIC execute revoked from list RPC.
 -- Scrolling / Super Admin Invitations milestone. Blocked on applying: the
 -- Supabase management access token expired mid-session; this file applies
 -- ONLY after a live read-only preflight (see PREFLIGHT) and owner go-ahead.
@@ -132,16 +132,16 @@ declare
   v_bucket text := 'create_invitation:' || p_user::text;
   v_count int;
 begin
-  insert into admin.rate_limit_counters (bucket_key, window_start, attempt_count)
+  insert into admin.rate_limit_counters (bucket_key, window_started_at, attempt_count)
   values (v_bucket, now(), 1)
   on conflict (bucket_key) do update
     set attempt_count = case
-          when rate_limit_counters.window_start < now() - interval '1 hour' then 1
+          when rate_limit_counters.window_started_at < now() - interval '1 hour' then 1
           else rate_limit_counters.attempt_count + 1
         end,
-        window_start = case
-          when rate_limit_counters.window_start < now() - interval '1 hour' then now()
-          else rate_limit_counters.window_start
+        window_started_at = case
+          when rate_limit_counters.window_started_at < now() - interval '1 hour' then now()
+          else rate_limit_counters.window_started_at
         end;
   select attempt_count into v_count
   from admin.rate_limit_counters where bucket_key = v_bucket;
@@ -211,7 +211,7 @@ begin
   perform admin._invitation_rate_limit(v_inviter);
 
   -- crypto-secure single-use token; store ONLY the sha256 hash
-  v_token := encode(gen_random_bytes(32), 'hex');
+  v_token := encode(extensions.gen_random_bytes(32), 'hex');
   v_hash  := encode(sha256(convert_to(v_token, 'UTF8')), 'hex');
 
   insert into admin.super_admin_invitations
@@ -222,9 +222,9 @@ begin
   perform admin.write_audit(
     'super_admin_invitation_created',
     'super_admin_invitation',
-    (select id from admin.super_admin_invitations where token_hash = v_hash),
+    (select id from admin.super_admin_invitations where token_hash = v_hash)::text,
     'success',
-    'Invitee: ' || v_email
+    jsonb_build_object('invitee_email', v_email, 'inviter', v_inviter)
   );
 
   return v_token;
@@ -264,9 +264,9 @@ begin
   perform admin.write_audit(
     'super_admin_invitation_revoked',
     'super_admin_invitation',
-    p_invitation_id,
+    p_invitation_id::text,
     'success',
-    'Revoked by admin'
+    jsonb_build_object('revoked_by', auth.uid())
   );
 
   return jsonb_build_object('ok', true);
@@ -356,9 +356,9 @@ begin
   perform admin.write_audit(
     'super_admin_invitation_accepted',
     'super_admin_invitation',
-    v_inv.id,
+    v_inv.id::text,
     'success',
-    'Accepted by invited user'
+    jsonb_build_object('accepted_by', auth.uid(), 'invitee_email', v_inv.invitee_email)
   );
 
   return jsonb_build_object('ok', true);
@@ -433,3 +433,5 @@ commit;
 --     accept → invitation_expired.
 -- V8. Revoked invitation: accept → invitation_invalid_or_used.
 -- V9. Rate limit: 4 creates within an hour → rate_limit_exceeded on the 4th.
+
+revoke execute on function public.admin_list_super_admin_invitations() from public, anon;

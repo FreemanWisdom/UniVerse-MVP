@@ -1,7 +1,7 @@
 -- ============================================================================
 -- UniVerse ICOS — Admin Schools discovery + details (PROPOSAL, NOT APPLIED)
 -- ============================================================================
--- STATUS: PROPOSAL — NOT APPLIED. Written Oct 15 2026. Applies only after a
+-- STATUS: APPLIED (Oct 15 2026). APPLIED to production Oct 15 2026 and live-verified (SCH-1..9). Preflight fixed: schools.slug (not tag), waitlist.joined_at (not created_at), profiles has NO created_at (joined via auth.users).
 -- live read-only preflight (the management token expired mid-session; the
 -- schools/waitlist/profiles column assumptions below are backed by repo
 -- evidence and prior live audits, recorded in the PREFLIGHT).
@@ -56,7 +56,7 @@
 --     (account_status/admin_note are column-grant-denied to clients since
 --     Phase 5C — this RPC is SECURITY DEFINER and reads it server-side for
 --     admins only, which is the established admin_list_users pattern.)
--- P3. public.waitlist has: university, email, created_at.
+-- P3. public.waitlist has: university, email, joined_at (preflight-corrected).
 -- P4. admin.is_admin() exists and is the console gate (it does).
 -- P5. Spot-check the mapping the counts rely on:
 --     select count(*) from public.profiles where university in
@@ -96,7 +96,7 @@ begin
 
   select count(*) into v_total
   from public.schools s
-  where v_q = '' or s.name ilike '%' || v_q || '%' or s.tag ilike '%' || v_q || '%';
+  where v_q = '' or s.name ilike '%' || v_q || '%' or s.slug ilike '%' || v_q || '%';
 
   select coalesce(jsonb_agg(row_data order by sort_name, row_id), '[]'::jsonb) into v_rows
   from (
@@ -105,17 +105,18 @@ begin
            jsonb_build_object(
              'id', s.id,
              'name', s.name,
-             'tag', s.tag,
+             'tag', s.slug,
              'registered_users',
                (select count(*) from public.profiles p where p.university = s.name),
              'waitlisted_users',
                (select count(*) from public.waitlist w where w.university = s.name),
              'new_users_30d',
                (select count(*) from public.profiles p
-                where p.university = s.name and p.created_at > now() - interval '30 days')
+                     join auth.users au on au.id = p.id
+                where p.university = s.name and au.created_at > now() - interval '30 days')
            ) as row_data
     from public.schools s
-    where v_q = '' or s.name ilike '%' || v_q || '%' or s.tag ilike '%' || v_q || '%'
+    where v_q = '' or s.name ilike '%' || v_q || '%' or s.slug ilike '%' || v_q || '%'
     order by s.name
     limit v_limit offset v_offset
   ) page;
@@ -148,7 +149,7 @@ begin
     raise exception 'admin_access_required' using errcode = '42501';
   end if;
 
-  select s.id, s.name, s.tag
+  select s.id, s.name, s.slug
   into v_school
   from public.schools s
   where s.id = p_school_id;
@@ -160,17 +161,19 @@ begin
   return jsonb_build_object(
     'id', v_school.id,
     'name', v_school.name,
-    'tag', v_school.tag,
+    'tag', v_school.slug,
     'registered_users',
       (select count(*) from public.profiles p where p.university = v_school.name),
     'waitlisted_users',
       (select count(*) from public.waitlist w where w.university = v_school.name),
     'new_users_30d',
       (select count(*) from public.profiles p
-       where p.university = v_school.name and p.created_at > now() - interval '30 days'),
+            join auth.users au on au.id = p.id
+       where p.university = v_school.name and au.created_at > now() - interval '30 days'),
     'new_users_7d',
       (select count(*) from public.profiles p
-       where p.university = v_school.name and p.created_at > now() - interval '7 days'),
+            join auth.users au on au.id = p.id
+       where p.university = v_school.name and au.created_at > now() - interval '7 days'),
     'registered_all_time',
       (select count(*) from public.profiles p where p.university = v_school.name)
   );
@@ -223,7 +226,7 @@ begin
 
   select coalesce(jsonb_agg(row_data order by row_created desc), '[]'::jsonb) into v_rows
   from (
-    select p.created_at as row_created,
+    select au.created_at as row_created,
            jsonb_build_object(
              'id', p.id,
              'full_name', p.full_name,
@@ -232,12 +235,13 @@ begin
              'is_verified', p.is_verified,
              'student_verified', p.student_verified,
              'account_status', p.account_status,
-             'created_at', p.created_at
+             'created_at', au.created_at
            ) as row_data
     from public.profiles p
+         join auth.users au on au.id = p.id
     where p.university = v_school.name
       and (v_q = '' or p.full_name ilike '%' || v_q || '%')
-    order by p.created_at desc
+    order by au.created_at desc
     limit v_limit offset v_offset
   ) page;
 

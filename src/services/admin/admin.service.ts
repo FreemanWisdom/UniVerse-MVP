@@ -155,6 +155,30 @@ export async function moderateAdminContent(
   });
 }
 
+export interface SurveyResponseRow {
+  id: string;
+  display_name: string;
+  campus: string;
+  answers: Record<string, unknown>;
+  submitted_at: string;
+  updated_at: string;
+}
+
+/** Admin Surveys: read-only responses via admin_list_survey_responses. */
+export async function listSurveyResponses(
+  supabase: SupabaseClient,
+  campus: string | null,
+  limit = 20,
+  offset = 0
+): Promise<SurveyResponseRow[]> {
+  const rows = await rpc<SurveyResponseRow[]>(supabase, "admin_list_survey_responses", {
+    p_campus: campus || null,
+    p_limit: limit,
+    p_offset: offset,
+  });
+  return rows ?? [];
+}
+
 export async function listAdminReports(
   supabase: SupabaseClient,
   limit = 60

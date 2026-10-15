@@ -120,6 +120,36 @@ function base64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   return view;
 }
 
+/**
+ * The public key a subscription was created with, as base64. Chrome exposes
+ * subscription.applicationServerKey as an ArrayBuffer of the raw 65-byte
+ * key; some browsers omit it entirely.
+ */
+export function subscriptionServerKeyBase64(subscription: PushSubscription): string | null {
+  try {
+    const raw = (subscription as unknown as { applicationServerKey?: ArrayBuffer }).applicationServerKey;
+    if (!raw || raw.byteLength === 0) return null;
+    const bytes = new Uint8Array(raw);
+    let binary = "";
+    for (const b of bytes) binary += String.fromCharCode(b);
+    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * True when an existing subscription was created with a VAPID key that no
+ * longer matches the server's current key. Pushes signed with the new key
+ * are rejected by the push service for such subscriptions, so they must be
+ * re-created. Happened for real on Oct 15 2026 (phase 9 VAPID repair).
+ */
+export function subscriptionHasStaleServerKey(subscription: PushSubscription): boolean {
+  const key = subscriptionServerKeyBase64(subscription);
+  if (!key) return false; // unknown key: leave it alone; the sender cleans up
+  return key !== PUSH_VAPID_PUBLIC_KEY;
+}
+
 export function getPushPermissionState(): NotificationPermission | "unsupported" {
   if (typeof window === "undefined" || typeof window.Notification === "undefined") {
     return "unsupported";
@@ -127,41 +157,11 @@ export function getPushPermissionState(): NotificationPermission | "unsupported"
   return window.Notification.permission;
 }
 
-/**
- * Requests notification permission and registers this device for Web Push.
- * Mirrors the legacy flow: register /notifications-sw.js, subscribe with the
- * VAPID key, then upsert the push_subscriptions row (endpoint is UNIQUE).
- */
-export async function enableDevicePush(supabase: SupabaseClient): Promise<void> {
-  if (typeof window.Notification === "undefined") {
-    throw new Error("This browser does not support device notifications.");
-  }
-  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-    throw new Error("Push notifications are not supported by this browser.");
-  }
-  // No pre-check on Notification.permission here: the synchronous read can be
-  // stale in some browsers/embedded webviews. requestPermission() below is the
-  // authoritative source and handles the denied case itself.
-  const permission = await window.Notification.requestPermission();
-  if (permission !== "granted") {
-    throw new Error(
-      permission === "denied"
-        ? "Notifications were blocked."
-        : "Notification permission was not granted."
-    );
-  }
-
-  const registration = await navigator.serviceWorker.register("/notifications-sw.js", { scope: "/" });
-  await navigator.serviceWorker.ready;
-
-  let subscription = await registration.pushManager.getSubscription();
-  if (!subscription) {
-    subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: base64ToUint8Array(PUSH_VAPID_PUBLIC_KEY),
-    });
-  }
-
+/** Persists a subscription for the signed-in user (endpoint is UNIQUE). */
+export async function savePushSubscription(
+  supabase: SupabaseClient,
+  subscription: PushSubscription
+): Promise<void> {
   const json = subscription.toJSON();
   const endpoint = String(subscription.endpoint || "");
   if (!endpoint) {
@@ -188,6 +188,82 @@ export async function enableDevicePush(supabase: SupabaseClient): Promise<void> 
 
   if (error) {
     throw new Error(`Unable to save the push subscription: ${error.message}`);
+  }
+}
+
+/**
+ * Registers this device for Web Push: permission -> register
+ * /notifications-sw.js -> subscribe with the VAPID key -> persist.
+ * Existing subscriptions are reused ONLY when they were created with the
+ * current VAPID key; stale-key subscriptions are replaced.
+ */
+export async function enableDevicePush(supabase: SupabaseClient): Promise<void> {
+  if (typeof window.Notification === "undefined") {
+    throw new Error("This browser does not support device notifications.");
+  }
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    throw new Error("Push notifications are not supported by this browser.");
+  }
+  // No pre-check on Notification.permission here: the synchronous read can be
+  // stale in some browsers/embedded webviews. requestPermission() below is the
+  // authoritative source and handles the denied case itself.
+  const permission = await window.Notification.requestPermission();
+  if (permission !== "granted") {
+    throw new Error(
+      permission === "denied"
+        ? "Notifications were blocked."
+        : "Notification permission was not granted."
+    );
+  }
+
+  const registration = await navigator.serviceWorker.register("/notifications-sw.js", { scope: "/" });
+  await navigator.serviceWorker.ready;
+
+  let subscription = await registration.pushManager.getSubscription();
+  if (subscription && subscriptionHasStaleServerKey(subscription)) {
+    // Signed with a retired VAPID key: pushes are silently dropped by the
+    // push service. Drop it so the subscribe below creates a fresh one.
+    await subscription.unsubscribe().catch(() => undefined);
+    subscription = null;
+  }
+  if (!subscription) {
+    subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: base64ToUint8Array(PUSH_VAPID_PUBLIC_KEY),
+    });
+  }
+
+  await savePushSubscription(supabase, subscription);
+}
+
+/**
+ * Silent re-registration for devices that already granted permission but
+ * hold a stale-key subscription (VAPID rotation, Oct 15 2026). Runs without
+ * any prompt: permission was already granted, only the subscription is
+ * refreshed. Returns "renewed" when a subscription was replaced.
+ */
+export async function renewStalePushSubscription(
+  supabase: SupabaseClient
+): Promise<"renewed" | "ok" | "skipped"> {
+  if (typeof window === "undefined") return "skipped";
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return "skipped";
+  if (getPushPermissionState() !== "granted") return "skipped";
+  try {
+    const registration = await navigator.serviceWorker.getRegistration("/");
+    if (!registration) return "skipped";
+    const subscription = await registration.pushManager.getSubscription();
+    if (!subscription) return "skipped";
+    if (!subscriptionHasStaleServerKey(subscription)) return "ok";
+
+    await subscription.unsubscribe().catch(() => undefined);
+    const fresh = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: base64ToUint8Array(PUSH_VAPID_PUBLIC_KEY),
+    });
+    await savePushSubscription(supabase, fresh);
+    return "renewed";
+  } catch {
+    return "skipped";
   }
 }
 

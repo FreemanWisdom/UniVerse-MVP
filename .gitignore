@@ -31,3 +31,4 @@ yarn-error.log*
 .vscode/
 pnpm-workspace.yaml
 e2e-p5/
+e2e-p9/

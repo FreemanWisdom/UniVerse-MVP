@@ -60,8 +60,9 @@ export function notificationRoute(type: string): string {
   }
 }
 
-/** Web Push VAPID public key (public by design; mirrors the legacy client). */
+/** Web Push VAPID public key (public by design). Rotated Oct 15 2026: the old
+ *  legacy pair was lost, so a fresh keypair was deployed server-side. */
 export const PUSH_VAPID_PUBLIC_KEY =
-  "BIgx8xy_gacjbLZ8uz-4pktk-fhJWUQQFcDD9MtddNhM9ur2_31OIa3NeZUXeD3payMiLtKGAeOyb8ejZhVsiT4";
+  "BJ9nOuTD2bb14RvAjrxV-CIS9VK4IX7V2iYcjYCuCIz0q__Mkcw4kNPpINZokZWHVFyINWtYd6G8Mlae9lUWhlI";
 
 export const NOTIFICATIONS_PAGE_SIZE = 30;

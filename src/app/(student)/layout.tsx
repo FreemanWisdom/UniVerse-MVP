@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { NotificationsBell } from "@/features/notifications/components/notifications-bell";
@@ -7,6 +8,8 @@ import { PostTourInstallPrompt } from "@/components/pwa/post-tour-install-prompt
 import { FloatingInstallButton } from "@/components/pwa/floating-install-button";
 import { LaunchGate } from "@/components/launch/launch-gate";
 import { AppHistoryTracker } from "@/components/app-history-tracker";
+import { PushSubscriptionRenewal } from "@/components/push-subscription-renewal";
+import { ForegroundNotifications } from "@/features/notifications/components/foreground-notifications";
 import { isLaunchCampus } from "@/lib/launch";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -50,6 +53,10 @@ export default async function StudentLayout({
     <PresenceProvider userId={profile?.id ?? user.id} university={profile?.university ?? ""}>
     <div className="flex min-h-screen flex-col bg-background pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
       <AppHistoryTracker />
+      <PushSubscriptionRenewal />
+      <Suspense>
+        <ForegroundNotifications />
+      </Suspense>
       <WelcomeCarousel />
       <PostTourInstallPrompt />
       <FloatingInstallButton />

@@ -59,6 +59,10 @@ function CallbackInner() {
           const { error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) throw error;
         }
+        // Email-link confirmations (new signups) also earn a welcome email;
+        // the route is idempotent (atomic claim + new-account guard) so
+        // existing users are unaffected. Fire-and-forget.
+        void fetch("/api/welcome-email", { method: "POST" }).catch(() => undefined);
         router.replace(next);
         router.refresh();
       } catch {

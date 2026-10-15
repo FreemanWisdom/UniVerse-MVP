@@ -237,6 +237,9 @@ export function SignUpForm() {
 
       // Email confirmed — the account is now verified, and this is treated
       // exactly like a confirmed signup: straight into the app.
+      // Welcome email: atomic + idempotent server-side; fire-and-forget so
+      // navigation stays snappy.
+      void fetch("/api/welcome-email", { method: "POST" }).catch(() => undefined);
       router.push("/orbit"); // like every other confirmed path (login, email-link callback)
       router.refresh();
     } catch (error) {

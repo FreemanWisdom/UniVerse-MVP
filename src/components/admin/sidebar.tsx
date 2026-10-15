@@ -40,6 +40,7 @@ const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
     label: "Community",
     items: [
       { title: "Content", href: "/admin/content", icon: <IconContent size={16} /> },
+      { title: "Surveys", href: "/admin/surveys", icon: <IconFlag size={16} /> },
       { title: "Reports", href: "/admin/reports", icon: <IconFlag size={16} /> },
     ],
   },

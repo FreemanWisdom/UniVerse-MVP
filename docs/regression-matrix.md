@@ -259,3 +259,35 @@ cleaned: profiles/wallet counts back to baseline +2 genuine new signups, roster
 - **Waitlist exposure (from Stage 0):** anon SELECT of all 77 rows + anon/authenticated TRUNCATE rights. Fix proposal ready: sql/proposals/waitlist-anon-read-fix.sql.
 
 **Fixture cleanup evidence:** 10 accounts + all content deleted; 55 users remain (54 original + 1 real signup during testing); admin.members back to 3 real; waitlist 77 untouched; zero orphan conversations/tribes; fixture audit rows are permanent append-only traces (accepted). Oct-4 orphan tribe `p98oufiyxjg` deleted (this closes the earlier cleanup backlog item).
+
+---
+
+## Phase 9 execution results (Oct 15, 2026 — Welcome Email / Surveys / Push Notifications, live probes + prod build :3299, commits on my-new-feature uncommitted)
+
+### Verified facts
+- **Push (VAPID):** old keypair was invalid (48-byte garbage); new P-256 keypair generated + deployed via Supabase CLI, client key rotated, `send-push` edge fn updated (stale-403/410 cleanup verified, `staleRemoved:1`). Live probe returned `sent:true` for a valid fixture subscription.
+- **Foreground pipeline:** realtime INSERT → toast renders with title/body (E2 PASS), bell badge increments live (E3 PASS, 2→3), notification link routes to `/chat?c=<id>`.
+
+### Survey blocker (root cause closed)
+- `survey_responses` INSERT policy was fine, but PostgREST inserts always use `RETURNING` (return=representation); Postgres evaluates the new row against **SELECT** policies — with RLS on and no SELECT policy, every client insert failed with "new row violates row-level security policy". Fix: strict own-row SELECT policy `survey_responses_select_own (user_id = auth.uid())` (sql/phase9-notification-welcome-survey.sql, applied live). NOT a contract change — Supabase's own guidance for RETURNING-capable tables.
+
+### Gates
+| ID | Check | Result |
+|----|-------|--------|
+| R1/R1b | Real upsert insert + resubmit (UI path, on_conflict=user_id) | PASS |
+| R2 | Client SELECT returns ONLY own row | PASS |
+| R3 | Anon insert denied | PASS |
+| R4/R5 | Admin survey RPC lists row / non-admin rejected | PASS |
+| E1 | Student login, bell mounts, 0 console errors | PASS |
+| E2/E3 | Foreground toast + badge on realtime insert | PASS |
+| E4 | Survey submit → "Thank you!" (update path), console clean | PASS |
+| E5 | Admin /admin/surveys lists response, campus filter keeps/hides row, console clean | PASS |
+| E6 | Signup → 6-digit code screen → OTP → /orbit; welcome_emails claim `status='sent'` via Resend | PASS |
+
+### Fixture cleanup evidence
+cc-p9-student / cc-p9-admin / cc-p9-welcome + all their rows deleted (notifications, survey_responses, welcome_emails, admin.members, profiles, auth.users, rate counters). Roster back to 4 real admins; 58 profiles, zero orphans; 16 real push_subscriptions untouched; welcome-email audit trail removed with fixture (claim table, not audit_log). Known permanent traces: none this phase (no admin actions taken with fixture accounts that hit audit_log).
+
+### Known limitations (this phase)
+- Welcome-email send verified only against the cc-p9-welcome fixture inbox claim (`status='sent'` from Resend API response); actual inbox delivery not inspected (consistent with prior Resend domain DKIM+SPF verification).
+- Push `sent:true` verified for a synthetic fixture subscription (p256dh); real-device delivery still pending owner's on-device check (standing cutover item).
+- The toast e2e used a postgres-direct INSERT (not a user-action event); user-action notification creation was verified in earlier phases and unchanged.

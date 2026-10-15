@@ -1,0 +1,4 @@
+project_id = "universe-mvp"
+
+[functions.send-push]
+verify_jwt = false

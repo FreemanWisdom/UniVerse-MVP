@@ -25,7 +25,6 @@ import {
   IconUsers,
   IconSettings,
   IconBell,
-  IconMegaphone,
 } from "@/components/icons";
 
 export default async function StudentLayout({
@@ -167,13 +166,6 @@ export default async function StudentLayout({
             <span className="text-[10px]">Chat</span>
           </Link>
           <Link
-            href="/announcements"
-            className="flex flex-col items-center py-1 text-xs text-slate-400 hover:text-campus-400"
-          >
-            <IconMegaphone size={20} />
-            <span className="text-[10px]">Notice</span>
-          </Link>
-          <Link
             href="/settings"
             className="flex flex-col items-center py-1 text-xs text-slate-400 hover:text-campus-400"
           >
@@ -194,6 +186,5 @@ const NAV_ICONS: Record<string, (p: React.SVGProps<SVGSVGElement> & { size?: num
   "/whisper": IconWhisper,
   "/chat": IconChat,
   "/notifications": IconBell,
-  "/announcements": IconMegaphone,
   "/profile": IconUsers,
 };

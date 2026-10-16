@@ -14,9 +14,14 @@
  *   vault secret); the client never calls it. Web Push subscription on the
  *   client needs the VAPID public key, hardcoded in the legacy client too
  *   (it is public by design).
- * - notifications is NOT in the supabase_realtime publication, so there is
- *   no realtime stream for it; the UI polls instead. Adding the table to
- *   the publication would be a DB change requiring owner approval.
+ * - notifications IS in the supabase_realtime publication (added Phase 9,
+ *   sql/phase9-notification-welcome-survey.sql): realtime INSERT events
+ *   drive the foreground toasts and the bell refresh via the
+ *   "universe:notifications-changed" window event. The bell additionally
+ *   polls (60s) and refreshes on tab visibility.
+ * - 'announcement' rows are created server-side by the fan-out inside
+ *   admin_publish_announcement (Phase 10,
+ *   sql/phase10-announcement-notifications.sql) — never by the client.
  */
 
 export type NotificationType =
@@ -25,7 +30,8 @@ export type NotificationType =
   | "orbit_post"
   | "orbit_mention"
   | "orbit_like"
-  | "orbit_comment";
+  | "orbit_comment"
+  | "announcement";
 
 export interface NotificationRow {
   id: string;
@@ -55,6 +61,8 @@ export function notificationRoute(type: string): string {
     case "campus_message":
     case "message_request":
       return "/chat";
+    case "announcement":
+      return "/announcements";
     default:
       return "/orbit";
   }

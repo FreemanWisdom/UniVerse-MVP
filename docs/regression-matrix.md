@@ -291,3 +291,28 @@ cc-p9-student / cc-p9-admin / cc-p9-welcome + all their rows deleted (notificati
 - Welcome-email send verified only against the cc-p9-welcome fixture inbox claim (`status='sent'` from Resend API response); actual inbox delivery not inspected (consistent with prior Resend domain DKIM+SPF verification).
 - Push `sent:true` verified for a synthetic fixture subscription (p256dh); real-device delivery still pending owner's on-device check (standing cutover item).
 - The toast e2e used a postgres-direct INSERT (not a user-action event); user-action notification creation was verified in earlier phases and unchanged.
+
+---
+
+## Phase 10 execution results (Oct 16 2026 — Announcement notifications + Orbit entry, local build + prod DB, my-new-feature UNCOMMITTED, no deploy)
+
+### Root cause (audited, live)
+- `admin_publish_announcement` inserted the announcement + audit but NEVER created `public.notifications` rows. Message notifications come from the `universeicos_notify_message` trigger; announcements had no equivalent. The feed, unread count, realtime publication, and push trigger were all healthy — nothing filtered announcements out; rows were simply never created.
+
+### Implemented
+- **DB (sql/phase10-announcement-notifications.sql + rollback, applied to prod):** publish RPC (same 5-arg signature) now fans out one notification row per eligible recipient INSIDE the publish transaction: global → every profile; campus:X → only profiles with that exact university (server-side targeting, mirrors get_active_announcements scope logic). type='announcement', link='/announcements', actor_id NULL (pseudonymous attribution must not leak publisher identity via actor lookup). Publish rollback = no rows (no partial fan-out). Returns `notified` count. Audit unchanged.
+- **Client:** `notificationRoute` maps 'announcement' → /announcements; new `getUnreadAnnouncementNotificationCount` / `markAnnouncementNotificationsRead` service fns (reuse the notifications read-state model; RLS-bounded); new `OrbitAnnouncements` component (megaphone button + inline panel, unread badge via the shared "universe:notifications-changed" event, opening the panel marks announcement rows read); mounted in Orbit immediately before the composer; removed the mobile "Notice" bottom-nav item, desktop sidebar Announcements entry, and NAV_ICONS mapping. /announcements page retained (deep-link target). Admin publishing UI/permissions untouched.
+- **Push:** announcement rows enter the SAME generic INSERT→`universeicos-notifications-push` trigger→send-push edge fn path as message notifications (edge fn probe with an announcement record: clean, attempted=0 for sub-less user). No push-specific code was added or needed.
+
+### Gates (all PASS)
+- DB (11/11): global + campus publish fan-out; campus isolation (ATBU campus reaches only ATBU profiles, FUNAI 0); read RPC unaffected; non-admin publish rejected (admin_access_required); invalid campus scope rejected; no duplicate rows per announcement; link=/announcements + actor NULL; publish audit written; message notifications still trigger.
+- Browser (15/15, prod build :3299): Announcements entry present and before the composer; no bottom-nav Notice; no sidebar entry; empty state; realtime toast + orbit badge increment (no refresh); panel lists announcement + badge clears + marks read; feed row opens /announcements; message toast intact; 390px no overflow; zero console errors.
+- tsc PASS, lint 0 errors (6 pre-existing warnings), build PASS.
+
+### Fixture/test hygiene
+- Early DB-gate runs published two GLOBAL test announcements which reached real users' in-app feeds and (for subscribed users) device push; all rows deleted the same hour (~131 rows, 0 left). Later tests used a zero-real-user campus (ATBU) and direct-SQL inserts. Fixtures cc-p10-admin/unn/funai + all rows deleted; 58 profiles, 0 orphans, roster 4; the 1 real announcement untouched.
+- GOTCHA (test-side): non-launch-campus fixtures hit the launch waitlist gate — no bell/toast/composer mounts, which mimics a realtime outage. Use launch-campus fixtures for notification e2e.
+
+### Known limitations
+- Real-device push for announcements follows the same standing owner item (on-device check, phase 9).
+- Fixture publish/admin audit rows are permanent append-only traces (accepted, consistent with prior phases).

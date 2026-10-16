@@ -6,6 +6,7 @@ import { loadOrbitFeed, loadOrbitPost, subscribeToOrbit } from "@/services/orbit
 import type { OrbitFeedMode, OrbitPost } from "../orbit.types";
 import { rankTrending, searchPosts } from "../orbit.utils";
 import { OrbitComposer } from "./orbit-composer";
+import { OrbitAnnouncements } from "./orbit-announcements";
 import { OrbitPostCard } from "./orbit-post-card";
 import { OrbitComments } from "./orbit-comments";
 import { OrbitEmpty, OrbitError } from "./orbit-states";
@@ -176,6 +177,8 @@ export function OrbitPage({ userId, university }: { userId: string; university: 
         aria-label="Search loaded Orbit posts"
         className="w-full rounded-md border border-white/10 bg-surface-100/40 px-3 py-2 text-sm outline-none placeholder:text-slate-500 focus:border-campus-500 transition-colors"
       />
+      
+      <OrbitAnnouncements />
       
       <OrbitComposer userId={userId} university={university} onCreated={refresh} />
       

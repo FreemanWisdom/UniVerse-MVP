@@ -294,3 +294,40 @@ export async function hasActivePushSubscription(): Promise<boolean> {
     return false;
   }
 }
+
+/** Unread count for announcement notifications only (Orbit badge).
+ *  Reuses the same notifications read-state model — RLS scopes the query
+ *  to the signed-in user's own rows; there is no separate announcement
+ *  counter. */
+export async function getUnreadAnnouncementNotificationCount(
+  supabase: SupabaseClient
+): Promise<number> {
+  const { count, error } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("is_read", false)
+    .eq("type", "announcement");
+
+  if (error) {
+    throw new Error(`Unable to load announcement count: ${error.message}`);
+  }
+
+  return count ?? 0;
+}
+
+/** Marks the user's unread announcement notifications read (RLS: own rows
+ *  only) — called when the Orbit announcements panel is opened. Same
+ *  read-state model the notifications page uses. */
+export async function markAnnouncementNotificationsRead(
+  supabase: SupabaseClient
+): Promise<void> {
+  const { error } = await supabase
+    .from("notifications")
+    .update({ is_read: true })
+    .eq("type", "announcement")
+    .eq("is_read", false);
+
+  if (error) {
+    throw new Error(`Unable to mark announcement notifications read: ${error.message}`);
+  }
+}

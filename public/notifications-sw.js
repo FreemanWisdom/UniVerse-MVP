@@ -99,7 +99,21 @@ self.addEventListener("push", (event) => {
     data: { link: data.link || "", notificationId: data.notificationId || "" },
     requireInteraction: false,
   };
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(
+    (async () => {
+      // Duplicate suppression: when a UniVerse window is open and visible,
+      // the app's foreground toast already surfaced this event — a second
+      // system notification would be a duplicate interruption. Backgrounded
+      // or closed clients still get the system notification.
+      const clientList = await clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+      const visible = clientList.some((c) => c.visibilityState === "visible");
+      if (visible) return;
+      await self.registration.showNotification(title, options);
+    })()
+  );
 });
 
 self.addEventListener("notificationclick", (event) => {
@@ -111,6 +125,13 @@ self.addEventListener("notificationclick", (event) => {
       const target = new URL(rawLink, self.location.origin);
       // Legacy .html routes do not exist in this app; land on the root.
       if (target.pathname.endsWith(".html")) target.pathname = "/";
+      // 1) A client already showing the target conversation: just focus it.
+      for (const client of clientList) {
+        try {
+          if (new URL(client.url).href === target.href) return client.focus();
+        } catch (_) {}
+      }
+      // 2) Any existing client: navigate it to the target and focus.
       for (const client of clientList) {
         if ("focus" in client) {
           try {
@@ -119,6 +140,7 @@ self.addEventListener("notificationclick", (event) => {
           return client.focus();
         }
       }
+      // 3) No client at all: open the app at the target.
       if (clients.openWindow) return clients.openWindow(target.href);
     })()
   );

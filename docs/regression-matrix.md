@@ -316,3 +316,30 @@ cc-p9-student / cc-p9-admin / cc-p9-welcome + all their rows deleted (notificati
 ### Known limitations
 - Real-device push for announcements follows the same standing owner item (on-device check, phase 9).
 - Fixture publish/admin audit rows are permanent append-only traces (accepted, consistent with prior phases).
+
+---
+
+## Phase 11 execution results (Oct 18 2026 — Background push hardening, DB + edge LIVE, client LOCAL UNCOMMITTED, no app deploy)
+
+### Audit result (the failing layer)
+- The delivery pipeline is HEALTHY: notifications INSERT trigger -> send-push edge fn -> web-push has organically 403-deleted 11 stale subscriptions since the Oct 15 VAPID rotation. Verified live.
+- The real failure was on DEVICES: all 5 remaining subscriptions (4x web.push.apple.com, 1x Windows WNS) were created with the retired VAPID key; the phase-9 renewal heuristic reads subscription.applicationServerKey, which Safari/iOS and Windows browsers do not reliably expose — exactly those devices kept unusable subscriptions. The DB held ZERO deliverable subscriptions.
+- Secondary defects: send-push accepted the public anon key (verified live) — anyone could push arbitrary content to any user; net.http_post is fire-and-forget with no recovery; no delivery diagnostics; SW showed a duplicate system notification over the foreground toast; edge fn sent an absolute icon URL on the legacy apex domain.
+
+### Implemented (DB + edge live on prod; client local)
+- **DB (sql/phase11-background-push.sql + rollback, applied):** push_delivery_log receipt table (per notification+device; RLS: own rows SELECT only, service-role writes); push_test_send() self-test RPC (authenticated, 3/hour rate limit via admin.rate_limit_counters — GOTCHA: that table lives in the ADMIN schema and has PK on bucket_key, update-or-insert not ON CONFLICT); push_retry_sweep() at-least-once recovery (re-fires edge fn for receipt-less notifications <30 min old, users still subscribed; pg_cron installed + scheduled */5, job 1); push trigger rotated to new vault secret universe_push_worker_v2.
+- **Edge fn (deployed via CLI):** requires apikey == PUSH_WORKER_KEY (new env secret set) — anon key now 401 (verified live); per-device bounded retry (2 attempts, 1.5s backoff on 429/5xx/network); receipts written per device with status (sent/failed_temporary/failed_permanent/stale_removed); 403/404/410 stale cleanup unchanged; payload drops absolute icon URL (SW uses origin-relative defaults).
+- **Client (local, NOT deployed):** deterministic per-device VAPID version marker (localStorage universe-push-vapid-version, keyed to the public key prefix) wired into enableDevicePush + renewStalePushSubscription — platform-independent stale detection for browsers that don't expose applicationServerKey (the actual root fix for Apple/Windows devices); Settings "Send test notification" button with live receipt polling and honest per-device result messaging; SW foreground duplicate suppression (visible client -> no system notification) + notificationclick prefers a client already at the target conversation; 'push_test' type + route.
+
+### Gates (all PASS)
+- DB (10/10): test RPC creates row; trigger -> edge fn writes receipts (fake apple endpoint classified failed_temporary, attempts recorded); RLS own-visible/other-invisible; 3/hour rate limit (4th rejected); sweep re-fires receipt-less notification; trigger on v2 secret; cron scheduled.
+- Browser (9/9, prod build :3299): test button + delivery-status result via receipt polling; feed rows; push_test routing; message toast regression; SW duplicate-suppression + click handlers served; 390px clean; zero console errors.
+- tsc PASS, lint 0 errors (6 pre-existing warnings), build PASS.
+
+### Verified vs NOT verified
+- VERIFIED live: anon rejection, worker-key acceptance, receipts, retry, sweep, cron, RLS, rate limit.
+- NOT verified here (needs the app DEPLOY + a real device): on-device display, notificationclick on-device, multi-device same account, iOS/Android parity — the new Settings test button is the owner's one-tap verification tool AFTER deploy. Platform limitation documented: iOS requires installed-on-Home-Screen PWA + 16.4+, and notifications only arrive while the WebKit process is alive.
+- All 5 pre-rotation subscriptions remain stale by construction: they self-heal via the marker renewal the first time each device opens the app post-deploy, or via the 403/404/410 cleanup on their next notification.
+
+### Cleanup
+Fixture cc-p11-student + fake subscription + receipts + rate rows fully deleted; 58 profiles 0 orphans; the 5 real subscription rows untouched; receipt log empty.

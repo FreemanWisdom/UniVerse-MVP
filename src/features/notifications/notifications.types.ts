@@ -31,7 +31,8 @@ export type NotificationType =
   | "orbit_mention"
   | "orbit_like"
   | "orbit_comment"
-  | "announcement";
+  | "announcement"
+  | "push_test";
 
 export interface NotificationRow {
   id: string;
@@ -63,6 +64,8 @@ export function notificationRoute(type: string): string {
       return "/chat";
     case "announcement":
       return "/announcements";
+    case "push_test":
+      return "/notifications";
     default:
       return "/orbit";
   }

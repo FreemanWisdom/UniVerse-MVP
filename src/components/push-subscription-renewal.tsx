@@ -13,6 +13,12 @@ import { renewStalePushSubscription } from "@/services/notifications/notificatio
  * once per logged-in load for permission-granted devices and re-subscribes
  * them with the current key. No permission prompt can appear here —
  * permission was already granted, only the subscription is refreshed.
+ *
+ * Phase 11: staleness is now detected via a per-device VAPID version marker
+ * (see notification.service.ts), which also catches devices whose browsers
+ * do not expose subscription.applicationServerKey (Safari/iOS, some
+ * Windows browsers) — exactly the devices that stayed broken after the
+ * rotation.
  */
 export function PushSubscriptionRenewal() {
   useEffect(() => {

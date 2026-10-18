@@ -220,7 +220,8 @@ export async function enableDevicePush(supabase: SupabaseClient): Promise<void> 
   await navigator.serviceWorker.ready;
 
   let subscription = await registration.pushManager.getSubscription();
-  if (subscription && subscriptionHasStaleServerKey(subscription)) {
+  const markerStale = deviceVapidVersionMarker() !== currentVapidVersionMarker();
+  if (subscription && (markerStale || subscriptionHasStaleServerKey(subscription))) {
     // Signed with a retired VAPID key: pushes are silently dropped by the
     // push service. Drop it so the subscribe below creates a fresh one.
     await subscription.unsubscribe().catch(() => undefined);
@@ -233,7 +234,42 @@ export async function enableDevicePush(supabase: SupabaseClient): Promise<void> 
     });
   }
 
+  stampVapidVersionMarker();
   await savePushSubscription(supabase, subscription);
+}
+
+/**
+ * A short stable marker derived from the current VAPID public key, stored in
+ * localStorage per device. When the app rotates its VAPID key the stored
+ * marker stops matching, which deterministically identifies subscriptions
+ * created with the retired key — on EVERY platform.
+ *
+ * Why not only subscriptionHasStaleServerKey(): it depends on the browser
+ * exposing subscription.applicationServerKey, which Safari/iOS and some
+ * Windows browsers do not. After the Oct 15 2026 rotation exactly those
+ * devices kept unusable subscriptions. The marker is platform-independent;
+ * the applicationServerKey check stays as an extra safety net.
+ */
+const VAPID_VERSION_KEY = "universe-push-vapid-version";
+
+function currentVapidVersionMarker(): string {
+  return PUSH_VAPID_PUBLIC_KEY.slice(0, 24);
+}
+
+function deviceVapidVersionMarker(): string | null {
+  try {
+    return localStorage.getItem(VAPID_VERSION_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function stampVapidVersionMarker(): void {
+  try {
+    localStorage.setItem(VAPID_VERSION_KEY, currentVapidVersionMarker());
+  } catch {
+    // Storage unavailable: the key-report fallback still protects us.
+  }
 }
 
 /**
@@ -253,13 +289,15 @@ export async function renewStalePushSubscription(
     if (!registration) return "skipped";
     const subscription = await registration.pushManager.getSubscription();
     if (!subscription) return "skipped";
-    if (!subscriptionHasStaleServerKey(subscription)) return "ok";
+    const markerStale = deviceVapidVersionMarker() !== currentVapidVersionMarker();
+    if (!markerStale && !subscriptionHasStaleServerKey(subscription)) return "ok";
 
     await subscription.unsubscribe().catch(() => undefined);
     const fresh = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: base64ToUint8Array(PUSH_VAPID_PUBLIC_KEY),
     });
+    stampVapidVersionMarker();
     await savePushSubscription(supabase, fresh);
     return "renewed";
   } catch {
@@ -330,4 +368,45 @@ export async function markAnnouncementNotificationsRead(
   if (error) {
     throw new Error(`Unable to mark announcement notifications read: ${error.message}`);
   }
+}
+
+/** Self-test RPC result: the created notification id (the push trigger fans
+ *  it out through the exact same path as a real message). */
+export async function sendTestPushNotification(
+  supabase: SupabaseClient
+): Promise<string> {
+  const { data, error } = await supabase.rpc("push_test_send");
+  if (error) {
+    throw new Error(error.message.includes("rate_limited")
+      ? "Too many test notifications — try again later."
+      : `Test notification failed: ${error.message}`);
+  }
+  return data as string;
+}
+
+export interface PushReceipt {
+  id: string;
+  notification_id: string;
+  status: "sent" | "failed_temporary" | "failed_permanent" | "stale_removed";
+  status_code: number | null;
+  attempts: number;
+}
+
+/** Delivery receipts for a notification (RLS: own rows only). Powers the
+ *  Settings test-notification diagnostics: sent / temporary / stale. */
+export async function fetchPushReceipts(
+  supabase: SupabaseClient,
+  notificationId: string
+): Promise<PushReceipt[]> {
+  const { data, error } = await supabase
+    .from("push_delivery_log")
+    .select("id, notification_id, status, status_code, attempts")
+    .eq("notification_id", notificationId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw new Error(`Unable to load push receipts: ${error.message}`);
+  }
+
+  return (data ?? []) as PushReceipt[];
 }

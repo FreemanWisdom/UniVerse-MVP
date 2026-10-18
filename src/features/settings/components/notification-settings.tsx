@@ -8,6 +8,9 @@ import {
   enableDevicePush,
   disableDevicePush,
   hasActivePushSubscription,
+  sendTestPushNotification,
+  fetchPushReceipts,
+  PushReceipt,
 } from "@/services/notifications/notification.service";
 
 /**
@@ -22,6 +25,8 @@ export function NotificationSettings() {
   const [permission, setPermission] = useState<string>("default");
   const [hasSubscription, setHasSubscription] = useState<boolean>(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
+  const [testResult, setTestResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -72,6 +77,50 @@ export function NotificationSettings() {
     }
   }, []);
 
+/** One-tap end-to-end diagnostics: sends a real test notification through
+ *  the exact production path (notification row -> trigger -> send-push ->
+ *  web push), then reports per-device delivery from the receipt log. */
+  const handleTestPush = useCallback(async () => {
+    setIsTesting(true);
+    setError(null);
+    setTestResult(null);
+    try {
+      const supabase = createClient();
+      const notificationId = await sendTestPushNotification(supabase);
+      setTestResult("Sending… watching for delivery receipts…");
+      // The trigger + edge fn usually settle within a few seconds.
+      for (let i = 0; i < 10; i++) {
+        await new Promise((r) => setTimeout(r, 2000));
+        let receipts: PushReceipt[] = [];
+        try {
+          receipts = await fetchPushReceipts(supabase, notificationId);
+        } catch {
+          // receipt read failure is not fatal for the test itself
+        }
+        if (receipts.length > 0) {
+          const sent = receipts.filter((r) => r.status === "sent").length;
+          const stale = receipts.filter((r) => r.status === "stale_removed").length;
+          const failed = receipts.length - sent - stale;
+          if (sent > 0) {
+            setTestResult(`Delivered to ${sent} device${sent > 1 ? "s" : ""} of ${receipts.length}. Check your phone!`);
+          } else if (stale > 0) {
+            setTestResult(
+              `${stale} of your registered device${stale > 1 ? "s" : ""} had an expired push subscription (now removed). Tap Disable, then Enable to re-register, and test again.`
+            );
+          } else {
+            setTestResult(`The push service could not deliver right now (${failed} device${failed === 1 ? "" : "s"} failed with a temporary error — this can happen when a phone has been offline). The test notification is saved in your feed.`);
+          }
+          return;
+        }
+      }
+      setTestResult("No delivery receipts yet. If no device is registered for push (or the send-push worker is unreachable), nothing is sent — the test notification is still saved in your feed.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to send the test notification.");
+    } finally {
+      setIsTesting(false);
+    }
+  }, []);
+
   return (
     <div className="rounded-lg border border-surface-200 bg-surface-100/70 p-4">
       <div className="flex items-center justify-between gap-4">
@@ -109,6 +158,28 @@ export function NotificationSettings() {
           {notice}
         </p>
       )}
+      <div className="mt-3 border-t border-surface-200 pt-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            onClick={handleTestPush}
+            disabled={isTesting}
+            variant="outline"
+            size="sm"
+            className="min-h-[36px]"
+          >
+            {isTesting ? "Testing…" : "Send test notification"}
+          </Button>
+          <span className="text-[11px] text-slate-500">
+            Runs the full delivery path and reports the result.
+          </span>
+        </div>
+        {testResult && (
+          <p className="mt-2 text-xs text-campus-300" role="status" aria-live="polite">
+            {testResult}
+          </p>
+        )}
+      </div>
+
       {permission === "denied" && !isEnabled && (
         <p className="mt-3 border-t border-surface-200 pt-3 text-xs text-amber-300">
           Notifications are blocked for this site in your browser settings. Unblock them

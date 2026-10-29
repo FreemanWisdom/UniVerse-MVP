@@ -19,6 +19,10 @@ function buildNotification(record: any) {
     link: record?.link || "/",
     notificationId: record?.id || "",
     tag: `universeicos-${record?.id || crypto.randomUUID()}`,
+    // Test notifications always display on-device (the Settings self-test
+    // is typically run with the app open, where regular pushes are
+    // deliberately suppressed in favor of the foreground toast).
+    diagnostic: record?.type === "push_test",
   };
 }
 
@@ -103,7 +107,10 @@ Deno.serve(async (req) => {
         } catch (error: any) {
           status = Number(error?.statusCode || 0);
           message = error?.message || String(error);
-          // permanent (auth/gone) or unretryable client errors: stop now
+          // permanent (auth/gone) or unretryable client errors: stop now.
+          // 401 from Apple endpoints = invalid endpoint credentials: treat
+          // as permanent (recorded, not retried) but NOT stale-removable —
+          // 401 can also mean a transient VAPID/auth issue.
           if (status === 403 || status === 404 || status === 410 || (status >= 400 && status < 500 && status !== 429)) {
             break;
           }
@@ -112,12 +119,13 @@ Deno.serve(async (req) => {
       }
 
       const permanent = status === 403 || status === 404 || status === 410;
+      const permanentFailure = permanent || (status >= 400 && status < 500 && status !== 429);
       if (permanent) staleIds.push(row.id);
       await writeReceipt({
         notification_id: notificationId,
         user_id: userId,
         subscription_id: row.id,
-        status: permanent ? "stale_removed" : "failed_temporary",
+        status: permanent ? "stale_removed" : permanentFailure ? "failed_permanent" : "failed_temporary",
         status_code: status,
         attempts,
       });

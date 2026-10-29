@@ -102,7 +102,7 @@ export function NotificationSettings() {
           const stale = receipts.filter((r) => r.status === "stale_removed").length;
           const failed = receipts.length - sent - stale;
           if (sent > 0) {
-            setTestResult(`Delivered to ${sent} device${sent > 1 ? "s" : ""} of ${receipts.length}. Check your phone!`);
+            setTestResult(`Delivered to ${sent} device${sent > 1 ? "s" : ""} of ${receipts.length}. Check your phone — test notifications display even while the app is open.`);
           } else if (stale > 0) {
             setTestResult(
               `${stale} of your registered device${stale > 1 ? "s" : ""} had an expired push subscription (now removed). Tap Disable, then Enable to re-register, and test again.`

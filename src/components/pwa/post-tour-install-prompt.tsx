@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 import {
   ensureInstallListeners,
   getCapturedInstallPrompt,
+  isInstallPromotionSnoozed,
   isIOSUserAgent,
   isStandaloneDisplay,
+  markInstallObserved,
+  snoozeInstallPromotion,
   subscribeInstallState,
   triggerInstall,
   type InstallOutcome,
@@ -32,7 +35,6 @@ import {
  * registration is the app's one and only SW.
  */
 
-const DISMISS_KEY = "universe-install-prompt-v1";
 const TOUR_DONE_EVENT = "universe:tour-completed";
 
 export function PostTourInstallPrompt() {
@@ -46,20 +48,18 @@ export function PostTourInstallPrompt() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsIOS(isIOSUserAgent());
 
-    const markSeen = () => {
-      try { window.localStorage.setItem(DISMISS_KEY, "done"); } catch { /* best-effort */ }
-    };
     const close = () => setVisible(false);
 
     const onInstalled = () => {
-      markSeen();
+      markInstallObserved();
       close();
     };
     const onTourDone = () => {
-      if (isStandaloneDisplay()) { markSeen(); return; }
-      let seen = false;
-      try { seen = window.localStorage.getItem(DISMISS_KEY) === "done"; } catch { seen = true; }
-      if (seen) return;
+      if (isStandaloneDisplay()) { markInstallObserved(); return; }
+      // Consistent promotion (phase 12): the post-tour card respects the
+      // same bounded snooze as the floating install pill instead of a
+      // permanent per-device flag — an uninstall reinstates promotion.
+      if (isInstallPromotionSnoozed()) return;
       setVisible(true);
     };
 
@@ -77,7 +77,7 @@ export function PostTourInstallPrompt() {
   }, []);
 
   const markSeenAndClose = () => {
-    try { window.localStorage.setItem(DISMISS_KEY, "done"); } catch { /* best-effort */ }
+    snoozeInstallPromotion();
     setVisible(false);
   };
 

@@ -5,22 +5,29 @@ import {
   ensureInstallListeners,
   getCapturedInstallPrompt,
   isIOSUserAgent,
+  isInstallPromotionSnoozed,
   isStandaloneDisplay,
+  reconcileInstallState,
+  snoozeInstallPromotion,
   subscribeInstallState,
   triggerInstall,
 } from "@/lib/pwa-install";
 
-const DISMISS_KEY = "universe-install-float-dismissed";
-
 /**
  * Floating install affordance (Phase 8 request).
  *
- * A small fixed pill, bottom-right, visible whenever the app is installable
- * on this device: Chrome/Edge/Android after beforeinstallprompt fires, or
- * iOS (manual Add to Home Screen flow). Hidden when already installed or
- * after the user dismisses it (persisted per device — same spirit as the
- * tour keys: presentation preference, no DB row).
+ * A small fixed pill, bottom-right, shown to EVERY signed-in user who does
+ * not have the app installed — a one-tap install where the browser exposes
+ * beforeinstallprompt, iOS Add-to-Home-Screen guidance on Safari, and
+ * honest browser-menu guidance everywhere else.
  *
+ * Consistency rules (phase 12):
+ * - "Not now" snoozes the pill for 7 days; it returns after that.
+ * - A user who uninstalls the app sees the pill again immediately: the
+ *   stored installed-flag no longer matches the browser display-mode, so
+ *   reconcileInstallState() clears the snooze on the next visit.
+ * - Installing (appinstalled) clears the snooze for good benefit; the pill
+ *   disappears because display-mode reports standalone.
  * Shares the single captured install event with the Settings card and the
  * post-tour invitation through src/lib/pwa-install — one prompt() consumes
  * it for everyone. A stale event never leaves the user with no feedback:
@@ -30,7 +37,7 @@ export function FloatingInstallButton() {
   const [available, setAvailable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [dismissed, setDismissed] = useState(true); // hidden until mount checks pass
+  const [snoozed, setSnoozed] = useState(true); // hidden until mount checks pass
   const [showIOSHint, setShowIOSHint] = useState(false);
   const [showFallbackHint, setShowFallbackHint] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -41,13 +48,11 @@ export function FloatingInstallButton() {
     // lint rule — same approach as the Settings InstallPrompt).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsStandalone(isStandaloneDisplay());
-     
+    // If the app was installed before and is now running in a browser tab,
+    // the user uninstalled it: drop the snooze so the promotion returns.
+    reconcileInstallState();
     setIsIOS(isIOSUserAgent());
-    try {
-      setDismissed(window.localStorage.getItem(DISMISS_KEY) === "1");
-    } catch {
-      /* private mode: treat as not dismissed */
-    }
+    setSnoozed(isInstallPromotionSnoozed());
 
     const unsubscribe = subscribeInstallState(() => {
       setAvailable(getCapturedInstallPrompt() !== null);
@@ -63,16 +68,14 @@ export function FloatingInstallButton() {
     };
   }, []);
 
-  const visible = !isStandalone && !dismissed && (available || isIOS || showFallbackHint || busy);
+  // Shown to every non-installed user (not only where a one-tap API exists):
+  // browsers without the API get the honest menu guidance below.
+  const visible = !isStandalone && !snoozed;
   if (!visible) return null;
 
   const dismiss = () => {
-    setDismissed(true);
-    try {
-      window.localStorage.setItem(DISMISS_KEY, "1");
-    } catch {
-      /* ignore */
-    }
+    setSnoozed(true);
+    snoozeInstallPromotion();
   };
 
   const install = async () => {

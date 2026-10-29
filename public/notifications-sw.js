@@ -96,7 +96,11 @@ self.addEventListener("push", (event) => {
     badge: data.badge || "/favicon.ico",
     tag: data.tag || `universeicos-${data.notificationId || Date.now()}`,
     renotify: true,
-    data: { link: data.link || "", notificationId: data.notificationId || "" },
+    data: {
+      link: data.link || "",
+      notificationId: data.notificationId || "",
+      diagnostic: data.diagnostic === true,
+    },
     requireInteraction: false,
   };
   event.waitUntil(
@@ -105,6 +109,13 @@ self.addEventListener("push", (event) => {
       // the app's foreground toast already surfaced this event — a second
       // system notification would be a duplicate interruption. Backgrounded
       // or closed clients still get the system notification.
+      // EXCEPTION: diagnostic pushes (Settings "Send test notification")
+      // must ALWAYS show the system notification — the whole point is for
+      // the owner to verify on-device display, usually while the app is open.
+      if (options.data.diagnostic) {
+        await self.registration.showNotification(title, options);
+        return;
+      }
       const clientList = await clients.matchAll({
         type: "window",
         includeUncontrolled: true,

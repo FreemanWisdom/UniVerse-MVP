@@ -360,3 +360,15 @@ Cleanup complete (Nov 11): cc-p12-student + cc-push-probe test accounts deleted 
 ## Notifications inbox (Nov 11 2026 — LOCAL, not deployed)
 
 Question: "why don't notifications disappear after being viewed" — because the page listed every row regardless of read state; viewing only marked is_read (clearing the bell badge). Fix: the inbox now shows UNREAD only; opening a notification marks it read and it leaves the list; read history sits behind an "Earlier notifications (n)" toggle; "Mark all read" empties the inbox view. Verified 9/9 browser e2e; tsc/lint/build clean.
+
+---
+
+## Delete-on-view notifications (Nov 11 2026 — LOCAL, DB policy applied live)
+
+Owner refinement: viewed notifications should be DELETED, not archived behind a toggle.
+- sql/phase13-notification-delete.sql (+rollback, applied live): RLS DELETE policy "users delete their own notifications" using (user_id = auth.uid()). Table DELETE grant already existed; without a policy deletes were silently blocked.
+- Notifications page: opening a row deletes it (optimistic removal, restored on failure) then navigates; "Clear all" deletes every row; the Earlier toggle is gone. Unread badge follows because the rows themselves disappear.
+- Announcements panel: opening it now consumes the announcement notification rows (delete) instead of marking read — same inbox semantics; the unread badge stays correct.
+- push_delivery_log has no FK to notifications, so delivery receipts survive (diagnostics intact).
+
+Verified: 8/8 browser e2e (list, delete-on-open persisted to DB, clear all, caught-up, 390px, zero console errors) + RLS negative gate (foreign user delete removes 0 rows, row survives). Fixtures cleaned.

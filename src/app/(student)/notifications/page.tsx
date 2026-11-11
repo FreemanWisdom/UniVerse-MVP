@@ -21,8 +21,8 @@ import {
   getPushPermissionState,
   hasActivePushSubscription,
   listNotifications,
-  markAllNotificationsRead,
-  markNotificationRead,
+  deleteAllNotifications,
+  deleteNotification,
 } from "@/services/notifications/notification.service";
 
 type PushState = "unsupported" | "granted" | "denied" | "default";
@@ -38,18 +38,18 @@ export default function NotificationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [markingAll, setMarkingAll] = useState(false);
-  // Viewed notifications leave the list. They stay reachable behind this
-  // toggle instead of cluttering the inbox — "seen" rows are history, not work.
-  const [showEarlier, setShowEarlier] = useState(false);
+
 
   const [pushPermission, setPushPermission] = useState<PushState>("default");
   const [pushSubscribed, setPushSubscribed] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);
   const [pushMessage, setPushMessage] = useState<string | null>(null);
 
-  const unreadRows = rows.filter((row) => !row.is_read);
-  const earlierRows = rows.filter((row) => row.is_read);
-  const unreadCount = unreadRows.length;
+  // Viewed notifications are deleted, so the list is simply everything that
+  // still exists. Filtering read rows out keeps it correct for rows marked
+  // read elsewhere (e.g. a stale legacy row).
+  const visibleRows = rows.filter((row) => !row.is_read);
+  const unreadCount = visibleRows.length;
 
   useEffect(() => {
     let cancelled = false;
@@ -120,37 +120,34 @@ export default function NotificationsPage() {
   const open = async (row: NotificationRow) => {
     const supabase = createClient();
 
-    if (!row.is_read) {
-      setBusyId(row.id);
-      setRows((current) =>
-        current.map((item) => (item.id === row.id ? { ...item, is_read: true } : item))
-      );
-      try {
-        await markNotificationRead(supabase, row.id);
-        window.dispatchEvent(new Event("universe:notifications-changed"));
-      } catch {
-        setRows((current) =>
-          current.map((item) => (item.id === row.id ? { ...item, is_read: false } : item))
-        );
-      } finally {
-        setBusyId(null);
-      }
+    // Viewing consumes the notification: remove it optimistically, delete the
+    // row, then navigate. If the delete fails the row comes back so nothing
+    // is silently lost.
+    setBusyId(row.id);
+    setRows((current) => current.filter((item) => item.id !== row.id));
+    try {
+      await deleteNotification(supabase, row.id);
+      window.dispatchEvent(new Event("universe:notifications-changed"));
+    } catch {
+      setRows((current) => (current.some((item) => item.id === row.id) ? current : [row, ...current]));
+    } finally {
+      setBusyId(null);
     }
 
     // Navigate by type; the stored `link` is a legacy route.
     router.push(notificationRoute(row.type));
   };
 
-  const markAll = async () => {
+  const clearAll = async () => {
     const supabase = createClient();
     setMarkingAll(true);
 
     try {
-      await markAllNotificationsRead(supabase);
-      setRows((current) => current.map((row) => ({ ...row, is_read: true })));
+      await deleteAllNotifications(supabase);
+      setRows([]);
       window.dispatchEvent(new Event("universe:notifications-changed"));
     } catch {
-      setError("We couldn't mark your notifications as read. Please try again.");
+      setError("We couldn't clear your notifications. Please try again.");
     } finally {
       setMarkingAll(false);
     }
@@ -237,8 +234,8 @@ export default function NotificationsPage() {
           </p>
         </div>
         {unreadCount > 0 ? (
-          <Button type="button" size="sm" variant="outline" onClick={() => void markAll()} disabled={markingAll}>
-            {markingAll ? "Marking…" : "Mark all read"}
+          <Button type="button" size="sm" variant="outline" onClick={() => void clearAll()} disabled={markingAll}>
+            {markingAll ? "Clearing…" : "Clear all"}
           </Button>
         ) : null}
       </div>
@@ -265,15 +262,15 @@ export default function NotificationsPage() {
         </Card>
       ) : (
         <div className="space-y-2" aria-live="polite">
-          {unreadRows.length === 0 ? (
+          {visibleRows.length === 0 ? (
             <Card>
               <CardContent className="p-6 text-sm text-slate-400">
-                You&rsquo;re all caught up — opening a notification removes it from this list.
+                You&rsquo;re all caught up. Opening a notification clears it for good.
               </CardContent>
             </Card>
           ) : null}
 
-          {unreadRows.map((row) => {
+          {visibleRows.map((row) => {
             const actor = row.actor_id ? actors[row.actor_id] : undefined;
             const name = actor ? displayName(actor) : "Campus";
             return (
@@ -326,52 +323,6 @@ export default function NotificationsPage() {
             </Button>
           ) : null}
 
-          {earlierRows.length > 0 ? (
-            <div className="space-y-2 pt-2">
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowEarlier((v) => !v)}
-                aria-expanded={showEarlier}
-              >
-                {showEarlier
-                  ? "Hide earlier notifications"
-                  : `Earlier notifications (${earlierRows.length})`}
-              </Button>
-              {showEarlier
-                ? earlierRows.map((row) => {
-                    const actor = row.actor_id ? actors[row.actor_id] : undefined;
-                    const name = actor ? displayName(actor) : "Campus";
-                    return (
-                      <div
-                        key={row.id}
-                        className="flex w-full items-start gap-3 rounded-xl border border-surface-200 bg-surface-50 p-3 text-left opacity-80 transition-colors hover:border-campus-500 hover:opacity-100"
-                      >
-                        <UserAvatar
-                          profile={{ id: actor?.id, full_name: name, avatar_url: actor?.avatar_url }}
-                          size="md"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => router.push(notificationRoute(row.type))}
-                          aria-label={`Open earlier notification: ${row.title}`}
-                          className="flex min-w-0 flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500 rounded"
-                        >
-                          <span className="flex items-center justify-between gap-2">
-                            <span className="block text-sm font-medium text-slate-300">{row.title}</span>
-                            <span className="shrink-0 text-[11px] text-slate-500">{formatOrbitTime(row.created_at)}</span>
-                          </span>
-                          {row.body ? (
-                            <span className="mt-1 block break-words text-xs text-slate-400">{row.body}</span>
-                          ) : null}
-                        </button>
-                      </div>
-                    );
-                  })
-                : null}
-            </div>
-          ) : null}
         </div>
       )}
     </div>

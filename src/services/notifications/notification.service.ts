@@ -72,6 +72,25 @@ export async function markNotificationRead(supabase: SupabaseClient, id: string)
 }
 
 /** Marks all the user's unread notifications read. */
+/**
+ * Deletes one notification. Viewing consumes it — the row is not archived.
+ * RLS ("users delete their own notifications") scopes this to the caller.
+ */
+export async function deleteNotification(supabase: SupabaseClient, id: string): Promise<void> {
+  const { error } = await supabase.from("notifications").delete().eq("id", id);
+  if (error) {
+    throw new Error(`Unable to clear notification: ${error.message}`);
+  }
+}
+
+/** Deletes every one of the caller's notifications (RLS-scoped). */
+export async function deleteAllNotifications(supabase: SupabaseClient): Promise<void> {
+  const { error } = await supabase.from("notifications").delete().not("id", "is", null);
+  if (error) {
+    throw new Error(`Unable to clear notifications: ${error.message}`);
+  }
+}
+
 export async function markAllNotificationsRead(supabase: SupabaseClient): Promise<void> {
   const { error } = await supabase
     .from("notifications")
@@ -359,14 +378,13 @@ export async function getUnreadAnnouncementNotificationCount(
 export async function markAnnouncementNotificationsRead(
   supabase: SupabaseClient
 ): Promise<void> {
-  const { error } = await supabase
-    .from("notifications")
-    .update({ is_read: true })
-    .eq("type", "announcement")
-    .eq("is_read", false);
+  // Opening the announcements panel counts as viewing them: the rows are
+  // consumed (deleted) rather than archived, matching the notifications
+  // inbox. The unread badge is driven by these rows, so it clears too.
+  const { error } = await supabase.from("notifications").delete().eq("type", "announcement");
 
   if (error) {
-    throw new Error(`Unable to mark announcement notifications read: ${error.message}`);
+    throw new Error(`Unable to clear announcement notifications: ${error.message}`);
   }
 }
 

@@ -38,13 +38,18 @@ export default function NotificationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [markingAll, setMarkingAll] = useState(false);
+  // Viewed notifications leave the list. They stay reachable behind this
+  // toggle instead of cluttering the inbox — "seen" rows are history, not work.
+  const [showEarlier, setShowEarlier] = useState(false);
 
   const [pushPermission, setPushPermission] = useState<PushState>("default");
   const [pushSubscribed, setPushSubscribed] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);
   const [pushMessage, setPushMessage] = useState<string | null>(null);
 
-  const unreadCount = rows.filter((row) => !row.is_read).length;
+  const unreadRows = rows.filter((row) => !row.is_read);
+  const earlierRows = rows.filter((row) => row.is_read);
+  const unreadCount = unreadRows.length;
 
   useEffect(() => {
     let cancelled = false;
@@ -226,7 +231,9 @@ export default function NotificationsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Notifications</h1>
           <p className="text-sm text-slate-400">
-            {unreadCount > 0 ? `${unreadCount} unread` : "Campus alerts and personal activity."}
+            {unreadCount > 0
+              ? `${unreadCount} new notification${unreadCount === 1 ? "" : "s"}`
+              : "You're all caught up."}
           </p>
         </div>
         {unreadCount > 0 ? (
@@ -258,7 +265,15 @@ export default function NotificationsPage() {
         </Card>
       ) : (
         <div className="space-y-2" aria-live="polite">
-          {rows.map((row) => {
+          {unreadRows.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-sm text-slate-400">
+                You&rsquo;re all caught up — opening a notification removes it from this list.
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {unreadRows.map((row) => {
             const actor = row.actor_id ? actors[row.actor_id] : undefined;
             const name = actor ? displayName(actor) : "Campus";
             return (
@@ -309,6 +324,53 @@ export default function NotificationsPage() {
             <Button type="button" size="sm" variant="outline" onClick={() => void loadMore()} disabled={loadingMore}>
               {loadingMore ? "Loading…" : "Load more"}
             </Button>
+          ) : null}
+
+          {earlierRows.length > 0 ? (
+            <div className="space-y-2 pt-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowEarlier((v) => !v)}
+                aria-expanded={showEarlier}
+              >
+                {showEarlier
+                  ? "Hide earlier notifications"
+                  : `Earlier notifications (${earlierRows.length})`}
+              </Button>
+              {showEarlier
+                ? earlierRows.map((row) => {
+                    const actor = row.actor_id ? actors[row.actor_id] : undefined;
+                    const name = actor ? displayName(actor) : "Campus";
+                    return (
+                      <div
+                        key={row.id}
+                        className="flex w-full items-start gap-3 rounded-xl border border-surface-200 bg-surface-50 p-3 text-left opacity-80 transition-colors hover:border-campus-500 hover:opacity-100"
+                      >
+                        <UserAvatar
+                          profile={{ id: actor?.id, full_name: name, avatar_url: actor?.avatar_url }}
+                          size="md"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => router.push(notificationRoute(row.type))}
+                          aria-label={`Open earlier notification: ${row.title}`}
+                          className="flex min-w-0 flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-campus-500 rounded"
+                        >
+                          <span className="flex items-center justify-between gap-2">
+                            <span className="block text-sm font-medium text-slate-300">{row.title}</span>
+                            <span className="shrink-0 text-[11px] text-slate-500">{formatOrbitTime(row.created_at)}</span>
+                          </span>
+                          {row.body ? (
+                            <span className="mt-1 block break-words text-xs text-slate-400">{row.body}</span>
+                          ) : null}
+                        </button>
+                      </div>
+                    );
+                  })
+                : null}
+            </div>
           ) : null}
         </div>
       )}

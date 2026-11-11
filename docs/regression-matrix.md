@@ -343,3 +343,20 @@ cc-p9-student / cc-p9-admin / cc-p9-welcome + all their rows deleted (notificati
 
 ### Cleanup
 Fixture cc-p11-student + fake subscription + receipts + rate rows fully deleted; 58 profiles 0 orphans; the 5 real subscription rows untouched; receipt log empty.
+
+---
+
+## Phase 12 (Nov 11 2026 — DEPLOYED bbf85d2, Action 43100627958)
+
+Install promotion consistency: every signed-in non-installed user sees the install pill (one-tap where beforeinstallprompt exists, iOS Share guidance, browser-menu guidance otherwise). Dismiss = 7-day snooze with absolute expiry; previously-installed + now-browser-tab reconciliation clears the snooze so an uninstall re-promotes on the next visit; appinstalled clears snooze. Post-tour card shares the same snooze (no contradicting permanent flags).
+
+Push diagnostics: diagnostic (push_test) payloads always display the system notification even with a window visible; 401 classified failed_permanent (no repeated retries).
+
+Verified: 7/7 browser e2e (visibility, snooze persistence, expiry, uninstall re-promotion, 390px, zero console errors), tsc/lint/build clean, prod smoke 200 on all routes, SW bypass + install-promotion code confirmed in served assets.
+Cleanup complete (Nov 11): cc-p12-student + cc-push-probe test accounts deleted with their rows; 58 profiles, 0 orphans, 0 cc- accounts left.
+
+---
+
+## Notifications inbox (Nov 11 2026 — LOCAL, not deployed)
+
+Question: "why don't notifications disappear after being viewed" — because the page listed every row regardless of read state; viewing only marked is_read (clearing the bell badge). Fix: the inbox now shows UNREAD only; opening a notification marks it read and it leaves the list; read history sits behind an "Earlier notifications (n)" toggle; "Mark all read" empties the inbox view. Verified 9/9 browser e2e; tsc/lint/build clean.

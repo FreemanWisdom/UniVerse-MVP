@@ -265,7 +265,7 @@ export default function NotificationsPage() {
           {visibleRows.length === 0 ? (
             <Card>
               <CardContent className="p-6 text-sm text-slate-400">
-                You&rsquo;re all caught up. Opening a notification clears it for good.
+                You&rsquo;re all caught up
               </CardContent>
             </Card>
           ) : null}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ensureInstallListeners,
   getCapturedInstallPrompt,
@@ -36,6 +36,8 @@ import {
  */
 
 const TOUR_DONE_EVENT = "universe:tour-completed";
+const TITLE_ID = "install-prompt-title";
+const DESCRIPTION_ID = "install-prompt-description";
 
 export function PostTourInstallPrompt() {
   const [visible, setVisible] = useState(false);
@@ -43,6 +45,8 @@ export function PostTourInstallPrompt() {
   const [isIOS, setIsIOS] = useState(false);
   const [busy, setBusy] = useState(false);
   const [outcome, setOutcome] = useState<InstallOutcome | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
   useEffect(() => {
     ensureInstallListeners();
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -76,9 +80,91 @@ export function PostTourInstallPrompt() {
     };
   }, []);
 
+  /**
+   * Modal shell. The card behaved like a modal on desktop (full-screen
+   * scrim, every pointer event captured) while announcing itself as
+   * non-modal, and on mobile it blocked nothing but let the page scroll
+   * underneath. This makes it a real modal at every breakpoint and ties the
+   * ARIA to what actually happens.
+   */
+  useEffect(() => {
+    if (!visible) return;
+
+    previouslyFocused.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    // Lock both the root and the body: with only the body locked, the
+    // document element still scrolls behind the prompt.
+    const root = document.documentElement;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousRootOverflow = root.style.overflow;
+    document.body.style.overflow = "hidden";
+    root.style.overflow = "hidden";
+
+    dialogRef.current?.focus({ preventScroll: true });
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      root.style.overflow = previousRootOverflow;
+
+      const target = previouslyFocused.current;
+      previouslyFocused.current = null;
+      if (target && target.isConnected && target !== document.body) {
+        target.focus({ preventScroll: true });
+        return;
+      }
+      // The invitation opens from the tour's finish action, which no longer
+      // exists by the time it closes — land on real content instead of
+      // stranding focus on a removed node.
+      const fallback = document.querySelector<HTMLElement>(
+        'main a[href], main button, main [tabindex]:not([tabindex="-1"]), header a[href]'
+      );
+      if (fallback?.isConnected) fallback.focus({ preventScroll: true });
+      else (document.activeElement as HTMLElement | null)?.blur();
+    };
+  }, [visible]);
+
   const markSeenAndClose = () => {
     snoozeInstallPromotion();
     setVisible(false);
+  };
+
+  /** Escape closes it; Tab / Shift+Tab stay inside it. */
+  const onDialogKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      markSeenAndClose();
+      return;
+    }
+    if (event.key !== "Tab") return;
+
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const focusable = Array.from(
+      dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => el.getClientRects().length > 0 || el === document.activeElement);
+
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+
+    if (event.shiftKey) {
+      if (active === first || active === dialog) {
+        event.preventDefault();
+        last.focus();
+      }
+      return;
+    }
+
+    if (active === last) {
+      event.preventDefault();
+      first.focus();
+    }
   };
 
   const install = async () => {
@@ -98,10 +184,14 @@ export function PostTourInstallPrompt() {
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
-      aria-modal="false"
-      aria-label="Install Universe ICOS"
-      className="fixed inset-x-0 bottom-0 z-[55] flex justify-center bg-background/90 p-4 pb-6 backdrop-blur-sm sm:inset-0 sm:items-center sm:p-6"
+      aria-modal="true"
+      aria-labelledby={TITLE_ID}
+      aria-describedby={DESCRIPTION_ID}
+      tabIndex={-1}
+      onKeyDown={onDialogKeyDown}
+      className="fixed inset-0 z-[55] flex items-end justify-center bg-background/90 p-4 pb-6 backdrop-blur-sm outline-none sm:items-center sm:p-6"
     >
       <div className="w-full max-w-md rounded-2xl border border-surface-200 bg-surface-50 p-5 shadow-2xl">
         <div className="flex items-center gap-3">
@@ -111,14 +201,17 @@ export function PostTourInstallPrompt() {
             </svg>
           </span>
           <div className="min-w-0">
-            <p className="font-display text-sm font-bold tracking-tight text-foreground">
+            <h2
+              id={TITLE_ID}
+              className="font-display text-sm font-bold tracking-tight text-foreground"
+            >
               Add Universe ICOS to your home screen
-            </p>
+            </h2>
             <p className="text-xs text-slate-400">Faster access, full-screen, app-like.</p>
           </div>
         </div>
 
-        <div className="mt-3 text-sm text-slate-400">
+        <div id={DESCRIPTION_ID} className="mt-3 text-sm text-slate-400">
           {showGuidance ? (
             <p>
               The one-tap install didn&rsquo;t open on its own — use your browser&rsquo;s menu:{" "}
@@ -145,6 +238,14 @@ export function PostTourInstallPrompt() {
             </p>
           )}
         </div>
+
+        <p role="status" aria-live="polite" className="sr-only">
+          {busy
+            ? "Installing the app…"
+            : showGuidance
+              ? "One-tap install is unavailable. Use your browser menu to install."
+              : ""}
+        </p>
 
         <div className="mt-4 flex items-center gap-3">
           {(available || busy) && !showGuidance ? (

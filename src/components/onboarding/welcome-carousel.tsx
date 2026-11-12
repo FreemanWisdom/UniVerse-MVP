@@ -95,6 +95,8 @@ export function WelcomeCarousel() {
   const [index, setIndex] = useState(0);
   const [slide, setSlide] = useState<Slide | null>(null);
   const touchStartX = useRef<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
 
   // Hydration-safe reveal: only decide after mount so server and client
   // render the same (hidden) markup first.
@@ -140,6 +142,72 @@ export function WelcomeCarousel() {
     return () => window.removeEventListener("keydown", onKey);
   }, [visible, index, go, finish]);
 
+  /**
+   * Modal shell behaviour. The dialog is already role="dialog"
+   * aria-modal="true"; what was missing is the part assistive tech and
+   * keyboards actually rely on:
+   *
+   *  - remember what had focus so it can be returned on close
+   *  - move focus into the dialog when it opens
+   *  - lock background scrolling while it is open
+   *  - release both on close (no leftover body style, no stale focus)
+   */
+  useEffect(() => {
+    if (!visible) return;
+
+    previouslyFocused.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = "hidden";
+
+    // Focus the dialog itself: the accessible name is announced and the first
+    // Tab lands on the first control rather than on the page behind.
+    dialogRef.current?.focus();
+
+    return () => {
+      body.style.overflow = previousOverflow;
+      const target = previouslyFocused.current;
+      previouslyFocused.current = null;
+      if (target && target.isConnected && target !== document.body) {
+        target.focus({ preventScroll: true });
+      }
+    };
+  }, [visible]);
+
+  /** Keeps Tab / Shift+Tab inside the dialog while it is open. */
+  const onDialogKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab") return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const focusable = Array.from(
+      dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => el.getClientRects().length > 0 || el === document.activeElement);
+
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+
+    if (event.shiftKey) {
+      if (active === first || active === dialog) {
+        event.preventDefault();
+        last.focus();
+      }
+      return;
+    }
+
+    if (active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   if (!visible || !slide) return null;
 
   const isLast = index === SLIDES.length - 1;
@@ -158,10 +226,13 @@ export function WelcomeCarousel() {
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-label="Welcome to Universe ICOS"
-      className="fixed inset-0 z-[60] flex items-end justify-center bg-background/90 p-0 backdrop-blur-sm sm:items-center sm:p-6"
+      tabIndex={-1}
+      onKeyDown={onDialogKeyDown}
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-background/90 p-0 backdrop-blur-sm outline-none sm:items-center sm:p-6"
     >
       <div
         className="flex w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-surface-200 bg-surface-50 shadow-2xl sm:rounded-2xl"

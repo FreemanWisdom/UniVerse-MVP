@@ -35,6 +35,7 @@ export function ResetPasswordForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [revocationFailed, setRevocationFailed] = useState(false);
 
   const run = useRef(false);
 
@@ -114,16 +115,12 @@ export function ResetPasswordForm() {
     })();
   }, []);
 
-  const handleDone = useCallback(async () => {
-    // The recovery session has served its purpose; end it cleanly so the
-    // user re-authenticates with their new password.
-    try {
-      const supabase = createClient();
-      await supabase.auth.signOut();
-    } catch {
-      // Sign-out best effort — the new password is already saved.
-    }
-    router.push("/login");
+  const handleDone = useCallback(() => {
+    // The recovery session is deliberately PRESERVED: the approved behaviour
+    // is that a successful reset leaves this device signed in, with the other
+    // devices revoked by the `scope: "others"` call above. Nothing is signed
+    // out here.
+    router.push("/orbit");
     router.refresh();
   }, [router]);
 
@@ -158,6 +155,13 @@ export function ResetPasswordForm() {
         return;
       }
 
+      // A reset must not leave the compromised sessions alive. `scope: 'others'`
+      // revokes every other refresh token AND keeps this recovery session (the
+      // client skips local session removal for that scope), so the success
+      // screen and the notification below still work.
+      const { error: revokeError } = await supabase.auth.signOut({ scope: "others" });
+      setRevocationFailed(Boolean(revokeError));
+
       // Best-effort password-change notification (spec §5). Fires while the
       // recovery session is still valid; any failure is swallowed so it can
       // never block an already-successful password change.
@@ -175,7 +179,35 @@ export function ResetPasswordForm() {
   };
 
   if (stage === "done") {
-    return <AuthTransition variant="success" title="Password updated" onDone={handleDone} />;
+    if (revocationFailed) {
+      // Password change succeeded, revocation did not. Say both things.
+      return (
+        <div className="space-y-4 py-2 text-center">
+          <div className="space-y-1.5">
+            <h3 className="font-display text-lg font-bold text-foreground">Password updated</h3>
+            <p className="text-sm text-slate-400">
+              We couldn&apos;t sign out your other devices. They may still be signed in.
+            </p>
+            <p className="text-xs text-slate-500">
+              You are still signed in on this device. Use &ldquo;Sign out of all devices&rdquo; in
+              Settings to be sure.
+            </p>
+          </div>
+          <Button type="button" onClick={handleDone} className="w-full">
+            Continue to UniVerse
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <AuthTransition
+        variant="success"
+        title="Password updated"
+        caption="Your other devices have been signed out. You're still signed in here."
+        onDone={handleDone}
+      />
+    );
   }
 
   if (stage === "checking") {

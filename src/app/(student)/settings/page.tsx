@@ -6,6 +6,7 @@ import { NotificationSettings } from "@/features/settings/components/notificatio
 import { ThemeSettings } from "@/features/settings/components/theme-settings";
 import { PasswordSettings } from "@/features/settings/components/password-settings";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { SignOutEverywhereButton } from "@/components/auth/sign-out-everywhere-button";
 import { ReplayIntroButton } from "@/components/onboarding/replay-intro-button";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { createClient } from "@/lib/supabase/server";
@@ -141,9 +142,21 @@ export default async function SettingsPage() {
       <section className="space-y-3" aria-label="Privacy and security">
         <SectionHeading>Privacy &amp; Security</SectionHeading>
         <div className="space-y-2">
-          <SettingRow title="Sign out" description="End your current session">
+          <SettingRow
+            title="Sign out"
+            description="End this device's session. Other devices stay signed in."
+          >
             <div className="flex min-h-[36px] items-center">
               <LogoutButton />
+            </div>
+          </SettingRow>
+
+          <SettingRow
+            title="Sign out of all devices"
+            description="End all active UniVerse sessions associated with your account, including this device."
+          >
+            <div className="flex min-h-[36px] items-center">
+              <SignOutEverywhereButton />
             </div>
           </SettingRow>
         </div>

@@ -49,7 +49,21 @@ export function PasswordSettings() {
       const supabase = createClient();
       const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
       if (updateError) throw updateError;
-      setNotice("Password updated. Use it the next time you sign in.");
+
+      // A new password must not leave the old sessions alive. `scope: 'others'`
+      // revokes every other refresh token and — by design of the client —
+      // keeps this browser signed in.
+      const { error: revokeError } = await supabase.auth.signOut({ scope: "others" });
+
+      if (revokeError) {
+        // Honest partial result: the password IS changed, the other sessions may
+        // not be. Never present this as complete enforcement.
+        setNotice(
+          "Password updated, but we couldn't sign out your other devices. Use “Sign out of all devices” below to be sure."
+        );
+      } else {
+        setNotice("Password updated. Your other devices have been signed out.");
+      }
       resetForm();
       setIsOpen(false);
     } catch (err) {
